@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gentle Warrior Universe</title>
+  <meta name="description" content="Gentle Warrior symbols, hero, and memory mini-game." />
+
+  <link rel="preload" href="hero-portrait.jpg" as="image">
+  <link rel="preload" href="card-back.png" as="image">
+
+  <style>
+    :root{
+      --bg1:#071f16;
+      --bg2:#0b2d1e;
+      --muted:#b6c7b7;
+      --accent:#9ae07a;
+      --card-bg: rgba(255,255,255,0.02);
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --symbol-size:86px;
+      --white:#ffffff;
+      --ui-green:#b7f08a;
+      --panel:#0f2c20;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      color: #dbeadf;
+      line-height:1.35;
+      padding:24px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{width:100%;max-width:820px}
+
+    #loadingOverlay{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      background:rgba(0,0,0,0.6);
+      z-index:9999;color:#cfeccd;font-weight:600;
+      backdrop-filter: blur(3px);
+      transition:opacity .4s ease;
+    }
+    #loadingOverlay.hidden{opacity:0;pointer-events:none;display:none}
+
+    header.hero{
+      background: rgba(255,255,255,0.03);
+      border-radius:var(--radius);
+      padding:22px;
+      margin-bottom:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-inner{display:flex;align-items:center;gap:18px}
+    .hero-avatar{
+      width:92px;height:92px;border-radius:18px;overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      transition:transform .25s ease;
+    }
+    .hero-avatar img{width:100%;height:100%;object-fit:cover}
+    .hero-title h1{margin:0;font-size:20px;color:var(--white)}
+    .hero-title p{margin:6px 0 0;color:var(--muted);font-size:14px}
+    .parallax-layer{
+      position:absolute;inset:0;opacity:.06;
+      background-image:
+      radial-gradient(circle at 20% 20%, rgba(180,240,150,0.06), transparent 10%),
+      radial-gradient(circle at 80% 80%, rgba(120,200,255,0.03), transparent 10%);
+      transform:translateZ(-1px) scale(1.2);
+    }
+
+    .panel{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow: 0 6px 20px rgba(2,6,4,0.4);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:14px;
+    }
+    @media(min-width:720px){
+      .grid{grid-template-columns: repeat(3,1fr)}
+    }
+
+    .symbol-card{
+      background:var(--panel);
+      border-radius:14px;
+      padding:14px;
+      text-align:center;
+      cursor:pointer;
+      transition:.18s ease;
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .symbol-card:hover{transform:translateY(-6px)}
+    .symbol-thumb{
+      width:var(--symbol-size);height:var(--symbol-size);
+      background:#071612;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .symbol-thumb img{
+      width:72%;height:72%;object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+    }
+    .glow{animation: glowPulse 2.6s infinite}
+    @keyframes glowPulse{
+      0%{filter:brightness(1)}
+      50%{filter:brightness(1.3)}
+      100%{filter:brightness(1)}
+    }
+    .symbol-name{font-size:14px;font-weight:700}
+    .symbol-desc{font-size:13px;color:var(--muted)}
+.cta-btn{
+      background:var(--accent);
+      padding:10px 16px;
+      border-radius:10px;
+      font-size:14px;
+      font-weight:700;
+      color:#06200b;
+      display:inline-block;
+      text-align:center;
+      margin-top:12px;
+      text-decoration:none;
+      transition:.18s ease;
+    }
+    .cta-btn:hover{opacity:.85}
+
+    /* GAME */
+    #gameSection{margin-top:22px}
+    #gameBoard{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+    .card{
+      width:100%;aspect-ratio:1;position:relative;
+      transform-style:preserve-3d;
+      transition:transform .25s ease;
+      cursor:pointer;
+    }
+    .card.flip{transform:rotateY(180deg)}
+    .card-face{
+      position:absolute;inset:0;
+      border-radius:12px;
+      backface-visibility:hidden;
+      overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .card-front{
+      background:#0b1a13;
+      border:1px solid rgba(255,255,255,0.04);
+      transform:rotateY(180deg);
+    }
+    .card-front img{
+      width:70%;height:70%;object-fit:contain
+    }
+    .card-back{
+      background:#07130e url("card-back.png") center/cover no-repeat;
+    }
+
+    #controls{margin-top:10px;display:flex;gap:10px}
+    .btn{
+      padding:8px 16px;background:var(--accent);
+      color:#06200b;font-weight:700;border-radius:8px;border:none;
+      cursor:pointer
+    }
+    .btn:hover{opacity:.8}
+
+    #stats{margin-top:6px;font-size:14px;color:var(--muted)}
+
+    footer{
+      margin-top:40px;font-size:13px;color:var(--muted);
+      text-align:center;opacity:.8
+    }
+
+    .socials-footer{
+      margin-top:16px;
+      display:flex;gap:22px;justify-content:center;
+    }
+    .socials-footer img{
+      width:24px;height:24px;opacity:0.9;
+      transition:.2s ease;
+    }
+    .socials-footer img:hover{opacity:1}
+
+    /* MODAL */
+    .modal-bg{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,0.65);
+      display:flex;align-items:center;justify-content:center;
+      padding:20px;z-index:999;
+    }
+    .modal{
+      max-width:420px;width:100%;
+      background:#0c1f16;border-radius:14px;
+      border:1px solid rgba(255,255,255,0.05);
+      padding:22px;color:#dfeee2;
+      animation:pop .25s ease;
+    }
+    @keyframes pop{
+      0%{transform:scale(.8);opacity:0}
+      100%{transform:scale(1);opacity:1}
+    }
+    .modal h2{margin:0 0 6px}
+    .modal p{font-size:14px;color:#b6c7b7}
+    .modal-close{
+      margin-top:16px;
+      padding:10px;background:var(--accent);
+      text-align:center;border-radius:8px;font-weight:700;
+      cursor:pointer;color:#06200b
+    }
+
+  </style>
+</head>
+
+<body>
+<div id="loadingOverlay">Loading…</div>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="parallax-layer"></div>
+  <div class="hero-inner">
+    <div class="hero-avatar">
+      <img src="hero-portrait.jpg" alt="Hero" />
+    </div>
+    <div class="hero-title">
+      <h1>Gentle Warrior Universe</h1>
+      <p>"Soft heart. Strong spirit."</p>
+    </div>
+  </div>
+</header>
+
+<section class="panel">
+  <h2>The Six Symbols</h2>
+
+  <div class="grid">
+    <div class="symbol-card" data-modal="aurelion">
+      <div class="symbol-thumb glow">
+        <img src="symbol-aurelion.png" />
+      </div>
+      <div class="symbol-name">Aurelion</div>
+      <div class="symbol-desc">Light, leadership</div>
+    </div>
+
+    <div class="symbol-card" data-modal="gaialune">
+      <div class="symbol-thumb glow">
+        <img src="symbol-gaialune.png" />
+      </div>
+      <div class="symbol-name">Gaialune</div>
+      <div class="symbol-desc">Nature, healing</div>
+    </div>
+
+    <div class="symbol-card" data-modal="ignara">
+      <div class="symbol-thumb glow">
+        <img src="symbol-ignara.png" />
+      </div>
+      <div class="symbol-name">Ignara</div>
+      <div class="symbol-desc">Passion, will</div>
+    </div>
+
+    <div class="symbol-card" data-modal="solyndra">
+      <div class="symbol-thumb glow">
+        <img src="symbol-solyndra.png" />
+      </div>
+      <div class="symbol-name">Solyndra</div>
+      <div class="symbol-desc">Guidance, hope</div>
+    </div>
+
+    <div class="symbol-card" data-modal="umbrath">
+      <div class="symbol-thumb glow">
+        <img src="symbol-umbrath.png" />
+      </div>
+      <div class="symbol-name">Umbrath</div>
+      <div class="symbol-desc">Mystery, protection</div>
+    </div>
+
+    <div class="symbol-card" data-modal="zeratheon">
+      <div class="symbol-thumb glow">
+        <img src="symbol-zeratheon.png" />
+      </div>
+      <div class="symbol-name">Zeratheon</div>
+      <div class="symbol-desc">Strength, swift justice</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>About Gentle Warrior</h2>
+  <p>Gentle Warrior is a creative universe that values kindness, courage, and protection. This page introduces the symbols, showcases the hero, and connects you to our stories and future events.</p>
+
+  <a href="https://t.me/GentleWarriorPortal" class="cta-btn">Join on Telegram</a>
+</section>
+
+
+<section id="gameSection" class="panel">
+  <h2>Memory Game — Find the matching symbol pairs</h2>
+
+  <div id="controls">
+    <button id="startBtn" class="btn">Start</button>
+    <button id="resetBtn" class="btn">Reset</button>
+  </div>
+
+  <div id="stats">Time: 00:00 • Moves: 0</div>
+
+  <div id="gameBoard"></div>
+</section>
+
+<footer>
+  Gentle Warrior <br>
+  © 2025 Gentle Warrior. All rights reserved.
+
+  <div class="socials-footer">
+    <a href="https://x.com/GentleWrrior" target="_blank"><img src="icon-x.png"></a>
+    <a href="https://tiktok.com/@gentlewarrior" target="_blank"><img src="icon-tiktok.png"></a>
+    <a href="https://instagram.com/gentlewarrioruniverse" target="_blank"><img src="icon-ig.png"></a>
+    <a href="https://t.me/GentleWarriorPortal" target="_blank"><img src="icon-telegram.png"></a>
+  </div>
+</footer>
+<!-- CHUNK 3/3 - JavaScript + Modal (paste at end of file) -->
+<script>
+(() => {
+  /* ====== CONFIG: symbol items (must match your uploaded file names) ====== */
+  const SYMBOLS = [
+    { id: 'aurelion', name: 'Aurelion', desc: 'Light, leadership', file: 'symbol-aurelion.png' },
+    { id: 'gaialune', name: 'Gaialune', desc: 'Nature, healing', file: 'symbol-gaialune.png' },
+    { id: 'ignara', name: 'Ignara', desc: 'Passion, will', file: 'symbol-ignara.png' },
+    { id: 'solyndra', name: 'Solyndra', desc: 'Guidance, hope', file: 'symbol-solyndra.png' },
+    { id: 'umbrath', name: 'Umbrath', desc: 'Mystery, protection', file: 'symbol-umbrath.png' },
+    { id: 'zeratheon', name: 'Zeratheon', desc: 'Strength, swift justice', file: 'symbol-zeratheon.png' }
+  ];
+
+  /* ====== DOM refs ====== */
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const gameBoard = document.getElementById('gameBoard');
+  const statsEl = document.getElementById('stats');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const symbolCards = document.querySelectorAll('.symbol-card');
+
+  /* ====== tiny dynamic styles for glow pulsing (injected) ====== */
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .glow {box-shadow:0 0 18px rgba(180,220,150,0.06); transition:box-shadow .3s ease;}
+    .glow-pulse { animation: glowPulse 2.6s infinite ease-in-out; }
+    @keyframes glowPulse {
+      0% { box-shadow:0 0 8px rgba(140,200,120,0.04); transform: translateY(0); }
+      50% { box-shadow:0 0 26px rgba(160,240,140,0.12); transform: translateY(-2px); }
+      100% { box-shadow:0 0 8px rgba(140,200,120,0.04); transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ====== Game state ====== */
+  let deck = [];            // array of card objects
+  let firstCard = null;
+  let secondCard = null;
+  let lockBoard = false;
+  let moves = 0;
+  let matches = 0;
+  let timer = null;
+  let seconds = 0;
+  let started = false;
+
+  /* ====== helper utils ====== */
+  function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [array[i],array[j]]=[array[j],array[i]];
+    }
+    return array;
+  }
+
+  function formatTime(s){
+    const mm = String(Math.floor(s/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    return `${mm}:${ss}`;
+  }
+
+  function updateStats(){
+    statsEl.textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+  }
+
+  function startTimer(){
+    if(timer) return;
+    timer = setInterval(()=>{
+      seconds++;
+      updateStats();
+    },1000);
+  }
+  function stopTimer(){
+    clearInterval(timer); timer = null;
+  }
+  function resetTimer(){
+    stopTimer(); seconds=0; updateStats();
+  }
+
+  /* ====== build card DOM ====== */
+  function createCardElement(cardData){
+    const wrapper = document.createElement('div');
+    wrapper.className = 'card';
+    wrapper.dataset.cardId = cardData.id;
+    wrapper.dataset.symbolId = cardData.symbolId;
+
+    const back = document.createElement('div');
+    back.className = 'card-face card-back';
+
+    const front = document.createElement('div');
+    front.className = 'card-face card-front';
+
+    const img = document.createElement('img');
+    img.src = cardData.file;
+    img.alt = cardData.symbolId;
+    front.appendChild(img);
+
+    wrapper.appendChild(back);
+    wrapper.appendChild(front);
+
+    wrapper.addEventListener('click', () => handleCardClick(wrapper), { passive: true });
+
+    return wrapper;
+  }
+
+  /* ====== game actions ====== */
+  function buildDeck(){
+    // create two cards per symbol
+    const pairArray = [];
+    SYMBOLS.forEach(sym=>{
+      const a = { id: cryptoRandomId(), symbolId: sym.id, file: sym.file };
+      const b = { id: cryptoRandomId(), symbolId: sym.id, file: sym.file };
+      pairArray.push(a,b);
+    });
+    deck = shuffle(pairArray);
+  }
+
+  function renderBoard(){
+    gameBoard.innerHTML = '';
+    deck.forEach(cd => gameBoard.appendChild(createCardElement(cd)));
+  }
+
+  function startGame(){
+    // reset
+    firstCard = null; secondCard = null; lockBoard=false;
+    moves = 0; matches = 0; started = true;
+    resetTimer(); startTimer();
+    buildDeck();
+    renderBoard();
+    updateStats();
+    // add a subtle glow to symbol thumbnails on main page
+    document.querySelectorAll('.symbol-thumb').forEach(el=>el.classList.add('glow-pulse'));
+  }
+
+  function resetGame(){
+    stopTimer();
+    started = false;
+    firstCard = secondCard = null;
+    lockBoard=false;
+    moves = 0; matches = 0; seconds=0;
+    gameBoard.innerHTML='';
+    updateStats();
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('flip'));
+    document.querySelectorAll('.symbol-thumb').forEach(el=>el.classList.remove('glow-pulse'));
+  }
+
+  function handleCardClick(cardEl){
+    if(lockBoard) return;
+    if(cardEl === firstCard) return;
+    // show card
+    cardEl.classList.add('flip');
+
+    if(!started){
+      // if somehow user taps before pressing start, start automatically
+      startGame();
+    }
+
+    if(!firstCard){
+      firstCard = cardEl;
+      return;
+    }
+    secondCard = cardEl;
+    lockBoard = true;
+    moves++;
+    updateStats();
+
+    // check match
+    if(firstCard.dataset.symbolId === secondCard.dataset.symbolId){
+      // matched
+      matches++;
+      // keep flipped & disable click
+      firstCard.style.pointerEvents='none';
+      secondCard.style.pointerEvents='none';
+      // reset selection
+      firstCard = secondCard = null;
+      lockBoard = false;
+      // win condition
+      if(matches === SYMBOLS.length){
+        stopTimer();
+        setTimeout(()=>showWin(), 450);
+      }
+    } else {
+      // not matched -> flip back after delay
+      setTimeout(()=>{
+        firstCard.classList.remove('flip');
+        secondCard.classList.remove('flip');
+        firstCard = secondCard = null;
+        lockBoard = false;
+      }, 700);
+    }
+  }
+
+  function showWin(){
+    // create modal-like quick win message (re-using symbol modal structure)
+    const w = createModal('You win!', `Time: ${formatTime(seconds)} • Moves: ${moves}`, true);
+    document.body.appendChild(w);
+  }
+
+  /* ====== modal for symbol explanations ====== */
+  function createModal(title, htmlContent, showClose = true){
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    const h2 = document.createElement('h2'); h2.textContent = title;
+    const p = document.createElement('p'); p.innerHTML = htmlContent;
+
+    modal.appendChild(h2);
+    modal.appendChild(p);
+
+    if(showClose){
+      const c = document.createElement('div');
+      c.className = 'modal-close';
+      c.textContent = 'Close';
+      c.addEventListener('click', ()=> {
+        bg.remove();
+      });
+      modal.appendChild(c);
+    }
+
+    bg.addEventListener('click', (e) => {
+      if(e.target === bg) bg.remove();
+    });
+
+    bg.appendChild(modal);
+    return bg;
+  }
+
+  function showSymbolModal(symbolId){
+    const sym = SYMBOLS.find(s=>s.id===symbolId);
+    if(!sym) return;
+    const content = `<img src="${sym.file}" alt="${sym.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:8px auto 12px;">
+                     <strong>${sym.name}</strong><br><span style="color:#b6c7b7">${sym.desc}</span>`;
+    const modal = createModal(sym.name, content, true);
+    document.body.appendChild(modal);
+  }
+
+  /* ====== small helpers ====== */
+  function cryptoRandomId(){
+    // small unique id
+    return Math.random().toString(36).slice(2,9);
+  }
+
+  /* ====== parallax layer and loading control ====== */
+  function initParallax(){
+    const layer = document.querySelector('.parallax-layer');
+    if(!layer) return;
+    window.addEventListener('scroll', ()=>{
+      const y = window.scrollY;
+      layer.style.transform = `translateY(${y * 0.2}px)`;
+    }, { passive: true });
+  }
+
+  function hideLoading(){
+    loadingOverlay.style.opacity = 0;
+    setTimeout(()=>loadingOverlay.style.display='none', 400);
+  }
+
+  /* ====== wire events ====== */
+  startBtn.addEventListener('click', ()=> {
+    startGame();
+  });
+
+  resetBtn.addEventListener('click', ()=> {
+    resetGame();
+  });
+
+  // symbol cards open modal on tap
+  symbolCards.forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.modal;
+      showSymbolModal(id);
+    }, { passive: true });
+  });
+
+  // implement click-to-open for individual generated cards front face (already wired in createCardElement)
+
+  /* ====== initial setup on DOM ready ====== */
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // small set up board placeholder (empty grid)
+    gameBoard.innerHTML = '';
+    updateStats();
+    initParallax();
+
+    // hide loading after tiny delay to allow images to appear
+    setTimeout(hideLoading, 600);
+  });
+
+  /* ====== expose a minimal debug API on window (optional) ====== */
+  window.GentleWarriorGame = {
+    start: startGame,
+    reset: resetGame,
+    status: ()=>({moves,matches,seconds,started})
+  };
+})();
+</script>
+</body>
+</html>
