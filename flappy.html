@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Flappy Warrior — Gentle Warrior</title>
+<style>
+  :root{--bg:#0f2b24;--accent:#9be57f;--muted:#9fbfa7}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  body{background:linear-gradient(180deg,#062b1b,#042417);color:#e6f6ea;display:flex;justify-content:center;padding:18px}
+  .wrap{width:100%;max-width:820px}
+  h1{text-align:center;margin:6px 0 14px;font-size:20px}
+  .panel{background:rgba(0,0,0,0.18);padding:14px;border-radius:12px}
+  canvas{display:block;width:100%;height:auto;border-radius:10px;background:#022618}
+  .controls{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:#072215;border:none;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn.secondary{background:#184334;color:#d0f3d3}
+  .status{margin-left:auto;color:var(--muted);font-weight:600}
+  .box{margin-top:12px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.14)}
+  .share-preview{max-width:320px;border-radius:10px;border:4px solid rgba(255,255,255,0.04)}
+  .note{font-size:13px;color:#bcd9c1;margin-top:8px}
+  .errors{background:#3b1414;color:#ffd6d6;padding:8px;border-radius:8px;margin-top:8px;display:none}
+  footer{margin-top:14px;text-align:center;color:#9fbfa7;font-size:12px}
+  ul.asset-list{padding-left:18px;margin:6px 0}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Flappy Warrior — Gentle Warrior</h1>
+
+    <div class="panel">
+      <canvas id="game" width="800" height="600" aria-label="Flappy Warrior game"></canvas>
+
+      <div class="controls">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="resetBtn" class="btn secondary">Reset</button>
+        <button id="shareBtn" class="btn">Share score</button>
+        <div class="status">Score: <span id="score">0</span></div>
+      </div>
+
+      <div class="box">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div>
+            <strong>Your best</strong>
+            <div id="bestDisplay" style="font-size:24px;margin-top:6px">0</div>
+          </div>
+          <div style="margin-left:auto">
+            <img id="sharePreview" class="share-preview" src="flappy-share.png" alt="share preview" />
+          </div>
+        </div>
+        <p class="note">Tip: Tap or press Space to flap. Avoid the pipes and beat your best score.</p>
+
+        <div id="errors" class="errors"></div>
+
+        <p class="note"><strong>Assets (must be in same folder as this file):</strong></p>
+        <ul class="asset-list">
+          <li>flap-up.png</li>
+          <li>flap-mid.png</li>
+          <li>flap-down.png</li>
+          <li>background.png</li>
+          <li>pipe.png</li>
+          <li>ground.png</li>
+          <li>tap-start.png</li>
+          <li>game-over.png</li>
+          <li>flappy-share.png</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>© 2025 Gentle Warrior — gentlewarrior-universe.netlify.app</footer>
+  </div>
+
+<script>
+/* -------- CONFIG -------- */
+const ASSET_PATH = ""; // images are in repo root (same folder as this file)
+const files = {
+  bg: 'background.png',
+  pipe: 'pipe.png',
+  ground: 'ground.png',
+  flapUp: 'flap-up.png',
+  flapMid: 'flap-mid.png',
+  flapDown: 'flap-down.png',
+  tap: 'tap-start.png',
+  gameover: 'game-over.png',
+  share: 'flappy-share.png'
+};
+
+/* -------- DOM -------- */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const startBtn = document.getElementById('startBtn');
+const resetBtn = document.getElementById('resetBtn');
+const shareBtn = document.getElementById('shareBtn');
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('bestDisplay');
+const errorsEl = document.getElementById('errors');
+
+let W = canvas.width, H = canvas.height;
+
+/* -------- IMAGES -------- */
+const images = {};
+let loadCount = 0;
+let failedAssets = [];
+
+function loadAllAssets(cb) {
+  const keys = Object.keys(files);
+  keys.forEach(k=>{
+    const img = new Image();
+    img.src = ASSET_PATH + files[k];
+    img.onload = () => {
+      images[k] = img;
+      loadCount++;
+      if(loadCount === keys.length) cb();
+    };
+    img.onerror = () => {
+      failedAssets.push(files[k]);
+      loadCount++;
+      if(loadCount === keys.length) cb();
+    };
+  });
+}
+
+/* -------- GAME STATE -------- */
+let running = false;
+let pipes = [];
+let spawnTimer = 0;
+let spawnInterval = 1500;
+let lastTime = 0;
+let score = 0;
+let best = Number(localStorage.getItem('gw-flappy-best') || 0);
+bestEl.textContent = best;
+
+/* Player sized relative to canvas for responsiveness */
+const player = { x:0, y:0, w:0, h:0, vy:0, frameIndex:1, frameTimer:0 };
+
+/* initialize responsive sizes */
+function layout(){
+  // use CSS width to compute canvas pixel size (no devicePixelRatio transform)
+  const cssW = Math.min(820, window.innerWidth - 36);
+  const cssH = Math.round(cssW * 0.6); // landscape-ish
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.width = cssW;
+  canvas.height = cssH;
+  W = canvas.width; H = canvas.height;
+
+  // player dimensions relative to canvas size
+  player.w = Math.round(W * 0.12); // 12% width
+  player.h = Math.round(player.w * 0.9);
+  player.x = Math.round(W * 0.18);
+  player.y = Math.round(H * 0.45);
+}
+window.addEventListener('resize', ()=>{ layout(); draw(); });
+
+/* -------- Input -------- */
+function flap(){
+  if(!running){
+    start();
+    return;
+  }
+  player.vy = -9;
+  player.frameIndex = 0;
+  player.frameTimer = 0;
+}
+document.addEventListener('keydown', e=>{ if(e.code==='Space'){ e.preventDefault(); flap(); }});
+canvas.addEventListener('mousedown', flap);
+canvas.addEventListener('touchstart', e=>{ e.preventDefault(); flap(); }, {passive:false});
+
+startBtn.addEventListener('click', ()=>{ if(!running) start(); });
+resetBtn.addEventListener('click', ()=>{ reset(); draw(); });
+shareBtn.addEventListener('click', shareScore);
+
+/* -------- Game functions -------- */
+function reset(){
+  pipes = [];
+  score = 0;
+  scoreEl.textContent = score;
+  player.y = Math.round(H * 0.45);
+  player.vy = 0;
+  running = false;
+  startBtn.textContent = 'Start';
+}
+
+function start(){
+  if(running) return;
+  running = true;
+  startBtn.textContent = 'Playing...';
+  lastTime = performance.now();
+  spawnTimer = performance.now();
+}
+
+/* spawn pipe */
+function spawnPipe(){
+  const gap = Math.round(H * 0.22); // gap relative to height
+  const minTop = Math.round(H * 0.12);
+  const maxTop = Math.round(H * 0.5);
+  const top = Math.floor(Math.random()*(maxTop-minTop))+minTop;
+  pipes.push({ x: W + 20, top, gap, passed:false });
+}
+
+/* collision */
+function rectI(x,y,w,h, x2,y2,w2,h2){
+  return !(x2 > x + w || x2 + w2 < x || y2 > y + h || y2 + h2 < y);
+}
+function checkCollision(){
+  // ground collision
+  if(player.y + player.h > H - Math.round(H*0.13)) return true;
+  if(player.y < 0) return true;
+  const pipeW = Math.round(W * 0.12);
+  for(const p of pipes){
+    if(rectI(player.x, player.y, player.w, player.h, p.x, 0, pipeW, p.top)) return true;
+    if(rectI(player.x, player.y, player.w, player.h, p.x, p.top + p.gap, pipeW, H)) return true;
+  }
+  return false;
+}
+
+/* update */
+function update(dt){
+  player.vy += 0.45; // gravity
+  player.y += player.vy;
+
+  // animate
+  player.frameTimer += dt;
+  if(player.frameTimer > 120){
+    player.frameTimer = 0;
+    player.frameIndex = (player.frameIndex + 1) % 3;
+  }
+
+  // spawn
+  const now = performance.now();
+  if(now - spawnTimer > spawnInterval){
+    spawnPipe();
+    spawnTimer = now;
+  }
+
+  // move pipes & scoring
+  const speed = 2 + Math.min(3, score/30);
+  for(let i=pipes.length-1;i>=0;i--){
+    pipes[i].x -= speed;
+    if(!pipes[i].passed && pipes[i].x + Math.round(W * 0.12) < player.x){
+      pipes[i].passed = true;
+      score++;
+      scoreEl.textContent = score;
+      if(score > best){
+        best = score; bestEl.textContent = best; localStorage.setItem('gw-flappy-best', best);
+      }
+    }
+    if(pipes[i].x < -200) pipes.splice(i,1);
+  }
+
+  // collision -> end round
+  if(checkCollision()){
+    running = false;
+    startBtn.textContent = 'Start';
+  }
+}
+
+/* draw */
+function draw(){
+  // clear
+  ctx.clearRect(0,0,W,H);
+
+  // background
+  if(images.bg) ctx.drawImage(images.bg, 0, 0, W, H);
+  else { ctx.fillStyle='#042e22'; ctx.fillRect(0,0,W,H); }
+
+  // pipes
+  const pipeW = Math.round(W * 0.12);
+  for(const p of pipes){
+    if(images.pipe){
+      // draw top: use image height as tile - scale to pipeW width; draw top so that bottom aligns at p.top
+      const ph = images.pipe.height * (pipeW / images.pipe.width);
+      ctx.drawImage(images.pipe, p.x, p.top - ph, pipeW, ph);
+      // bottom
+      ctx.drawImage(images.pipe, p.x, p.top + p.gap, pipeW, ph);
+    } else {
+      ctx.fillStyle = '#2f6b4b'; ctx.fillRect(p.x, 0, pipeW, p.top);
+      ctx.fillRect(p.x, p.top + p.gap, pipeW, H);
+    }
+  }
+
+  // ground
+  const groundH = Math.round(H * 0.13);
+  if(images.ground) ctx.drawImage(images.ground, 0, H - groundH, W, groundH);
+  else { ctx.fillStyle='#063a2a'; ctx.fillRect(0, H-groundH, W, groundH); }
+
+  // player frame selection
+  let pimg = images.flapMid;
+  if(player.frameIndex === 0 && images.flapUp) pimg = images.flapUp;
+  if(player.frameIndex === 2 && images.flapDown) pimg = images.flapDown;
+
+  // draw player centered relative to player.x,y
+  if(pimg){
+    // If sprite bigger than target size, draw scaled to player.w/player.h
+    ctx.drawImage(pimg, player.x, player.y, player.w, player.h);
+  } else {
+    ctx.fillStyle = '#9be57f';
+    ctx.fillRect(player.x, player.y, player.w, player.h);
+  }
+
+  // start hint
+  if(!running && images.tap){
+    const tw = Math.round(W * 0.45);
+    ctx.drawImage(images.tap, (W - tw)/2, Math.round(H * 0.09), tw, Math.round(tw * 0.33));
+  }
+
+  // game over overlay
+  if(!running && score > 0 && images.gameover){
+    const gw = Math.round(W * 0.6);
+    ctx.drawImage(images.gameover, (W - gw)/2, Math.round(H * 0.32), gw, Math.round(gw * 0.28));
+  }
+}
+
+/* main loop */
+let rafId = null;
+function loop(now){
+  if(!lastTime) lastTime = now;
+  const dt = now - lastTime;
+  lastTime = now;
+  if(running) update(dt);
+  draw();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* share */
+async function shareScore(){
+  const url = location.href;
+  const text = `I scored ${score} on Flappy Warrior — can you beat me? ${url}`;
+  try{
+    if(navigator.share){
+      await navigator.share({title:'Flappy Warrior', text, url});
+      return;
+    }
+  }catch(e){}
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('Score text copied to clipboard. Paste to share!');
+  }catch(e){
+    prompt('Copy this to share:', text);
+  }
+}
+
+/* -------- STARTUP -------- */
+function showAssetErrors(){
+  if(failedAssets.length){
+    errorsEl.style.display = 'block';
+    errorsEl.innerHTML = '<strong>Missing or failed assets:</strong><br>' + failedAssets.join(', ');
+  } else {
+    errorsEl.style.display = 'none';
+  }
+}
+
+loadAllAssets(()=> {
+  showAssetErrors();
+  layout();
+  reset();
+  // start the RAF loop only after assets are attempted
+  rafId = requestAnimationFrame(loop);
+});
+
+</script>
+</body>
+</html>
