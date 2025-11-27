@@ -92,27 +92,23 @@
     #home ol{padding-left:20px;margin-top:8px}
     #home li{margin-bottom:4px}
 
+    /* Weekly CTA */
     .cta-card{
-      margin-top:14px;
-      padding:14px;
+      margin-top:18px;
+      padding:14px 16px;
       border-radius:14px;
       background:#082418;
       border:1px solid rgba(154,224,122,0.4);
     }
-    .cta-card h3{
-      margin:0 0 4px;
-      font-size:18px;
-    }
-    .cta-card p{
-      margin:0 0 10px;
-      font-size:14px;
-      color:var(--muted);
-    }
+    .cta-card h3{margin:0 0 6px;}
+    .cta-card p{margin:0 0 10px;color:var(--muted);font-size:14px;}
     .cta-row{
       display:flex;
       flex-wrap:wrap;
-      align-items:center;
       gap:10px;
+      align-items:center;
+      font-size:13px;
+      color:var(--muted);
     }
 
     /* Symbols */
@@ -241,12 +237,57 @@
       margin-top:6px;
       display:flex;
       justify-content:center;
-      gap:10px;
+      gap:12px;
     }
     .socials img{
-      width:22px;
-      height:22px;
-      display:block;
+      width:24px;height:24px;display:block;
+    }
+
+    /* Symbol modal */
+    .symbol-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.65);
+      z-index:9999;
+    }
+    .symbol-modal.active{display:flex;}
+    .symbol-modal-inner{
+      background:#0f2c20;
+      border-radius:18px;
+      padding:18px;
+      max-width:320px;
+      width:90%;
+      box-shadow:0 10px 30px rgba(0,0,0,0.7);
+      text-align:center;
+    }
+    .symbol-modal-inner img{
+      width:120px;
+      height:120px;
+      border-radius:18px;
+      object-fit:cover;
+      margin-bottom:12px;
+    }
+    .symbol-modal-inner h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .symbol-modal-inner p{
+      margin:0;
+      font-size:14px;
+      color:var(--muted);
+    }
+    .symbol-modal-close{
+      margin-top:16px;
+      padding:8px 18px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      background:var(--accent);
+      color:#04210f;
+      font-weight:700;
     }
   </style>
 </head>
@@ -278,22 +319,22 @@
     <!-- HOME TAB -->
     <section id="home" class="panel">
       <h2>Gentle Warrior — Project Goal</h2>
-      <p>A heart-led project built on courage and empathy.</p>
+      <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with courage far bigger than his body.</p>
       <ol>
-        <li>Positive, heart-centered brand.</li>
-        <li>Stories and games that matter.</li>
-        <li>Responsible growth (NFT, token, community).</li>
-        <li>Empathy first.</li>
-        <li>Helping children with similar conditions.</li>
+        <li>Build a positive, heart-centered brand.</li>
+        <li>Create meaningful stories and experiences.</li>
+        <li>Grow responsibly (NFT, token, community).</li>
+        <li>Promote empathy.</li>
+        <li>Support children with similar conditions.</li>
       </ol>
 
-      <!-- Engagement CTA -->
+      <!-- Weekly Memory Trial CTA (from index.better1.html style) -->
       <div class="cta-card">
         <h3>Weekly Memory Trial</h3>
         <p>Flip the ancient tiles, beat your best score, and earn your place on the Gentle Warrior board. Seasons reset every Monday (UTC).</p>
         <div class="cta-row">
-          <button id="home-play-btn" class="btn">Play the Memory Game</button>
-          <span style="font-size:12px;color:var(--muted);">Top runs only — time + moves both matter.</span>
+          <button id="home-play" class="btn">Play the Memory Game</button>
+          <span>Top runs only — time + moves both matter.</span>
         </div>
       </div>
     </section>
@@ -305,8 +346,7 @@
 
         <div class="symbol-card"
              data-name="Aurelion"
-             data-line="Light, leadership."
-             data-lore="A gentle sun that leads without burning.">
+             data-lore="Light, leadership. A gentle sun that leads without burning.">
           <img src="symbol-aurelion.png" alt="Aurelion">
           <div class="symbol-name">Aurelion</div>
           <div class="symbol-desc">Light, leadership</div>
@@ -314,8 +354,7 @@
 
         <div class="symbol-card"
              data-name="Gaialune"
-             data-line="Nature, healing."
-             data-lore="Roots that hold, leaves that shelter.">
+             data-lore="Nature, healing. Roots that hold, leaves that shelter.">
           <img src="symbol-gaialune.png" alt="Gaialune">
           <div class="symbol-name">Gaialune</div>
           <div class="symbol-desc">Nature, healing</div>
@@ -323,8 +362,7 @@
 
         <div class="symbol-card"
              data-name="Ignara"
-             data-line="Passion, will."
-             data-lore="A heart-fire that chooses courage over rage.">
+             data-lore="Passion, will. A heart-fire that chooses courage over rage.">
           <img src="symbol-ignara.png" alt="Ignara">
           <div class="symbol-name">Ignara</div>
           <div class="symbol-desc">Passion, will</div>
@@ -332,8 +370,7 @@
 
         <div class="symbol-card"
              data-name="Solyndra"
-             data-line="Guidance, hope."
-             data-lore="Quiet starlight that shows the way home.">
+             data-lore="Guidance, hope. Quiet starlight that shows the way home.">
           <img src="symbol-solyndra.png" alt="Solyndra">
           <div class="symbol-name">Solyndra</div>
           <div class="symbol-desc">Guidance, hope</div>
@@ -341,8 +378,7 @@
 
         <div class="symbol-card"
              data-name="Umbrath"
-             data-line="Mystery, protection."
-             data-lore="A crescent shadow that watches over the weak.">
+             data-lore="Mystery, protection. A crescent shadow that watches over the weak.">
           <img src="symbol-umbrath.png" alt="Umbrath">
           <div class="symbol-name">Umbrath</div>
           <div class="symbol-desc">Mystery, protection</div>
@@ -350,8 +386,7 @@
 
         <div class="symbol-card"
              data-name="Zeratheon"
-             data-line="Strength, swift justice."
-             data-lore="Thunder that answers when lines are crossed.">
+             data-lore="Strength, swift justice. Thunder that answers when lines are crossed.">
           <img src="symbol-zeratheon.png" alt="Zeratheon">
           <div class="symbol-name">Zeratheon</div>
           <div class="symbol-desc">Strength, swift justice</div>
@@ -394,33 +429,40 @@
       </div>
     </section>
 
-    <footer>
-      Gentle Warrior • © 2025
-      <div class="socials">
-        <!-- Replace # with your real links -->
-        <a href="#" target="_blank" rel="noopener">
-          <img src="icon-x.png" alt="X">
-        </a>
-        <a href="#" target="_blank" rel="noopener">
-          <img src="icon-ig.png" alt="Instagram">
-        </a>
-        <a href="#" target="_blank" rel="noopener">
-          <img src="icon-tiktok.png" alt="TikTok">
-        </a>
-        <a href="#" target="_blank" rel="noopener">
-          <img src="icon-telegram.png" alt="Telegram">
-        </a>
-      </div>
-    </footer>
+  <footer>
+  Gentle Warrior • © 2025
+  <div class="socials">
+    <a href="https://x.com/GentleWarriorHQ" target="_blank" rel="noopener noreferrer">
+      <img src="icon-x.png" alt="X (Twitter)">
+    </a>
+    <a href="https://instagram.com/OfficialGentleWarriorHQ" target="_blank" rel="noopener noreferrer">
+      <img src="icon-ig.png" alt="Instagram">
+    </a>
+    <a href="https://www.tiktok.com/@OfficialGentleWarriorHQ" target="_blank" rel="noopener noreferrer">
+      <img src="icon-tiktok.png" alt="TikTok">
+    </a>
+    <a href="https://t.me/OfficialGentleWarriorHQ" target="_blank" rel="noopener noreferrer">
+      <img src="icon-telegram.png" alt="Telegram">
+    </a>
+  </div>
+</footer>
+
+  <!-- SYMBOL MODAL -->
+  <div id="symbolModal" class="symbol-modal">
+    <div class="symbol-modal-inner">
+      <img id="symbolModalImg" src="" alt="">
+      <h3 id="symbolModalName"></h3>
+      <p id="symbolModalLore"></p>
+      <button class="symbol-modal-close" id="symbolModalClose">Close</button>
+    </div>
   </div>
 
   <!-- MAIN SCRIPT: tabs, symbols, game, countdown, CA loader -->
   <script>
     // ---- Tabs
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    tabButtons.forEach(btn=>{
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
-        tabButtons.forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
         ['home','symbols','game'].forEach(id=>{
@@ -429,27 +471,39 @@
       });
     });
 
-    // Home CTA -> Game tab
-    const homePlayBtn = document.getElementById('home-play-btn');
-    homePlayBtn.addEventListener('click', () => {
+    // Home CTA -> switch to Game tab
+    document.getElementById('home-play').addEventListener('click', () => {
       document.querySelector('.tab-btn[data-tab="game"]').click();
-      setTimeout(()=> {
-        document.getElementById('game').scrollIntoView({behavior:'smooth'});
-      }, 80);
-      if (window.gtag) {
-        gtag('event','play_cta_click',{location:'home'});
-      }
     });
 
-    // ---- Symbols click (simple modal via alert)
+    // ---- Symbol modal instead of alert
+    const modal = document.getElementById('symbolModal');
+    const modalImg = document.getElementById('symbolModalImg');
+    const modalName = document.getElementById('symbolModalName');
+    const modalLore = document.getElementById('symbolModalLore');
+    const modalClose = document.getElementById('symbolModalClose');
+
+    function openSymbolModal(card){
+      const name = card.dataset.name || '';
+      const lore = card.dataset.lore || '';
+      const imgEl = card.querySelector('img');
+      const src = imgEl ? imgEl.src : '';
+      modalName.textContent = name;
+      modalLore.textContent = lore;
+      modalImg.src = src;
+      modalImg.alt = name;
+      modal.classList.add('active');
+    }
+    function closeSymbolModal(){
+      modal.classList.remove('active');
+    }
+
     document.querySelectorAll('.symbol-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const name = card.dataset.name || '';
-        const line = card.dataset.line || '';
-        const lore = card.dataset.lore || '';
-        const msg = `${name}\n\n${line}\n${lore}`;
-        alert(msg);
-      });
+      card.addEventListener('click',()=>openSymbolModal(card));
+    });
+    modalClose.addEventListener('click',closeSymbolModal);
+    modal.addEventListener('click',e=>{
+      if(e.target === modal){ closeSymbolModal(); }
     });
 
     // ---- Contract address loader
@@ -534,6 +588,7 @@
     }
 
     function buildDeck(){
+      // Use existing symbol images so no broken files
       const files = [
         'symbol-aurelion.png',
         'symbol-gaialune.png',
@@ -622,9 +677,6 @@
       renderBoard();
       updateStats();
       startTimer();
-      if (window.gtag){
-        gtag('event','game_start_button');
-      }
     }
 
     function resetGame(){
@@ -635,7 +687,7 @@
       seconds = 0;
       firstCard = null;
       lock = false;
-      gameBoard.innerHTML = '';
+      gameBoard.innerHTML = ''; // cards hidden until next Start
       updateStats();
     }
 
@@ -645,15 +697,13 @@
 
     function onWin(){
       stopTimer();
-      if (moves < 6){
+      // anti-cheat: ignore runs below 6 moves
+      if(moves < 6){
         alert('Runs below 6 moves are not counted for the leaderboard.');
         return;
       }
       if(window.gwRecordRun){
         window.gwRecordRun(moves, seconds*1000);
-      }
-      if (window.gtag){
-        gtag('event','game_win',{moves,seconds});
       }
       alert(`You win!\nTime: ${formatTime(seconds)}\nMoves: ${moves}`);
     }
@@ -676,6 +726,7 @@
       where
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+    // Firebase config (same project)
     const firebaseConfig = {
       apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
       authDomain: "gentle-warrior.firebaseapp.com",
@@ -691,6 +742,7 @@
     const playersCol = collection(db, "players");
     const runsCol    = collection(db, "runs");
 
+    // Same isoWeekId as your older version
     function isoWeekId(date = new Date()){
       const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
@@ -699,9 +751,11 @@
       return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
     }
 
+    // IMPORTANT: we DO NOT touch your getSeasonID().
+    // If it exists, we use it. If not, we fall back to isoWeekId().
     function currentSeasonId(){
       if (typeof window.getSeasonID === "function") {
-        try { return window.getSeasonID(); } catch(e) {}
+        try { return window.getSeasonID(); } catch(e) { /* fallback below */ }
       }
       return isoWeekId();
     }
@@ -746,6 +800,7 @@
 
       const { pRef, data } = await ensurePlayer(deviceTag, name);
 
+      // Log this run
       try{
         await addDoc(runsCol, {
           deviceTag,
@@ -763,6 +818,7 @@
       let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
       let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
 
+      // New season? treat as fresh
       if(prevSeasonId !== seasonId){
         prevMoves = null;
         prevTime  = null;
@@ -798,6 +854,7 @@
       const seasonId = currentSeasonId();
 
       try{
+        // Simple where + client-side sort (avoids index issues)
         const qRef = query(
           playersCol,
           where("currentSeasonId", "==", seasonId)
@@ -825,7 +882,7 @@
 
         lb.innerHTML = arr.slice(0,10).map((p,i)=>
           `<div class="leader-row">
-             <div>#${i+1} ${p.name}</div>
+             <div>#${Number(i)+1} ${p.name}</div>
              <div>${p.moves} moves • ${Math.round(p.time/1000)}s</div>
            </div>`
         ).join("");
@@ -835,9 +892,10 @@
       }
     }
 
+    // expose & initial load
     window.gwRecordRun = recordRun;
     window.gwRenderLeaderboard = renderLeaderboard;
     renderLeaderboard();
   </script>
 </body>
-</html>
+  </html>
