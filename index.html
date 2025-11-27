@@ -354,9 +354,8 @@
     // ---- Symbols click (simple modal via alert)
     document.querySelectorAll('.symbol-card').forEach(card=>{
       card.addEventListener('click',()=>{
-        const name = card.dataset.name;
         const lore = card.dataset.lore || '';
-        alert(name + "\\n\\n" + lore);
+        alert(lore);
       });
     });
 
@@ -559,7 +558,7 @@
       if(window.gwRecordRun){
         window.gwRecordRun(moves, seconds*1000);
       }
-      alert(`You win!\\nTime: ${formatTime(seconds)}\\nMoves: ${moves}`);
+      alert(`You win!\nTime: ${formatTime(seconds)}\nMoves: ${moves}`);
     }
   </script>
 
