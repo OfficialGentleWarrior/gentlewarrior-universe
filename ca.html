@@ -1,0 +1,198 @@
+<!-- CA BOX SNIPPET FOR GENTLE WARRIOR ($GWAR) -->
+
+<style>
+  .gw-ca-box{
+    max-width:420px;
+    margin:0 auto;
+    background:#132d22;
+    padding:18px 16px 20px;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:#e3f7e8;
+  }
+  .gw-ca-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .gw-ca-title{
+    font-weight:800;
+    font-size:17px;
+  }
+  .gw-ca-badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    font-size:11px;
+  }
+  .gw-badge{
+    padding:4px 8px;
+    border-radius:999px;
+    background:#0b2118;
+    border:1px solid rgba(255,255,255,0.08);
+    display:flex;
+    align-items:center;
+    gap:4px;
+    white-space:nowrap;
+  }
+  .gw-badge span{
+    font-size:11px;
+  }
+  .gw-badge.gw-network{
+    background:#2b3a5c;
+    border-color:rgba(173,197,255,0.5);
+  }
+  .gw-ca-label{
+    font-size:13px;
+    color:#a9c9b0;
+    margin-top:6px;
+  }
+  .gw-ca-value-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:4px;
+  }
+  .gw-ca-value{
+    font-family:"SF Mono","Menlo",Consolas,monospace;
+    font-size:13px;
+    background:#0b1c15;
+    border-radius:10px;
+    padding:8px 10px;
+    flex:1;
+    word-break:break-all;
+  }
+  .gw-ca-actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .gw-btn{
+    border:none;
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+  .gw-btn-primary{
+    background:#86e58a;
+    color:#082713;
+  }
+  .gw-btn-secondary{
+    background:#0b2118;
+    color:#dcefe3;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .gw-btn[disabled]{
+    opacity:.45;
+    cursor:default;
+  }
+  .gw-ca-warning{
+    margin-top:10px;
+    font-size:11px;
+    color:#ffbdbd;
+  }
+  .gw-ca-note{
+    margin-top:4px;
+    font-size:11px;
+    color:#a9c9b0;
+  }
+  .gw-copy-status{
+    margin-top:4px;
+    font-size:11px;
+    color:#9ae07a;
+    min-height:14px;
+  }
+</style>
+
+<div class="gw-ca-box">
+  <div class="gw-ca-header">
+    <div class="gw-ca-title">$GWAR – The Official Token of Gentle Warrior</div>
+    <div class="gw-ca-badges">
+      <div class="gw-badge gw-network">
+        🟣 <span>Solana</span>
+      </div>
+      <div class="gw-badge">
+        🔒 <span>Official source only</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="gw-ca-label">Contract address</div>
+  <div class="gw-ca-value-row">
+    <div class="gw-ca-value" id="gwCaValue">COMING SOON</div>
+    <div class="gw-ca-actions">
+      <button class="gw-btn gw-btn-secondary" id="gwCopyBtn" disabled>
+        📋 Copy
+      </button>
+      <button class="gw-btn gw-btn-primary" id="gwBuyBtn" disabled>
+        💰 Buy
+      </button>
+    </div>
+  </div>
+
+  <div class="gw-copy-status" id="gwCopyStatus"></div>
+
+  <div class="gw-ca-warning">
+    Always confirm this address from this website, the official X, and the pinned Telegram message only.
+  </div>
+  <div class="gw-ca-note">
+    Beware of fake tokens, look-alike names, and DM “helpers”. No team member will ever ask you to send funds first.
+  </div>
+</div>
+
+<script>
+  // 🔧 EDIT THESE TWO VALUES ONLY WHEN READY
+  const CONTRACT_ADDRESS = ""; // Paste Solana CA here at launch
+  const TRADE_LINK       = ""; // Paste pump.fun or DEX link here
+
+  const caEl     = document.getElementById("gwCaValue");
+  const copyBtn  = document.getElementById("gwCopyBtn");
+  const buyBtn   = document.getElementById("gwBuyBtn");
+  const copyMsg  = document.getElementById("gwCopyStatus");
+
+  // Init state
+  if (CONTRACT_ADDRESS && CONTRACT_ADDRESS.length > 20) {
+    caEl.textContent = CONTRACT_ADDRESS;
+    copyBtn.disabled = false;
+  }
+
+  if (TRADE_LINK && TRADE_LINK.startsWith("http")) {
+    buyBtn.disabled = false;
+    buyBtn.addEventListener("click", () => {
+      window.open(TRADE_LINK, "_blank");
+    });
+  }
+
+  // Copy-to-clipboard
+  copyBtn.addEventListener("click", async () => {
+    if (!CONTRACT_ADDRESS) return;
+    copyMsg.textContent = "";
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(CONTRACT_ADDRESS);
+      } else {
+        const temp = document.createElement("textarea");
+        temp.value = CONTRACT_ADDRESS;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      }
+      copyMsg.textContent = "Contract address copied.";
+    } catch (e) {
+      copyMsg.textContent = "Unable to copy. Please copy manually.";
+    }
+    setTimeout(() => { copyMsg.textContent = ""; }, 2500);
+  });
+</script>
