@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gentle Warrior Universe</title>
+
+<style>
+body{margin:0;background:#071f16;color:#e6f5ec;font-family:system-ui}
+.wrap{max-width:900px;margin:auto;padding:16px}
+
+.hero{display:flex;gap:14px;align-items:center;background:#0b2d1e;padding:16px;border-radius:16px}
+.hero img{width:72px;height:72px;border-radius:16px}
+.tabs{display:flex;justify-content:center;gap:10px;margin:16px 0}
+.tab{padding:10px 18px;border-radius:99px;background:#062115;color:#b9d9c6;border:none;font-weight:700}
+.tab.active{background:#9ae07a;color:#06200b}
+
+.panel{background:#0b2d1e;padding:16px;border-radius:16px;margin-top:12px}
+.symbol-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.symbol-card{text-align:center;background:#123524;border-radius:14px;padding:12px}
+.symbol-card img{width:100px;height:100px;border-radius:14px;object-fit:cover}
+
+.controls{display:flex;gap:10px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+input{padding:8px;border-radius:8px;border:0}
+button{border:0;border-radius:8px;padding:8px 14px;background:#9ae07a;font-weight:700}
+
+#board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:400px;margin:auto}
+.card{aspect-ratio:1;perspective:700px}
+.inner{width:100%;height:100%;transition:.3s;transform-style:preserve-3d}
+.flip .inner{transform:rotateY(180deg)}
+.front,.back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
+.front{background:#042117}
+.back{background:#042117;transform:rotateY(180deg)}
+.back img{width:70%}
+
+.leader{margin-top:10px}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+
+.countdown{text-align:center;font-weight:700;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div class="hero">
+<img src="hero-portrait.jpg">
+<div>
+<b>Gentle Warrior Universe</b><br>
+<small>Soft heart. Strong spirit.</small>
+</div>
+</div>
+
+<div class="panel" id="caBox">Loading contract info…</div>
+
+<div class="tabs">
+<button class="tab active" data-tab="home">Home</button>
+<button class="tab" data-tab="symbols">Symbols</button>
+<button class="tab" data-tab="game">Game</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="panel">
+Welcome to Gentle Warrior.
+</div>
+
+<!-- SYMBOLS -->
+<div id="symbols" class="panel" style="display:none">
+<div class="symbol-grid">
+<div class="symbol-card"><img src="symbol-aurelion.png"><div>Aurelion</div></div>
+<div class="symbol-card"><img src="symbol-gaialune.png"><div>Gaialune</div></div>
+<div class="symbol-card"><img src="symbol-ignara.png"><div>Ignara</div></div>
+<div class="symbol-card"><img src="symbol-solyndra.png"><div>Solyndra</div></div>
+<div class="symbol-card"><img src="symbol-umbrath.png"><div>Umbrath</div></div>
+<div class="symbol-card"><img src="symbol-zeratheon.png"><div>Zeratheon</div></div>
+</div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="panel" style="display:none">
+
+<div class="countdown" id="countdown">Loading countdown…</div>
+
+<div class="controls">
+<input id="name" placeholder="Your public name">
+<button onclick="saveName()">Save name</button>
+<button onclick="startGame()">Start</button>
+<button onclick="resetGame()">Reset</button>
+</div>
+
+<div id="stats">Time: 00:00 • Moves: 0</div>
+
+<div id="board"></div>
+
+<div class="leader">
+<b>Weekly Leaderboard</b>
+<div id="leaderboard">Loading…</div>
+</div>
+
+</div>
+
+<footer style="text-align:center;margin-top:20px;color:#87b3a0">
+Gentle Warrior © 2025
+</footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(btn=>{
+btn.onclick=()=>{
+document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'))
+btn.classList.add('active')
+document.querySelectorAll('[id=home],[id=symbols],[id=game]').forEach(p=>p.style.display='none')
+document.getElementById(btn.dataset.tab).style.display='block'
+}
+})
+
+function nextReset(){
+let d=new Date()
+d.setUTCDate(d.getUTCDate()+((8-d.getUTCDay())%7))
+d.setUTCHours(0,0,0,0)
+return d
+}
+let reset=nextReset()
+
+setInterval(()=>{
+let diff=reset-new Date()
+if(diff<=0){reset=nextReset();return}
+let s=Math.floor(diff/1000)
+let d=Math.floor(s/86400)
+let h=Math.floor(s%86400/3600)
+let m=Math.floor(s%3600/60)
+let sec=s%60
+document.getElementById("countdown").innerText=
+`Next official challenge in: ${d}d ${h}h ${m}m ${sec}s (UTC)`
+},1000)
+
+fetch("ca.html").then(r=>r.text()).then(t=>{
+document.getElementById("caBox").innerHTML=t||"Contract will be posted here."
+})
+
+let nameInput=document.getElementById("name")
+nameInput.value=localStorage.getItem("gw_name")||""
+function saveName(){localStorage.setItem("gw_name",nameInput.value)}
+
+let first=null,lock=false,moves=0,time=0,timer=null,board=document.getElementById("board")
+let symbols=["symbol-aurelion.png","symbol-gaialune.png","symbol-ignara.png","symbol-solyndra.png","symbol-umbrath.png","symbol-zeratheon.png"]
+
+function startGame(){
+clearInterval(timer)
+time=0;moves=0;updateStats()
+board.innerHTML=""
+let deck=[...symbols,...symbols].sort(()=>Math.random()-.5)
+deck.forEach(img=>{
+let c=document.createElement("div");c.className="card"
+c.innerHTML=`<div class="inner"><div class="front"></div><div class="back"><img src="${img}"></div></div>`
+c.onclick=()=>flip(c)
+board.appendChild(c)
+})
+timer=setInterval(()=>{time++;updateStats()},1000)
+}
+
+function resetGame(){clearInterval(timer);board.innerHTML="";updateStats()}
+
+function updateStats(){
+document.getElementById("stats").innerText=
+`Time: ${Math.floor(time/60).toString().padStart(2,"0")}:${(time%60).toString().padStart(2,"0")} • Moves: ${moves}`
+}
+
+function flip(card){
+if(lock||card===first||card.classList.contains("matched"))return
+card.classList.add("flip")
+if(!first){first=card;return}
+moves++;lock=true
+let a=first.querySelector("img").src
+let b=card.querySelector("img").src
+if(a===b){
+first.classList.add("matched")
+card.classList.add("matched")
+resetPick()
+}else{
+setTimeout(()=>{
+first.classList.remove("flip")
+card.classList.remove("flip")
+resetPick()
+},600)
+}
+}
+function resetPick(){first=null;lock=false}
+
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"
+import {getFirestore,collection,addDoc,getDocs} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"
+
+const app=initializeApp({
+apiKey:"AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+authDomain:"gentle-warrior.firebaseapp.com",
+projectId:"gentle-warrior"
+})
+const db=getFirestore(app)
+const runs=collection(db,"runs")
+
+async function loadLeaderboard(){
+const snap=await getDocs(runs)
+let arr=[]
+snap.forEach(d=>arr.push(d.data()))
+arr.sort((a,b)=>a.moves-b.moves || a.time-b.time)
+document.getElementById("leaderboard").innerHTML=
+arr.slice(0,10).map((r,i)=>
+`<div class="row">#${i+1} ${r.player} • ${r.moves} moves • ${r.time}s</div>`
+).join("") || "No data yet."
+}
+loadLeaderboard()
+</script>
+
+</body>
+</html>
