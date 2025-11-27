@@ -214,6 +214,17 @@
       font-size:13px;
       color:var(--muted);
     }
+    .socials{
+      margin-top:6px;
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      font-size:18px;
+    }
+    .socials a{
+      color:var(--muted);
+      text-decoration:none;
+    }
   </style>
 </head>
 <body>
@@ -259,37 +270,49 @@
       <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
       <div class="grid">
 
-        <div class="symbol-card" data-name="Aurelion" data-lore="Aurelion — light and leadership. A gentle sun that leads without burning.">
+        <div class="symbol-card"
+             data-name="Aurelion"
+             data-lore="Light and leadership — a gentle sun that leads without burning.">
           <img src="symbol-aurelion.png" alt="Aurelion">
           <div class="symbol-name">Aurelion</div>
           <div class="symbol-desc">Light, leadership</div>
         </div>
 
-        <div class="symbol-card" data-name="Gaialune" data-lore="Gaialune — nature and healing. Roots that hold, leaves that shelter.">
+        <div class="symbol-card"
+             data-name="Gaialune"
+             data-lore="Nature and healing — roots that hold, leaves that shelter.">
           <img src="symbol-gaialune.png" alt="Gaialune">
           <div class="symbol-name">Gaialune</div>
           <div class="symbol-desc">Nature, healing</div>
         </div>
 
-        <div class="symbol-card" data-name="Ignara" data-lore="Ignara — passion and will. A heart-fire that chooses courage over rage.">
+        <div class="symbol-card"
+             data-name="Ignara"
+             data-lore="Passion and will — a heart-fire that chooses courage over rage.">
           <img src="symbol-ignara.png" alt="Ignara">
           <div class="symbol-name">Ignara</div>
           <div class="symbol-desc">Passion, will</div>
         </div>
 
-        <div class="symbol-card" data-name="Solyndra" data-lore="Solyndra — guidance and hope. Quiet starlight that shows the way home.">
+        <div class="symbol-card"
+             data-name="Solyndra"
+             data-lore="Guidance and hope — quiet starlight that shows the way home.">
           <img src="symbol-solyndra.png" alt="Solyndra">
           <div class="symbol-name">Solyndra</div>
           <div class="symbol-desc">Guidance, hope</div>
         </div>
 
-        <div class="symbol-card" data-name="Umbrath" data-lore="Umbrath — mystery and protection. A crescent shadow that watches over the weak.">
+        <div class="symbol-card"
+             data-name="Umbrath"
+             data-lore="Mystery and protection — a crescent shadow that watches over the weak.">
           <img src="symbol-umbrath.png" alt="Umbrath">
           <div class="symbol-name">Umbrath</div>
           <div class="symbol-desc">Mystery, protection</div>
         </div>
 
-        <div class="symbol-card" data-name="Zeratheon" data-lore="Zeratheon — strength and swift justice. Thunder that answers when lines are crossed.">
+        <div class="symbol-card"
+             data-name="Zeratheon"
+             data-lore="Strength and swift justice — thunder that answers when lines are crossed.">
           <img src="symbol-zeratheon.png" alt="Zeratheon">
           <div class="symbol-name">Zeratheon</div>
           <div class="symbol-desc">Strength, swift justice</div>
@@ -333,8 +356,16 @@
     </section>
 
     <footer>
-      Gentle Warrior • © 2025
+      <div>Gentle Warrior • © 2025</div>
+      <div class="socials">
+        <!-- Replace # with your real urls -->
+        <a href="#" target="_blank" rel="noopener">X</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="#" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">Telegram</a>
+      </div>
     </footer>
+
   </div>
 
   <!-- MAIN SCRIPT: tabs, symbols, game, countdown, CA loader -->
@@ -354,8 +385,9 @@
     // ---- Symbols click (simple modal via alert)
     document.querySelectorAll('.symbol-card').forEach(card=>{
       card.addEventListener('click',()=>{
+        const name = card.dataset.name;
         const lore = card.dataset.lore || '';
-        alert(lore);
+        alert(name + "\n\n" + lore);
       });
     });
 
@@ -364,11 +396,11 @@
       .then(r=>r.text())
       .then(t=>{
         document.getElementById('caBox').innerHTML =
-          (t && t.trim()) || 'The official contract address will be posted here, on X, and on Telegram only.';
+          (t && t.trim()) || 'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
       })
       .catch(()=>{
         document.getElementById('caBox').textContent =
-          'The official contract address will be posted here, on X, and on Telegram only.';
+          'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
       });
 
     // ---- Player name
