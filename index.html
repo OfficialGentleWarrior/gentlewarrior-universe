@@ -1,220 +1,699 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Gentle Warrior Universe</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gentle Warrior Universe</title>
+  <meta name="description" content="Gentle Warrior symbols, hero, and memory mini-game with weekly leaderboard.">
 
-<style>
-body{margin:0;background:#071f16;color:#e6f5ec;font-family:system-ui}
-.wrap{max-width:900px;margin:auto;padding:16px}
+  <style>
+    :root{
+      --bg1:#071f16; --bg2:#0b2d1e;
+      --panel:#0f2c20; --muted:#b6c7b7; --accent:#9ae07a;
+      --card-bg:rgba(255,255,255,0.03); --white:#fff;
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6f5ec;
+    }
+    .wrap{max-width:980px;margin:20px auto;padding:0 16px}
 
-.hero{display:flex;gap:14px;align-items:center;background:#0b2d1e;padding:16px;border-radius:16px}
-.hero img{width:72px;height:72px;border-radius:16px}
-.tabs{display:flex;justify-content:center;gap:10px;margin:16px 0}
-.tab{padding:10px 18px;border-radius:99px;background:#062115;color:#b9d9c6;border:none;font-weight:700}
-.tab.active{background:#9ae07a;color:#06200b}
+    /* Hero */
+    header.hero{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:14px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .hero-avatar{
+      width:80px;height:80px;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      flex-shrink:0;
+    }
+    .hero-avatar img{
+      width:100%;height:100%;object-fit:cover;
+    }
+    .hero-title h1{
+      margin:0;
+      font-size:22px;
+      color:#fff;
+    }
+    .hero-title p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
 
-.panel{background:#0b2d1e;padding:16px;border-radius:16px;margin-top:12px}
-.symbol-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.symbol-card{text-align:center;background:#123524;border-radius:14px;padding:12px}
-.symbol-card img{width:100px;height:100px;border-radius:14px;object-fit:cover}
+    /* Contract banner */
+    .banner-warning{
+      background:#0c2e21;
+      border-radius:12px;
+      padding:12px 14px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.06);
+      font-size:14px;
+      line-height:1.4;
+    }
 
-.controls{display:flex;gap:10px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
-input{padding:8px;border-radius:8px;border:0}
-button{border:0;border-radius:8px;padding:8px 14px;background:#9ae07a;font-weight:700}
+    /* Tabs */
+    .tabs{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .tab{
+      padding:8px 20px;
+      border-radius:999px;
+      border:none;
+      background:#062115;
+      color:#b9d9c6;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .tab.active{
+      background:var(--accent);
+      color:#06200b;
+    }
 
-#board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:400px;margin:auto}
-.card{aspect-ratio:1;perspective:700px}
-.inner{width:100%;height:100%;transition:.3s;transform-style:preserve-3d}
-.flip .inner{transform:rotateY(180deg)}
-.front,.back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden}
-.front{background:#042117}
-.back{background:#042117;transform:rotateY(180deg)}
-.back img{width:70%}
+    /* Panels */
+    .panel{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow:0 6px 22px rgba(0,0,0,0.55);
+    }
+    .panel h2{
+      margin-top:0;
+      text-align:center;
+    }
 
-.leader{margin-top:10px}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+    /* Home content */
+    #home p{margin:6px 0;font-size:14px;color:var(--muted);}
+    #home ol{margin:8px 0 0 20px;font-size:14px;color:var(--muted);}
+    #home ol li{margin-bottom:4px;}
 
-.countdown{text-align:center;font-weight:700;margin-bottom:10px}
-</style>
+    /* Symbols grid */
+    .symbol-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+    }
+    @media(max-width:640px){
+      .symbol-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    .symbol-card{
+      background:#0f2c20;
+      border-radius:16px;
+      padding:12px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.05);
+    }
+    .symbol-card img{
+      width:110px;height:110px;
+      border-radius:18px;          /* rounded square */
+      object-fit:cover;
+      box-shadow:0 8px 18px rgba(0,0,0,0.7);
+      margin-bottom:8px;
+    }
+    .symbol-card .name{
+      font-weight:700;
+      margin-bottom:2px;
+    }
+    .symbol-card .desc{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* Game */
+    .countdown{
+      text-align:center;
+      font-weight:700;
+      margin-bottom:10px;
+      font-size:14px;
+    }
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .controls input{
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(0,0,0,0.25);
+      color:#fff;
+      min-width:190px;
+    }
+    .btn{
+      padding:8px 14px;
+      border-radius:8px;
+      border:none;
+      background:var(--accent);
+      color:#06200b;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+    }
+    #stats{
+      text-align:center;
+      margin-bottom:10px;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    #board{
+      width:100%;
+      max-width:460px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .card{
+      aspect-ratio:1/1;
+      perspective:800px;
+      cursor:pointer;
+    }
+    .inner{
+      width:100%;height:100%;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:0.28s ease;
+    }
+    .card.flip .inner{
+      transform:rotateY(180deg);
+    }
+    .front,.back{
+      position:absolute;inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backface-visibility:hidden;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.05);
+    }
+    .front{
+      background:#07130e url("card-back.png") center/cover no-repeat;
+    }
+    .back{
+      background:#07130e;
+      transform:rotateY(180deg);
+    }
+    .back img{
+      width:70%;height:70%;
+      object-fit:contain;
+      filter:drop-shadow(0 0 12px rgba(255,200,0,0.6));
+    }
+
+    .leader-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:14px;
+      margin-top:12px;
+      margin-bottom:4px;
+    }
+    .leader-box{
+      background:rgba(255,255,255,0.03);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+    }
+    .row{
+      display:flex;
+      justify-content:space-between;
+      padding:5px 0;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .row:last-child{border-bottom:none;}
+
+    footer{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-top:6px;
+      padding-bottom:16px;
+    }
+  </style>
 </head>
 <body>
-
 <div class="wrap">
 
-<div class="hero">
-<img src="hero-portrait.jpg">
-<div>
-<b>Gentle Warrior Universe</b><br>
-<small>Soft heart. Strong spirit.</small>
-</div>
-</div>
+  <header class="hero">
+    <div class="hero-avatar">
+      <img src="hero-portrait.jpg" alt="Gentle Warrior">
+    </div>
+    <div class="hero-title">
+      <h1>Gentle Warrior Universe</h1>
+      <p>Soft heart. Strong spirit.</p>
+    </div>
+  </header>
 
-<div class="panel" id="caBox">Loading contract info…</div>
+  <div class="banner-warning" id="caBox">
+    The official contract address will be posted here, on our X page, and on Telegram only.
+    Stay cautious — beware of fake or scam tokens.
+  </div>
 
-<div class="tabs">
-<button class="tab active" data-tab="home">Home</button>
-<button class="tab" data-tab="symbols">Symbols</button>
-<button class="tab" data-tab="game">Game</button>
-</div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="home">Home</button>
+    <button class="tab" data-tab="symbols">Symbols</button>
+    <button class="tab" data-tab="game">Game</button>
+  </div>
 
-<!-- HOME -->
-<div id="home" class="panel">
-Welcome to Gentle Warrior.
-</div>
+  <!-- HOME PANEL -->
+  <section id="home" class="panel">
+    <h2>Gentle Warrior — Project Goal</h2>
+    <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with a courage far bigger than his body.</p>
+    <p>The long-term goal of the project:</p>
+    <ol>
+      <li>Build a positive, heart-centered brand.</li>
+      <li>Create meaningful stories and experiences.</li>
+      <li>Grow responsibly (NFT, token, community).</li>
+      <li>Promote empathy and kindness online.</li>
+      <li>Support children with similar conditions in the future.</li>
+    </ol>
+  </section>
 
-<!-- SYMBOLS -->
-<div id="symbols" class="panel" style="display:none">
-<div class="symbol-grid">
-<div class="symbol-card"><img src="symbol-aurelion.png"><div>Aurelion</div></div>
-<div class="symbol-card"><img src="symbol-gaialune.png"><div>Gaialune</div></div>
-<div class="symbol-card"><img src="symbol-ignara.png"><div>Ignara</div></div>
-<div class="symbol-card"><img src="symbol-solyndra.png"><div>Solyndra</div></div>
-<div class="symbol-card"><img src="symbol-umbrath.png"><div>Umbrath</div></div>
-<div class="symbol-card"><img src="symbol-zeratheon.png"><div>Zeratheon</div></div>
-</div>
-</div>
+  <!-- SYMBOLS PANEL -->
+  <section id="symbols" class="panel" style="display:none">
+    <h2>The Six Symbols</h2>
+    <div class="symbol-grid">
+      <div class="symbol-card">
+        <img src="symbol-aurelion.png" alt="Aurelion">
+        <div class="name">Aurelion</div>
+        <div class="desc">Light, leadership</div>
+      </div>
+      <div class="symbol-card">
+        <img src="symbol-gaialune.png" alt="Gaialune">
+        <div class="name">Gaialune</div>
+        <div class="desc">Nature, healing</div>
+      </div>
+      <div class="symbol-card">
+        <img src="symbol-ignara.png" alt="Ignara">
+        <div class="name">Ignara</div>
+        <div class="desc">Passion, will</div>
+      </div>
+      <div class="symbol-card">
+        <img src="symbol-solyndra.png" alt="Solyndra">
+        <div class="name">Solyndra</div>
+        <div class="desc">Guidance, hope</div>
+      </div>
+      <div class="symbol-card">
+        <img src="symbol-umbrath.png" alt="Umbrath">
+        <div class="name">Umbrath</div>
+        <div class="desc">Mystery, protection</div>
+      </div>
+      <div class="symbol-card">
+        <img src="symbol-zeratheon.png" alt="Zeratheon">
+        <div class="name">Zeratheon</div>
+        <div class="desc">Strength, swift justice</div>
+      </div>
+    </div>
+  </section>
 
-<!-- GAME -->
-<div id="game" class="panel" style="display:none">
+  <!-- GAME PANEL -->
+  <section id="game" class="panel" style="display:none">
+    <h2 style="text-align:center;margin-top:0">Memory Game</h2>
 
-<div class="countdown" id="countdown">Loading countdown…</div>
+    <div class="countdown" id="countdown">Loading countdown…</div>
 
-<div class="controls">
-<input id="name" placeholder="Your public name">
-<button onclick="saveName()">Save name</button>
-<button onclick="startGame()">Start</button>
-<button onclick="resetGame()">Reset</button>
-</div>
+    <div class="controls">
+      <input id="gw-player-name" placeholder="Your public name">
+      <button class="btn" id="gw-save-name">Save name</button>
+      <button class="btn" id="startBtn">Start</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
 
-<div id="stats">Time: 00:00 • Moves: 0</div>
+    <div id="stats">Time: 00:00 • Moves: 0</div>
+    <div id="board"></div>
 
-<div id="board"></div>
+    <div class="leader-header">
+      <strong>Weekly Leaderboard</strong>
+      <small style="color:var(--muted)">Top 10 — resets weekly</small>
+    </div>
+    <div class="leader-box" id="leaderboard">
+      Loading leaderboard…
+    </div>
+  </section>
 
-<div class="leader">
-<b>Weekly Leaderboard</b>
-<div id="leaderboard">Loading…</div>
-</div>
-
-</div>
-
-<footer style="text-align:center;margin-top:20px;color:#87b3a0">
-Gentle Warrior © 2025
-</footer>
-
+  <footer>
+    Gentle Warrior • © 2025
+  </footer>
 </div>
 
 <script>
-document.querySelectorAll('.tab').forEach(btn=>{
-btn.onclick=()=>{
-document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'))
-btn.classList.add('active')
-document.querySelectorAll('[id=home],[id=symbols],[id=game]').forEach(p=>p.style.display='none')
-document.getElementById(btn.dataset.tab).style.display='block'
-}
-})
+  // -------- Tabs ----------
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      ['home','symbols','game'].forEach(id=>{
+        document.getElementById(id).style.display = (btn.dataset.tab===id) ? 'block' : 'none';
+      });
+    });
+  });
 
-function nextReset(){
-let d=new Date()
-d.setUTCDate(d.getUTCDate()+((8-d.getUTCDay())%7))
-d.setUTCHours(0,0,0,0)
-return d
-}
-let reset=nextReset()
+  // -------- Contract loader ----------
+  fetch('ca.html')
+    .then(r=>r.text())
+    .then(t=>{
+      document.getElementById('caBox').innerHTML =
+        (t && t.trim()) || 'The official contract address will be posted here, on X, and on Telegram only.';
+    })
+    .catch(()=>{
+      document.getElementById('caBox').textContent =
+        'The official contract address will be posted here, on X, and on Telegram only.';
+    });
 
-setInterval(()=>{
-let diff=reset-new Date()
-if(diff<=0){reset=nextReset();return}
-let s=Math.floor(diff/1000)
-let d=Math.floor(s/86400)
-let h=Math.floor(s%86400/3600)
-let m=Math.floor(s%3600/60)
-let sec=s%60
-document.getElementById("countdown").innerText=
-`Next official challenge in: ${d}d ${h}h ${m}m ${sec}s (UTC)`
-},1000)
+  // -------- Countdown (next Monday 00:00 UTC) ----------
+  function nextResetDate(){
+    const now = new Date();
+    const day = now.getUTCDay();        // 0=Sun
+    let diff = (1 - day + 7) % 7;       // days until next Monday
+    if(diff === 0 && now.getUTCHours() >= 0) diff = 7; // if already Monday, go to next week
+    const target = new Date(now);
+    target.setUTCDate(now.getUTCDate() + diff);
+    target.setUTCHours(0,0,0,0);
+    return target;
+  }
+  let resetDate = nextResetDate();
+  const cdEl = document.getElementById('countdown');
+  setInterval(()=>{
+    const now = new Date();
+    if(now >= resetDate) resetDate = nextResetDate();
+    let diff = Math.floor((resetDate - now)/1000);
+    const d = Math.floor(diff/86400); diff%=86400;
+    const h = Math.floor(diff/3600); diff%=3600;
+    const m = Math.floor(diff/60);
+    const s = diff%60;
+    cdEl.textContent =
+      `Next official challenge in: ${d}d ${h}h ${m}m ${s}s (UTC)`;
+  },1000);
 
-fetch("ca.html").then(r=>r.text()).then(t=>{
-document.getElementById("caBox").innerHTML=t||"Contract will be posted here."
-})
+  // -------- Memory Game (front-end only) ----------
+  const boardEl = document.getElementById('board');
+  const statsEl = document.getElementById('stats');
 
-let nameInput=document.getElementById("name")
-nameInput.value=localStorage.getItem("gw_name")||""
-function saveName(){localStorage.setItem("gw_name",nameInput.value)}
+  const files = [
+    "symbol-aurelion.png",
+    "symbol-gaialune.png",
+    "symbol-ignara.png",
+    "symbol-solyndra.png",
+    "symbol-umbrath.png",
+    "symbol-zeratheon.png"
+  ];
 
-let first=null,lock=false,moves=0,time=0,timer=null,board=document.getElementById("board")
-let symbols=["symbol-aurelion.png","symbol-gaialune.png","symbol-ignara.png","symbol-solyndra.png","symbol-umbrath.png","symbol-zeratheon.png"]
+  let deck = [];
+  let first = null;
+  let lock = false;
+  let moves = 0;
+  let seconds = 0;
+  let timer = null;
+  let matches = 0;
+  const totalPairs = files.length;
 
-function startGame(){
-clearInterval(timer)
-time=0;moves=0;updateStats()
-board.innerHTML=""
-let deck=[...symbols,...symbols].sort(()=>Math.random()-.5)
-deck.forEach(img=>{
-let c=document.createElement("div");c.className="card"
-c.innerHTML=`<div class="inner"><div class="front"></div><div class="back"><img src="${img}"></div></div>`
-c.onclick=()=>flip(c)
-board.appendChild(c)
-})
-timer=setInterval(()=>{time++;updateStats()},1000)
-}
+  function formatTime(s){
+    const m = String(Math.floor(s/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    return `${m}:${ss}`;
+  }
+  function updateStats(){
+    statsEl.textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+  }
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function buildDeck(){
+    deck = [];
+    files.forEach(f=>{
+      deck.push({file:f,id:Math.random()});
+      deck.push({file:f,id:Math.random()});
+    });
+    shuffle(deck);
+  }
+  function renderBoard(){
+    boardEl.innerHTML='';
+    deck.forEach(card=>{
+      const wrap = document.createElement('div');
+      wrap.className='card';
+      wrap.dataset.id = card.id;
+      wrap.dataset.file = card.file;
+      wrap.innerHTML = `
+        <div class="inner">
+          <div class="front"></div>
+          <div class="back"><img src="${card.file}" alt=""></div>
+        </div>`;
+      wrap.addEventListener('click', ()=>handleCard(wrap));
+      boardEl.appendChild(wrap);
+    });
+  }
+  function startGame(){
+    clearInterval(timer);
+    seconds=0;moves=0;matches=0;first=null;lock=false;
+    buildDeck();renderBoard();updateStats();
+    timer = setInterval(()=>{seconds++;updateStats();},1000);
+  }
+  function resetGame(){
+    clearInterval(timer);
+    seconds=0;moves=0;matches=0;first=null;lock=false;
+    boardEl.innerHTML='';
+    updateStats();
+  }
+  function handleCard(card){
+    if(lock || card.classList.contains('matched') || card === first) return;
+    card.classList.add('flip');
+    if(!first){ first=card; return; }
+    lock = true;
+    moves++; updateStats();
+    const file1 = first.dataset.file;
+    const file2 = card.dataset.file;
+    if(file1 === file2){
+      first.classList.add('matched');
+      card.classList.add('matched');
+      matches++;
+      first = null; lock = false;
+      if(matches === totalPairs){
+        clearInterval(timer);
+        // record run to Firestore if available
+        if(window.gwRecordRun){
+          window.gwRecordRun(moves, seconds*1000);
+        }
+        if(window.gwRenderLeaderboard){
+          window.gwRenderLeaderboard();
+        }
+        alert(`You win!\nTime: ${formatTime(seconds)}\nMoves: ${moves}`);
+      }
+    }else{
+      setTimeout(()=>{
+        first.classList.remove('flip');
+        card.classList.remove('flip');
+        first = null; lock = false;
+      },600);
+    }
+  }
 
-function resetGame(){clearInterval(timer);board.innerHTML="";updateStats()}
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('resetBtn').addEventListener('click', resetGame);
 
-function updateStats(){
-document.getElementById("stats").innerText=
-`Time: ${Math.floor(time/60).toString().padStart(2,"0")}:${(time%60).toString().padStart(2,"0")} • Moves: ${moves}`
-}
-
-function flip(card){
-if(lock||card===first||card.classList.contains("matched"))return
-card.classList.add("flip")
-if(!first){first=card;return}
-moves++;lock=true
-let a=first.querySelector("img").src
-let b=card.querySelector("img").src
-if(a===b){
-first.classList.add("matched")
-card.classList.add("matched")
-resetPick()
-}else{
-setTimeout(()=>{
-first.classList.remove("flip")
-card.classList.remove("flip")
-resetPick()
-},600)
-}
-}
-function resetPick(){first=null;lock=false}
-
+  // name save
+  const nameInput = document.getElementById('gw-player-name');
+  const savedName = localStorage.getItem('gw_player_name');
+  if(savedName) nameInput.value = savedName;
+  document.getElementById('gw-save-name').addEventListener('click', ()=>{
+    const val = (nameInput.value || '').trim() || 'Warrior';
+    localStorage.setItem('gw_player_name', val);
+    alert('Name saved: ' + val);
+  });
 </script>
 
-<!-- FIREBASE -->
+<!-- FIREBASE: weekly leaderboard using existing players/runs structure -->
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"
-import {getFirestore,collection,addDoc,getDocs} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    addDoc,
+    updateDoc,
+    serverTimestamp,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-const app=initializeApp({
-apiKey:"AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
-authDomain:"gentle-warrior.firebaseapp.com",
-projectId:"gentle-warrior"
-})
-const db=getFirestore(app)
-const runs=collection(db,"runs")
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+    authDomain: "gentle-warrior.firebaseapp.com",
+    projectId: "gentle-warrior",
+    storageBucket: "gentle-warrior.firebasestorage.app",
+    messagingSenderId: "206508766648",
+    appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+  };
 
-async function loadLeaderboard(){
-const snap=await getDocs(runs)
-let arr=[]
-snap.forEach(d=>arr.push(d.data()))
-arr.sort((a,b)=>a.moves-b.moves || a.time-b.time)
-document.getElementById("leaderboard").innerHTML=
-arr.slice(0,10).map((r,i)=>
-`<div class="row">#${i+1} ${r.player} • ${r.moves} moves • ${r.time}s</div>`
-).join("") || "No data yet."
-}
-loadLeaderboard()
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const playersCol = collection(db, "players");
+  const runsCol    = collection(db, "runs");
+
+  function isoWeekId(date = new Date()){
+    const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
+  }
+
+  function getDeviceTag(){
+    let t = localStorage.getItem("gw_device_tag");
+    if(!t){
+      t = "gw_" + Math.random().toString(36).slice(2,9);
+      localStorage.setItem("gw_device_tag", t);
+    }
+    return t;
+  }
+
+  async function ensurePlayer(deviceTag, name){
+    const pRef = doc(db, "players", deviceTag);
+    const snap = await getDoc(pRef);
+    if(!snap.exists()){
+      await setDoc(pRef, {
+        name,
+        deviceTag,
+        createdAt: serverTimestamp(),
+        totalPoints: 0,
+        currentWeekMoves: null,
+        currentWeekTimeMs: null,
+        currentSeasonId: isoWeekId(),
+        lastPlayedAt: serverTimestamp()
+      });
+      return { pRef, data: null };
+    } else {
+      const data = snap.data();
+      try{
+        await updateDoc(pRef, { name, lastPlayedAt: serverTimestamp() });
+      }catch(e){}
+      return { pRef, data };
+    }
+  }
+
+  async function recordRun(moves, timeMs){
+    const deviceTag = getDeviceTag();
+    const name = localStorage.getItem("gw_player_name") || "Warrior";
+    const seasonId = isoWeekId();
+
+    const { pRef, data } = await ensurePlayer(deviceTag, name);
+
+    // log raw run
+    try{
+      await addDoc(runsCol, {
+        deviceTag,
+        playerName: name,
+        moves,
+        timeMs,
+        seasonId,
+        createdAt: serverTimestamp()
+      });
+    }catch(e){
+      console.warn("addDoc failed", e);
+    }
+
+    let prevSeasonId = data && data.currentSeasonId;
+    let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
+    let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
+
+    if(prevSeasonId !== seasonId){
+      prevMoves = null;
+      prevTime  = null;
+    }
+
+    const isBetter =
+      prevMoves === null ||
+      moves < prevMoves ||
+      (moves === prevMoves && timeMs < prevTime);
+
+    if(isBetter){
+      try{
+        await updateDoc(pRef, {
+          currentSeasonId: seasonId,
+          currentWeekMoves: moves,
+          currentWeekTimeMs: timeMs,
+          name,
+          lastPlayedAt: serverTimestamp()
+        });
+      }catch(e){
+        console.warn("updateDoc failed", e);
+      }
+    }
+
+    await renderLeaderboard();
+  }
+
+  async function renderLeaderboard(){
+    const lb = document.getElementById("leaderboard");
+    if(!lb) return;
+    lb.textContent = "Loading leaderboard…";
+
+    const seasonId = isoWeekId();
+
+    try{
+      const snaps = await getDocs(playersCol);   // no composite index needed
+      const arr = [];
+      snaps.forEach(s=>{
+        const d = s.data();
+        if(d.currentSeasonId === seasonId && d.currentWeekMoves != null){
+          arr.push({
+            name: d.name || "Warrior",
+            moves: d.currentWeekMoves,
+            timeMs: d.currentWeekTimeMs || 0
+          });
+        }
+      });
+
+      arr.sort((a,b)=> a.moves - b.moves || a.timeMs - b.timeMs);
+
+      if(!arr.length){
+        lb.textContent = "No runs this week yet. Be the first!";
+        return;
+      }
+
+      lb.innerHTML = arr.slice(0,10).map((p,i)=>
+        `<div class="row">
+           <div>#${i+1} ${p.name}</div>
+           <div>${p.moves} moves • ${Math.round(p.timeMs/1000)}s</div>
+         </div>`
+      ).join("");
+    }catch(e){
+      console.warn("renderLeaderboard error", e);
+      lb.textContent = "Unable to load leaderboard.";
+    }
+  }
+
+  // expose to window so the front-end script can call
+  window.gwRecordRun = recordRun;
+  window.gwRenderLeaderboard = renderLeaderboard;
+
+  // initial load
+  renderLeaderboard();
 </script>
-
 </body>
 </html>
