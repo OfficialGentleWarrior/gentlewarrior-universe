@@ -31,11 +31,12 @@
     }
     .wrap{max-width:980px;margin:24px auto;padding:0 18px}
 
+    /* Hero */
     header.hero{
       background:var(--card-bg);
       border-radius:var(--radius);
       padding:22px;
-      margin-bottom:18px;
+      margin-bottom:14px;
       display:flex;
       align-items:center;
       gap:18px;
@@ -50,6 +51,34 @@
     .hero-avatar img{width:100%;height:100%;object-fit:cover}
     .hero-title h1{margin:0;font-size:22px;color:#fff}
     .hero-title p{margin:6px 0 0;color:var(--muted)}
+
+    /* Tabs */
+    .tabs{
+      margin:0 auto 18px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      max-width:420px;
+    }
+    .tab{
+      flex:1;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(0,0,0,0.3);
+      color:var(--muted);
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .tab.active{
+      background:var(--accent);
+      color:#042410;
+      border-color:transparent;
+    }
+
+    .tab-section{display:none;}
+    .tab-section.active{display:block;}
 
     .banner-warning{
       background:#0c2e21;
@@ -101,18 +130,21 @@
       align-items:center;
       gap:10px;
     }
+    /* rounded square instead of circle */
     .symbol-thumb{
       width:120px;height:120px;
-      border-radius:50%;
+      border-radius:18px;
       background:#071612;
       display:flex;
       align-items:center;
       justify-content:center;
       box-shadow:0 8px 18px rgba(0,0,0,0.6);
+      overflow:hidden;
     }
     .symbol-thumb img{
-      width:72%;height:72%;
-      object-fit:contain;
+      width:100%;height:100%;
+      object-fit:cover;
+      border-radius:inherit;
       filter:drop-shadow(0 8px 18px rgba(0,0,0,0.8));
     }
     .symbol-name{font-weight:800;margin-top:4px;text-align:center}
@@ -248,8 +280,8 @@
       text-align:center;
       margin-top:30px;
       font-size:13px;
-      color:var(--muted);
     }
+    footer{color:var(--muted);}
     .socials-footer{
       margin-top:10px;
       display:flex;
@@ -276,88 +308,104 @@
       </div>
     </header>
 
-    <!-- Contract warning / ca.html -->
-    <div class="banner-warning" id="caBox">
-      Loading contract info…
-    </div>
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-target="home">Home</button>
+      <button class="tab" data-target="symbols">Symbols</button>
+      <button class="tab" data-target="game">Game</button>
+    </nav>
 
-    <section id="gw-goal">
-      <h3>Gentle Warrior — Project Goal</h3>
-      <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with a courage far bigger than his body.</p>
-      <ol>
-        <li>Build a positive, heart-centered brand.</li>
-        <li>Create meaningful stories and experiences.</li>
-        <li>Grow responsibly (NFT, token, community).</li>
-        <li>Promote empathy.</li>
-        <li>Support children with similar conditions.</li>
-      </ol>
+    <!-- HOME TAB -->
+    <section id="section-home" class="tab-section active">
+      <!-- Contract warning / ca.html -->
+      <div class="banner-warning" id="caBox">
+        Loading contract info…
+      </div>
+
+      <section id="gw-goal">
+        <h3>Gentle Warrior — Project Goal</h3>
+        <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with a courage far bigger than his body.</p>
+        <ol>
+          <li>Build a positive, heart-centered brand.</li>
+          <li>Create meaningful stories and experiences.</li>
+          <li>Grow responsibly (NFT, token, community).</li>
+          <li>Promote empathy.</li>
+          <li>Support children with similar conditions.</li>
+        </ol>
+      </section>
     </section>
 
-    <section class="panel">
-      <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
-      <div class="grid" id="symbolsGrid">
+    <!-- SYMBOLS TAB -->
+    <section id="section-symbols" class="tab-section">
+      <section class="panel">
+        <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
+        <div class="grid" id="symbolsGrid">
 
-        <div class="symbol-card" data-key="aurelion" data-file="symbol-aurelion.png">
-          <div class="symbol-thumb"><img src="symbol-aurelion.png" alt="Aurelion"></div>
-          <div class="symbol-name">Aurelion</div>
-          <div class="symbol-desc">Light, leadership</div>
+          <div class="symbol-card" data-key="aurelion" data-file="symbol-aurelion.png">
+            <div class="symbol-thumb"><img src="symbol-aurelion.png" alt="Aurelion"></div>
+            <div class="symbol-name">Aurelion</div>
+            <div class="symbol-desc">Light, leadership</div>
+          </div>
+
+          <div class="symbol-card" data-key="gaialune" data-file="symbol-gaialune.png">
+            <div class="symbol-thumb"><img src="symbol-gaialune.png" alt="Gaialune"></div>
+            <div class="symbol-name">Gaialune</div>
+            <div class="symbol-desc">Nature, healing</div>
+          </div>
+
+          <div class="symbol-card" data-key="ignara" data-file="symbol-ignara.png">
+            <div class="symbol-thumb"><img src="symbol-ignara.png" alt="Ignara"></div>
+            <div class="symbol-name">Ignara</div>
+            <div class="symbol-desc">Passion, will</div>
+          </div>
+
+          <div class="symbol-card" data-key="solyndra" data-file="symbol-solyndra.png">
+            <div class="symbol-thumb"><img src="symbol-solyndra.png" alt="Solyndra"></div>
+            <div class="symbol-name">Solyndra</div>
+            <div class="symbol-desc">Guidance, hope</div>
+          </div>
+
+          <div class="symbol-card" data-key="umbrath" data-file="symbol-umbrath.png">
+            <div class="symbol-thumb"><img src="symbol-umbrath.png" alt="Umbrath"></div>
+            <div class="symbol-name">Umbrath</div>
+            <div class="symbol-desc">Mystery, protection</div>
+          </div>
+
+          <div class="symbol-card" data-key="zeratheon" data-file="symbol-zeratheon.png">
+            <div class="symbol-thumb"><img src="symbol-zeratheon.png" alt="Zeratheon"></div>
+            <div class="symbol-name">Zeratheon</div>
+            <div class="symbol-desc">Strength, swift justice</div>
+          </div>
+
         </div>
-
-        <div class="symbol-card" data-key="gaialune" data-file="symbol-gaialune.png">
-          <div class="symbol-thumb"><img src="symbol-gaialune.png" alt="Gaialune"></div>
-          <div class="symbol-name">Gaialune</div>
-          <div class="symbol-desc">Nature, healing</div>
-        </div>
-
-        <div class="symbol-card" data-key="ignara" data-file="symbol-ignara.png">
-          <div class="symbol-thumb"><img src="symbol-ignara.png" alt="Ignara"></div>
-          <div class="symbol-name">Ignara</div>
-          <div class="symbol-desc">Passion, will</div>
-        </div>
-
-        <div class="symbol-card" data-key="solyndra" data-file="symbol-solyndra.png">
-          <div class="symbol-thumb"><img src="symbol-solyndra.png" alt="Solyndra"></div>
-          <div class="symbol-name">Solyndra</div>
-          <div class="symbol-desc">Guidance, hope</div>
-        </div>
-
-        <div class="symbol-card" data-key="umbrath" data-file="symbol-umbrath.png">
-          <div class="symbol-thumb"><img src="symbol-umbrath.png" alt="Umbrath"></div>
-          <div class="symbol-name">Umbrath</div>
-          <div class="symbol-desc">Mystery, protection</div>
-        </div>
-
-        <div class="symbol-card" data-key="zeratheon" data-file="symbol-zeratheon.png">
-          <div class="symbol-thumb"><img src="symbol-zeratheon.png" alt="Zeratheon"></div>
-          <div class="symbol-name">Zeratheon</div>
-          <div class="symbol-desc">Strength, swift justice</div>
-        </div>
-
-      </div>
+      </section>
     </section>
 
-    <section class="panel">
-      <h2 style="text-align:center;margin-top:0">Memory Game — Match the Symbols</h2>
+    <!-- GAME TAB -->
+    <section id="section-game" class="tab-section">
+      <section class="panel">
+        <h2 style="text-align:center;margin-top:0">Memory Game — Match the Symbols</h2>
 
-      <div id="controls">
-        <input id="gw-player-name"
-               placeholder="Your public name"
-               style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:white;min-width:180px;">
-        <button id="gw-save-name" class="btn">Save name</button>
-        <button id="startBtn" class="btn">Start</button>
-        <button id="resetBtn" class="btn">Reset</button>
-      </div>
-
-      <div id="stats">Time: 00:00 • Moves: 0</div>
-      <div id="gameBoard"></div>
-
-      <div class="leaderboard-box">
-        <div style="display:flex;justify-content:space-between;">
-          <strong>Weekly Leaderboard</strong>
-          <small style="color:var(--muted)">Top 10 — resets weekly</small>
+        <div id="controls">
+          <input id="gw-player-name"
+                 placeholder="Your public name"
+                 style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:white;min-width:180px;">
+          <button id="gw-save-name" class="btn">Save name</button>
+          <button id="startBtn" class="btn">Start</button>
+          <button id="resetBtn" class="btn">Reset</button>
         </div>
-        <div id="leaderboard" style="margin-top:8px">Loading leaderboard…</div>
-      </div>
+
+        <div id="stats">Time: 00:00 • Moves: 0</div>
+        <div id="gameBoard"></div>
+
+        <div class="leaderboard-box">
+          <div style="display:flex;justify-content:space-between;">
+            <strong>Weekly Leaderboard</strong>
+            <small style="color:var(--muted)">Top 10 — resets weekly</small>
+          </div>
+          <div id="leaderboard" style="margin-top:8px">Loading leaderboard…</div>
+        </div>
+      </section>
     </section>
 
     <footer>
@@ -379,8 +427,27 @@
     </footer>
   </div>
 
-  <!-- Main (non-module) script: symbols, game, CA loader -->
+  <!-- Main (non-module) script: tabs, symbols, game, CA loader -->
   <script>
+    /* ---------- Tabs ---------- */
+    const tabs = document.querySelectorAll('.tab');
+    const sections = {
+      home: document.getElementById('section-home'),
+      symbols: document.getElementById('section-symbols'),
+      game: document.getElementById('section-game')
+    };
+
+    tabs.forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        const target = tab.dataset.target;
+        tabs.forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        Object.entries(sections).forEach(([key,sec])=>{
+          sec.classList.toggle('active', key === target);
+        });
+      });
+    });
+
     /* ---------- Symbol lore (short explanations) ---------- */
     const SYMBOL_LORE = {
       aurelion: {
@@ -588,7 +655,8 @@
       query,
       orderBy,
       limit,
-      getDocs
+      getDocs,
+      where
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     // Firebase config
@@ -635,6 +703,7 @@
           totalPoints: 0,
           currentWeekMoves: null,
           currentWeekTimeMs: null,
+          currentSeasonId: isoWeekId(),
           lastPlayedAt: serverTimestamp()
         });
         return { pRef, data: null };
@@ -650,10 +719,11 @@
     async function recordRun(moves, timeMs){
       const deviceTag = getDeviceTag();
       const name = localStorage.getItem("gw_player_name") || "Warrior";
-      const { pRef, data } = await ensurePlayer(deviceTag, name);
       const seasonId = isoWeekId();
 
-      // Log this run
+      const { pRef, data } = await ensurePlayer(deviceTag, name);
+
+      // Log this run with seasonId
       try{
         await addDoc(runsCol, {
           deviceTag,
@@ -667,8 +737,16 @@
         console.warn("addDoc failed", e);
       }
 
-      const prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
-      const prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
+      const prevSeasonId = data && data.currentSeasonId;
+      let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
+      let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
+
+      // If new week, treat as fresh
+      if(prevSeasonId !== seasonId){
+        prevMoves = null;
+        prevTime  = null;
+      }
+
       const isBetter =
         prevMoves === null ||
         moves < prevMoves ||
@@ -677,6 +755,7 @@
       if(isBetter){
         try{
           await updateDoc(pRef, {
+            currentSeasonId: seasonId,
             currentWeekMoves: moves,
             currentWeekTimeMs: timeMs,
             name,
@@ -695,10 +774,17 @@
       if(!lb) return;
       lb.textContent = "Loading leaderboard…";
 
+      const seasonId = isoWeekId();
+
       try{
-        const snaps = await getDocs(
-          query(playersCol, orderBy("currentWeekMoves","asc"), limit(200))
+        const qRef = query(
+          playersCol,
+          where("currentSeasonId", "==", seasonId),
+          orderBy("currentWeekMoves","asc"),
+          limit(200)
         );
+
+        const snaps = await getDocs(qRef);
         const arr = [];
         snaps.forEach(s=>{
           const d = s.data();
@@ -710,11 +796,14 @@
             });
           }
         });
+
         arr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
+
         if(!arr.length){
           lb.textContent = "No runs this week yet. Be the first!";
           return;
         }
+
         lb.innerHTML = arr.slice(0,10).map((p,i)=>
           `<div class="leader-row">
              <div>#${i+1} ${p.name}</div>
