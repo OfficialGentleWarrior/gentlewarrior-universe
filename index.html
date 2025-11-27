@@ -214,6 +214,62 @@
       font-size:13px;
       color:var(--muted);
     }
+    .socials{
+      margin-top:6px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+    }
+    .socials img{
+      width:24px;height:24px;display:block;
+    }
+
+    /* Symbol modal */
+    .symbol-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.65);
+      z-index:9999;
+    }
+    .symbol-modal.active{display:flex;}
+    .symbol-modal-inner{
+      background:#0f2c20;
+      border-radius:18px;
+      padding:18px;
+      max-width:320px;
+      width:90%;
+      box-shadow:0 10px 30px rgba(0,0,0,0.7);
+      text-align:center;
+    }
+    .symbol-modal-inner img{
+      width:120px;
+      height:120px;
+      border-radius:18px;
+      object-fit:cover;
+      margin-bottom:12px;
+    }
+    .symbol-modal-inner h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .symbol-modal-inner p{
+      margin:0;
+      font-size:14px;
+      color:var(--muted);
+    }
+    .symbol-modal-close{
+      margin-top:16px;
+      padding:8px 18px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      background:var(--accent);
+      color:#04210f;
+      font-weight:700;
+    }
   </style>
 </head>
 <body>
@@ -259,37 +315,49 @@
       <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
       <div class="grid">
 
-        <div class="symbol-card" data-name="Aurelion" data-lore="Aurelion — light and leadership. A gentle sun that leads without burning.">
+        <div class="symbol-card"
+             data-name="Aurelion"
+             data-lore="Light and leadership — a gentle sun that leads without burning.">
           <img src="symbol-aurelion.png" alt="Aurelion">
           <div class="symbol-name">Aurelion</div>
           <div class="symbol-desc">Light, leadership</div>
         </div>
 
-        <div class="symbol-card" data-name="Gaialune" data-lore="Gaialune — nature and healing. Roots that hold, leaves that shelter.">
+        <div class="symbol-card"
+             data-name="Gaialune"
+             data-lore="Nature and healing — roots that hold, leaves that shelter.">
           <img src="symbol-gaialune.png" alt="Gaialune">
           <div class="symbol-name">Gaialune</div>
           <div class="symbol-desc">Nature, healing</div>
         </div>
 
-        <div class="symbol-card" data-name="Ignara" data-lore="Ignara — passion and will. A heart-fire that chooses courage over rage.">
+        <div class="symbol-card"
+             data-name="Ignara"
+             data-lore="Passion and will — a heart-fire that chooses courage over rage.">
           <img src="symbol-ignara.png" alt="Ignara">
           <div class="symbol-name">Ignara</div>
           <div class="symbol-desc">Passion, will</div>
         </div>
 
-        <div class="symbol-card" data-name="Solyndra" data-lore="Solyndra — guidance and hope. Quiet starlight that shows the way home.">
+        <div class="symbol-card"
+             data-name="Solyndra"
+             data-lore="Guidance and hope — quiet starlight that shows the way home.">
           <img src="symbol-solyndra.png" alt="Solyndra">
           <div class="symbol-name">Solyndra</div>
           <div class="symbol-desc">Guidance, hope</div>
         </div>
 
-        <div class="symbol-card" data-name="Umbrath" data-lore="Umbrath — mystery and protection. A crescent shadow that watches over the weak.">
+        <div class="symbol-card"
+             data-name="Umbrath"
+             data-lore="Mystery and protection — a crescent shadow that watches over the weak.">
           <img src="symbol-umbrath.png" alt="Umbrath">
           <div class="symbol-name">Umbrath</div>
           <div class="symbol-desc">Mystery, protection</div>
         </div>
 
-        <div class="symbol-card" data-name="Zeratheon" data-lore="Zeratheon — strength and swift justice. Thunder that answers when lines are crossed.">
+        <div class="symbol-card"
+             data-name="Zeratheon"
+             data-lore="Strength and swift justice — thunder that answers when lines are crossed.">
           <img src="symbol-zeratheon.png" alt="Zeratheon">
           <div class="symbol-name">Zeratheon</div>
           <div class="symbol-desc">Strength, swift justice</div>
@@ -334,7 +402,23 @@
 
     <footer>
       Gentle Warrior • © 2025
+      <div class="socials">
+        <img src="icon-x.png" alt="X">
+        <img src="icon-ig.png" alt="Instagram">
+        <img src="icon-tiktok.png" alt="TikTok">
+        <img src="icon-telegram.png" alt="Telegram">
+      </div>
     </footer>
+  </div>
+
+  <!-- SYMBOL MODAL -->
+  <div id="symbolModal" class="symbol-modal">
+    <div class="symbol-modal-inner">
+      <img id="symbolModalImg" src="" alt="">
+      <h3 id="symbolModalName"></h3>
+      <p id="symbolModalLore"></p>
+      <button class="symbol-modal-close" id="symbolModalClose">Close</button>
+    </div>
   </div>
 
   <!-- MAIN SCRIPT: tabs, symbols, game, countdown, CA loader -->
@@ -351,13 +435,34 @@
       });
     });
 
-    // ---- Symbols click (simple modal via alert)
+    // ---- Symbol modal instead of alert
+    const modal = document.getElementById('symbolModal');
+    const modalImg = document.getElementById('symbolModalImg');
+    const modalName = document.getElementById('symbolModalName');
+    const modalLore = document.getElementById('symbolModalLore');
+    const modalClose = document.getElementById('symbolModalClose');
+
+    function openSymbolModal(card){
+      const name = card.dataset.name || '';
+      const lore = card.dataset.lore || '';
+      const imgEl = card.querySelector('img');
+      const src = imgEl ? imgEl.src : '';
+      modalName.textContent = name;
+      modalLore.textContent = lore;
+      modalImg.src = src;
+      modalImg.alt = name;
+      modal.classList.add('active');
+    }
+    function closeSymbolModal(){
+      modal.classList.remove('active');
+    }
+
     document.querySelectorAll('.symbol-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const name = card.dataset.name;
-        const lore = card.dataset.lore || '';
-        alert(name + "\\n\\n" + lore);
-      });
+      card.addEventListener('click',()=>openSymbolModal(card));
+    });
+    modalClose.addEventListener('click',closeSymbolModal);
+    modal.addEventListener('click',e=>{
+      if(e.target === modal){ closeSymbolModal(); }
     });
 
     // ---- Contract address loader
@@ -559,7 +664,7 @@
       if(window.gwRecordRun){
         window.gwRecordRun(moves, seconds*1000);
       }
-      alert(`You win!\\nTime: ${formatTime(seconds)}\\nMoves: ${moves}`);
+      alert(`You win!\nTime: ${formatTime(seconds)}\nMoves: ${moves}`);
     }
   </script>
 
@@ -736,7 +841,7 @@
 
         lb.innerHTML = arr.slice(0,10).map((p,i)=>
           `<div class="leader-row">
-             <div>#${i+1} ${p.name}</div>
+             <div>#${Number(i)+1} ${p.name}</div>
              <div>${p.moves} moves • ${Math.round(p.time/1000)}s</div>
            </div>`
         ).join("");
