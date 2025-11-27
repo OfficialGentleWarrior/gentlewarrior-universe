@@ -20,7 +20,7 @@
       --bg1:#071f16; --bg2:#0b2d1e;
       --panel:#0f2c20; --muted:#b6c7b7; --accent:#9ae07a;
       --card-bg:rgba(255,255,255,0.03); --white:#fff;
-      --radius:14px;
+      --radius:18px;
     }
     *{box-sizing:border-box}
     body{
@@ -41,8 +41,8 @@
       gap:18px;
     }
     .hero-avatar{
-      width:106px;height:106px;
-      border-radius:24px;
+      width:96px;height:96px;
+      border-radius:22px;
       overflow:hidden;
       box-shadow:0 6px 18px rgba(0,0,0,0.6);
       flex-shrink:0;
@@ -53,9 +53,9 @@
 
     .banner-warning{
       background:#0c2e21;
-      border-radius:12px;
-      padding:14px;
-      margin-bottom:20px;
+      border-radius:16px;
+      padding:14px 16px;
+      margin-bottom:18px;
       border:1px solid rgba(255,255,255,0.05);
       font-size:15px;
     }
@@ -63,48 +63,43 @@
     /* Tabs */
     .tabs{
       display:flex;
-      gap:12px;
+      gap:10px;
+      margin:0 auto 18px;
       justify-content:center;
-      margin:16px 0 20px;
     }
     .tab-btn{
-      padding:10px 22px;
+      padding:8px 20px;
       border-radius:999px;
       border:none;
-      background:#061b13;
-      color:var(--white);
       font-weight:600;
       cursor:pointer;
-      font-size:15px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.4);
+      background:#062015;
+      color:#dbeadf;
+      min-width:90px;
     }
     .tab-btn.active{
       background:var(--accent);
-      color:#063015;
+      color:#06200b;
     }
-    .tab-section{display:none;}
-    .tab-section.active{display:block;}
 
     .panel{
       background:var(--card-bg);
-      border-radius:14px;
+      border-radius:var(--radius);
       padding:18px;
       margin-bottom:20px;
       box-shadow:0 6px 20px rgba(0,0,0,0.4);
     }
 
-    #gw-goal h3{margin-top:0;color:#bff6b6}
+    /* Home / goal */
+    #homePanel h3{margin-top:0;color:#bff6b6}
+    #homePanel ol{padding-left:18px;margin:8px 0 0;font-size:14px;color:var(--muted)}
 
-    /* Symbols grid */
-    .symbols-title{
-      text-align:center;
-      font-size:24px;
-      margin:0 0 18px;
-    }
+    /* ALWAYS 2 columns for symbols */
     .grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
       gap:16px;
+      justify-items:center;
     }
     @media(max-width:640px){
       .grid{grid-template-columns:repeat(2,1fr);}
@@ -112,6 +107,7 @@
 
     .symbol-card{
       width:100%;
+      max-width:520px;
       background:var(--panel);
       text-align:center;
       padding:18px;
@@ -124,30 +120,34 @@
       gap:10px;
     }
     .symbol-thumb{
-      width:140px;height:140px;
-      border-radius:28px;
+      width:120px;height:120px;
+      border-radius:26px;          /* rounded square */
       background:#071612;
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow:0 12px 26px rgba(0,0,0,0.75);
+      box-shadow:0 10px 22px rgba(0,0,0,0.75);
     }
     .symbol-thumb img{
       width:100%;height:100%;
       object-fit:cover;
-      border-radius:24px;
-      filter:drop-shadow(0 8px 18px rgba(0,0,0,0.9));
+      border-radius:26px;
     }
     .symbol-name{font-weight:800;margin-top:4px;text-align:center}
     .symbol-desc{color:var(--muted);font-size:13px;text-align:center}
 
     /* Memory game */
-    #countdown{
-      margin-bottom:10px;
-      font-size:14px;
-      color:var(--muted);
+    #gamePanel h2{
       text-align:center;
+      margin:0 0 8px;
     }
+    #countdown{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:14px;
+    }
+
     #controls{
       display:flex;
       justify-content:center;
@@ -155,24 +155,36 @@
       flex-wrap:wrap;
       margin-bottom:10px;
     }
-    #gw-player-name{
-      padding:10px 12px;
+    #playerName{
+      padding:8px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,0.08);
-      background:#03140f;
+      border:1px solid rgba(255,255,255,0.12);
+      background:#02160f;
       color:#fff;
-      min-width:190px;
+      min-width:160px;
+      text-align:center;
     }
     .btn{
-      padding:9px 16px;
+      padding:8px 14px;
       border:none;
       border-radius:999px;
       background:var(--accent);
       font-weight:800;
       color:#06200b;
       cursor:pointer;
+      min-width:82px;
     }
-    #stats{text-align:center;margin-bottom:10px;color:var(--muted)}
+    .btn-secondary{
+      background:#123524;
+      color:#dbeadf;
+    }
+    #nameHint{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    #stats{text-align:center;margin-bottom:10px;color:var(--muted);font-size:14px}
 
     #gameBoard{
       width:100%;
@@ -194,7 +206,7 @@
     .card-front,.card-back{
       position:absolute;inset:0;
       backface-visibility:hidden;
-      border-radius:12px;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,0.06);
       display:flex;
       align-items:center;
@@ -210,43 +222,34 @@
     .card-back img{
       width:70%;height:70%;
       object-fit:contain;
-      filter:drop-shadow(0 0 12px rgba(255,180,0,0.7));
+      filter:drop-shadow(0 0 12px rgba(255,180,0,0.6));
     }
 
     .leaderboard-box{
-      margin-top:14px;
+      margin-top:4px;
       padding:14px;
-      background:rgba(0,0,0,0.32);
-      border-radius:14px;
+      background:rgba(255,255,255,0.03);
+      border-radius:18px;
+      font-size:13px;
     }
-    .leader-header{
+    .leaderboard-header{
       display:flex;
       justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      font-size:14px;
+      align-items:flex-end;
+      gap:8px;
+      margin-bottom:6px;
+      font-size:13px;
     }
+    .leaderboard-header strong{font-size:14px}
     .leader-row{
       display:flex;
       justify-content:space-between;
-      padding:6px 0;
+      padding:4px 0;
       border-bottom:1px solid rgba(255,255,255,0.05);
-      font-size:14px;
     }
     .leader-row:last-child{border-bottom:none}
-    .leader-caption{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .last-week{
-      margin-top:12px;
-      padding-top:10px;
-      border-top:1px dashed rgba(255,255,255,0.1);
-      font-size:13px;
-    }
 
-    /* Modal */
+    /* Modal centered content */
     .modal-bg{
       position:fixed;inset:0;
       background:rgba(0,0,0,0.6);
@@ -259,7 +262,7 @@
     .modal{
       background:#0c1f16;
       padding:18px;
-      border-radius:14px;
+      border-radius:18px;
       width:100%;
       max-width:560px;
       border:1px solid rgba(255,255,255,0.05);
@@ -302,7 +305,7 @@
 
     footer{
       text-align:center;
-      margin-top:30px;
+      margin:26px 0 10px;
       font-size:13px;
       color:var(--muted);
     }
@@ -314,38 +317,37 @@
       align-items:center;
     }
     .socials-footer img{
-      width:24px;height:24px;
+      width:22px;height:22px;
       display:block;
     }
   </style>
 </head>
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <header class="hero">
-    <div class="hero-avatar">
-      <img src="hero-portrait.jpg" alt="Gentle Warrior">
+    <header class="hero">
+      <div class="hero-avatar">
+        <img src="hero-portrait.jpg" alt="Gentle Warrior">
+      </div>
+      <div class="hero-title">
+        <h1>Gentle Warrior Universe</h1>
+        <p>Soft heart. Strong spirit.</p>
+      </div>
+    </header>
+
+    <div class="banner-warning" id="caBox">
+      The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.
     </div>
-    <div class="hero-title">
-      <h1>Gentle Warrior Universe</h1>
-      <p>Soft heart. Strong spirit.</p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="home">Home</button>
+      <button class="tab-btn" data-tab="symbols">Symbols</button>
+      <button class="tab-btn" data-tab="game">Game</button>
     </div>
-  </header>
 
-  <div class="banner-warning" id="caBox">
-    $GWAR — the token behind the Gentle Warrior world. A gentle heart. A strong spirit. CA : LINK • BEWARE OF FAKE TOKENS
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="home">Home</button>
-    <button class="tab-btn" data-tab="symbols">Symbols</button>
-    <button class="tab-btn" data-tab="game">Game</button>
-  </div>
-
-  <!-- Home tab -->
-  <section id="tab-home" class="tab-section active">
-    <section id="gw-goal" class="panel">
+    <!-- HOME PANEL -->
+    <section class="panel" id="homePanel">
       <h3>Gentle Warrior — Project Goal</h3>
       <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with a courage far bigger than his body.</p>
       <ol>
@@ -356,13 +358,11 @@
         <li>Support children with similar conditions.</li>
       </ol>
     </section>
-  </section>
 
-  <!-- Symbols tab -->
-  <section id="tab-symbols" class="tab-section">
-    <section class="panel">
-      <h2 class="symbols-title">The Six Symbols</h2>
-      <div class="grid">
+    <!-- SYMBOLS PANEL -->
+    <section class="panel" id="symbolsPanel" style="display:none">
+      <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
+      <div class="grid" id="symbolsGrid">
 
         <div class="symbol-card" data-key="aurelion" data-file="symbol-aurelion.png">
           <div class="symbol-thumb"><img src="symbol-aurelion.png" alt="Aurelion"></div>
@@ -402,599 +402,525 @@
 
       </div>
     </section>
-  </section>
 
-  <!-- Game tab -->
-  <section id="tab-game" class="tab-section">
-    <section class="panel">
-      <h2 style="text-align:center;margin-top:0">Memory Game — Weekly Challenge</h2>
-
-      <div id="countdown">Next official weekly season starts in: …</div>
+    <!-- GAME PANEL -->
+    <section class="panel" id="gamePanel" style="display:none">
+      <h2>Memory Game — Weekly Challenge</h2>
+      <div id="countdown">Next official weekly season starts soon…</div>
 
       <div id="controls">
-        <input id="gw-player-name" placeholder="Your public name">
-        <button id="gw-save-name" class="btn">Save</button>
+        <input id="playerName" placeholder="Your public name">
+        <button id="saveNameBtn" class="btn">Save</button>
       </div>
-      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:-4px;margin-bottom:10px;">
-        Use the SAME name every run so your best score stays under one identity.
-      </p>
+      <div id="nameHint">Use the SAME name every run so your best score stays under one identity.</div>
 
       <div style="display:flex;justify-content:center;gap:10px;margin-bottom:10px;">
         <button id="startBtn" class="btn">Start</button>
-        <button id="resetBtn" class="btn">Reset</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
       </div>
 
       <div id="stats">Time: 00:00 • Moves: 0</div>
-
       <div id="gameBoard"></div>
 
       <div class="leaderboard-box">
-        <div class="leader-header">
+        <div class="leaderboard-header">
           <strong>Weekly Leaderboard</strong>
-          <span style="font-size:12px;color:var(--muted)">Season resets automatically every Monday (UTC).</span>
+          <span>Season resets automatically every Monday (UTC).</span>
         </div>
-        <div id="leaderboard" style="margin-top:8px;">Loading leaderboard…</div>
+        <div id="leaderboard">Loading leaderboard…</div>
       </div>
     </section>
-  </section>
 
-  <footer>
-    Gentle Warrior • © 2025
-    <div class="socials-footer">
-      <a href="https://x.com/GentleWarrior02" target="_blank" rel="noopener">
-        <img src="icon-x.png" alt="X">
-      </a>
-      <a href="https://www.tiktok.com/@officialgentlewarrior" target="_blank" rel="noopener">
-        <img src="icon-tiktok.png" alt="TikTok">
-      </a>
-      <a href="https://www.instagram.com/officialgentlewarrior" target="_blank" rel="noopener">
-        <img src="icon-ig.png" alt="Instagram">
-      </a>
-      <a href="https://t.me/OfficialGentleWarriorHQ" target="_blank" rel="noopener">
-        <img src="icon-telegram.png" alt="Telegram">
-      </a>
-    </div>
-  </footer>
-</div>
+    <footer>
+      Gentle Warrior • © 2025
+      <div class="socials-footer">
+        <a href="https://x.com/GentleWarrior02" target="_blank" rel="noopener">
+          <img src="icon-x.png" alt="X">
+        </a>
+        <a href="https://www.tiktok.com/@officialgentlewarrior" target="_blank" rel="noopener">
+          <img src="icon-tiktok.png" alt="TikTok">
+        </a>
+        <a href="https://www.instagram.com/officialgentlewarrior" target="_blank" rel="noopener">
+          <img src="icon-ig.png" alt="Instagram">
+        </a>
+        <a href="https://t.me/OfficialGentleWarriorHQ" target="_blank" rel="noopener">
+          <img src="icon-telegram.png" alt="Telegram">
+        </a>
+      </div>
+    </footer>
+  </div>
 
-<!-- Main script: tabs, symbols, game, countdown, CA loader -->
-<script>
-  /* ---------- Tabs ---------- */
-  document.querySelectorAll('.tab-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const tab = btn.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-'+tab).classList.add('active');
-    });
-  });
-
-  /* ---------- Contract address loader (ca.html) ---------- */
-  fetch('ca.html')
-    .then(r=>r.text())
-    .then(t=>{
-      document.getElementById('caBox').innerHTML =
-        (t && t.trim()) ||
-        'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
-    })
-    .catch(()=>{
-      document.getElementById('caBox').textContent =
-        'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
-    });
-
-  /* ---------- Symbol lore ---------- */
-  const SYMBOL_LORE = {
-    aurelion: {
-      title: "Aurelion",
-      lore: "Aurelion — the guiding dawn. It embodies leadership, gentle radiance, and the courage to lead by compassion. Those who carry the light of Aurelion stand to inspire and protect."
-    },
-    gaialune: {
-      title: "Gaialune",
-      lore: "Gaialune — the healing green. Guardian of growth, renewal, and nature’s quiet strength. Its touch mends wounds, soothes hearts, and roots communities together."
-    },
-    ignara: {
-      title: "Ignara",
-      lore: "Ignara — the ember of will. Passionate and fierce, Ignara fuels perseverance and steady willpower that shapes destiny more than force alone."
-    },
-    solyndra: {
-      title: "Solyndra",
-      lore: "Solyndra — the starlit guide. A beacon of hope and quiet counsel, Solyndra lights hidden paths and comforts those who travel through darkness."
-    },
-    umbrath: {
-      title: "Umbrath",
-      lore: "Umbrath — the shadow guardian. Keeper of mysteries and protective silence, Umbrath shields the vulnerable and turns uncertainty into thoughtful vigilance."
-    },
-    zeratheon: {
-      title: "Zeratheon",
-      lore: "Zeratheon — the swift thunder. A symbol of justice and decisive strength, Zeratheon acts when balance is threatened, moving with purpose to restore order."
-    }
-  };
-
-  function showModal(title, html){
-    const bg = document.createElement('div'); bg.className='modal-bg';
-    const modal = document.createElement('div'); modal.className='modal';
-    modal.innerHTML = `<h2>${title}</h2><div class="modal-body">${html}</div>`;
-    const close = document.createElement('div'); close.className='modal-close'; close.textContent='Close';
-    close.onclick = () => bg.remove();
-    modal.appendChild(close);
-    bg.appendChild(modal);
-    document.body.appendChild(bg);
-    bg.addEventListener('click', e=>{ if(e.target===bg) bg.remove(); });
-  }
-
-  document.querySelectorAll('.symbol-card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      const key = card.dataset.key;
-      const file = card.dataset.file;
-      const info = SYMBOL_LORE[key] || { title:key, lore:'' };
-      const html = `
-        <div class="img-wrap">
-          <img src="${file}" alt="${info.title}">
-        </div>
-        <div class="lore">
-          <strong>${info.title}</strong>
-          <p style="margin-top:8px">${info.lore}</p>
-        </div>`;
-      showModal(info.title, html);
-    }, { passive:true });
-  });
-
-  /* ---------- Weekly season id (KEEP THIS STABLE) ---------- */
-  function getSeasonId(date){
-    const d = date ? new Date(date) : new Date();
-    const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-    const day = utc.getUTCDay() || 7; // Monday-based ISO week
-    utc.setUTCDate(utc.getUTCDate() + 4 - day);
-    const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
-    const weekNo = Math.ceil(((utc - yearStart) / 86400000 + 1) / 7);
-    return `${utc.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
-  }
-
-  /* ---------- Countdown to next Monday 00:00 UTC ---------- */
-  const countdownEl = document.getElementById('countdown');
-  function nextMondayUTC(){
-    const now = new Date();
-    const day = now.getUTCDay(); // 0=Sun
-    const daysUntilMon = (8 - day) % 7 || 7; // next Monday
-    const target = new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate() + daysUntilMon,
-      0,0,0,0
-    ));
-    return target;
-  }
-  const seasonStartTarget = nextMondayUTC();
-  function updateCountdown(){
-    const now = new Date();
-    let diff = seasonStartTarget - now;
-    if(diff <= 0){
-      countdownEl.textContent = "New weekly season has started. Good luck, Warrior!";
-      return;
-    }
-    const totalSeconds = Math.floor(diff / 1000);
-    const d = Math.floor(totalSeconds / 86400);
-    const h = Math.floor((totalSeconds % 86400) / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
-    countdownEl.textContent =
-      `Next official weekly season starts in: ${d}d ${h}h ${m}m ${s}s (UTC)`;
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-  /* ---------- Memory game (12 cards) ---------- */
-  const gameBoard = document.getElementById('gameBoard');
-  let deck = [], first=null, second=null, lock=false, moves=0, matches=0, started=false, timer=null, seconds=0;
-
-  function formatTime(s){
-    const m = String(Math.floor(s/60)).padStart(2,'0');
-    const ss = String(s%60).padStart(2,'0');
-    return `${m}:${ss}`;
-  }
-  function updateStats(){
-    document.getElementById('stats').textContent =
-      `Time: ${formatTime(seconds)} • Moves: ${moves}`;
-  }
-  function startTimer(){
-    if(!timer) timer = setInterval(()=>{ seconds++; updateStats(); },1000);
-  }
-  function stopTimer(){ clearInterval(timer); timer=null; }
-
-  function shuffle(a){
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]] = [a[j],a[i]];
-    }
-    return a;
-  }
-
-  function buildDeck(){
-    const files = [
-      "symbol-aurelion.png",
-      "symbol-gaialune.png",
-      "symbol-ignara.png",
-      "symbol-solyndra.png",
-      "symbol-umbrath.png",
-      "symbol-zeratheon.png"
-    ];
-    deck = [];
-    files.forEach(f=>{
-      deck.push({file:f,id:Math.random()});
-      deck.push({file:f,id:Math.random()});
-    });
-    shuffle(deck);
-  }
-
-  function renderBoard(){
-    gameBoard.innerHTML = '';
-    deck.forEach(card=>{
-      const wrap = document.createElement('div'); wrap.className='card'; wrap.dataset.id = card.id;
-      const inner = document.createElement('div'); inner.className='card-inner';
-      const front = document.createElement('div'); front.className='card-front';
-      const back = document.createElement('div'); back.className='card-back';
-      const img = document.createElement('img'); img.src = card.file;
-      back.appendChild(img);
-      inner.appendChild(front);
-      inner.appendChild(back);
-      wrap.appendChild(inner);
-      wrap.onclick = ()=>handleCard(wrap);
-      gameBoard.appendChild(wrap);
-    });
-  }
-
-  function resetBoardOnly(){
-    buildDeck();
-    renderBoard();
-  }
-
-  function handleCard(card){
-    if(lock) return;
-    if(card === first) return;
-    card.classList.add('flip');
-    if(!started){
-      startGame(true); // reuse but keep deck
-      return;
-    }
-    if(!first){ first = card; return; }
-    second = card; lock=true; moves++; updateStats();
-    const img1 = first.querySelector('.card-back img').src;
-    const img2 = second.querySelector('.card-back img').src;
-    if(img1 === img2){
-      matches++;
-      first.style.pointerEvents='none';
-      second.style.pointerEvents='none';
-      first = second = null; lock=false;
-      if(matches === 6) setTimeout(()=>onWin(),320);
-    } else {
-      setTimeout(()=>{
-        first.classList.remove('flip');
-        second.classList.remove('flip');
-        first = second = null; lock=false;
-      }, 600);
-    }
-  }
-
-  function startGame(fromClick){
-    started = true;
-    moves = 0; matches = 0; seconds = 0;
-    stopTimer(); startTimer();
-    if(!fromClick){
-      buildDeck();
-      renderBoard();
-    }
-    updateStats();
-    gtag('event','game_start');
-  }
-
-  function resetGame(){
-    stopTimer();
-    started = false;
-    moves = 0; matches = 0; seconds = 0;
-    first = second = null; lock=false;
-    resetBoardOnly();
-    updateStats();
-  }
-
-  document.getElementById('startBtn').onclick = ()=>startGame(false);
-  document.getElementById('resetBtn').onclick = resetGame;
-
-  function onWin(){
-    stopTimer();
-    started = false;
-    gtag('event','game_win',{moves,seconds});
-    // Anti-cheat: ignore impossible perfect runs (<6 moves)
-    if(moves < 6){
-      alert('Runs under 6 moves are treated as invalid. Please play a normal round.');
-      return;
-    }
-    if(window.gwRecordRun) window.gwRecordRun(moves, seconds*1000);
-    if(window.gwRenderLeaderboard) window.gwRenderLeaderboard();
-    showModal('You win!', `<div style="text-align:center"><strong>Time:</strong> ${formatTime(seconds)}<br><strong>Moves:</strong> ${moves}</div>`);
-  }
-
-  /* ---------- Name save ---------- */
-  const nameInput = document.getElementById('gw-player-name');
-  const saveBtn = document.getElementById('gw-save-name');
-
-  (function preloadName(){
-    const saved = localStorage.getItem('gw_player_name');
-    if(saved) nameInput.value = saved;
-    else nameInput.value = 'Warrior';
-  })();
-
-  saveBtn.addEventListener('click', ()=>{
-    const val = (nameInput.value || '').trim() || 'Warrior';
-    localStorage.setItem('gw_player_name', val);
-    alert('Name saved as: ' + val);
-  });
-
-  // initial board
-  resetBoardOnly();
-  updateStats();
-</script>
-
-<!-- Firebase + leaderboard (module) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    doc,
-    getDoc,
-    setDoc,
-    addDoc,
-    updateDoc,
-    serverTimestamp,
-    query,
-    orderBy,
-    limit,
-    getDocs,
-    where
-  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
-    authDomain: "gentle-warrior.firebaseapp.com",
-    projectId: "gentle-warrior",
-    storageBucket: "gentle-warrior.firebasestorage.app",
-    messagingSenderId: "206508766648",
-    appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-
-  const playersCol = collection(db,"players");
-  const runsCol    = collection(db,"runs");
-
-  function getDeviceTag(){
-    let t = localStorage.getItem("gw_device_tag");
-    if(!t){
-      t = "gw_" + Math.random().toString(36).slice(2,9);
-      localStorage.setItem("gw_device_tag", t);
-    }
-    return t;
-  }
-
-  async function ensurePlayer(deviceTag, name){
-    const pRef = doc(db,"players",deviceTag);
-    const snap = await getDoc(pRef);
-    if(!snap.exists()){
-      await setDoc(pRef,{
-        name,
-        deviceTag,
-        createdAt: serverTimestamp(),
-        totalPoints: 0,
-        currentWeekMoves: null,
-        currentWeekTimeMs: null,
-        currentSeasonId: window.getSeasonId(),
-        lastPlayedAt: serverTimestamp()
-      });
-      return { pRef, data:null };
-    } else {
-      const data = snap.data();
-      try{
-        await updateDoc(pRef,{
-          name,
-          lastPlayedAt: serverTimestamp()
+  <!-- Main (non-module) script: tabs, symbols, game logic, CA loader -->
+  <script>
+    /* ----- Tabs ----- */
+    const panels = {
+      home: document.getElementById('homePanel'),
+      symbols: document.getElementById('symbolsPanel'),
+      game: document.getElementById('gamePanel')
+    };
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        Object.keys(panels).forEach(k=>{
+          panels[k].style.display = (k===tab)?'block':'none';
         });
-      }catch(e){}
-      return { pRef, data };
-    }
-  }
-
-  async function recordRun(moves, timeMs){
-    const deviceTag = getDeviceTag();
-    const name = localStorage.getItem("gw_player_name") || "Warrior";
-    const seasonId = window.getSeasonId();
-
-    const { pRef, data } = await ensurePlayer(deviceTag, name);
-
-    // log run
-    try{
-      await addDoc(runsCol,{
-        deviceTag,
-        playerName:name,
-        moves,
-        timeMs,
-        seasonId,
-        createdAt: serverTimestamp()
       });
-    }catch(e){ console.warn("addDoc failed",e); }
+    });
 
-    let prevSeasonId = data && data.currentSeasonId;
-    let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
-    let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
-
-    if(prevSeasonId !== seasonId){
-      prevMoves = null;
-      prevTime  = null;
-    }
-
-    const isBetter =
-      prevMoves === null ||
-      moves < prevMoves ||
-      (moves === prevMoves && timeMs < prevTime);
-
-    if(isBetter){
-      try{
-        await updateDoc(pRef,{
-          currentSeasonId: seasonId,
-          currentWeekMoves: moves,
-          currentWeekTimeMs: timeMs,
-          name,
-          lastPlayedAt: serverTimestamp()
-        });
-      }catch(e){ console.warn("updateDoc failed",e); }
-    }
-
-    await renderLeaderboard();
-  }
-
-  async function renderLeaderboard(){
-    const lb = document.getElementById("leaderboard");
-    if(!lb) return;
-    lb.textContent = "Loading leaderboard…";
-
-    const seasonId = window.getSeasonId();
-
-    try{
-      // current season
-      const qRef = query(
-        playersCol,
-        where("currentSeasonId","==",seasonId),
-        where("currentWeekMoves","!=",null),
-        orderBy("currentWeekMoves","asc"),
-        limit(200)
-      );
-      const snaps = await getDocs(qRef);
-      let arr = [];
-      snaps.forEach(s=>{
-        const d = s.data();
-        if(d.currentWeekMoves != null){
-          arr.push({
-            id: s.id,
-            name: d.name || "Warrior",
-            moves: d.currentWeekMoves,
-            time: d.currentWeekTimeMs || 0
-          });
-        }
-      });
-
-      // previous season id (simple step back)
-      const [yStr,wStr] = seasonId.split("-");
-      let y = parseInt(yStr,10), w = parseInt(wStr,10);
-      if(w>1) w--; else { y--; w = 52; }
-      const prevSeasonId = `${y}-${String(w).padStart(2,"0")}`;
-
-      const qPrev = query(
-        playersCol,
-        where("currentSeasonId","==",prevSeasonId),
-        where("currentWeekMoves","!=",null),
-        orderBy("currentWeekMoves","asc"),
-        limit(200)
-      );
-      const prevSnaps = await getDocs(qPrev);
-      let lastWeekArr = [];
-      prevSnaps.forEach(s=>{
-        const d = s.data();
-        if(d.currentWeekMoves != null){
-          lastWeekArr.push({
-            id:s.id,
-            name:d.name || "Warrior",
-            moves:d.currentWeekMoves,
-            time:d.currentWeekTimeMs || 0
-          });
-        }
-      });
-
-      // If no current scores yet, show previous week (so Restraint appears)
-      if(arr.length === 0 && lastWeekArr.length > 0){
-        arr = lastWeekArr.slice();
-        lastWeekArr = []; // treat as current only
+    /* ---------- Symbol lore (short explanations) ---------- */
+    const SYMBOL_LORE = {
+      aurelion: {
+        title: "Aurelion",
+        lore: "Aurelion — the guiding dawn. Aurelion embodies leadership, gentle radiance, and the courage to lead by compassion. Those who carry the light of Aurelion stand to inspire and protect."
+      },
+      gaialune: {
+        title: "Gaialune",
+        lore: "Gaialune — the healing green. Guardian of growth, renewal, and nature’s quiet strength. Its touch mends wounds, soothes hearts, and roots communities together."
+      },
+      ignara: {
+        title: "Ignara",
+        lore: "Ignara — the ember of will. Passionate and fierce, Ignara fuels perseverance. It teaches that courage and steady willpower shape destiny more than force alone."
+      },
+      solyndra: {
+        title: "Solyndra",
+        lore: "Solyndra — the starlit guide. A beacon of hope and quiet counsel, Solyndra lights hidden paths and comforts those who travel through darkness."
+      },
+      umbrath: {
+        title: "Umbrath",
+        lore: "Umbrath — the shadow guardian. Keeper of mysteries and protective silence, Umbrath shields the vulnerable and turns uncertainty into thoughtful vigilance."
+      },
+      zeratheon: {
+        title: "Zeratheon",
+        lore: "Zeratheon — the swift thunder. A symbol of justice and decisive strength, Zeratheon acts when balance is threatened, moving with purpose to restore order."
       }
+    };
 
-      arr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
-      lastWeekArr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
+    function showModal(title, html){
+      const bg = document.createElement('div'); bg.className='modal-bg';
+      const modal = document.createElement('div'); modal.className='modal';
+      modal.innerHTML = `<h2>${title}</h2><div class="modal-body">${html}</div>`;
+      const close = document.createElement('div'); close.className='modal-close'; close.textContent='Close';
+      close.onclick = () => bg.remove();
+      modal.appendChild(close);
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.addEventListener('click', (e)=> { if(e.target === bg) bg.remove(); });
+    }
 
-      if(!arr.length){
-        lb.innerHTML = "<p>No runs recorded for this week yet. Be the first to claim the board.</p>";
-        if(lastWeekArr.length){
-          lb.innerHTML += "<div class='last-week'><strong>Last Week Winners</strong><br/>" +
-            lastWeekArr.slice(0,3).map((p,i)=>
-              `#${i+1} ${p.name} — ${p.moves} moves, ${Math.round(p.time/1000)}s`
-            ).join("<br/>") + "</div>";
-        }
+    document.querySelectorAll('.symbol-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const key = card.dataset.key;
+        const file = card.dataset.file;
+        const info = SYMBOL_LORE[key] || { title:key, lore: '' };
+        const html = `
+          <div class="img-wrap">
+            <img src="${file}" alt="${info.title}">
+          </div>
+          <div class="lore">
+            <strong>${info.title}</strong>
+            <p style="margin-top:8px">${info.lore}</p>
+          </div>`;
+        showModal(info.title, html);
+      });
+    });
+
+    /* ---------- Memory game (12 cards, flip) ---------- */
+    const gameBoard = document.getElementById('gameBoard');
+    let deck=[], first=null, second=null, lock=false, moves=0, matches=0, started=false, timer=null, seconds=0;
+
+    function formatTime(s){
+      const m=String(Math.floor(s/60)).padStart(2,'0');
+      const ss=String(s%60).padStart(2,'0');
+      return `${m}:${ss}`;
+    }
+    function updateStats(){
+      document.getElementById('stats').textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+    }
+    function startTimer(){
+      if(!timer) timer=setInterval(()=>{ seconds++; updateStats(); },1000);
+    }
+    function stopTimer(){ clearInterval(timer); timer=null; }
+    function shuffle(a){
+      for(let i=a.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+
+    function buildDeck(){
+      const files = [
+        "symbol-aurelion.png",
+        "symbol-gaialune.png",
+        "symbol-ignara.png",
+        "symbol-solyndra.png",
+        "symbol-umbrath.png",
+        "symbol-zeratheon.png"
+      ];
+      deck=[];
+      files.forEach(f=>{
+        deck.push({file:f,id:Math.random()});
+        deck.push({file:f,id:Math.random()});
+      });
+      shuffle(deck);
+    }
+
+    function renderBoard(){
+      gameBoard.innerHTML='';
+      deck.forEach(card=>{
+        const wrap = document.createElement('div'); wrap.className='card'; wrap.dataset.id = card.id;
+        const inner = document.createElement('div'); inner.className='card-inner';
+        const front = document.createElement('div'); front.className='card-front';
+        const back = document.createElement('div'); back.className='card-back';
+        const img = document.createElement('img'); img.src = card.file;
+        back.appendChild(img);
+        inner.appendChild(front);
+        inner.appendChild(back);
+        wrap.appendChild(inner);
+        wrap.onclick = ()=>handleCard(wrap);
+        gameBoard.appendChild(wrap);
+      });
+    }
+
+    function handleCard(card){
+      if(lock) return;
+      if(card === first) return;
+      card.classList.add('flip');
+      if(!started) startGame();
+      if(!first){ first = card; return; }
+      second = card; lock = true; moves++; updateStats();
+      const img1 = first.querySelector('.card-back img').src;
+      const img2 = second.querySelector('.card-back img').src;
+      if(img1 === img2){
+        matches++;
+        first.style.pointerEvents='none';
+        second.style.pointerEvents='none';
+        first = second = null; lock = false;
+        if(matches === 6) setTimeout(()=> onWin(), 320);
+      } else {
+        setTimeout(()=>{
+          first.classList.remove('flip');
+          second.classList.remove('flip');
+          first = second = null; lock = false;
+        }, 600);
+      }
+    }
+
+    function startGame(){
+      started=true;
+      moves=0; matches=0; seconds=0;
+      stopTimer(); startTimer();
+      buildDeck(); renderBoard(); updateStats();
+      if(window.gtag){ gtag('event','game_start'); }
+    }
+    function resetGame(){
+      stopTimer(); started=false;
+      moves=0; matches=0; seconds=0;
+      first=second=null;
+      gameBoard.innerHTML='';
+      updateStats();
+      buildDeck(); renderBoard();
+    }
+
+    document.getElementById('startBtn').onclick = startGame;
+    document.getElementById('resetBtn').onclick = resetGame;
+
+    function onWin(){
+      stopTimer();
+      if(window.gtag){ gtag('event','game_win'); }
+      if(window.gwRecordRun) window.gwRecordRun(moves, seconds*1000);
+      showModal('You win!', `<div style="text-align:center"><strong>Time:</strong> ${formatTime(seconds)}<br><strong>Moves:</strong> ${moves}</div>`);
+      if(window.gwRenderLeaderboard) window.gwRenderLeaderboard();
+    }
+
+    /* ---------- Name save (localStorage) ---------- */
+    const nameInput = document.getElementById('playerName');
+    const saveBtn = document.getElementById('saveNameBtn');
+
+    (function preloadName(){
+      const saved = localStorage.getItem('gw_player_name');
+      if(saved) nameInput.value = saved;
+      else nameInput.value = 'Warrior';
+    })();
+
+    saveBtn.addEventListener('click', ()=>{
+      const val = (nameInput.value || '').trim() || 'Warrior';
+      localStorage.setItem('gw_player_name', val);
+      alert('Name saved: ' + val);
+    });
+
+    /* ---------- Countdown to next Monday (UTC) ---------- */
+    function getNextMondayUtc(){
+      const now = new Date();
+      const utcNow = new Date(now.toISOString()); // normalize to UTC
+      const day = utcNow.getUTCDay(); // 0=Sun
+      const diffToMonday = (1 - day + 7) % 7 || 7; // next Monday
+      const nextMon = new Date(Date.UTC(
+        utcNow.getUTCFullYear(),
+        utcNow.getUTCMonth(),
+        utcNow.getUTCDate() + diffToMonday,
+        0,0,0
+      ));
+      return nextMon;
+    }
+    const nextMonday = getNextMondayUtc();
+    function updateCountdown(){
+      const el = document.getElementById('countdown');
+      const now = new Date();
+      const diff = (nextMonday - now);
+      if(diff <= 0){
+        el.textContent = "Current weekly season is live now. Good luck, Warrior!";
+        return;
+      }
+      const totalSec = Math.floor(diff/1000);
+      const d = Math.floor(totalSec/86400);
+      const h = Math.floor((totalSec%86400)/3600);
+      const m = Math.floor((totalSec%3600)/60);
+      const s = totalSec%60;
+      el.textContent = `Next official weekly season starts in: ${d}d ${h}h ${m}m ${s}s (UTC)`;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    /* ---------- CA loader (ca.html) ---------- */
+    fetch('ca.html')
+      .then(r=>r.text())
+      .then(t=>{
+        document.getElementById('caBox').innerHTML =
+          (t && t.trim()) || 'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
+      })
+      .catch(()=>{
+        document.getElementById('caBox').textContent =
+          'The official contract address will be posted here, on our X page, and on Telegram only. Stay cautious — beware of fake or scam tokens.';
+      });
+
+    // initial board
+    buildDeck(); renderBoard();
+  </script>
+
+  <!-- Firebase + leaderboard (module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      setDoc,
+      addDoc,
+      updateDoc,
+      serverTimestamp,
+      query,
+      orderBy,
+      limit,
+      getDocs,
+      where
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // Firebase config (same as before)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+      authDomain: "gentle-warrior.firebaseapp.com",
+      projectId: "gentle-warrior",
+      storageBucket: "gentle-warrior.firebasestorage.app",
+      messagingSenderId: "206508766648",
+      appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    const playersCol = collection(db, "players");
+    const runsCol    = collection(db, "runs");
+
+    // IMPORTANT: we keep the existing season-id logic.
+    function getSeasonId(date = new Date()){
+      // same week-id logic as before (ISO week)
+      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
+    }
+
+    function getDeviceTag(){
+      let t = localStorage.getItem("gw_device_tag");
+      if(!t){
+        t = "gw_" + Math.random().toString(36).slice(2,9);
+        localStorage.setItem("gw_device_tag", t);
+      }
+      return t;
+    }
+
+    async function ensurePlayer(deviceTag, name){
+      const pRef = doc(db, "players", deviceTag);
+      const snap = await getDoc(pRef);
+      if(!snap.exists()){
+        await setDoc(pRef, {
+          name,
+          deviceTag,
+          createdAt: serverTimestamp(),
+          totalPoints: 0,
+          currentWeekMoves: null,
+          currentWeekTimeMs: null,
+          currentSeasonId: getSeasonId(),
+          lastPlayedAt: serverTimestamp()
+        });
+        return { pRef, data: null };
+      } else {
+        const data = snap.data();
+        try{
+          await updateDoc(pRef, { name, lastPlayedAt: serverTimestamp() });
+        } catch(e){}
+        return { pRef, data };
+      }
+    }
+
+    async function recordRun(moves, timeMs){
+      // anti-cheat: ignore unrealistic <6 moves
+      if(moves < 6){
+        console.warn("Run ignored: moves < 6");
         return;
       }
 
-      const top3 = arr.slice(0,3);
-      let html = "<div><strong>Current Top 3 (This Week)</strong><br/>";
-      html += top3.map((p,i)=>
-        `#${i+1} ${p.name} — ${p.moves} moves, ${Math.round(p.time/1000)}s`
-      ).join("<br/>") + "</div>";
+      const deviceTag = getDeviceTag();
+      const name = localStorage.getItem("gw_player_name") || "Warrior";
+      const seasonId = getSeasonId();
 
-      if(arr.length > 3){
-        html += "<div class='leader-caption' style='margin-top:10px;'>Full Top 10</div>";
-        const top10 = arr.slice(0,10);
-        html += top10.map((p,i)=>
-          `<div class="leader-row"><div>#${i+1} ${p.name}</div><div>${p.moves} moves • ${Math.round(p.time/1000)}s</div></div>`
-        ).join("");
+      const { pRef, data } = await ensurePlayer(deviceTag, name);
+
+      try{
+        await addDoc(runsCol, {
+          deviceTag,
+          playerName: name,
+          moves,
+          timeMs,
+          seasonId,
+          createdAt: serverTimestamp()
+        });
+      } catch(e){
+        console.warn("addDoc failed", e);
       }
 
-      if(lastWeekArr.length){
-        html += "<div class='last-week'><strong>Last Week Winners</strong><br/>" +
-          lastWeekArr.slice(0,3).map((p,i)=>
-            `#${i+1} ${p.name} — ${p.moves} moves, ${Math.round(p.time/1000)}s`
-          ).join("<br/>") + "</div>";
+      const prevSeasonId = data && data.currentSeasonId;
+      let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
+      let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
+
+      if(prevSeasonId !== seasonId){
+        prevMoves = null;
+        prevTime  = null;
       }
 
-      lb.innerHTML = html;
+      const isBetter =
+        prevMoves === null ||
+        moves < prevMoves ||
+        (moves === prevMoves && timeMs < prevTime);
 
-    }catch(e){
-      console.warn("renderLeaderboard error",e);
-      lb.textContent = "Unable to load leaderboard.";
+      if(isBetter){
+        try{
+          await updateDoc(pRef, {
+            currentSeasonId: seasonId,
+            currentWeekMoves: moves,
+            currentWeekTimeMs: timeMs,
+            name,
+            lastPlayedAt: serverTimestamp()
+          });
+        } catch(e){
+          console.warn("updateDoc failed", e);
+        }
+      }
+
+      await renderLeaderboard();
     }
-  }
 
-  // Restore Restraint into current season if nothing yet (one-time helper)
-  async function restoreRestraintIfNeeded(){
-    const seasonId = window.getSeasonId();
+    async function renderLeaderboard(){
+      const lb = document.getElementById("leaderboard");
+      if(!lb) return;
+      lb.textContent = "Loading leaderboard…";
 
-    const qCurrent = query(
-      playersCol,
-      where("currentSeasonId","==",seasonId),
-      where("currentWeekMoves","!=",null),
-      limit(1)
-    );
-    const curSnap = await getDocs(qCurrent);
-    if(!curSnap.empty) return; // current season already has entries
+      const seasonId = getSeasonId();
 
-    const qRestraint = query(
-      playersCol,
-      where("name","==","Restraint"),
-      where("currentWeekMoves","!=",null),
-      limit(1)
-    );
-    const rSnap = await getDocs(qRestraint);
-    if(rSnap.empty) return;
+      try{
+        // 1) Try current season first
+        const qRef = query(
+          playersCol,
+          where("currentSeasonId", "==", seasonId),
+          orderBy("currentWeekMoves","asc"),
+          limit(200)
+        );
 
-    const docSnap = rSnap.docs[0];
-    const pRef = doc(db,"players",docSnap.id);
-    try{
-      await updateDoc(pRef,{
-        currentSeasonId: seasonId
-      });
-    }catch(e){ console.warn("restoreRestraintIfNeeded update failed",e); }
-  }
+        const snaps = await getDocs(qRef);
+        const arr = [];
+        snaps.forEach(s=>{
+          const d = s.data();
+          if(d.currentWeekMoves != null){
+            arr.push({
+              name: d.name || "Warrior",
+              moves: d.currentWeekMoves,
+              time: d.currentWeekTimeMs || 0
+            });
+          }
+        });
 
-  window.gwRecordRun = recordRun;
-  window.gwRenderLeaderboard = renderLeaderboard;
+        arr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
 
-  await restoreRestraintIfNeeded();
-  renderLeaderboard();
-</script>
+        if(arr.length){
+          lb.innerHTML = arr.slice(0,10).map((p,i)=>
+            `<div class="leader-row">
+               <div>#${i+1} ${p.name}</div>
+               <div>${p.moves} moves • ${Math.round(p.time/1000)}s</div>
+             </div>`
+          ).join("");
+          return;
+        }
+
+        // 2) Fallback: show best scores from any season (so old winners still visible)
+        const allRef = query(
+          playersCol,
+          orderBy("currentWeekMoves","asc"),
+          limit(200)
+        );
+        const snapsAll = await getDocs(allRef);
+        const allArr = [];
+        snapsAll.forEach(s=>{
+          const d = s.data();
+          if(d.currentWeekMoves != null){
+            allArr.push({
+              name: d.name || "Warrior",
+              moves: d.currentWeekMoves,
+              time: d.currentWeekTimeMs || 0
+            });
+          }
+        });
+        allArr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
+
+        if(allArr.length){
+          lb.innerHTML =
+            `<div style="margin-bottom:6px;color:${'#b6c7b7'}">No runs recorded yet for this week. Showing best results from previous weeks:</div>` +
+            allArr.slice(0,10).map((p,i)=>
+              `<div class="leader-row">
+                 <div>#${i+1} ${p.name}</div>
+                 <div>${p.moves} moves • ${Math.round(p.time/1000)}s</div>
+               </div>`
+            ).join("");
+        } else {
+          lb.textContent = "No recorded winners yet. Be the first to claim the board.";
+        }
+
+      } catch(e){
+        console.warn("renderLeaderboard error", e);
+        lb.textContent = "Unable to load leaderboard.";
+      }
+    }
+
+    // expose to main script
+    window.gwRecordRun = recordRun;
+    window.gwRenderLeaderboard = renderLeaderboard;
+
+    // initial load after DOM is ready
+    window.addEventListener('load', renderLeaderboard);
+  </script>
 </body>
 </html>
