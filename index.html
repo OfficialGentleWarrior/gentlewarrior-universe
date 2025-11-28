@@ -73,6 +73,7 @@
       justify-content:center;
       gap:8px;
       margin:8px 0 18px;
+      flex-wrap:wrap;
     }
     .tab-btn{
       padding:8px 18px;
@@ -399,6 +400,7 @@
       <button class="tab-btn active" data-tab="home">Home</button>
       <button class="tab-btn" data-tab="symbols">Symbols</button>
       <button class="tab-btn" data-tab="game">Game</button>
+      <button class="tab-btn" data-tab="chart">Chart</button>
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
 
@@ -414,7 +416,7 @@
         <li>Support children with similar conditions.</li>
       </ol>
 
-      <!-- ✅ ROADMAP IMAGE ADDED -->
+      <!-- ROADMAP IMAGE -->
       <div id="roadmap" style="margin-top:24px; text-align:center;">
         <h2 style="margin-bottom:12px;">Roadmap</h2>
         <a href="roadmap.png" target="_blank">
@@ -515,12 +517,36 @@
 
       <div id="gameBoard"></div>
 
+      <!-- MY BEST RUN -->
+      <div id="myBestRun" style="
+        text-align:center;
+        margin-top:10px;
+        margin-bottom:6px;
+        font-size:13px;
+        color:var(--muted);
+      ">
+        Loading your best run…
+      </div>
+
       <div class="leaderboard-box">
         <div style="display:flex;justify-content:space-between;">
           <strong>Weekly Leaderboard</strong>
           <span style="color:var(--muted);font-size:12px;">Season resets automatically every Monday (UTC).</span>
         </div>
         <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
+      </div>
+    </section>
+
+    <!-- CHART TAB -->
+    <section id="chart" class="panel" style="display:none">
+      <h2 style="text-align:center;margin-top:0;">Live Token Chart</h2>
+      <p style="text-align:center;font-size:14px;color:var(--muted);">
+        Once the token is live, the official chart will appear here. Always verify the contract address in the green box above.
+      </p>
+      <div id="chartContent" style="margin-top:12px;">
+        <p style="text-align:center;font-size:13px;color:var(--muted);">
+          Loading chart…
+        </p>
       </div>
     </section>
 
@@ -572,7 +598,7 @@
         tabButtons.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        ['home','symbols','game','announcements'].forEach(id=>{
+        ['home','symbols','game','chart','announcements'].forEach(id=>{
           const el = document.getElementById(id);
           if(el) el.style.display = (id===tab?'block':'none');
         });
@@ -620,6 +646,18 @@
       .catch(()=>{
         const box = document.getElementById('announcementsContent');
         if (box) box.innerHTML = '<p>Unable to load announcements right now.</p>';
+      });
+
+    // ---- Chart loader (chart.html)
+    fetch('chart.html')
+      .then(r => r.text())
+      .then(html => {
+        const box = document.getElementById('chartContent');
+        if (box) box.innerHTML = html || '<p style="text-align:center;font-size:13px;color:var(--muted);">Chart will appear here when live.</p>';
+      })
+      .catch(()=>{
+        const box = document.getElementById('chartContent');
+        if (box) box.innerHTML = '<p style="text-align:center;font-size:13px;color:var(--muted);">Unable to load chart right now.</p>';
       });
 
     // ---- Load socials from socials.html into footer
@@ -811,7 +849,7 @@
       if(e.target === winOverlay) hideWinOverlay();
     });
 
-    // ✅ NEW X (TWITTER) SHARE HANDLER
+    // X share
     winShareBtn.addEventListener('click', () => {
 
       const stats = winStatsEl.textContent || '';
@@ -967,6 +1005,15 @@ ${rankTag} ${badge}
       renderBoard();
       updateStats();
       startTimer();
+
+      if (window.gtag) {
+        const deviceTag  = localStorage.getItem('gw_device_tag') || 'unknown';
+        const playerName = localStorage.getItem('gw_player_name') || 'Warrior';
+        gtag('event', 'game_start', {
+          gw_device_tag: deviceTag,
+          gw_player_name: playerName
+        });
+      }
     }
 
     function resetGame(){
@@ -993,11 +1040,20 @@ ${rankTag} ${badge}
       }
       const statsText = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
       if(window.gwRecordRun){
-        // keep existing behavior, just also use win overlay
         const promise = window.gwRecordRun(moves, seconds*1000);
         if(promise && typeof promise.then === 'function'){
           promise.then(()=>{ updateWinRankPreview(); }).catch(()=>{});
         }
+      }
+      if (window.gtag) {
+        const deviceTag  = localStorage.getItem('gw_device_tag') || 'unknown';
+        const playerName = localStorage.getItem('gw_player_name') || 'Warrior';
+        gtag('event', 'game_win', {
+          gw_device_tag: deviceTag,
+          gw_player_name: playerName,
+          moves: moves,
+          time_seconds: seconds
+        });
       }
       showWinOverlay(statsText);
     }
@@ -1083,6 +1139,35 @@ ${rankTag} ${badge}
       }
     }
 
+    // Load My Best Run text
+    async function loadMyBestRun() {
+      const el = document.getElementById("myBestRun");
+      if (!el) return;
+
+      const deviceTag = localStorage.getItem("gw_device_tag");
+      if (!deviceTag) {
+        el.textContent = "Play a run to record your first score.";
+        return;
+      }
+
+      const pRef = doc(db, "players", deviceTag);
+      const snap = await getDoc(pRef);
+
+      if (!snap.exists()) {
+        el.textContent = "Play a run to record your first score.";
+        return;
+      }
+
+      const d = snap.data();
+      if (d.currentWeekMoves == null) {
+        el.textContent = "Play a run to record your first score.";
+        return;
+      }
+
+      const seconds = Math.round((d.currentWeekTimeMs || 0) / 1000);
+      el.textContent = `Your best run this week: ${d.currentWeekMoves} moves • ${seconds}s`;
+    }
+
     async function recordRun(moves, timeMs){
       const deviceTag = getDeviceTag();
       const name = localStorage.getItem("gw_player_name") || "Warrior";
@@ -1132,6 +1217,7 @@ ${rankTag} ${badge}
       }
 
       await renderLeaderboard();
+      await loadMyBestRun(); // refresh My Best Run after each valid run
     }
 
     async function renderLeaderboard(){
@@ -1182,6 +1268,7 @@ ${rankTag} ${badge}
     window.gwRecordRun = recordRun;
     window.gwRenderLeaderboard = renderLeaderboard;
     renderLeaderboard();
+    loadMyBestRun();  // load My Best Run when page loads
   </script>
 </body>
-  </html>
+                         </html>
