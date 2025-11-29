@@ -1,12 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>Gentle Warrior Universe</title>
-  <meta name="description" content="Gentle Warrior symbols, hero, and memory mini-game with weekly leaderboard.">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gentle Warrior Universe — soft heart, strong spirit. Play the weekly memory challenge and climb the leaderboard." />
 
-  <!-- GA4 -->
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZLK6PBCQ7P"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -17,57 +17,73 @@
 
   <style>
     :root{
-      --bg1:#071f16; --bg2:#0b2d1e;
-      --panel:#0f2c20; --muted:#b6c7b7; --accent:#9ae07a;
-      --card-bg:rgba(255,255,255,0.03); --white:#fff;
-      --radius:16px;
+      --bg:#03110a;
+      --bg-soft:#062016;
+      --card:#0b2a1b;
+      --accent:#9ae07a;
+      --accent-soft:#193d28;
+      --text:#f4fff7;
+      --muted:#a2b7a6;
+      --danger:#ff7070;
+      --border:#21412e;
+      --gold:#f6d47a;
+      --shadow:0 12px 30px rgba(0,0,0,0.6);
     }
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-      background:linear-gradient(180deg,var(--bg1),var(--bg2));
-      color:#e2f0e4;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#123822 0,#020806 55%);
+      color:var(--text);
+      min-height:100vh;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .wrap{
+      max-width:960px;
+      margin:0 auto;
+      padding:16px 14px 32px;
+    }
+    img{max-width:100%;display:block;}
 
     header.hero{
-      background:var(--card-bg);
-      border-radius:var(--radius);
-      padding:18px;
-      margin-bottom:16px;
       display:flex;
       align-items:center;
-      gap:16px;
+      gap:14px;
+      padding:14px 16px;
+      background:linear-gradient(120deg,#0b2417,#134226);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
     }
     .hero-avatar{
-      width:96px;height:96px;
-      border-radius:24px;
+      width:72px;
+      height:72px;
+      border-radius:999px;
       overflow:hidden;
-      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      border:3px solid var(--accent);
+      box-shadow:0 0 18px rgba(154,224,122,.5);
+      flex-shrink:0;
     }
-    .hero-avatar img{width:100%;height:100%;object-fit:cover}
-    .hero-title h1{margin:0 0 4px;font-size:22px}
-    .hero-title p{margin:0;color:var(--muted)}
-
-    .panel{
-      background:var(--card-bg);
-      border-radius:var(--radius);
-      padding:18px;
-      margin-bottom:16px;
-      box-shadow:0 6px 16px rgba(0,0,0,0.4);
+    .hero-avatar img{width:100%;height:100%;object-fit:cover;}
+    .hero-title h1{
+      font-size:22px;
+      letter-spacing:.03em;
+      margin-bottom:4px;
+    }
+    .hero-title p{
+      font-size:14px;
+      color:var(--muted);
     }
 
     .banner-warning{
-      background:#0c2e21;
+      margin:14px 0;
+      padding:10px 12px;
       border-radius:14px;
-      padding:14px;
-      margin-bottom:16px;
-      border:1px solid rgba(255,255,255,0.05);
-      font-size:15px;
+      background:#071d13;
+      border:1px solid #31593b;
+      font-size:13px;
+      color:#ffdf9c;
     }
 
-    /* Tabs */
+    /* Tabs — centered */
     .tabs{
       display:flex;
       justify-content:center;
@@ -83,173 +99,230 @@
       background:#062216;
       color:#dbeadf;
       font-weight:700;
+      font-size:14px;
+      white-space:nowrap;
     }
     .tab-btn.active{
       background:var(--accent);
       color:#04210f;
     }
 
-    /* Home */
-    #home ol{padding-left:20px;margin-top:8px}
-    #home li{margin-bottom:4px}
-
-    /* CTA card (used in cta.html) */
-    .cta-card{
-      margin-top:16px;
-      padding:14px 14px 12px;
-      border-radius:16px;
-      background:rgba(0,0,0,0.35);
-      border:1px solid rgba(255,255,255,0.06);
+    .panel{
+      background:var(--bg-soft);
+      border-radius:18px;
+      padding:16px 16px 18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
     }
-    .cta-card h3{
-      margin:0 0 6px;
-      font-size:17px;
+    h2{
+      font-size:18px;
+      margin-bottom:8px;
     }
-    .cta-card p{
-      margin:0 0 10px;
+    p{
       font-size:14px;
-      color:var(--muted);
+      line-height:1.5;
+      margin-bottom:8px;
     }
-    .cta-row{
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:10px;
-      font-size:12px;
-      color:var(--muted);
+    ol{
+      padding-left:18px;
+      margin:8px 0 4px;
+      font-size:14px;
     }
+    ol li{margin-bottom:4px;}
 
     /* Symbols */
     .grid{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:16px;
-    }
-    @media(max-width:640px){
-      .grid{grid-template-columns:repeat(2,1fr);}
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:10px;
     }
     .symbol-card{
-      background:#0f2c20;
-      border-radius:18px;
-      padding:14px;
-      text-align:center;
+      background:var(--card);
+      border-radius:14px;
+      padding:10px;
+      border:1px solid var(--border);
       cursor:pointer;
-      box-shadow:0 8px 18px rgba(0,0,0,0.4);
+      transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
     }
     .symbol-card img{
-      width:100%;
-      max-width:160px;
-      border-radius:20px;
-      display:block;
-      margin:0 auto 8px;
+      width:70px;
+      height:70px;
+      margin:0 auto 6px;
     }
-    .symbol-name{font-weight:800;margin-bottom:2px}
-    .symbol-desc{color:var(--muted);font-size:13px}
+    .symbol-name{
+      text-align:center;
+      font-weight:700;
+      margin-bottom:2px;
+    }
+    .symbol-desc{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .symbol-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 20px rgba(0,0,0,0.5);
+      border-color:var(--accent);
+    }
 
-    /* Game */
+    /* Game controls */
     #controls{
       display:flex;
-      justify-content:center;
       gap:8px;
-      flex-wrap:wrap;
       margin:10px 0;
+      justify-content:center;
+      flex-wrap:wrap;
     }
-    #gw-player-name{
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.05);
-      background:#02140d;
-      color:#fff;
+    #controls input{
+      flex:1;
       min-width:180px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#04160d;
+      color:var(--text);
+      font-size:14px;
     }
+    #controls input::placeholder{color:var(--muted);}
     .btn{
-      padding:10px 16px;
+      padding:8px 14px;
       border-radius:999px;
       border:none;
-      cursor:pointer;
       background:var(--accent);
+      color:#04210f;
       font-weight:700;
-      color:#06200b;
+      font-size:14px;
+      cursor:pointer;
+      white-space:nowrap;
     }
     .btn-secondary{
       background:#123225;
-      color:#e2f0e4;
+      color:var(--text);
     }
-    #stats{text-align:center;margin-bottom:8px;color:var(--muted);}
+    #stats{
+      margin-top:4px;
+      margin-bottom:4px;
+      font-size:14px;
+      text-align:center;
+    }
+    #stageInfo{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
 
     #gameBoard{
-      width:100%;
-      max-width:480px;
-      margin:0 auto 12px;
       display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
+      grid-template-columns:repeat(4,1fr); /* default, overridden per stage */
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .card,
+    .disabled-slot{
+      position:relative;
+      padding-top:120%;
+      border-radius:12px;
+      background:#020a05;
     }
     .card{
-      width:100%;
-      aspect-ratio:1/1;
-      perspective:800px;
       cursor:pointer;
-    }
-    .card-inner{
-      position:relative;
-      width:100%;height:100%;
       transform-style:preserve-3d;
-      transition:0.28s ease;
+      transition:transform .24s ease;
     }
-    .card.flip .card-inner{transform:rotateY(180deg);}
-    .card-front,.card-back{
-      position:absolute;inset:0;
+    .card.flip{
+      transform:rotateY(180deg);
+    }
+    .disabled-slot{
+      opacity:0.18;
+      border:1px dashed var(--border);
+      pointer-events:none;
+    }
+
+    .card-face{
+      position:absolute;
+      inset:0;
       backface-visibility:hidden;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,0.06);
+      border-radius:12px;
       display:flex;
       align-items:center;
       justify-content:center;
+      box-shadow:0 8px 16px rgba(0,0,0,0.6);
     }
+
+    /* HEART IMAGE CARD BACK (front side) */
     .card-front{
-      background:#07130e url("card-back.png") center/cover no-repeat;
+      background: url("card-back.png") center center / contain no-repeat;
+      background-color: #02140b;
+      border:1px solid var(--border);
     }
+
     .card-back{
-      background:#07130e;
+      background:#020a05;
+      border:1px solid var(--border);
       transform:rotateY(180deg);
     }
     .card-back img{
-      width:70%;height:70%;
+      width:70%;
+      height:70%;
       object-fit:contain;
-      filter:drop-shadow(0 0 12px rgba(255,180,0,0.6));
     }
 
     .leaderboard-box{
       margin-top:10px;
-      padding:12px;
-      background:rgba(255,255,255,0.03);
+      padding:10px 10px 8px;
       border-radius:14px;
-      font-size:14px;
+      background:#04150c;
+      border:1px solid var(--border);
+      font-size:13px;
     }
     .leader-row{
       display:flex;
       justify-content:space-between;
-      padding:4px 0;
-      border-bottom:1px solid rgba(255,255,255,0.06);
+      align-items:baseline;
+      gap:6px;
+      margin-bottom:3px;
     }
-    .leader-row:last-child{border-bottom:none}
+    .leader-row:last-child{margin-bottom:0;}
+    .leader-row div:first-child{
+      font-weight:600;
+    }
+    .leader-row div:last-child{
+      color:var(--muted);
+      font-size:12px;
+      text-align:right;
+    }
 
     footer{
       text-align:center;
-      margin:24px 0 6px;
-      font-size:13px;
+      font-size:12px;
       color:var(--muted);
+      margin-top:8px;
     }
 
-    .socials{
+    /* SOCIALS (footer) */
+    #socials-container{
       margin-top:6px;
       display:flex;
       justify-content:center;
-      gap:12px;
+      flex-wrap:wrap;
+      gap:8px;
     }
-    .socials img{
-      width:24px;height:24px;display:block;
+    #socials-container a{
+      text-decoration:none;
+      font-size:13px;
+      color:#e8fff0;
+      background:#062216;
+      padding:6px 11px;
+      border-radius:999px;
+      border:1px solid #21412e;
+    }
+    #socials-container a:hover{
+      background:#0f3a23;
+      border-color:#9ae07a;
+    }
+    #socials-container img{
+      display:none; /* hide any icon image if included in socials.html */
     }
 
     /* Symbol modal */
@@ -259,121 +332,74 @@
       display:none;
       align-items:center;
       justify-content:center;
-      background:rgba(0,0,0,0.65);
-      z-index:9999;
+      background:rgba(0,0,0,0.75);
+      z-index:30;
     }
     .symbol-modal.active{display:flex;}
     .symbol-modal-inner{
-      background:#0f2c20;
+      background:#04140d;
       border-radius:18px;
-      padding:18px;
-      max-width:320px;
+      padding:16px 16px 12px;
+      max-width:340px;
       width:90%;
-      box-shadow:0 10px 30px rgba(0,0,0,0.7);
+      box-shadow:var(--shadow);
       text-align:center;
     }
     .symbol-modal-inner img{
-      width:120px;
-      height:120px;
-      border-radius:18px;
-      object-fit:cover;
-      margin-bottom:12px;
+      width:90px;
+      height:90px;
+      margin:0 auto 8px;
     }
-    .symbol-modal-inner h3{
-      margin:0 0 8px;
-      font-size:18px;
-    }
+    .symbol-modal-inner h3{margin-bottom:4px;}
     .symbol-modal-inner p{
-      margin:0;
-      font-size:14px;
+      font-size:13px;
       color:var(--muted);
+      margin-bottom:10px;
     }
     .symbol-modal-close{
-      margin-top:16px;
-      padding:8px 18px;
-      border-radius:999px;
       border:none;
-      cursor:pointer;
+      padding:6px 12px;
+      border-radius:999px;
       background:var(--accent);
       color:#04210f;
       font-weight:700;
+      cursor:pointer;
     }
 
-    /* Confetti + win overlay */
-    #confettiCanvas{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:9500;
-    }
-    .win-overlay{
+    /* Simple win overlay */
+    #winOverlay{
       position:fixed;
       inset:0;
       background:rgba(0,0,0,0.7);
       display:none;
       align-items:center;
       justify-content:center;
-      z-index:9600;
+      z-index:40;
     }
-    .win-overlay.active{display:flex;}
-    .win-card{
-      background:#0f2c20;
+    #winOverlay.active{display:flex;}
+    #winCard{
+      background:#04140d;
+      padding:16px 18px;
       border-radius:18px;
-      padding:18px;
+      text-align:center;
+      border:1px solid rgba(154,224,122,0.7);
       max-width:320px;
       width:90%;
-      text-align:center;
-      box-shadow:0 10px 30px rgba(0,0,0,0.8);
-    }
-    .win-card h3{
-      margin:0 0 8px;
-      font-size:20px;
-    }
-    .win-card p{
-      margin:4px 0;
       font-size:14px;
-      color:var(--muted);
     }
-    .win-badge{
-      display:inline-block;
-      margin:8px 0 10px;
-      padding:4px 12px;
-      border-radius:999px;
-      background:rgba(154,224,122,0.12);
-      border:1px solid rgba(154,224,122,0.7);
-      font-size:12px;
-      font-weight:600;
-      color:var(--accent);
-    }
-    .glow-pulse{
-      animation:glowPulse 1.5s ease-in-out infinite;
-    }
-    @keyframes glowPulse{
-      0%{box-shadow:0 0 0 rgba(154,224,122,0);}
-      50%{box-shadow:0 0 18px rgba(154,224,122,0.8);}
-      100%{box-shadow:0 0 0 rgba(154,224,122,0);}
-    }
-    .win-actions{
-      margin-top:10px;
+    #winCard h3{margin-bottom:6px;}
+    #winCard p{margin-bottom:4px;}
+    #winActions{
+      margin-top:8px;
       display:flex;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
+      flex-direction:column;
+      gap:6px;
     }
-    .win-actions button{
-      padding:8px 14px;
-      border-radius:999px;
-      border:none;
-      cursor:pointer;
-      font-weight:700;
+    #winActions button{
+      width:100%;
     }
-    .win-share{
-      background:var(--accent);
-      color:#04210f;
-    }
-    .win-close{
-      background:#123225;
-      color:#e2f0e4;
+    #winShareBtn{
+      font-size:14px;
     }
   </style>
 </head>
@@ -390,7 +416,6 @@
       </div>
     </header>
 
-    <!-- Contract warning -->
     <div class="banner-warning" id="caBox">
       Loading contract info…
     </div>
@@ -404,7 +429,7 @@
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
 
-    <!-- HOME TAB -->
+    <!-- HOME -->
     <section id="home" class="panel">
       <h2>Gentle Warrior — Project Goal</h2>
       <p>Gentle Warrior is inspired by the journey of a small child who faced early medical challenges with courage far bigger than his body.</p>
@@ -416,7 +441,6 @@
         <li>Support children with similar conditions.</li>
       </ol>
 
-      <!-- ROADMAP IMAGE -->
       <div id="roadmap" style="margin-top:24px; text-align:center;">
         <h2 style="margin-bottom:12px;">Roadmap</h2>
         <a href="roadmap.png" target="_blank">
@@ -429,15 +453,13 @@
         </p>
       </div>
 
-      <!-- CTA will be loaded here from cta.html -->
       <div id="home-cta"></div>
     </section>
 
-    <!-- SYMBOLS TAB -->
+    <!-- SYMBOLS -->
     <section id="symbols" class="panel" style="display:none">
       <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
       <div class="grid">
-
         <div class="symbol-card"
              data-name="Aurelion"
              data-lore="Light, leadership. A gentle sun that leads without burning.">
@@ -485,14 +507,12 @@
           <div class="symbol-name">Zeratheon</div>
           <div class="symbol-desc">Strength, swift justice</div>
         </div>
-
       </div>
 
-      <!-- CTA also shown under symbols -->
       <div id="symbols-cta" style="margin-top:18px;"></div>
     </section>
 
-    <!-- GAME TAB -->
+    <!-- GAME -->
     <section id="game" class="panel" style="display:none">
       <h2 style="text-align:center;margin-top:0">Memory Game — Weekly Challenge</h2>
       <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
@@ -514,43 +534,35 @@
       </div>
 
       <div id="stats">Time: 00:00 • Moves: 0</div>
+      <div id="stageInfo">Stage 1 of 7</div>
 
       <div id="gameBoard"></div>
 
-      <!-- MY BEST RUN -->
-      <div id="myBestRun" style="
-        text-align:center;
-        margin-top:10px;
-        margin-bottom:6px;
-        font-size:13px;
-        color:var(--muted);
-      ">
+      <div id="myBestRun" style="text-align:center;margin-top:10px;margin-bottom:6px;font-size:13px;color:var(--muted);">
         Loading your best run…
       </div>
 
       <div class="leaderboard-box">
-        <div style="display:flex;justify-content:space-between;">
-          <strong>Weekly Leaderboard</strong>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+          <strong>Weekly Leaderboard (Top 10)</strong>
           <span style="color:var(--muted);font-size:12px;">Season resets automatically every Monday (UTC).</span>
         </div>
         <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
       </div>
     </section>
 
-    <!-- CHART TAB -->
+    <!-- CHART -->
     <section id="chart" class="panel" style="display:none">
       <h2 style="text-align:center;margin-top:0;">Live Token Chart</h2>
       <p style="text-align:center;font-size:14px;color:var(--muted);">
         Once the token is live, the official chart will appear here. Always verify the contract address in the green box above.
       </p>
       <div id="chartContent" style="margin-top:12px;">
-        <p style="text-align:center;font-size:13px;color:var(--muted);">
-          Loading chart…
-        </p>
+        <p style="text-align:center;font-size:13px;color:var(--muted);">Loading chart…</p>
       </div>
     </section>
 
-    <!-- ANNOUNCEMENTS TAB -->
+    <!-- ANNOUNCEMENTS -->
     <section id="announcements" class="panel" style="display:none">
       <h2>Announcements</h2>
       <div id="announcementsContent">
@@ -564,7 +576,7 @@
     </footer>
   </div>
 
-  <!-- SYMBOL MODAL -->
+  <!-- Symbol modal -->
   <div id="symbolModal" class="symbol-modal">
     <div class="symbol-modal-inner">
       <img id="symbolModalImg" src="" alt="">
@@ -574,24 +586,21 @@
     </div>
   </div>
 
-  <!-- CONFETTI CANVAS + WIN OVERLAY -->
-  <canvas id="confettiCanvas"></canvas>
-  <div id="winOverlay" class="win-overlay">
-    <div class="win-card glow-pulse" id="winCard">
-      <h3 id="winTitle">Victory!</h3>
-      <p id="winStats">Time: 00:00 • Moves: 0</p>
-      <p id="winRank">Updating rank…</p>
-      <div id="winBadge" class="win-badge">Weekly Challenger</div>
-      <div class="win-actions">
-        <button id="winShareBtn" class="win-share">Share</button>
-        <button id="winCloseBtn" class="win-close">Close</button>
+  <!-- Simple win overlay -->
+  <div id="winOverlay">
+    <div id="winCard">
+      <h3 id="winTitle">Run complete</h3>
+      <p id="winStats"></p>
+      <p id="winRank"></p>
+      <div id="winActions">
+        <button id="winShareBtn" class="btn">Share on X</button>
+        <button id="winCloseBtn" class="btn btn-secondary">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- MAIN SCRIPT -->
   <script>
-    // ---- Tabs
+    /* ---- Tabs ---- */
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -605,7 +614,21 @@
       });
     });
 
-    // ---- Load CTA from cta.html into Home + Symbols
+    function openTabFromHash(){
+      const hash = (window.location.hash || '').toLowerCase();
+      if(hash === '#play' || hash === '#game'){
+        const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
+        if(gameTabBtn) gameTabBtn.click();
+        const gameSection = document.getElementById('game');
+        if(gameSection){
+          setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
+        }
+      }
+    }
+    window.addEventListener('load', openTabFromHash);
+    window.addEventListener('hashchange', openTabFromHash);
+
+    /* ---- CTA + socials + content loaders ---- */
     function wireCtaButtons(){
       document.querySelectorAll('.cta-play-btn').forEach(btn=>{
         btn.addEventListener('click',()=>{
@@ -615,13 +638,9 @@
           if(gameSection){
             setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
           }
-          if(window.gtag){
-            gtag('event','play_cta_click',{location:'cta'});
-          }
         });
       });
     }
-
     function loadCTA(){
       fetch('cta.html')
         .then(r=>r.text())
@@ -672,48 +691,41 @@
     }
     loadSocials();
 
-    // ---- Symbol modal
+    /* ---- Symbol modal ---- */
     const modal = document.getElementById('symbolModal');
     const modalImg = document.getElementById('symbolModalImg');
     const modalName = document.getElementById('symbolModalName');
     const modalLore = document.getElementById('symbolModalLore');
     const modalClose = document.getElementById('symbolModalClose');
 
-    function openSymbolModal(card){
-      const name = card.dataset.name || '';
-      const lore = card.dataset.lore || '';
-      const imgEl = card.querySelector('img');
-      const src = imgEl ? imgEl.src : '';
-      modalName.textContent = name;
-      modalLore.textContent = lore;
-      modalImg.src = src;
-      modalImg.alt = name;
-      modal.classList.add('active');
-    }
-    function closeSymbolModal(){
-      modal.classList.remove('active');
-    }
     document.querySelectorAll('.symbol-card').forEach(card=>{
-      card.addEventListener('click',()=>openSymbolModal(card));
+      card.addEventListener('click',()=>{
+        const img = card.querySelector('img');
+        modalImg.src = img.src;
+        modalImg.alt = img.alt;
+        modalName.textContent = card.dataset.name || img.alt || '';
+        modalLore.textContent = card.dataset.lore || '';
+        modal.classList.add('active');
+      });
     });
-    modalClose.addEventListener('click',closeSymbolModal);
+    modalClose.addEventListener('click',()=>modal.classList.remove('active'));
     modal.addEventListener('click',e=>{
-      if(e.target === modal){ closeSymbolModal(); }
+      if(e.target === modal) modal.classList.remove('active');
     });
 
-    // ---- Contract address loader (ca.html)
+    /* ---- Contract box ---- */
     fetch('ca.html')
       .then(r=>r.text())
-      .then(t=>{
-        document.getElementById('caBox').innerHTML =
-          (t && t.trim()) || 'The official contract address will be posted here, on X, and on Telegram only.';
+      .then(html=>{
+        const box = document.getElementById('caBox');
+        if(box) box.innerHTML = html;
       })
       .catch(()=>{
-        document.getElementById('caBox').textContent =
-          'The official contract address will be posted here, on X, and on Telegram only.';
+        const box = document.getElementById('caBox');
+        if(box) box.textContent = 'Unable to load contract info right now.';
       });
 
-    // ---- Player name
+    /* ---- Player name ---- */
     const nameInput = document.getElementById('gw-player-name');
     nameInput.value = localStorage.getItem('gw_player_name') || 'Warrior';
     document.getElementById('gw-save-name').addEventListener('click',()=>{
@@ -722,19 +734,18 @@
       alert('Name saved: ' + val);
     });
 
-    // ---- Countdown to next Monday 00:00 UTC
+    /* ---- Countdown to next Monday ---- */
     function getNextMondayUTC(){
       const now = new Date();
       const day = now.getUTCDay();
       let diff = (1 - day + 7) % 7;
       if(diff === 0) diff = 7;
-      const target = new Date(Date.UTC(
+      return new Date(Date.UTC(
         now.getUTCFullYear(),
         now.getUTCMonth(),
         now.getUTCDate() + diff,
         0,0,0
       ));
-      return target;
     }
     const nextMonday = getNextMondayUTC();
     function updateCountdown(){
@@ -754,153 +765,69 @@
     updateCountdown();
     setInterval(updateCountdown,1000);
 
-    // ---- Confetti engine (simple)
-    const confettiCanvas = document.getElementById('confettiCanvas');
-    const ctx = confettiCanvas.getContext('2d');
-    let confettiPieces = [];
-    let confettiRunning = false;
-
-    function resizeConfetti(){
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeConfetti);
-    resizeConfetti();
-
-    function startConfetti(){
-      confettiPieces = [];
-      for(let i=0;i<120;i++){
-        confettiPieces.push({
-          x: Math.random()*confettiCanvas.width,
-          y: Math.random()*confettiCanvas.height - confettiCanvas.height,
-          r: 4+Math.random()*4,
-          d: 1+Math.random()*2,
-          color: `hsl(${80+Math.random()*40},70%,60%)`
-        });
-      }
-      confettiRunning = true;
-      requestAnimationFrame(confettiLoop);
-      setTimeout(()=>{confettiRunning=false; ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);},2500);
-    }
-
-    function confettiLoop(){
-      if(!confettiRunning) return;
-      ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-      confettiPieces.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2,false);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-        p.y += p.d*3;
-        p.x += Math.sin(p.y/20);
-        if(p.y>confettiCanvas.height){
-          p.y = -10;
-          p.x = Math.random()*confettiCanvas.width;
-        }
-      });
-      requestAnimationFrame(confettiLoop);
-    }
-
-    // ---- Win overlay helpers
+    /* ---- Win overlay ---- */
     const winOverlay = document.getElementById('winOverlay');
+    const winTitleEl = document.getElementById('winTitle');
     const winStatsEl = document.getElementById('winStats');
-    const winRankEl = document.getElementById('winRank');
-    const winBadgeEl = document.getElementById('winBadge');
+    const winRankEl  = document.getElementById('winRank');
     const winShareBtn = document.getElementById('winShareBtn');
     const winCloseBtn = document.getElementById('winCloseBtn');
-    const winTitleEl = document.getElementById('winTitle');
 
-    function showWinOverlay(statsText){
-      winStatsEl.textContent = statsText;
-      winTitleEl.textContent = 'You cleared the Trial!';
-      winBadgeEl.textContent = 'Weekly Challenger';
-      winOverlay.classList.add('active');
-      startConfetti();
-      updateWinRankPreview();
-    }
+    winCloseBtn.addEventListener('click',()=>winOverlay.classList.remove('active'));
 
-    function hideWinOverlay(){
-      winOverlay.classList.remove('active');
-    }
-
-    function updateWinRankPreview(){
-      const name = localStorage.getItem('gw_player_name') || 'Warrior';
-      const rows = document.querySelectorAll('#leaderboard .leader-row');
-      let rank = null;
-      rows.forEach((row,idx)=>{
-        if(row.textContent.includes(name)){
-          rank = idx+1;
-        }
-      });
-      if(rank){
-        winRankEl.textContent = `Current weekly rank: #${rank}`;
-        if(rank === 1){
-          winBadgeEl.textContent = 'Top of the Board';
-        }else if(rank <= 3){
-          winBadgeEl.textContent = 'Top 3 Warrior';
-        }
-      }else{
-        winRankEl.textContent = 'Your run is recorded for this week.';
-      }
-    }
-
-    winCloseBtn.addEventListener('click', hideWinOverlay);
-    winOverlay.addEventListener('click', (e)=>{
-      if(e.target === winOverlay) hideWinOverlay();
-    });
-
-    // X share
-    winShareBtn.addEventListener('click', () => {
-
-      const stats = winStatsEl.textContent || '';
-      const rankText = winRankEl.textContent || '';
-      const badge = winBadgeEl.textContent || '';
-
-      let emoji = "🛡️";
-      if (badge.includes("Top 3")) emoji = "🏆🔥";
-      else if (badge.includes("Top")) emoji = "🥇";
-      else if (badge.includes("Challenger")) emoji = "⚔️";
-
-      let rankTag = "";
-      if (rankText.includes("#1")) rankTag = "👑 TOP 1";
-      else if (rankText.includes("#2") || rankText.includes("#3")) rankTag = "🏆 TOP 3";
-      else if (rankText.includes("#")) rankTag = "🔥 TOP 10";
-
-      const tweet = `
-⚔️ I cleared the Gentle Warrior Memory Trial!
-
-${stats}
-${rankTag} ${badge}
-
-Play it here 👇
-https://officialgentlewarrior.github.io/gentlewarrior-universe/
-
-#GWAR #GentleWarrior #Web3Gaming #CryptoGame
-`;
-
-      const xUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(tweet.trim());
-
-      window.open(xUrl, "_blank", "noopener,noreferrer");
-    });
-
-    function showLowRunNotice(){
-      winTitleEl.textContent = 'Run not counted';
-      winStatsEl.textContent = 'Runs below 6 moves are not counted for the leaderboard.';
-      winRankEl.textContent = 'Try again with a full clear.';
-      winBadgeEl.textContent = 'Warm-up Attempt';
+    function showWinOverlay(text){
+      winStatsEl.textContent = text;
       winOverlay.classList.add('active');
     }
 
-    // ---- Memory Game
+    /* ---- Multi-stage game ---- */
     const gameBoard = document.getElementById('gameBoard');
+    const statsEl = document.getElementById('stats');
+    const stageInfoEl = document.getElementById('stageInfo');
+
+    const ALL_CARD_IMAGES = [
+      'coin.png',
+      'shield.png',
+      'sword.png',
+      'symbol-aurelion.png',
+      'symbol-gaialune.png',
+      'symbol-ignara.png',
+      'symbol-solyndra.png',
+      'symbol-umbrath.png',
+      'symbol-zeratheon.png'
+    ];
+
+    const STAGES = [
+      { stage:1, pairs:3, cols:3, rows:2,              moveLimit:14, mistakeLimit:4 },
+      { stage:2, pairs:4, cols:4, rows:2,              moveLimit:16, mistakeLimit:4 },
+      { stage:3, pairs:5, cols:5, rows:2,              moveLimit:18, mistakeLimit:3 },
+      { stage:4, pairs:6, cols:4, rows:3,              moveLimit:20, mistakeLimit:3 },
+      { stage:5, pairs:7, cols:4, rows:4, gapSlots:[5,10], moveLimit:22, mistakeLimit:2 },
+      { stage:6, pairs:8, cols:4, rows:4,              moveLimit:24, mistakeLimit:1 },
+      { stage:7, pairs:9, cols:5, rows:4, gapSlots:[7,12], moveLimit:26, mistakeLimit:1 }
+    ];
+
+    let currentStageIndex = 0;
     let deck = [];
     let firstCard = null;
     let lock = false;
     let moves = 0;
-    let matches = 0;
     let seconds = 0;
     let timer = null;
     let started = false;
+    let stageMatches = 0;
+    let highestStageCleared = 0;
+
+    // per-stage difficulty tracking
+    let stageMoves = 0;
+    let stageMistakes = 0;
+
+    // Last run stats for sharing
+    let lastRunStage = 0;
+    let lastRunMoves = 0;
+    let lastRunSeconds = 0;
+
+    function getCurrentStageConfig(){ return STAGES[currentStageIndex]; }
 
     function formatTime(s){
       const m = String(Math.floor(s/60)).padStart(2,'0');
@@ -908,161 +835,284 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
       return `${m}:${ss}`;
     }
     function updateStats(){
-      document.getElementById('stats').textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+      statsEl.textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
     }
+    function updateStageInfo(){
+      const cfg = getCurrentStageConfig();
+      stageInfoEl.textContent = `Stage ${cfg.stage} of ${STAGES.length}`;
+    }
+    function tickTimer(){ seconds++; updateStats(); }
+    function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(tickTimer,1000); }
+    function stopTimer(){ if(timer) clearInterval(timer); timer=null; }
 
-    function shuffle(a){
-      for(let i=a.length-1;i>0;i--){
+    function buildStageDeck(){
+      const cfg = getCurrentStageConfig();
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
+
+      gameBoard.style.gridTemplateColumns = `repeat(${cfg.cols},1fr)`;
+      const imagesForStage = ALL_CARD_IMAGES.slice(0, cfg.pairs);
+      let cards = imagesForStage.concat(imagesForStage);
+
+      for(let i=cards.length-1;i>0;i--){
         const j = Math.floor(Math.random()*(i+1));
-        [a[i],a[j]] = [a[j],a[i]];
+        [cards[i],cards[j]] = [cards[j],cards[i]];
       }
-      return a;
-    }
 
-    function buildDeck(){
-      const files = [
-        'symbol-aurelion.png',
-        'symbol-gaialune.png',
-        'symbol-ignara.png',
-        'symbol-solyndra.png',
-        'symbol-umbrath.png',
-        'symbol-zeratheon.png'
-      ];
-      deck = [];
-      files.forEach(f=>{
-        deck.push({file:f,id:Math.random()});
-        deck.push({file:f,id:Math.random()});
-      });
-      shuffle(deck);
+      const totalSlots = cfg.cols * cfg.rows;
+      const gapSlots = cfg.gapSlots || [];
+      const expectedCards = totalSlots - gapSlots.length;
+
+      if(cards.length !== expectedCards){
+        console.warn("Stage config mismatch", cfg, cards.length, expectedCards);
+      }
+
+      if(gapSlots.length){
+        const slots = new Array(totalSlots).fill(null);
+        let index = 0;
+        for(let i=0;i<totalSlots;i++){
+          if(gapSlots.includes(i)) continue;
+          slots[i] = cards[index++];
+        }
+        deck = slots;
+      }else{
+        deck = cards;
+      }
     }
 
     function renderBoard(){
       gameBoard.innerHTML = '';
-      deck.forEach(card=>{
-        const wrap = document.createElement('div');
-        wrap.className = 'card';
-        wrap.dataset.id = card.id;
-        wrap.innerHTML = `
-          <div class="card-inner">
-            <div class="card-front"></div>
-            <div class="card-back"><img src="${card.file}" alt=""></div>
-          </div>`;
-        wrap.addEventListener('click',()=>handleCard(wrap));
-        gameBoard.appendChild(wrap);
+      deck.forEach((src,idx)=>{
+        if(src===null){
+          const gap = document.createElement('div');
+          gap.className = 'disabled-slot';
+          gameBoard.appendChild(gap);
+          return;
+        }
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.index = idx;
+        card.innerHTML = `
+          <div class="card-face card-front"></div>
+          <div class="card-face card-back"><img src="${src}" alt=""></div>`;
+        card.addEventListener('click',()=>onCardClick(card));
+        gameBoard.appendChild(card);
       });
     }
 
-    function startTimer(){
-      if(timer) return;
-      timer = setInterval(()=>{
-        seconds++;
-        updateStats();
-      },1000);
-    }
-    function stopTimer(){
-      clearInterval(timer);
-      timer = null;
+    function failRun(reason){
+      stopTimer();
+      started = false;
+      const cfg = getCurrentStageConfig();
+      const currentStage = cfg ? cfg.stage : 0;
+      const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
+
+      // if sobrang short / walang sense, don't record
+      if(stageReached <= 0 || moves < 6){
+        winTitleEl.textContent = 'Run ended';
+        const stageLabel = currentStage ? `Stage ${currentStage}` : '';
+        const msg = stageLabel ? `${reason} • ${stageLabel}` : reason;
+        showWinOverlay(msg);
+        winRankEl.textContent = '';
+        return;
+      }
+
+      lastRunStage = stageReached;
+      lastRunMoves = moves;
+      lastRunSeconds = seconds;
+
+      winTitleEl.textContent = 'Run ended';
+      const statsText = `Stage ${stageReached} • Time: ${formatTime(seconds)} • Moves: ${moves}`;
+      showWinOverlay(`${reason} • ${statsText}`);
+
+      const currentRank = window.myCurrentRank;
+      winRankEl.textContent = currentRank ? `Current weekly rank: #${currentRank}` : '';
+
+      if(window.gwRecordRun){
+        window.gwRecordRun(moves, seconds*1000, stageReached, false).catch(()=>{});
+      }
     }
 
-    function handleCard(card){
-      if(lock || !started) return;
-      if(card === firstCard) return;
+    function onCardClick(card){
+      if(lock) return;
+      if(card.classList.contains('flip')) return;
+      if(!started){
+        started = true;
+        startTimer();
+      }
+
+      const cfg = getCurrentStageConfig();
+
       card.classList.add('flip');
       if(!firstCard){
         firstCard = card;
         return;
       }
-      lock = true;
+
+      // Every pair attempt = 1 move
       moves++;
+      stageMoves++;
       updateStats();
+
+      // Check move limit for this stage
+      if(cfg && typeof cfg.moveLimit === 'number' && stageMoves > cfg.moveLimit){
+        lock = true;
+        setTimeout(()=>{
+          failRun('Move limit reached');
+        }, 400);
+        return;
+      }
+
+      lock = true;
       const img1 = firstCard.querySelector('.card-back img').src;
       const img2 = card.querySelector('.card-back img').src;
+
       if(img1 === img2){
-        matches++;
+        stageMatches++;
         firstCard.style.pointerEvents='none';
         card.style.pointerEvents='none';
         firstCard = null;
         lock = false;
-        if(matches === 6){
-          setTimeout(onWin, 350);
+        const cfg2 = getCurrentStageConfig();
+        if(stageMatches === cfg2.pairs){
+          highestStageCleared = Math.max(highestStageCleared, cfg2.stage);
+          if(currentStageIndex === STAGES.length-1){
+            setTimeout(()=>onRunComplete(true), 350);
+          }else{
+            setTimeout(()=>{
+              currentStageIndex++;
+              buildStageDeck();
+              renderBoard();
+              updateStageInfo();
+            }, 550);
+          }
         }
       }else{
+        // wrong match = mistake
+        stageMistakes++;
+        const overMistakeLimit = (cfg && typeof cfg.mistakeLimit === 'number' && stageMistakes > cfg.mistakeLimit);
+
         setTimeout(()=>{
           firstCard.classList.remove('flip');
           card.classList.remove('flip');
           firstCard = null;
           lock = false;
+
+          if(overMistakeLimit){
+            failRun('Mistake limit reached');
+          }
         },600);
       }
     }
 
     function startGame(){
-      started = true;
+      started = false;
       moves = 0;
-      matches = 0;
       seconds = 0;
       firstCard = null;
       lock = false;
       stopTimer();
-      buildDeck();
+      currentStageIndex = 0;
+      highestStageCleared = 0;
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
+      buildStageDeck();
       renderBoard();
       updateStats();
-      startTimer();
-
-      if (window.gtag) {
-        const deviceTag  = localStorage.getItem('gw_device_tag') || 'unknown';
-        const playerName = localStorage.getItem('gw_player_name') || 'Warrior';
-        gtag('event', 'game_start', {
-          gw_device_tag: deviceTag,
-          gw_player_name: playerName
-        });
-      }
+      updateStageInfo();
     }
-
     function resetGame(){
       started = false;
       stopTimer();
       moves = 0;
-      matches = 0;
       seconds = 0;
       firstCard = null;
       lock = false;
+      currentStageIndex = 0;
+      highestStageCleared = 0;
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
       gameBoard.innerHTML = '';
       updateStats();
+      updateStageInfo();
     }
-
     document.getElementById('startBtn').addEventListener('click', startGame);
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     updateStats();
+    updateStageInfo();
 
-    function onWin(){
+    function onRunComplete(){
       stopTimer();
-      if(moves < 6){
-        showLowRunNotice();
+      started = false;
+      const cfg = getCurrentStageConfig();
+      const currentStage = cfg ? cfg.stage : 0;
+      const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
+
+      if(stageReached <= 0 || moves < 6){
+        winTitleEl.textContent = 'Run ended';
+        showWinOverlay('Short runs are not counted. Try a full attempt.');
+        winRankEl.textContent = '';
         return;
       }
-      const statsText = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+
+      lastRunStage = stageReached;
+      lastRunMoves = moves;
+      lastRunSeconds = seconds;
+
+      winTitleEl.textContent = 'Run complete';
+      const statsText = `Stage ${stageReached} • Time: ${formatTime(seconds)} • Moves: ${moves}`;
+      showWinOverlay(statsText);
+
+      const currentRank = window.myCurrentRank;
+      winRankEl.textContent = currentRank ? `Current weekly rank: #${currentRank}` : '';
+
       if(window.gwRecordRun){
-        const promise = window.gwRecordRun(moves, seconds*1000);
-        if(promise && typeof promise.then === 'function'){
-          promise.then(()=>{ updateWinRankPreview(); }).catch(()=>{});
+        window.gwRecordRun(moves, seconds*1000, stageReached, true).catch(()=>{});
+      }
+    }
+
+    function shareOnX(){
+      if(!lastRunStage){
+        alert('Play a full run first.');
+        return;
+      }
+      const rank = window.myCurrentRank;
+      const titleLine = '⚔️ I cleared the Gentle Warrior Memory Trial!';
+      const statsLine = `Stage ${lastRunStage} • Time: ${formatTime(lastRunSeconds)} • Moves: ${lastRunMoves}`;
+
+      let rankLine = '';
+      if(rank){
+        if(rank === 1){
+          rankLine = '👑 TOP 1 Weekly Challenger';
+        }else{
+          rankLine = `🏅 Weekly rank: #${rank}`;
         }
       }
-      if (window.gtag) {
-        const deviceTag  = localStorage.getItem('gw_device_tag') || 'unknown';
-        const playerName = localStorage.getItem('gw_player_name') || 'Warrior';
-        gtag('event', 'game_win', {
-          gw_device_tag: deviceTag,
-          gw_player_name: playerName,
-          moves: moves,
-          time_seconds: seconds
-        });
-      }
-      showWinOverlay(statsText);
+
+      const gameLink = 'https://officialgentlewarrior.github.io/gentlewarrior-universe/#play';
+      const ctaLine = 'Play it here 👇';
+
+      const msg = [
+        titleLine,
+        '',
+        statsLine,
+        rankLine,
+        '',
+        ctaLine,
+        gameLink
+      ].filter(Boolean).join('\n');
+
+      const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg);
+      window.location.href = tweetUrl;
     }
+
+    winShareBtn.addEventListener('click', shareOnX);
   </script>
 
-  <!-- FIREBASE + LEADERBOARD -->
+  <!-- FIREBASE + leaderboard (stage-first, TOP 10) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
@@ -1095,18 +1145,15 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
     const runsCol    = collection(db, "runs");
 
     function isoWeekId(date = new Date()){
-      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getDate()));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
       const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
       return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
     }
-
     function currentSeasonId(){
-      if (typeof window.getSeasonID === "function") {
-        try { return window.getSeasonID(); } catch(e) {}
-      }
-      return isoWeekId();
+      const base = isoWeekId();
+      return `${base}-ms1`;   // multi-stage season 1
     }
 
     function getDeviceTag(){
@@ -1129,6 +1176,8 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
           totalPoints: 0,
           currentWeekMoves: null,
           currentWeekTimeMs: null,
+          currentWeekStage: null,
+          currentWeekCompleted: false,
           currentSeasonId: currentSeasonId(),
           lastPlayedAt: serverTimestamp()
         });
@@ -1142,7 +1191,6 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
       }
     }
 
-    // Load My Best Run text
     async function loadMyBestRun() {
       const el = document.getElementById("myBestRun");
       if (!el) return;
@@ -1162,48 +1210,63 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
       }
 
       const d = snap.data();
-      if (d.currentWeekMoves == null) {
+      if (d.currentWeekStage == null) {
         el.textContent = "Play a run to record your first score.";
         return;
       }
 
       const seconds = Math.round((d.currentWeekTimeMs || 0) / 1000);
-      el.textContent = `Your best run this week: ${d.currentWeekMoves} moves • ${seconds}s`;
+      const stage   = d.currentWeekStage != null ? d.currentWeekStage : '?';
+      const cleared = !!d.currentWeekCompleted && stage === 7;
+
+      const clearedText = cleared ? " • CLEARED" : "";
+      el.textContent = `Your best run this week: Stage ${stage}${clearedText} • ${d.currentWeekMoves} moves • ${seconds}s`;
     }
 
-    async function recordRun(moves, timeMs){
+    async function recordRun(moves, timeMs, stageReached, completed){
       const deviceTag = getDeviceTag();
       const name = localStorage.getItem("gw_player_name") || "Warrior";
       const seasonId = currentSeasonId();
 
       const { pRef, data } = await ensurePlayer(deviceTag, name);
 
+      // log run
       try{
         await addDoc(runsCol, {
           deviceTag,
           playerName: name,
           moves,
           timeMs,
+          stageReached,
           seasonId,
+          completedFinal: !!completed,
           createdAt: serverTimestamp()
         });
-      } catch(e){
-        console.warn("addDoc failed", e);
-      }
+      }catch(e){}
 
       const prevSeasonId = data && data.currentSeasonId;
-      let prevMoves = data && data.currentWeekMoves != null ? data.currentWeekMoves : null;
-      let prevTime  = data && data.currentWeekTimeMs != null ? data.currentWeekTimeMs : null;
+
+      let prevMoves = data?.currentWeekMoves ?? null;
+      let prevTime  = data?.currentWeekTimeMs ?? null;
+      let prevStage = data?.currentWeekStage ?? null;
+      let prevCompleted = data?.currentWeekCompleted ?? false;
 
       if(prevSeasonId !== seasonId){
-        prevMoves = null;
-        prevTime  = null;
+        prevMoves = prevTime = prevStage = null;
+        prevCompleted = false;
       }
 
+      // STAGE-FIRST comparison:
       const isBetter =
-        prevMoves === null ||
-        moves < prevMoves ||
-        (moves === prevMoves && timeMs < prevTime);
+        prevStage === null ||
+        stageReached > prevStage ||
+        (
+          stageReached === prevStage &&
+          (
+            moves < prevMoves ||
+            (moves === prevMoves && timeMs < prevTime)
+          )
+        );
 
       if(isBetter){
         try{
@@ -1211,16 +1274,16 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
             currentSeasonId: seasonId,
             currentWeekMoves: moves,
             currentWeekTimeMs: timeMs,
+            currentWeekStage: stageReached,
+            currentWeekCompleted: !!completed,
             name,
             lastPlayedAt: serverTimestamp()
           });
-        } catch(e){
-          console.warn("updateDoc failed", e);
-        }
+        }catch(e){}
       }
 
       await renderLeaderboard();
-      await loadMyBestRun(); // refresh My Best Run after each valid run
+      await loadMyBestRun();
     }
 
     async function renderLeaderboard(){
@@ -1235,35 +1298,58 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
           playersCol,
           where("currentSeasonId", "==", seasonId)
         );
-
         const snaps = await getDocs(qRef);
         const arr = [];
         snaps.forEach(s=>{
           const d = s.data();
-          if(d.currentWeekMoves != null){
+          if(d.currentWeekStage != null){
             arr.push({
               name: d.name || "Warrior",
               moves: d.currentWeekMoves,
-              time: d.currentWeekTimeMs || 0
+              time: d.currentWeekTimeMs || 0,
+              stage: d.currentWeekStage,
+              completed: !!d.currentWeekCompleted
             });
           }
         });
 
-        arr.sort((a,b)=> a.moves - b.moves || a.time - b.time);
+        // STAGE first → then moves → then time
+        arr.sort((a,b)=>
+          b.stage - a.stage ||
+          a.moves - b.moves ||
+          a.time  - b.time
+        );
 
         if(!arr.length){
           lb.textContent = "No runs recorded for this week yet. Be the first!";
+          window.myCurrentRank = null;
           return;
         }
 
-        lb.innerHTML = arr.slice(0,10).map((p,i)=>
-          `<div class="leader-row">
+        const myName = localStorage.getItem("gw_player_name") || "Warrior";
+        window.myCurrentRank = null;
+
+        lb.innerHTML = arr.slice(0,10).map((p,i)=>{
+          if(p.name === myName && window.myCurrentRank === null){
+            window.myCurrentRank = i+1;
+          }
+          const clearedTag = (p.completed && p.stage === 7) ? ' ✅' : '';
+          return `<div class="leader-row">
              <div>#${Number(i)+1} ${p.name}</div>
-             <div>${p.moves} moves • ${Math.round(p.time/1000)}s</div>
-           </div>`
-        ).join("");
+             <div>Stage ${p.stage}${clearedTag} • ${p.moves} moves • ${Math.round(p.time/1000)}s</div>
+           </div>`;
+        }).join("");
+
+        // If the win modal is open, update rank text live
+        const overlay = document.getElementById("winOverlay");
+        const rankEl = document.getElementById("winRank");
+        if(overlay && rankEl && overlay.classList.contains("active")){
+          rankEl.textContent = window.myCurrentRank
+            ? `Current weekly rank: #${window.myCurrentRank}`
+            : '';
+        }
+
       } catch(e){
-        console.error("renderLeaderboard error", e);
         lb.textContent = "Unable to load leaderboard.";
       }
     }
@@ -1271,7 +1357,7 @@ https://officialgentlewarrior.github.io/gentlewarrior-universe/
     window.gwRecordRun = recordRun;
     window.gwRenderLeaderboard = renderLeaderboard;
     renderLeaderboard();
-    loadMyBestRun();  // load My Best Run when page loads
+    loadMyBestRun();
   </script>
 </body>
 </html>
