@@ -719,7 +719,22 @@
       .then(r=>r.text())
       .then(html=>{
         const box = document.getElementById('caBox');
-        if(box) box.innerHTML = html;
+        if(box){
+          box.innerHTML = html;
+
+          // NEW: execute any <script> tags inside ca.html
+          const scripts = box.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+            const s = document.createElement('script');
+            if (oldScript.src) {
+              s.src = oldScript.src;
+            } else {
+              s.textContent = oldScript.textContent;
+            }
+            document.head.appendChild(s);
+            oldScript.remove();
+          });
+        }
       })
       .catch(()=>{
         const box = document.getElementById('caBox');
@@ -1122,7 +1137,7 @@
     winShareBtn.addEventListener('click', shareOnX);
   </script>
 
-  <!-- FIREBASE + leaderboard (stage-first, TOP 10) -->
+  <!-- FIREBASE + leaderboard (stage-first, TOP 10 with Stage 7 clearers on top) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
@@ -1325,28 +1340,26 @@
 
         // STAGE first → then moves → then time
         // ✅ Separate Stage 7 clearers
-const cleared = arr.filter(p => p.completed && p.stage === 7);
-const others  = arr.filter(p => !(p.completed && p.stage === 7));
+        const cleared = arr.filter(p => p.completed && p.stage === 7);
+        const others  = arr.filter(p => !(p.completed && p.stage === 7));
 
-// ✅ Sort Stage 7 players: moves → time
-cleared.sort((a,b)=>
-  a.moves - b.moves ||
-  a.time  - b.time
-);
+        // ✅ Sort Stage 7 players: moves → time
+        cleared.sort((a,b)=>
+          a.moves - b.moves ||
+          a.time  - b.time
+        );
 
-// ✅ Sort others normally (stage → moves → time)
-others.sort((a,b)=>
-  b.stage - a.stage ||
-  a.moves - b.moves ||
-  a.time  - b.time
-);
+        // ✅ Sort others normally (stage → moves → time)
+        others.sort((a,b)=>
+          b.stage - a.stage ||
+          a.moves - b.moves ||
+          a.time  - b.time
+        );
 
-// ✅ Final leaderboard order:
-// TOP 3 = ONLY STAGE 7 CLEARERS
-// Everyone else follows below
-const finalLeaderboard = [...cleared, ...others];
-arr.length = 0;
-arr.push(...finalLeaderboard);
+        // ✅ Final leaderboard order
+        const finalLeaderboard = [...cleared, ...others];
+        arr.length = 0;
+        arr.push(...finalLeaderboard);
 
         if(!arr.length){
           lb.textContent = "No runs recorded for this week yet. Be the first!";
