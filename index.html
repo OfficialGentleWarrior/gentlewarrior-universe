@@ -301,26 +301,27 @@
     }
 
     /* SOCIALS (footer) */
-    #socials-container{
-  margin-top:12px;
+    /* SOCIALS (footer) — use icon images in one row */
+#socials-container{
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+}
+
+#socials-container .socials{
   display:flex;
   justify-content:center;
   align-items:center;
   gap:18px;
 }
-   #socials-container a{
-  background:transparent;
-  border:none;
-  padding:4px;
-  display:flex;
+
+#socials-container .socials a{
+  display:inline-flex;
   align-items:center;
   justify-content:center;
 }
-    #socials-container a:hover{
-      background:#0f3a23;
-      border-color:#9ae07a;
-    }
-    #socials-container img{
+
+#socials-container .socials img{
   width:26px;
   height:26px;
   display:block;
