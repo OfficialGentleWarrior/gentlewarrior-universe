@@ -300,33 +300,31 @@
       margin-top:8px;
     }
 
-    /* SOCIALS (footer) */
     /* SOCIALS (footer) — use icon images in one row */
-#socials-container{
-  margin-top:10px;
-  display:flex;
-  justify-content:center;
-}
+    #socials-container{
+      margin-top:10px;
+      display:flex;
+      justify-content:center;
+    }
 
-#socials-container .socials{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:18px;
-}
+    #socials-container .socials{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:18px;
+    }
 
-#socials-container .socials a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
+    #socials-container .socials a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-#socials-container .socials img{
-  width:26px;
-  height:26px;
-  display:block;
-}
-
+    #socials-container .socials img{
+      width:26px;
+      height:26px;
+      display:block;
+    }
 
     /* Symbol modal */
     .symbol-modal{
@@ -821,6 +819,9 @@
     let stageMatches = 0;
     let highestStageCleared = 0;
 
+    // NEW: prevent interaction after run ends
+    let runLocked = false;
+
     // per-stage difficulty tracking
     let stageMoves = 0;
     let stageMistakes = 0;
@@ -907,6 +908,8 @@
     function failRun(reason){
       stopTimer();
       started = false;
+      runLocked = true; // lock board after a failed run
+
       const cfg = getCurrentStageConfig();
       const currentStage = cfg ? cfg.stage : 0;
       const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
@@ -938,7 +941,7 @@
     }
 
     function onCardClick(card){
-      if(lock) return;
+      if(lock || runLocked) return;
       if(card.classList.contains('flip')) return;
       if(!started){
         started = true;
@@ -1015,6 +1018,7 @@
       seconds = 0;
       firstCard = null;
       lock = false;
+      runLocked = false; // new run, unlock board
       stopTimer();
       currentStageIndex = 0;
       highestStageCleared = 0;
@@ -1033,6 +1037,7 @@
       seconds = 0;
       firstCard = null;
       lock = false;
+      runLocked = false; // ensure unlocked on reset
       currentStageIndex = 0;
       highestStageCleared = 0;
       stageMatches = 0;
@@ -1050,6 +1055,8 @@
     function onRunComplete(){
       stopTimer();
       started = false;
+      runLocked = true; // lock board after a completed run
+
       const cfg = getCurrentStageConfig();
       const currentStage = cfg ? cfg.stage : 0;
       const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
