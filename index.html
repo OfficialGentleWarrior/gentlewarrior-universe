@@ -13,6 +13,17 @@
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-ZLK6PBCQ7P');
+
+    // Helper for custom events / conversions
+    function trackEvent(name, params){
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', name, params || {});
+        }
+      } catch (e) {
+        console && console.warn && console.warn('trackEvent error', e);
+      }
+    }
   </script>
 
   <style>
@@ -639,6 +650,10 @@
           if(gameSection){
             setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
           }
+          // conversion: play CTA click
+          if (typeof trackEvent === 'function') {
+            trackEvent('play_cta_click', {location: 'cta_section'});
+          }
         });
       });
     }
@@ -719,22 +734,7 @@
       .then(r=>r.text())
       .then(html=>{
         const box = document.getElementById('caBox');
-        if(box){
-          box.innerHTML = html;
-
-          // NEW: execute any <script> tags inside ca.html
-          const scripts = box.querySelectorAll('script');
-          scripts.forEach(oldScript => {
-            const s = document.createElement('script');
-            if (oldScript.src) {
-              s.src = oldScript.src;
-            } else {
-              s.textContent = oldScript.textContent;
-            }
-            document.head.appendChild(s);
-            oldScript.remove();
-          });
-        }
+        if(box) box.innerHTML = html;
       })
       .catch(()=>{
         const box = document.getElementById('caBox');
@@ -834,7 +834,7 @@
     let stageMatches = 0;
     let highestStageCleared = 0;
 
-    // NEW: prevent interaction after run ends
+    // prevent interaction after run ends
     let runLocked = false;
 
     // per-stage difficulty tracking
@@ -928,6 +928,16 @@
       const cfg = getCurrentStageConfig();
       const currentStage = cfg ? cfg.stage : 0;
       const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
+
+      // track failed run
+      if (stageReached > 0 && moves >= 6 && typeof trackEvent === 'function') {
+        trackEvent('game_fail', {
+          stage: stageReached,
+          moves: moves,
+          time_seconds: seconds,
+          reason: reason
+        });
+      }
 
       // if sobrang short / walang sense, don't record
       if(stageReached <= 0 || moves < 6){
@@ -1044,6 +1054,11 @@
       renderBoard();
       updateStats();
       updateStageInfo();
+
+      // conversion: a new game run actually starts
+      if (typeof trackEvent === 'function') {
+        trackEvent('game_start', {stage: 1});
+      }
     }
     function resetGame(){
       started = false;
@@ -1062,7 +1077,15 @@
       updateStats();
       updateStageInfo();
     }
-    document.getElementById('startBtn').addEventListener('click', startGame);
+
+    // button listeners
+    document.getElementById('startBtn').addEventListener('click', ()=>{
+      // conversion: user clicked start
+      if (typeof trackEvent === 'function') {
+        trackEvent('game_start_button', {label: 'start_button'});
+      }
+      startGame();
+    });
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     updateStats();
     updateStageInfo();
@@ -1093,6 +1116,15 @@
 
       const currentRank = window.myCurrentRank;
       winRankEl.textContent = currentRank ? `Current weekly rank: #${currentRank}` : '';
+
+      // conversion: full clear of Stage 7
+      if (stageReached === 7 && typeof trackEvent === 'function') {
+        trackEvent('game_win', {
+          stage: stageReached,
+          moves: moves,
+          time_seconds: seconds
+        });
+      }
 
       if(window.gwRecordRun){
         window.gwRecordRun(moves, seconds*1000, stageReached, true).catch(()=>{});
@@ -1137,7 +1169,7 @@
     winShareBtn.addEventListener('click', shareOnX);
   </script>
 
-  <!-- FIREBASE + leaderboard (stage-first, TOP 10 with Stage 7 clearers on top) -->
+  <!-- FIREBASE + leaderboard (stage-first, TOP 10) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
@@ -1356,7 +1388,9 @@
           a.time  - b.time
         );
 
-        // ✅ Final leaderboard order
+        // ✅ Final leaderboard order:
+        // TOP 3 = ONLY STAGE 7 CLEARERS
+        // Everyone else follows below
         const finalLeaderboard = [...cleared, ...others];
         arr.length = 0;
         arr.push(...finalLeaderboard);
