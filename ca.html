@@ -1,6 +1,15 @@
 <!-- CA BOX SNIPPET FOR GENTLE WARRIOR ($GWAR) -->
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>$GWAR – Gentle Warrior Contract</title>
 <style>
+  body{
+    margin:0;
+    padding:16px 0;
+    background:#000; /* will be invisible when embedded */
+  }
   .gw-ca-box{
     max-width:420px;
     margin:0 auto;
@@ -93,10 +102,6 @@
     color:#dcefe3;
     border:1px solid rgba(255,255,255,0.08);
   }
-  .gw-btn[disabled]{
-    opacity:.45;
-    cursor:default;
-  }
   .gw-ca-warning{
     margin-top:10px;
     font-size:11px;
@@ -114,6 +119,8 @@
     min-height:14px;
   }
 </style>
+</head>
+<body>
 
 <div class="gw-ca-box">
   <div class="gw-ca-header">
@@ -129,13 +136,34 @@
   </div>
 
   <div class="gw-ca-label">Contract address</div>
+
+  <!-- Store the CA once in data-address -->
   <div class="gw-ca-value-row">
-    <div class="gw-ca-value" id="gwCaValue">COMING SOON</div>
+    <div
+      class="gw-ca-value"
+      id="gwCaValue"
+      data-address="Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"
+    >
+      Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump
+    </div>
+
     <div class="gw-ca-actions">
-      <button class="gw-btn gw-btn-secondary" id="gwCopyBtn" disabled>
+      <!-- COPY BUTTON: inline JS so it works even when injected with innerHTML -->
+      <button
+        class="gw-btn gw-btn-secondary"
+        id="gwCopyBtn"
+        onclick="(async()=>{const addr=document.getElementById('gwCaValue').dataset.address;const status=document.getElementById('gwCopyStatus');status.textContent='';try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(addr);}else{const t=document.createElement('textarea');t.value=addr;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}status.textContent='Contract address copied.';}catch(e){status.textContent='Unable to copy. Please copy manually.';}setTimeout(()=>{status.textContent='';},2500);})()"
+      >
         📋 Copy
       </button>
-      <button class="gw-btn gw-btn-primary" id="gwBuyBtn" disabled>
+
+      <!-- BUY BUTTON -->
+      <button
+        class="gw-btn gw-btn-primary"
+        id="gwBuyBtn"
+        data-link="https://pump.fun/coin/Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"
+        onclick="const url=this.dataset.link;if(url){window.open(url,'_blank');}"
+      >
         💰 Buy
       </button>
     </div>
@@ -151,48 +179,5 @@
   </div>
 </div>
 
-<script>
-  // 🔧 EDIT THESE TWO VALUES ONLY WHEN READY
-  const CONTRACT_ADDRESS = "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"; // Paste Solana CA here at launch
-  const TRADE_LINK       = "https://pump.fun/coin/Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"; // Paste pump.fun or DEX link here
-
-  const caEl     = document.getElementById("gwCaValue");
-  const copyBtn  = document.getElementById("gwCopyBtn");
-  const buyBtn   = document.getElementById("gwBuyBtn");
-  const copyMsg  = document.getElementById("gwCopyStatus");
-
-  // Init state
-  if (CONTRACT_ADDRESS && CONTRACT_ADDRESS.length > 20) {
-    caEl.textContent = CONTRACT_ADDRESS;
-    copyBtn.disabled = false;
-  }
-
-  if (TRADE_LINK && TRADE_LINK.startsWith("http")) {
-    buyBtn.disabled = false;
-    buyBtn.addEventListener("click", () => {
-      window.open(TRADE_LINK, "_blank");
-    });
-  }
-
-  // Copy-to-clipboard
-  copyBtn.addEventListener("click", async () => {
-    if (!CONTRACT_ADDRESS) return;
-    copyMsg.textContent = "";
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(CONTRACT_ADDRESS);
-      } else {
-        const temp = document.createElement("textarea");
-        temp.value = CONTRACT_ADDRESS;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
-      }
-      copyMsg.textContent = "Contract address copied.";
-    } catch (e) {
-      copyMsg.textContent = "Unable to copy. Please copy manually.";
-    }
-    setTimeout(() => { copyMsg.textContent = ""; }, 2500);
-  });
-</script>
+</body>
+</html>
