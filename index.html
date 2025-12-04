@@ -429,6 +429,29 @@
     #winShareBtn{
       font-size:14px;
     }
+
+    /* helper text for device + Stage 7 hints */
+    .game-hint{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    /* Floating Play CTA (mobile-first) */
+    .floating-play-cta{
+      position:fixed;
+      right:12px;
+      bottom:14px;
+      z-index:50;
+      display:none;
+    }
+    .floating-play-cta button{
+      box-shadow:0 8px 18px rgba(0,0,0,0.6);
+    }
+    @media (max-width:768px){
+      .floating-play-cta{display:block;}
+    }
   </style>
 </head>
 <body>
@@ -436,7 +459,7 @@
 
     <header class="hero">
       <div class="hero-avatar">
-        <img src="hero-portrait.jpg" alt="Gentle Warrior">
+        <img src="hero-portrait.jpg" alt="Gentle Warrior" loading="lazy">
       </div>
       <div class="hero-title">
         <h1>Gentle Warrior Universe</h1>
@@ -449,20 +472,20 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="home">Home</button>
+      <button class="tab-btn" data-tab="home">Home</button>
       <button class="tab-btn" data-tab="symbols">Symbols</button>
       <button class="tab-btn" data-tab="symbolism">Symbolism</button>
       <button class="tab-btn" data-tab="awareness">Awareness</button>
       <button class="tab-btn" data-tab="families">Families</button>
       <button class="tab-btn" data-tab="caregivers">Care Team</button>
       <button class="tab-btn" data-tab="faq">FAQ</button>
-      <button class="tab-btn" data-tab="game">Game</button>
+      <button class="tab-btn active" data-tab="game">Game</button>
       <button class="tab-btn" data-tab="chart">Chart</button>
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
 
     <!-- HOME -->
-    <section id="home" class="panel">
+    <section id="home" class="panel" style="display:none">
       <h2>Gentle Warrior</h2>
       <p><strong>Soft Heart. Strong Spirit.</strong></p>
       <p>Raising awareness for children with cerebral palsy.</p>
@@ -554,6 +577,7 @@
         <a href="roadmap.png" target="_blank">
           <img src="roadmap.png"
                alt="Gentle Warrior Roadmap"
+               loading="lazy"
                style="max-width:100%; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.45);">
         </a>
         <p style="margin-top:8px;font-size:14px;color:var(--muted);">
@@ -576,7 +600,7 @@
         <div class="symbol-card"
              data-name="Aurelion"
              data-lore="Light and leadership — a gentle sun that guides without burning.">
-          <img src="symbol-aurelion.png" alt="Aurelion">
+          <img src="symbol-aurelion.png" alt="Aurelion" loading="lazy">
           <div class="symbol-name">Aurelion</div>
           <div class="symbol-desc">Light, leadership</div>
         </div>
@@ -584,7 +608,7 @@
         <div class="symbol-card"
              data-name="Gaialune"
              data-lore="Nature and healing — roots that hold, leaves that shelter.">
-          <img src="symbol-gaialune.png" alt="Gaialune">
+          <img src="symbol-gaialune.png" alt="Gaialune" loading="lazy">
           <div class="symbol-name">Gaialune</div>
           <div class="symbol-desc">Nature, healing</div>
         </div>
@@ -592,7 +616,7 @@
         <div class="symbol-card"
              data-name="Ignara"
              data-lore="Passion and will — a heart-fire that chooses courage over rage.">
-          <img src="symbol-ignara.png" alt="Ignara">
+          <img src="symbol-ignara.png" alt="Ignara" loading="lazy">
           <div class="symbol-name">Ignara</div>
           <div class="symbol-desc">Passion, will</div>
         </div>
@@ -600,7 +624,7 @@
         <div class="symbol-card"
              data-name="Solyndra"
              data-lore="Guidance and hope — quiet starlight that shows the way home.">
-          <img src="symbol-solyndra.png" alt="Solyndra">
+          <img src="symbol-solyndra.png" alt="Solyndra" loading="lazy">
           <div class="symbol-name">Solyndra</div>
           <div class="symbol-desc">Guidance, hope</div>
         </div>
@@ -608,7 +632,7 @@
         <div class="symbol-card"
              data-name="Umbrath"
              data-lore="Mystery and protection — a crescent shadow that watches over the weak.">
-          <img src="symbol-umbrath.png" alt="Umbrath">
+          <img src="symbol-umbrath.png" alt="Umbrath" loading="lazy">
           <div class="symbol-name">Umbrath</div>
           <div class="symbol-desc">Mystery, protection</div>
         </div>
@@ -616,7 +640,7 @@
         <div class="symbol-card"
              data-name="Zeratheon"
              data-lore="Strength and swift justice — thunder that answers when lines are crossed.">
-          <img src="symbol-zeratheon.png" alt="Zeratheon">
+          <img src="symbol-zeratheon.png" alt="Zeratheon" loading="lazy">
           <div class="symbol-name">Zeratheon</div>
           <div class="symbol-desc">Strength, justice</div>
         </div>
@@ -625,7 +649,7 @@
       <div id="symbols-cta" style="margin-top:18px;"></div>
     </section>
 
-    <!-- SYMBOLISM (CP-FOCUSED, NOW GRID LIKE SYMBOLS) -->
+    <!-- SYMBOLISM -->
     <section id="symbolism" class="panel" style="display:none">
       <h2 style="text-align:center;margin-top:0;">Symbolism</h2>
       <p style="text-align:center;margin-bottom:14px;">
@@ -637,7 +661,7 @@
         <div class="symbol-card"
              data-name="Gentle"
              data-lore="Gentle represents sensitivity, patience, and emotional strength. Being gentle does not mean being weak — it reflects awareness, care, and courage without force.">
-          <img src="symbol-gentle.png" alt="Gentle">
+          <img src="symbol-gentle.png" alt="Gentle" loading="lazy">
           <div class="symbol-name">Gentle</div>
           <div class="symbol-desc">Softness, patience, empathy</div>
         </div>
@@ -645,7 +669,7 @@
         <div class="symbol-card"
              data-name="Warrior"
              data-lore="Warrior represents resilience. Not battle or aggression, but endurance — the kind of strength that shows up every day, especially when life is difficult.">
-          <img src="symbol-warrior.png" alt="Warrior">
+          <img src="symbol-warrior.png" alt="Warrior" loading="lazy">
           <div class="symbol-name">Warrior</div>
           <div class="symbol-desc">Resilience, endurance</div>
         </div>
@@ -653,7 +677,7 @@
         <div class="symbol-card"
              data-name="Gentle Warrior"
              data-lore="Gentle Warrior brings both together: gentle in body, strong in spirit. It is the heart of the project — quiet strength wrapped in care.">
-          <img src="symbol-gentlewarrior.png" alt="Gentle Warrior">
+          <img src="symbol-gentlewarrior.png" alt="Gentle Warrior" loading="lazy">
           <div class="symbol-name">Gentle Warrior</div>
           <div class="symbol-desc">Soft heart, strong spirit</div>
         </div>
@@ -661,7 +685,7 @@
         <div class="symbol-card"
              data-name="Emerald"
              data-lore="Emerald represents healing, life, growth, and hope. It is also connected to cerebral palsy awareness — a reminder that even within limits, there is life and possibility.">
-          <img src="symbol-emerald.png" alt="Emerald">
+          <img src="symbol-emerald.png" alt="Emerald" loading="lazy">
           <div class="symbol-name">Emerald Color</div>
           <div class="symbol-desc">Healing, growth, hope</div>
         </div>
@@ -669,7 +693,7 @@
         <div class="symbol-card"
              data-name="Shield"
              data-lore="The Shield represents protection through love — parents, caregivers, therapists, teachers, doctors, family, and community who stand between a child and a hard world.">
-          <img src="symbol-shield-heart.png" alt="Shield">
+          <img src="symbol-shield-heart.png" alt="Shield" loading="lazy">
           <div class="symbol-name">Shield</div>
           <div class="symbol-desc">Protection, support system</div>
         </div>
@@ -677,7 +701,7 @@
         <div class="symbol-card"
              data-name="Heart Emblem"
              data-lore="The Heart Emblem represents emotional strength. Before labels, diagnosis, or comparison — there is love. That love matters as much as any treatment plan.">
-          <img src="symbol-heart.png" alt="Heart Emblem">
+          <img src="symbol-heart.png" alt="Heart Emblem" loading="lazy">
           <div class="symbol-name">Heart Emblem</div>
           <div class="symbol-desc">Love, emotional strength</div>
         </div>
@@ -685,7 +709,7 @@
         <div class="symbol-card"
              data-name="Cape"
              data-lore="The Cape represents dignity and visibility. It is not worn for power; it is worn to be seen. It reminds children with CP that they are not meant to be hidden — they deserve to stand in the light.">
-          <img src="symbol-cape.png" alt="Cape">
+          <img src="symbol-cape.png" alt="Cape" loading="lazy">
           <div class="symbol-name">Cape</div>
           <div class="symbol-desc">Dignity, visibility</div>
         </div>
@@ -693,7 +717,7 @@
         <div class="symbol-card"
              data-name="Sword"
              data-lore="The Sword represents effort. Not violence, not harm — but inner strength. It symbolizes the daily fight to move, balance, speak, and grow, even when those actions take extra energy.">
-          <img src="sword.png" alt="Sword">
+          <img src="sword.png" alt="Sword" loading="lazy">
           <div class="symbol-name">Sword</div>
           <div class="symbol-desc">Effort, inner fight</div>
         </div>
@@ -701,7 +725,7 @@
         <div class="symbol-card"
              data-name="Memory Game"
              data-lore="The Memory Game represents patience, focus, growth through repetition, and quiet victories. Development does not need to be loud to be powerful — every matched card is effort, every completed level is courage.">
-          <img src="symbol-memory.png" alt="Memory Game">
+          <img src="symbol-memory.png" alt="Memory Game" loading="lazy">
           <div class="symbol-name">Memory Game</div>
           <div class="symbol-desc">Patience, focus, small wins</div>
         </div>
@@ -709,7 +733,7 @@
         <div class="symbol-card"
              data-name="Chibi Character"
              data-lore="The chibi Gentle Warrior reflects innocence, vulnerability, and hope. It keeps the attention on the child — not just the condition — and reminds us that childhood itself is worth protecting.">
-          <img src="chibi-warrior.png" alt="Chibi Gentle Warrior">
+          <img src="chibi-warrior.png" alt="Chibi Gentle Warrior" loading="lazy">
           <div class="symbol-name">Chibi Gentle Warrior</div>
           <div class="symbol-desc">Innocence, hope, childhood</div>
         </div>
@@ -1132,11 +1156,19 @@
     </section>
 
     <!-- GAME -->
-    <section id="game" class="panel" style="display:none">
+    <section id="game" class="panel">
       <h2 style="text-align:center;margin-top:0">Memory Game — Weekly Challenge</h2>
       <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
         Loading season timer…
       </div>
+
+      <!-- helper hints -->
+      <p id="deviceNote" class="game-hint">
+        Best experienced on mobile — just tap Start to play.
+      </p>
+      <p class="game-hint">
+        Clear <strong>Stage 7</strong> to fully complete this week's Gentle Warrior Memory Trial.
+      </p>
 
       <div id="controls">
         <input id="gw-player-name" placeholder="Your public name">
@@ -1159,6 +1191,9 @@
 
       <div id="myBestRun" style="text-align:center;margin-top:10px;margin-bottom:6px;font-size:13px;color:var(--muted);">
         Loading your best run…
+      </div>
+      <div id="sessionHook" style="text-align:center;margin-bottom:10px;font-size:12px;color:var(--muted);">
+        Keep playing to beat your best run this week.
       </div>
 
       <div class="leaderboard-box">
@@ -1218,6 +1253,11 @@
     </div>
   </div>
 
+  <!-- Floating Play CTA -->
+  <div class="floating-play-cta">
+    <button id="floatingPlayBtn" class="btn">Play Memory Game</button>
+  </div>
+
   <script>
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(btn=>{
@@ -1274,6 +1314,22 @@
         .catch(err=>console.warn('CTA load failed', err));
     }
     loadCTA();
+
+    // Floating play CTA
+    const floatingPlayBtn = document.getElementById('floatingPlayBtn');
+    if(floatingPlayBtn){
+      floatingPlayBtn.addEventListener('click', ()=>{
+        const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
+        if(gameTabBtn) gameTabBtn.click();
+        const gameSection = document.getElementById('game');
+        if(gameSection){
+          setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
+        }
+        if (typeof trackEvent === 'function') {
+          trackEvent('play_cta_click', {location: 'floating_cta'});
+        }
+      });
+    }
 
     fetch('announcements.html')
       .then(r => r.text())
@@ -1676,6 +1732,16 @@
     updateStats();
     updateStageInfo();
 
+    // device-based helper text (mobile vs desktop)
+    const deviceNoteEl = document.getElementById('deviceNote');
+    if(deviceNoteEl){
+      if(window.innerWidth < 768){
+        deviceNoteEl.textContent = 'Best experienced on your phone — tap Start to play.';
+      } else {
+        deviceNoteEl.textContent = 'Works on desktop and mobile — most warriors play on their phones.';
+      }
+    }
+
     function onRunComplete(){
       stopTimer();
       started = false;
@@ -1697,7 +1763,7 @@
       lastRunSeconds = seconds;
 
       winTitleEl.textContent = 'Run complete';
-      const statsText = `Stage ${stageReached} • Time: ${formatTime(seconds)} • Moves: ${moves}`;
+      const statsText = `Stage ${stageReached} • Time: ${formatTime(lastRunSeconds)} • Moves: ${lastRunMoves}`;
       showWinOverlay(statsText);
 
       const currentRank = window.myCurrentRank;
@@ -1706,13 +1772,13 @@
       if (stageReached === 7 && typeof trackEvent === 'function') {
         trackEvent('game_win', {
           stage: stageReached,
-          moves: moves,
-          time_seconds: seconds
+          moves: lastRunMoves,
+          time_seconds: lastRunSeconds
         });
       }
 
       if(window.gwRecordRun){
-        window.gwRecordRun(moves, seconds*1000, stageReached, true).catch(()=>{});
+        window.gwRecordRun(lastRunMoves, lastRunSeconds*1000, stageReached, true).catch(()=>{});
       }
     }
 
@@ -1834,11 +1900,15 @@
 
     async function loadMyBestRun() {
       const el = document.getElementById("myBestRun");
+      const hookEl = document.getElementById("sessionHook");
       if (!el) return;
 
       const deviceTag = localStorage.getItem("gw_device_tag");
       if (!deviceTag) {
         el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Start a full run and see how far you can go this week.";
+        }
         return;
       }
 
@@ -1847,12 +1917,18 @@
 
       if (!snap.exists()) {
         el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Start a full run and see how far you can go this week.";
+        }
         return;
       }
 
       const d = snap.data();
       if (d.currentWeekStage == null) {
         el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Your first full attempt this week could place you on the leaderboard.";
+        }
         return;
       }
 
@@ -1862,6 +1938,14 @@
 
       const clearedText = cleared ? " • CLEARED" : "";
       el.textContent = `Your best run this week: Stage ${stage}${clearedText} • ${d.currentWeekMoves} moves • ${seconds}s`;
+
+      if(hookEl){
+        if(cleared){
+          hookEl.textContent = "You’ve cleared Stage 7 this week. Can you defend your rank or improve your time?";
+        } else {
+          hookEl.textContent = "Can you reach a higher stage or beat this time in your next run?";
+        }
+      }
     }
 
     async function recordRun(moves, timeMs, stageReached, completed){
