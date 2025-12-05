@@ -453,7 +453,7 @@
       .floating-play-cta{display:block;}
     }
 
-    /* ========= CHESS CORNER ========= */
+    /* ========= CHESS / GAME CORNER ========= */
     .chess-corner {
       margin-top: 1.5rem;
       padding: 1rem 1.2rem;
@@ -1178,7 +1178,11 @@
 
     <!-- GAME -->
     <section id="game" class="panel">
-      <h2 style="text-align:center;margin-top:0">Memory Game — Weekly Challenge</h2>
+      <h2 style="text-align:center;margin-top:0">
+        <a href="#play" style="color:#9ae07a;text-decoration:none;">
+          🧠 Memory Game — Weekly Challenge
+        </a>
+      </h2>
       <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
         Loading season timer…
       </div>
@@ -1226,12 +1230,16 @@
       </div>
 
       <!-- ======================= -->
-      <!-- ✅ CHESS CORNER (NEW)  -->
+      <!-- ♟ CHESS CORNER -->
       <!-- ======================= -->
       <hr style="margin:2rem 0; opacity:0.35;">
 
       <div class="chess-corner">
-        <h3>♟ Gentle Warrior Chess Corner</h3>
+        <h3>
+          <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">
+            ♟ Gentle Warrior Chess Corner
+          </a>
+        </h3>
         <p>
           Want a calm strategy game? Train patience, focus, and quiet strength through chess.
         </p>
@@ -1242,6 +1250,30 @@
 
         <p class="chess-note">
           We link to a trusted free chess platform while we build our own Gentle Warrior Chess mode.
+        </p>
+      </div>
+
+      <!-- ======================= -->
+      <!-- 🛡 HEART DEFENDER -->
+      <!-- ======================= -->
+      <hr style="margin:2rem 0; opacity:0.35;">
+
+      <div class="chess-corner">
+        <h3>
+          <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">
+            🛡 Heart Defender
+          </a>
+        </h3>
+        <p>
+          Protect the emerald heart. Every block is a small act of care.
+        </p>
+
+        <a href="heart-defender.html" class="btn">
+          Play Heart Defender
+        </a>
+
+        <p class="chess-note">
+          Built inside the Gentle Warrior universe.
         </p>
       </div>
     </section>
@@ -2104,34 +2136,41 @@
         const myName = localStorage.getItem("gw_player_name") || "Warrior";
         window.myCurrentRank = null;
 
-        lb.innerHTML = arr.slice(0,10).map((p,i)=>{
-          if(p.name === myName && window.myCurrentRank === null){
-            window.myCurrentRank = i+1;
-          }
-          const clearedTag = (p.completed && p.stage === 7) ? ' ✅' : '';
-          return `<div class="leader-row">
-             <div>#${Number(i)+1} ${p.name}</div>
-             <div>Stage ${p.stage}${clearedTag} • ${p.moves} moves • ${Math.round(p.time/1000)}s</div>
-           </div>`;
-        }).join("");
+        const lines = [];
+        finalLeaderboard.slice(0,10).forEach((p,idx)=>{
+          const rank = idx+1;
+          const seconds = Math.round((p.time || 0)/1000);
+          const label = p.completed && p.stage === 7
+            ? `Stage 7 • ${p.moves} moves • ${seconds}s`
+            : `Stage ${p.stage} • ${p.moves} moves • ${seconds}s`;
 
-        const overlay = document.getElementById("winOverlay");
-        const rankEl = document.getElementById("winRank");
-        if(overlay && rankEl && overlay.classList.contains("active")){
-          rankEl.textContent = window.myCurrentRank
-            ? `Current weekly rank: #${window.myCurrentRank}`
-            : '';
-        }
+          lines.push({
+            rank,
+            name: p.name,
+            label
+          });
+
+          if(p.name === myName && window.myCurrentRank == null){
+            window.myCurrentRank = rank;
+          }
+        });
+
+        lb.innerHTML = lines.map(row=>`
+          <div class="leader-row">
+            <div>#${row.rank} — ${row.name}</div>
+            <div>${row.label}</div>
+          </div>
+        `).join('');
 
       } catch(e){
-        lb.textContent = "Unable to load leaderboard.";
+        console.error(e);
+        lb.textContent = "Unable to load leaderboard right now.";
+        window.myCurrentRank = null;
       }
     }
 
     window.gwRecordRun = recordRun;
-    window.gwRenderLeaderboard = renderLeaderboard;
-    renderLeaderboard();
-    loadMyBestRun();
+    renderLeaderboard().then(loadMyBestRun).catch(()=>{});
   </script>
 </body>
-</html>
+    </html>
