@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shield Defender — Gentle Warrior</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --gw-bg: #02150f;
+      --gw-card: #062219;
+      --gw-accent: #7ee08a;
+      --gw-accent-soft: #3bbf6f;
+      --gw-text-main: #e8f6ec;
+      --gw-text-soft: #b9d7c4;
+      --gw-danger: #ff5c6c;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #063828 0, #020908 55%);
+      color: var(--gw-text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .shell {
+      width: 100%;
+      max-width: 480px;
+      background: radial-gradient(circle at top, #0b3928 0, #04140f 68%);
+      border-radius: 26px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.72);
+      border: 1px solid rgba(126, 224, 138, 0.18);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--gw-text-soft);
+      margin-bottom: 14px;
+    }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+    .hud span {
+      color: var(--gw-text-soft);
+    }
+    .hud strong {
+      color: var(--gw-accent);
+      font-weight: 600;
+    }
+    .hud-right {
+      text-align: right;
+    }
+    .ribbon {
+      font-size: 0.9rem;
+      margin: 0 2px;
+    }
+    .lives-hearts {
+      margin-left: 4px;
+      font-size: 0.82rem;
+    }
+    .lives-hearts span {
+      margin-left: 1px;
+      opacity: 0.9;
+    }
+    .game-frame {
+      margin: 6px 0 10px;
+      padding: 8px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top, #08281c 0, #020a07 75%);
+      box-shadow: inset 0 0 0 1px rgba(126, 224, 138, 0.06);
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
+      display: block;
+      background: radial-gradient(circle at bottom, #041b12 0, #000605 75%);
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0 6px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+    }
+    #startBtn {
+      background: linear-gradient(135deg, var(--gw-accent), #a6ffb6);
+      color: #052010;
+      box-shadow: 0 6px 16px rgba(126, 224, 138, 0.5);
+    }
+    #resetBtn {
+      background: rgba(21, 70, 47, 0.95);
+      color: var(--gw-text-soft);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    }
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: none;
+    }
+    .helper {
+      font-size: 0.82rem;
+      text-align: center;
+      color: var(--gw-text-soft);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+    .footer-note {
+      font-size: 0.78rem;
+      text-align: center;
+      color: rgba(185, 215, 196, 0.85);
+      margin-top: 2px;
+    }
+    .best-score {
+      font-size: 0.78rem;
+      text-align: center;
+      color: rgba(185, 215, 196, 0.78);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <h1>Shield Defender</h1>
+    <p class="subtitle">
+      Guard the emerald heart. Every quiet block is a small act of care.
+    </p>
+
+    <div class="hud">
+      <span>Score: <strong id="score">0</strong></span>
+      <span>
+        Lives <span class="ribbon">🎗️</span>
+        <strong id="lives">3</strong>
+        <span id="livesHearts" class="lives-hearts"></span>
+      </span>
+      <span class="hud-right">Wave: <strong id="wave">1</strong></span>
+    </div>
+
+    <div class="game-frame">
+      <canvas id="gameCanvas" width="360" height="420"></canvas>
+    </div>
+
+    <div class="buttons">
+      <button id="startBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <p class="helper">
+      Move the shield with touch, mouse, or ← → keys. Tap Start to begin.
+      Breathe gently and hold the line for the heart.
+    </p>
+    <p class="footer-note" id="statusMessage">
+      Quiet focus, gentle defense.
+    </p>
+    <p class="best-score">
+      Best score: <span id="bestScore">0</span> · Combo: <span id="comboLabel">0</span>
+    </p>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const scoreEl = document.getElementById("score");
+    const livesEl = document.getElementById("lives");
+    const waveEl = document.getElementById("wave");
+    const statusMessage = document.getElementById("statusMessage");
+    const bestScoreSpan = document.getElementById("bestScore");
+    const comboLabel = document.getElementById("comboLabel");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const livesHeartsEl = document.getElementById("livesHearts");
+
+    const heartImg = new Image();
+    heartImg.src = "heart-emblem.png";
+
+    let lastTime = 0;
+    let running = false;
+
+    const BASE_SHIELD_WIDTH = 120;
+    const MAX_LIVES = 5;
+
+    const gameState = {
+      score: 0,
+      lives: 3,
+      wave: 1,
+      combo: 0,
+      maxCombo: 0,
+      baseShieldWidth: BASE_SHIELD_WIDTH,
+      shield: {
+        width: BASE_SHIELD_WIDTH,
+        height: 16,
+        x: canvas.width / 2 - BASE_SHIELD_WIDTH / 2,
+        y: canvas.height * 0.70
+      },
+      heart: {
+        x: canvas.width / 2,
+        y: canvas.height * 0.84,
+        baseGlowRadius: 70,
+        glowPhase: 0
+      },
+      projectiles: [],
+      powerUps: [],
+      spawnTimer: 0,
+      spawnInterval: 800,
+      baseFallSpeed: 170,
+      fallSpeed: 170,
+      damageFlash: 0,
+      shieldImpactFlash: 0,
+      shake: 0,
+      particles: [],
+      dust: [],
+      gameOver: false,
+      powerUpState: {
+        shieldWideTimer: 0,
+        slowTimeTimer: 0
+      },
+      waveOverlayText: "",
+      waveOverlayTimer: 0,
+      bgPhase: 0,
+      gentleMomentTimer: 0
+    };
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function loadBestScore() {
+      try {
+        const stored = localStorage.getItem("gw_shield_best_score");
+        if (stored !== null) bestScoreSpan.textContent = stored;
+      } catch (e) {}
+    }
+    loadBestScore();
+
+    function saveBestScore() {
+      try {
+        const currentBest = parseInt(bestScoreSpan.textContent || "0", 10);
+        if (gameState.score > currentBest) {
+          localStorage.setItem("gw_shield_best_score", gameState.score);
+          bestScoreSpan.textContent = gameState.score;
+        }
+      } catch (e) {}
+    }
+
+    function initDust() {
+      gameState.dust = [];
+      for (let i = 0; i < 40; i++) {
+        gameState.dust.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: 0.8 + Math.random() * 1.4,
+          speed: 6 + Math.random() * 10,
+          alpha: 0.15 + Math.random() * 0.15
+        });
+      }
+    }
+
+    function updateLivesHearts() {
+      if (!livesHeartsEl) return;
+      let html = "";
+      for (let i = 0; i < MAX_LIVES; i++) {
+        html += `<span>${i < gameState.lives ? "💚" : "🤍"}</span>`;
+      }
+      livesHeartsEl.innerHTML = html;
+    }
+
+    function resetGameState() {
+      gameState.score = 0;
+      gameState.lives = 3;
+      gameState.wave = 1;
+      gameState.combo = 0;
+      gameState.maxCombo = 0;
+      gameState.projectiles = [];
+      gameState.powerUps = [];
+      gameState.spawnTimer = 0;
+      gameState.spawnInterval = 800;
+      gameState.baseFallSpeed = 170;
+      gameState.fallSpeed = 170;
+      gameState.damageFlash = 0;
+      gameState.shieldImpactFlash = 0;
+      gameState.shake = 0;
+      gameState.particles = [];
+      gameState.gameOver = false;
+      gameState.powerUpState.shieldWideTimer = 0;
+      gameState.powerUpState.slowTimeTimer = 0;
+      gameState.baseShieldWidth = BASE_SHIELD_WIDTH;
+      gameState.shield.width = BASE_SHIELD_WIDTH;
+      gameState.shield.height = 16;
+      gameState.shield.x = canvas.width / 2 - gameState.shield.width / 2;
+      gameState.shield.y = canvas.height * 0.70;
+      gameState.heart.y = canvas.height * 0.84;
+
+      gameState.waveOverlayText = "Wave 1 — Quiet focus, gentle defense.";
+      gameState.waveOverlayTimer = 2.5;
+      gameState.bgPhase = 0;
+      gameState.gentleMomentTimer = 0;
+
+      updateHUD();
+      comboLabel.textContent = "0";
+      statusMessage.textContent = "Quiet focus, gentle defense.";
+    }
+
+    function updateHUD() {
+      scoreEl.textContent = gameState.score;
+      livesEl.textContent = gameState.lives;
+      waveEl.textContent = gameState.wave;
+      updateLivesHearts();
+    }
+
+    function spawnProjectile() {
+      const padding = 30;
+      const x = Math.random() * (canvas.width - padding * 2) + padding;
+      const zigzag = gameState.wave >= 8 ? (Math.random() - 0.5) * 45 : 0;
+
+      gameState.projectiles.push({
+        x,
+        y: -20,
+        radius: 10,
+        speed: gameState.fallSpeed + Math.random() * 50,
+        vx: zigzag
+      });
+    }
+
+    function spawnPowerUp(x) {
+      const types = ["heal", "shield", "slow"];
+      const type = types[Math.floor(Math.random() * types.length)];
+      gameState.powerUps.push({
+        x,
+        y: -20,
+        radius: 11,
+        speed: 90,
+        type
+      });
+    }
+
+    function adjustShieldBaseWidthForWave() {
+      const w = gameState.wave;
+      let base = BASE_SHIELD_WIDTH;
+      if (w >= 4 && w < 7) base = 110;
+      else if (w >= 7 && w < 10) base = 100;
+      else if (w >= 10) base = 92;
+
+      gameState.baseShieldWidth = base;
+      if (gameState.powerUpState.shieldWideTimer <= 0) {
+        gameState.shield.width = base;
+      }
+    }
+
+    function setWaveOverlay(overlay) {
+      gameState.waveOverlayText = overlay;
+      gameState.waveOverlayTimer = 2.3;
+    }
+
+    function triggerGentleMoment() {
+      gameState.gentleMomentTimer = 2.6;
+      const hx = gameState.heart.x;
+      const hy = gameState.heart.y;
+      for (let i = 0; i < 14; i++) {
+        gameState.particles.push({
+          x: hx + (Math.random() - 0.5) * 26,
+          y: hy + (Math.random() - 0.5) * 18,
+          radius: 1.5 + Math.random() * 1.8,
+          vx: (Math.random() - 0.5) * 80,
+          vy: -40 - Math.random() * 40,
+          life: 0.6 + Math.random() * 0.4,
+          gentle: true,
+          shieldTrail: false
+        });
+      }
+      statusMessage.textContent = "Gentle moment — the heart feels safe for a while.";
+    }
+
+    function nextWave() {
+      gameState.wave++;
+
+      if (gameState.wave <= 3) {
+        gameState.spawnInterval = Math.max(650, gameState.spawnInterval - 60);
+        gameState.baseFallSpeed += 15;
+      } else if (gameState.wave <= 6) {
+        gameState.spawnInterval = Math.max(540, gameState.spawnInterval - 80);
+        gameState.baseFallSpeed += 20;
+      } else {
+        gameState.spawnInterval = Math.max(430, gameState.spawnInterval - 90);
+        gameState.baseFallSpeed += 24;
+      }
+      gameState.fallSpeed = gameState.baseFallSpeed;
+
+      adjustShieldBaseWidthForWave();
+
+      const messages = [
+        "The darkness grows. Hold steady.",
+        "Listen to your breathing, not the noise.",
+        "The heart is watching your quiet courage.",
+        "Only patience remains. Stay with it.",
+        "Small blocks, big protection."
+      ];
+      const msg = messages[(gameState.wave - 1) % messages.length];
+      const overlay = "Wave " + gameState.wave + " — " + msg;
+      statusMessage.textContent = overlay;
+      setWaveOverlay(overlay);
+    }
+
+    function update(dt) {
+      if (!running) return;
+      const g = gameState;
+
+      g.bgPhase += dt * 0.25;
+
+      // Spawn timing
+      g.spawnTimer += dt * 1000;
+      if (g.spawnTimer >= g.spawnInterval) {
+        g.spawnTimer = 0;
+        spawnProjectile();
+
+        if (g.wave >= 3 && Math.random() < 0.25) {
+          spawnProjectile();
+        }
+        if (g.wave >= 7 && Math.random() < 0.35) {
+          spawnProjectile();
+        }
+        if (g.wave >= 10 && Math.random() < 0.45) {
+          spawnProjectile();
+        }
+      }
+
+      if (g.waveOverlayTimer > 0) {
+        g.waveOverlayTimer -= dt;
+        if (g.waveOverlayTimer < 0) g.waveOverlayTimer = 0;
+      }
+
+      if (g.gentleMomentTimer > 0) {
+        g.gentleMomentTimer -= dt;
+        if (g.gentleMomentTimer < 0) g.gentleMomentTimer = 0;
+      }
+
+      g.heart.glowPhase += dt * 2.5;
+      if (g.damageFlash > 0) g.damageFlash = Math.max(0, g.damageFlash - dt * 2);
+      if (g.shieldImpactFlash > 0)
+        g.shieldImpactFlash = Math.max(0, g.shieldImpactFlash - dt * 3);
+      if (g.shake > 0) g.shake = Math.max(0, g.shake - dt * 2.5);
+
+      if (g.powerUpState.shieldWideTimer > 0) {
+        g.powerUpState.shieldWideTimer -= dt;
+        if (g.powerUpState.shieldWideTimer <= 0) {
+          g.shield.width = g.baseShieldWidth;
+        }
+      }
+      if (g.powerUpState.slowTimeTimer > 0) {
+        g.powerUpState.slowTimeTimer -= dt;
+        if (g.powerUpState.slowTimeTimer <= 0) g.fallSpeed = g.baseFallSpeed;
+      }
+
+      // Dust
+      g.dust.forEach((d) => {
+        d.y += d.speed * dt;
+        if (d.y > canvas.height + 10) {
+          d.y = -10;
+          d.x = Math.random() * canvas.width;
+        }
+      });
+
+      // Particles
+      g.particles.forEach((p) => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt;
+      });
+      g.particles = g.particles.filter((p) => p.life > 0);
+
+      // Projectiles
+      for (let i = g.projectiles.length - 1; i >= 0; i--) {
+        const p = g.projectiles[i];
+        p.y += p.speed * dt;
+        p.x += p.vx * dt * 0.04;
+
+        const shield = g.shield;
+        const closestX = Math.max(shield.x, Math.min(p.x, shield.x + shield.width));
+        const closestY = Math.max(shield.y, Math.min(p.y, shield.y + shield.height));
+        const dx = p.x - closestX;
+        const dy = p.y - closestY;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < p.radius * p.radius) {
+          // BLOCKED
+          g.score += 1;
+          g.combo += 1;
+          g.maxCombo = Math.max(g.maxCombo, g.combo);
+          comboLabel.textContent = g.combo;
+          g.shieldImpactFlash = 1;
+          g.shake = Math.max(g.shake, 0.3);
+
+          for (let j = 0; j < 8; j++) {
+            g.particles.push({
+              x: p.x,
+              y: shield.y,
+              radius: 2 + Math.random() * 2,
+              vx: (Math.random() - 0.5) * 160,
+              vy: -60 - Math.random() * 80,
+              life: 0.3 + Math.random() * 0.25,
+              gentle: false,
+              shieldTrail: false
+            });
+          }
+
+          if (g.combo >= 15 && g.gentleMomentTimer <= 0) {
+            triggerGentleMoment();
+          }
+
+          if (g.wave >= 3 && g.combo >= 8 && Math.random() < 0.09) {
+            spawnPowerUp(p.x);
+          }
+
+          g.projectiles.splice(i, 1);
+
+          if (g.score > 0 && g.score % 10 === 0) {
+            nextWave();
+          }
+          continue;
+        }
+
+        if (p.y >= g.heart.y - 14) {
+          g.projectiles.splice(i, 1);
+          g.lives -= 1;
+          g.combo = 0;
+          comboLabel.textContent = "0";
+          g.damageFlash = 1.2;
+          g.shake = Math.max(g.shake, 0.45);
+          updateHUD();
+
+          statusMessage.textContent =
+            g.lives > 0
+              ? "The heart felt that. Stay with it."
+              : "Run ended. The heart is grateful for your effort.";
+
+          if (g.lives <= 0) {
+            g.gameOver = true;
+            running = false;
+            saveBestScore();
+            break;
+          }
+        }
+      }
+
+      // Power-ups
+      for (let i = g.powerUps.length - 1; i >= 0; i--) {
+        const u = g.powerUps[i];
+        u.y += u.speed * dt;
+
+        const sx = g.shield.x;
+        const sy = g.shield.y;
+        const sw = g.shield.width;
+        const sh = g.shield.height;
+
+        const closestX = Math.max(sx, Math.min(u.x, sx + sw));
+        const closestY = Math.max(sy, Math.min(u.y, sy + sh));
+        const dx = u.x - closestX;
+        const dy = u.y - closestY;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < u.radius * u.radius) {
+          if (u.type === "heal") {
+            gameState.lives = Math.min(MAX_LIVES, gameState.lives + 1);
+            statusMessage.textContent = "Heal found. The heart breathes easier.";
+          } else if (u.type === "shield") {
+            gameState.shield.width = gameState.baseShieldWidth + 30;
+            gameState.powerUpState.shieldWideTimer = 6;
+            statusMessage.textContent = "Shield strengthened for a moment.";
+          } else if (u.type === "slow") {
+            gameState.fallSpeed = gameState.baseFallSpeed * 0.6;
+            gameState.powerUpState.slowTimeTimer = 4;
+            statusMessage.textContent = "Time softens. Breathe and block.";
+          }
+          updateHUD();
+          gameState.powerUps.splice(i, 1);
+          continue;
+        }
+
+        if (u.y > canvas.height + 20) {
+          gameState.powerUps.splice(i, 1);
+        }
+      }
+
+      updateHUD();
+    }
+
+    function drawBackground() {
+      const phase = gameState.bgPhase || 0;
+      const t = 0.5 + 0.5 * Math.sin(phase);
+
+      const topR = lerp(4, 8, t);
+      const topG = lerp(24, 44, t);
+      const topB = lerp(18, 26, t);
+      const bottomR = lerp(1, 2, t);
+      const bottomG = lerp(7, 12, t);
+      const bottomB = lerp(5, 8, t);
+
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, `rgb(${topR.toFixed(0)},${topG.toFixed(0)},${topB.toFixed(0)})`);
+      grad.addColorStop(1, `rgb(${bottomR.toFixed(0)},${bottomG.toFixed(0)},${bottomB.toFixed(0)})`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Floating dust
+      for (const d of gameState.dust) {
+        ctx.fillStyle = `rgba(170, 220, 190, ${d.alpha.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Symbolism glyphs
+      drawSymbolGlyphs();
+
+      // Warrior silhouette
+      drawWarriorSilhouette();
+
+      const vGrad = ctx.createRadialGradient(
+        canvas.width / 2,
+        canvas.height * 0.8,
+        40,
+        canvas.width / 2,
+        canvas.height * 0.8,
+        canvas.height * 0.9
+      );
+      vGrad.addColorStop(0, "rgba(0,0,0,0)");
+      vGrad.addColorStop(1, "rgba(0,0,0,0.75)");
+      ctx.fillStyle = vGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSymbolGlyphs() {
+      ctx.save();
+      ctx.globalAlpha = 0.12;
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = "#65c97c";
+
+      // Heart glyph (top-left)
+      const hx = canvas.width * 0.22;
+      const hy = canvas.height * 0.2;
+      const hSize = 14;
+      ctx.beginPath();
+      ctx.moveTo(hx, hy + hSize * 0.4);
+      ctx.bezierCurveTo(
+        hx - hSize, hy - hSize * 0.4,
+        hx - hSize * 0.2, hy - hSize,
+        hx, hy - hSize * 0.2
+      );
+      ctx.bezierCurveTo(
+        hx + hSize * 0.2, hy - hSize,
+        hx + hSize, hy - hSize * 0.4,
+        hx, hy + hSize * 0.4
+      );
+      ctx.stroke();
+
+      // Shield glyph (top-right)
+      const sx = canvas.width * 0.78;
+      const sy = canvas.height * 0.22;
+      const sW = 20;
+      const sH = 24;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy - sH / 2);
+      ctx.lineTo(sx + sW / 2, sy - 2);
+      ctx.lineTo(sx + sW / 4, sy + sH / 2);
+      ctx.lineTo(sx - sW / 4, sy + sH / 2);
+      ctx.lineTo(sx - sW / 2, sy - 2);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Sword glyph (left side)
+      const swx = canvas.width * 0.15;
+      const swy = canvas.height * 0.52;
+      ctx.beginPath();
+      ctx.moveTo(swx, swy - 16);
+      ctx.lineTo(swx, swy + 12);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(swx - 6, swy + 4);
+      ctx.lineTo(swx + 6, swy + 4);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(swx - 3, swy - 16);
+      ctx.lineTo(swx, swy - 22);
+      ctx.lineTo(swx + 3, swy - 16);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawWarriorSilhouette() {
+      ctx.save();
+      const cx = canvas.width / 2;
+      const cy = canvas.height * 0.66;
+
+      ctx.globalAlpha = 0.11;
+      ctx.fillStyle = "#0f3926";
+
+      // Cape
+      ctx.beginPath();
+      ctx.moveTo(cx - 32, cy + 8);
+      ctx.lineTo(cx + 32, cy + 8);
+      ctx.lineTo(cx + 6, cy + 64);
+      ctx.lineTo(cx - 18, cy + 64);
+      ctx.closePath();
+      ctx.fill();
+
+      // Shoulders / torso
+      ctx.beginPath();
+      ctx.moveTo(cx - 18, cy - 4);
+      ctx.lineTo(cx + 18, cy - 4);
+      ctx.lineTo(cx + 12, cy + 18);
+      ctx.lineTo(cx - 12, cy + 18);
+      ctx.closePath();
+      ctx.fill();
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(cx, cy - 16, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawCardFrame() {
+      ctx.save();
+      const margin = 8;
+      const r = 14;
+      const x = margin;
+      const y = margin;
+      const w = canvas.width - margin * 2;
+      const h = canvas.height - margin * 2;
+
+      ctx.strokeStyle = "rgba(126, 224, 138, 0.28)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawHeart() {
+      const { x, y, baseGlowRadius, glowPhase } = gameState.heart;
+      const lifeFactor = Math.max(0.8, 1.2 - gameState.lives * 0.05);
+      const pulseSpeed = 2.5 * lifeFactor;
+
+      gameState.heart.glowPhase += 0.02 * pulseSpeed;
+      const radius =
+        baseGlowRadius * (0.88 + 0.14 * Math.sin(glowPhase * pulseSpeed));
+
+      let colorCore;
+      if (gameState.lives >= 3) {
+        colorCore = "126, 224, 138";
+      } else if (gameState.lives === 2) {
+        colorCore = "170, 240, 190";
+      } else {
+        colorCore = "255, 210, 160";
+      }
+
+      const glowGrad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      glowGrad.addColorStop(0, `rgba(${colorCore}, 0.45)`);
+      glowGrad.addColorStop(0.5, `rgba(${colorCore}, 0.18)`);
+      glowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      const imgW = 68;
+      const imgH = 68;
+      ctx.drawImage(heartImg, x - imgW / 2, y - imgH / 2, imgW, imgH);
+
+      if (gameState.gentleMomentTimer > 0) {
+        const t = gameState.gentleMomentTimer;
+        const alpha = Math.min(0.7, 0.4 + t * 0.15);
+        const extraR = radius + 22;
+        const halo = ctx.createRadialGradient(x, y, 0, x, y, extraR);
+        halo.addColorStop(0, `rgba(255, 245, 210, ${alpha})`);
+        halo.addColorStop(0.4, "rgba(210, 255, 220, 0.35)");
+        halo.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(x, y, extraR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawShield() {
+      const s = gameState.shield;
+      const r = 9;
+      const x = s.x;
+      const y = s.y;
+      const w = s.width;
+      const h = s.height;
+
+      const glow = ctx.createRadialGradient(
+        x + w / 2,
+        y + h / 2,
+        0,
+        x + w / 2,
+        y + h / 2,
+        34
+      );
+      glow.addColorStop(0, "rgba(126, 224, 138, 0.48)");
+      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + h / 2, 34, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#b5ffd0";
+      ctx.fillStyle = "rgba(6, 69, 35, 0.95)";
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      if (gameState.shieldImpactFlash > 0) {
+        const alpha = gameState.shieldImpactFlash;
+        ctx.fillStyle = "rgba(181,255,208," + alpha + ")";
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function drawProjectiles() {
+      ctx.lineWidth = 2;
+      for (const p of gameState.projectiles) {
+        const trailGrad = ctx.createLinearGradient(p.x, p.y - 26, p.x, p.y);
+        trailGrad.addColorStop(0, "rgba(118, 233, 189, 0)");
+        trailGrad.addColorStop(1, "rgba(118, 233, 189, 0.65)");
+        ctx.strokeStyle = trailGrad;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y - 26);
+        ctx.lineTo(p.x, p.y - 4);
+        ctx.stroke();
+
+        const orbGrad = ctx.createRadialGradient(
+          p.x, p.y, 0, p.x, p.y, p.radius + 4
+        );
+        orbGrad.addColorStop(0, "rgba(180, 255, 230, 0.95)");
+        orbGrad.addColorStop(0.5, "rgba(130, 224, 190, 0.7)");
+        orbGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = orbGrad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius + 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawPowerUps() {
+      for (const u of gameState.powerUps) {
+        let glowColor;
+        if (u.type === "heal") glowColor = "rgba(126,224,138,0.95)";
+        else if (u.type === "shield") glowColor = "rgba(150,210,255,0.95)";
+        else glowColor = "rgba(255,225,160,0.95)";
+
+        const grad = ctx.createRadialGradient(
+          u.x, u.y, 0, u.x, u.y, u.radius + 7
+        );
+        grad.addColorStop(0, glowColor);
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(u.x, u.y, u.radius + 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(u.x, u.y);
+
+        if (u.type === "heal") {
+          ctx.fillStyle = "#35c86c";
+          ctx.beginPath();
+          ctx.arc(0, 0, u.radius - 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#e9fffb";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-4, 0);
+          ctx.lineTo(4, 0);
+          ctx.moveTo(0, -4);
+          ctx.lineTo(0, 4);
+          ctx.stroke();
+        } else if (u.type === "shield") {
+          ctx.fillStyle = "#57a6ff";
+          ctx.beginPath();
+          ctx.moveTo(0, -u.radius + 3);
+          ctx.lineTo(u.radius - 4, -2);
+          ctx.lineTo(u.radius - 8, u.radius - 4);
+          ctx.lineTo(0, u.radius - 1);
+          ctx.lineTo(-u.radius + 8, u.radius - 4);
+          ctx.lineTo(-u.radius + 4, -2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#e5f4ff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        } else if (u.type === "slow") {
+          ctx.strokeStyle = "#ffe8a0";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-u.radius + 3, -u.radius + 3);
+          ctx.lineTo(u.radius - 3, -u.radius + 3);
+          ctx.lineTo(-u.radius + 3, u.radius - 3);
+          ctx.lineTo(u.radius - 3, u.radius - 3);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-u.radius + 5, -u.radius + 5);
+          ctx.lineTo(u.radius - 5, u.radius - 5);
+          ctx.moveTo(u.radius - 5, -u.radius + 5);
+          ctx.lineTo(-u.radius + 5, u.radius - 5);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+    }
+
+    function drawParticles() {
+      for (const p of gameState.particles) {
+        const alpha = Math.max(0, p.life * 2);
+        if (p.gentle) {
+          ctx.fillStyle = "rgba(255, 248, 215," + alpha.toFixed(2) + ")";
+        } else if (p.shieldTrail) {
+          ctx.fillStyle = "rgba(190, 255, 220," + alpha.toFixed(2) + ")";
+        } else {
+          ctx.fillStyle = "rgba(182,255,208," + alpha.toFixed(2) + ")";
+        }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawDamageFlash() {
+      if (gameState.damageFlash <= 0) return;
+      const alpha = Math.min(0.6, gameState.damageFlash * 0.6);
+      ctx.fillStyle = "rgba(255, 90, 110," + alpha + ")";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawWaveOverlay() {
+      if (gameState.waveOverlayTimer <= 0 || !gameState.waveOverlayText) return;
+
+      const t = gameState.waveOverlayTimer;
+      let alpha = 1;
+      if (t < 0.7) alpha = t / 0.7;
+
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.fillStyle = "#e8f6ec";
+      ctx.textAlign = "center";
+      ctx.font = "bold 16px system-ui";
+      ctx.fillText(
+        gameState.waveOverlayText,
+        canvas.width / 2,
+        canvas.height * 0.18
+      );
+      ctx.restore();
+    }
+
+    function drawGentleMomentOverlay() {
+      if (gameState.gentleMomentTimer <= 0) return;
+      const t = gameState.gentleMomentTimer;
+      let alpha = Math.min(0.9, 0.4 + t * 0.25);
+
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.85;
+      ctx.fillStyle = "#fff5d5";
+      ctx.textAlign = "center";
+      ctx.font = "bold 15px system-ui";
+      ctx.fillText(
+        "Gentle Moment — The heart feels safe.",
+        canvas.width / 2,
+        canvas.height * 0.32
+      );
+      ctx.restore();
+    }
+
+    function render() {
+      ctx.save();
+      if (gameState.shake > 0) {
+        const mag = 7 * gameState.shake;
+        ctx.translate(
+          (Math.random() - 0.5) * mag,
+          (Math.random() - 0.5) * mag
+        );
+      }
+
+      drawBackground();
+      drawCardFrame();
+      drawHeart();
+      drawShield();
+      drawProjectiles();
+      drawPowerUps();
+      drawParticles();
+      drawDamageFlash();
+      drawWaveOverlay();
+      drawGentleMomentOverlay();
+
+      if (gameState.gameOver) {
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#e8f6ec";
+        ctx.font = "bold 20px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillText("Run ended", canvas.width / 2, canvas.height / 2 - 6);
+        ctx.font = "14px system-ui";
+        ctx.fillText(
+          "Score " + gameState.score + ". The heart is grateful.",
+          canvas.width / 2,
+          canvas.height / 2 + 16
+        );
+        ctx.font = "12px system-ui";
+        ctx.fillText(
+          "Best combo: " + gameState.maxCombo,
+          canvas.width / 2,
+          canvas.height / 2 + 34
+        );
+      }
+
+      ctx.restore();
+    }
+
+    function loop(ts) {
+      const dt = Math.min(0.04, (ts - lastTime) / 1000);
+      lastTime = ts;
+      if (running) update(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    function spawnShieldTrail(cx, cy, dx) {
+      const dir = dx > 0 ? 1 : -1;
+      for (let i = 0; i < 4; i++) {
+        gameState.particles.push({
+          x: cx + (Math.random() - 0.5) * 16,
+          y: cy + (Math.random() - 0.5) * 8,
+          radius: 1 + Math.random() * 1.5,
+          vx: dir * (40 + Math.random() * 60),
+          vy: -10 + (Math.random() - 0.5) * 30,
+          life: 0.25 + Math.random() * 0.15,
+          gentle: false,
+          shieldTrail: true
+        });
+      }
+    }
+
+    function moveShieldFromClientX(clientX) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const shield = gameState.shield;
+      const oldX = shield.x;
+      const x = (clientX - rect.left) * scaleX;
+      shield.x = x - shield.width / 2;
+      if (shield.x < 12) shield.x = 12;
+      if (shield.x > canvas.width - shield.width - 12) {
+        shield.x = canvas.width - shield.width - 12;
+      }
+      const dx = shield.x - oldX;
+      if (Math.abs(dx) > 18) {
+        spawnShieldTrail(
+          shield.x + shield.width / 2,
+          shield.y + shield.height / 2,
+          dx
+        );
+      }
+    }
+
+    let isDragging = false;
+
+    canvas.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      moveShieldFromClientX(e.clientX);
+    });
+    window.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      moveShieldFromClientX(e.clientX);
+    });
+    window.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        isDragging = true;
+        const t = e.touches[0];
+        if (!t) return;
+        moveShieldFromClientX(t.clientX);
+      },
+      { passive: true }
+    );
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!isDragging) return;
+        const t = e.touches[0];
+        if (!t) return;
+        moveShieldFromClientX(t.clientX);
+      },
+      { passive: true }
+    );
+    canvas.addEventListener(
+      "touchend",
+      () => {
+        isDragging = false;
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("keydown", (e) => {
+      const shield = gameState.shield;
+      const step = 34;
+      let dx = 0;
+      if (e.key === "ArrowLeft") {
+        const oldX = shield.x;
+        shield.x -= step;
+        if (shield.x < 12) shield.x = 12;
+        dx = shield.x - oldX;
+      } else if (e.key === "ArrowRight") {
+        const oldX = shield.x;
+        shield.x += step;
+        if (shield.x > canvas.width - shield.width - 12) {
+          shield.x = canvas.width - shield.width - 12;
+        }
+        dx = shield.x - oldX;
+      }
+      if (Math.abs(dx) > 18) {
+        spawnShieldTrail(
+          shield.x + shield.width / 2,
+          shield.y + shield.height / 2,
+          dx
+        );
+      }
+    });
+
+    startBtn.addEventListener("click", () => {
+      if (gameState.gameOver) resetGameState();
+      running = true;
+      statusMessage.textContent = "Breathe, focus, and guard the heart.";
+    });
+
+    resetBtn.addEventListener("click", () => {
+      saveBestScore();
+      resetGameState();
+      running = false;
+    });
+
+    initDust();
+    resetGameState();
+    render();
+  </script>
+</body>
+</html>
