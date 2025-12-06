@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Shield Defender — Gentle Warrior</title>
+  <title>HEART DEFENDER — Gentle Warrior</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
@@ -146,7 +146,7 @@
 </head>
 <body>
   <main class="shell">
-    <h1>Shield Defender</h1>
+    <h1>HEART DEFENDER</h1>
     <p class="subtitle">
       Guard the emerald heart. Every quiet block is a small act of care.
     </p>
@@ -154,7 +154,7 @@
     <div class="hud">
       <span>Score: <strong id="score">0</strong></span>
       <span>
-        Lives <span class="ribbon">🎗️</span>
+        Lives 
         <strong id="lives">3</strong>
         <span id="livesHearts" class="lives-hearts"></span>
       </span>
@@ -171,8 +171,7 @@
     </div>
 
     <p class="helper">
-      Move the shield with touch, mouse, or ← → keys. Tap Start to begin.
-      Breathe gently and hold the line for the heart.
+      Move the shield. Block the orb. Protect the heart.
     </p>
     <p class="footer-note" id="statusMessage">
       Quiet focus, gentle defense.
@@ -180,6 +179,14 @@
     <p class="best-score">
       Best score: <span id="bestScore">0</span> · Combo: <span id="comboLabel">0</span>
     </p>
+
+    <!-- NEW: Leaderboard (Top 10 players, best run only) -->
+    <div id="leaderboard" style="margin-top:8px; font-size:0.72rem; text-align:center; color:rgba(185,215,196,0.85);">
+      <div style="font-weight:600; margin-bottom:2px;">Top 10 players (best runs)</div>
+      <ol id="leaderboardList" style="padding-left:18px; text-align:left; display:inline-block; margin:0;">
+        <!-- filled by JS -->
+      </ol>
+    </div>
   </main>
 
   <script>
@@ -195,6 +202,7 @@
     const startBtn = document.getElementById("startBtn");
     const resetBtn = document.getElementById("resetBtn");
     const livesHeartsEl = document.getElementById("livesHearts");
+    const leaderboardListEl = document.getElementById("leaderboardList");
 
     const heartImg = new Image();
     heartImg.src = "heart-emblem.png";
@@ -204,6 +212,11 @@
 
     const BASE_SHIELD_WIDTH = 120;
     const MAX_LIVES = 5;
+
+    // Leaderboard keys
+    const playerNameKey = "gw_heart_player_name";
+    const leaderboardKey = "gw_heart_leaderboard";
+    let currentPlayerName = null;
 
     const gameState = {
       score: 0,
@@ -256,7 +269,6 @@
         if (stored !== null) bestScoreSpan.textContent = stored;
       } catch (e) {}
     }
-    loadBestScore();
 
     function saveBestScore() {
       try {
@@ -267,6 +279,98 @@
         }
       } catch (e) {}
     }
+
+    // ---------- PLAYER NAME + LEADERBOARD HELPERS ----------
+
+    function loadPlayerName() {
+      try {
+        const stored = localStorage.getItem(playerNameKey);
+        if (stored) currentPlayerName = stored;
+      } catch (e) {
+        currentPlayerName = null;
+      }
+    }
+
+    function ensurePlayerName() {
+      if (currentPlayerName) return;
+      let name = prompt("Enter your name for the leaderboard:", "") || "";
+      name = name.trim();
+      if (!name) name = "Player";
+      currentPlayerName = name.slice(0, 16); // limit length
+      try {
+        localStorage.setItem(playerNameKey, currentPlayerName);
+      } catch (e) {}
+    }
+
+    function loadLeaderboard() {
+      try {
+        const raw = localStorage.getItem(leaderboardKey);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLeaderboard(list) {
+      try {
+        localStorage.setItem(leaderboardKey, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    function renderLeaderboard() {
+      if (!leaderboardListEl) return;
+      const list = loadLeaderboard();
+      if (!list.length) {
+        leaderboardListEl.innerHTML = "<li>No runs yet</li>";
+        return;
+      }
+      leaderboardListEl.innerHTML = list
+        .map((run, i) => {
+          return `<li>${run.name}: ${run.score} pts · W${run.wave} · C${run.maxCombo}</li>`;
+        })
+        .join("");
+    }
+
+    function isBetterRun(a, b) {
+      if (a.score !== b.score) return a.score > b.score;
+      if (a.wave !== b.wave) return a.wave > b.wave;
+      return a.maxCombo > b.maxCombo;
+    }
+
+    function recordRunToLeaderboard() {
+      if (!currentPlayerName) return;
+      const run = {
+        name: currentPlayerName,
+        score: gameState.score,
+        wave: gameState.wave,
+        maxCombo: gameState.maxCombo
+      };
+      let board = loadLeaderboard();
+
+      const idx = board.findIndex(r => r.name === run.name);
+      if (idx === -1) {
+        board.push(run);
+      } else {
+        if (isBetterRun(run, board[idx])) {
+          board[idx] = run;
+        }
+      }
+
+      board.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (b.wave !== a.wave) return b.wave - a.wave;
+        return b.maxCombo - a.maxCombo;
+      });
+
+      board = board.slice(0, 10); // top 10 players
+      saveLeaderboard(board);
+      renderLeaderboard();
+    }
+
+    // ---------- END LEADERBOARD HELPERS ----------
 
     function initDust() {
       gameState.dust = [];
@@ -562,6 +666,7 @@
             g.gameOver = true;
             running = false;
             saveBestScore();
+            recordRunToLeaderboard(); // NEW: save best run per player to leaderboard
             break;
           }
         }
@@ -1005,7 +1110,7 @@
       ctx.globalAlpha = alpha * 0.9;
       ctx.fillStyle = "#e8f6ec";
       ctx.textAlign = "center";
-      ctx.font = "bold 16px system-ui";
+      ctx.font = "bold 14px system-ui";  // smaller than original 16px
       ctx.fillText(
         gameState.waveOverlayText,
         canvas.width / 2,
@@ -1023,7 +1128,7 @@
       ctx.globalAlpha = alpha * 0.85;
       ctx.fillStyle = "#fff5d5";
       ctx.textAlign = "center";
-      ctx.font = "bold 15px system-ui";
+      ctx.font = "bold 13px system-ui"; // smaller than original 15px
       ctx.fillText(
         "Gentle Moment — The heart feels safe.",
         canvas.width / 2,
@@ -1057,16 +1162,16 @@
         ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#e8f6ec";
-        ctx.font = "bold 20px system-ui";
+        ctx.font = "bold 18px system-ui";  // smaller than 20px
         ctx.textAlign = "center";
         ctx.fillText("Run ended", canvas.width / 2, canvas.height / 2 - 6);
-        ctx.font = "14px system-ui";
+        ctx.font = "12px system-ui";       // smaller than 14px
         ctx.fillText(
           "Score " + gameState.score + ". The heart is grateful.",
           canvas.width / 2,
           canvas.height / 2 + 16
         );
-        ctx.font = "12px system-ui";
+        ctx.font = "11px system-ui";       // smaller than 12px
         ctx.fillText(
           "Best combo: " + gameState.maxCombo,
           canvas.width / 2,
@@ -1192,6 +1297,7 @@
     });
 
     startBtn.addEventListener("click", () => {
+      ensurePlayerName(); // make sure may name bago maglaro
       if (gameState.gameOver) resetGameState();
       running = true;
       statusMessage.textContent = "Breathe, focus, and guard the heart.";
@@ -1204,6 +1310,9 @@
     });
 
     initDust();
+    loadBestScore();
+    loadPlayerName();
+    renderLeaderboard();
     resetGameState();
     render();
   </script>
