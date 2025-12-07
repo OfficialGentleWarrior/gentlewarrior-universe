@@ -321,11 +321,21 @@
       text-align:right;
     }
 
+    /* UPDATED FOOTER + DISCLAIMER */
     footer{
       text-align:center;
       font-size:12px;
       color:var(--muted);
-      margin-top:8px;
+      margin-top:16px;
+      padding-top:12px;
+      border-top:1px solid var(--border);
+    }
+    .footer-disclaimer{
+      font-size:11px;
+      line-height:1.5;
+      max-width:840px;
+      margin:4px auto 0;
+      color:var(--muted);
     }
 
     #socials-container{
@@ -475,6 +485,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
 
@@ -785,7 +796,7 @@
 
       <h3>What Is Cerebral Palsy?</h3>
       <p>
-        Cerebral palsy is a group of conditions that affect how the brain
+        Cerebral palsy is a group of conditions that affect how the the brain
         controls movement and balance. It usually develops before birth,
         during birth, or in early childhood.
       </p>
@@ -1298,8 +1309,20 @@
     </section>
 
     <footer>
-      Gentle Warrior • © 2025
+      <div>Gentle Warrior • © 2025</div>
       <div id="socials-container"></div>
+
+      <p class="footer-disclaimer">
+        Gentle Warrior is a community-driven awareness project inspired by real experiences with cerebral palsy.
+        This site does NOT provide medical advice, financial advice, or profit guarantees.
+      </p>
+      <p class="footer-disclaimer">
+        All games, NFTs, and any future tokens are for education, awareness, and community participation only —
+        they are NOT investment products and no profit is promised or implied.
+      </p>
+      <p class="footer-disclaimer">
+        Participation is voluntary and at your own risk. Never spend money you cannot afford to lose.
+      </p>
     </footer>
   </div>
 
@@ -2173,4 +2196,5 @@
     renderLeaderboard().then(loadMyBestRun).catch(()=>{});
   </script>
 </body>
-    </html>
+</html>
+```0
