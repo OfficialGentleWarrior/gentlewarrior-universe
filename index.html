@@ -463,25 +463,42 @@
       .floating-play-cta{display:block;}
     }
 
-    /* ========= CHESS / GAME CORNER ========= */
-    .chess-corner {
-      margin-top: 1.5rem;
-      padding: 1rem 1.2rem;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      text-align: center;
+    /* Game hub cards (Memory Game, Heart Defender, CP Myths Quiz) */
+    .game-hub{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:10px;
+      margin:10px 0 16px;
     }
-    .chess-corner h3 {
-      margin-bottom: 0.4rem;
+    .game-card{
+      background:var(--card);
+      border-radius:14px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      box-shadow:0 8px 18px rgba(0,0,0,0.45);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:6px;
+      font-size:13px;
     }
-    .chess-corner p {
-      opacity: 0.9;
-      margin-bottom: 0.8rem;
+    .game-card-title{
+      font-weight:700;
+      font-size:14px;
+      margin-bottom:2px;
     }
-    .chess-note {
-      font-size: 12px;
-      opacity: 0.65;
-      margin-top: 0.4rem;
+    .game-card p{
+      font-size:13px;
+      color:var(--muted);
+      flex:1;
+      margin-bottom:4px;
+    }
+    .game-card-btn{
+      width:100%;
+      text-align:center;
+      justify-content:center;
+      display:inline-flex;
+      align-items:center;
     }
   </style>
 </head>
@@ -1185,25 +1202,55 @@
         to families living with cerebral palsy.
       </p>
     </section>
-</section>
-<!-- GAME -->
+
+    <!-- GAME -->
     <section id="game" class="panel">
 
-      <!-- Game list / hub -->
-      <div class="chess-corner" style="margin-top:0;margin-bottom:1.4rem;">
-        <h3 style="margin-bottom:0.6rem;">Gentle Warrior Games</h3>
-        <ul style="list-style:none;padding:0;margin:0;font-size:14px;text-align:left;">
-          <li>🧠 <a href="#play" style="color:#9ae07a;text-decoration:none;">Memory Game</a></li>
-          <li>🛡 <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">Heart Defender</a></li>
-          <li>🧠 <a href="cp-myths-quiz.html" style="color:#9ae07a;text-decoration:none;">CP Myths Quiz</a></li>
-          <li>♟ <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">Chess</a></li>
-        </ul>
+      <!-- Game list / hub: 3 games only -->
+      <h2 style="text-align:center;margin-top:0;">Gentle Warrior Games</h2>
+      <p class="game-hint">Choose a game to play.</p>
+
+      <div class="game-hub">
+        <!-- Memory Game card -->
+        <div class="game-card">
+          <div class="game-card-title">🧠 Memory Game</div>
+          <p>
+            Flip and match Gentle Warrior symbols in a calm weekly challenge with a global leaderboard.
+          </p>
+          <button
+            class="btn game-card-btn"
+            onclick="window.location.hash='#play'; if (typeof openTabFromHash === 'function') openTabFromHash();">
+            Play Memory Game
+          </button>
+        </div>
+
+        <!-- Heart Defender card -->
+        <div class="game-card">
+          <div class="game-card-title">🛡 Heart Defender</div>
+          <p>
+            Protect the emerald heart from falling shards. Every block is a small act of care.
+          </p>
+          <a href="heart-defender.html" class="btn game-card-btn">
+            Open Heart Defender
+          </a>
+        </div>
+
+        <!-- CP Myths Quiz card -->
+        <div class="game-card">
+          <div class="game-card-title">✨ CP Myths Quiz</div>
+          <p>
+            Test what you know about cerebral palsy myths and facts in a gentle, educational quiz.
+          </p>
+          <a href="cp-myths-quiz.html" class="btn game-card-btn">
+            Open CP Myths Quiz
+          </a>
+        </div>
       </div>
 
-      <h2 style="text-align:center;margin-top:0">
-        <a href="#play" style="color:#9ae07a;text-decoration:none;">
-          🧠 Memory Game — Weekly Challenge
-        </a>
+      <hr style="margin:1.4rem 0; opacity:0.35;">
+
+      <h2 id="play" style="text-align:center;margin-top:0">
+        🧠 Memory Game — Weekly Challenge
       </h2>
       <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
         Loading season timer…
@@ -1249,54 +1296,6 @@
           <span style="color:var(--muted);font-size:12px;">Season resets automatically every Monday (UTC).</span>
         </div>
         <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
-      </div>
-
-      <!-- ======================= -->
-      <!-- ♟ CHESS CORNER -->
-      <!-- ======================= -->
-      <hr style="margin:2rem 0; opacity:0.35;">
-
-      <div class="chess-corner">
-        <h3>
-          <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">
-            ♟ Gentle Warrior Chess Corner
-          </a>
-        </h3>
-        <p>
-          Want a calm strategy game? Train patience, focus, and quiet strength through chess.
-        </p>
-
-        <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" class="btn">
-          Play Chess (opens in new tab)
-        </a>
-
-        <p class="chess-note">
-          We link to a trusted free chess platform while we build our own Gentle Warrior Chess mode.
-        </p>
-      </div>
-
-      <!-- ======================= -->
-      <!-- 🛡 HEART DEFENDER -->
-      <!-- ======================= -->
-      <hr style="margin:2rem 0; opacity:0.35;">
-
-      <div class="chess-corner">
-        <h3>
-          <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">
-            🛡 Heart Defender
-          </a>
-        </h3>
-        <p>
-          Protect the emerald heart. Every block is a small act of care.
-        </p>
-
-        <a href="heart-defender.html" class="btn">
-          Play Heart Defender
-        </a>
-
-        <p class="chess-note">
-          Built inside the Gentle Warrior universe.
-        </p>
       </div>
     </section>
 
@@ -1479,7 +1478,6 @@
     });
 
     // Sa halip na i-load ang lumang token card, kunin lang natin ang address sa ca.html
-    // at buuin dito ang mas conservative na card + neutral DEX button.
     fetch('ca.html')
       .then(r => r.text())
       .then(text => {
@@ -1962,7 +1960,8 @@
 
     winShareBtn.addEventListener('click', shareOnX);
   </script>
-<script type="module">
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
       getFirestore,
@@ -1997,7 +1996,7 @@
       const d = new Date(Date.UTC(
         date.getUTCFullYear(),
         date.getUTCMonth(),
-        date.getUTCDate() // instead of date.getDate()
+        date.getUTCDate()
       ));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
@@ -2253,4 +2252,4 @@
     renderLeaderboard().then(loadMyBestRun).catch(()=>{});
   </script>
 </body>
-  </html>
+</html>
