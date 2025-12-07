@@ -31,6 +31,7 @@
       padding: 16px;
     }
     .shell {
+      position: relative;
       width: 100%;
       max-width: 480px;
       background: radial-gradient(circle at top, #0b3928 0, #04140f 68%);
@@ -38,6 +39,7 @@
       padding: 20px 18px 18px;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.72);
       border: 1px solid rgba(126, 224, 138, 0.18);
+      overflow: hidden;
     }
     h1 {
       text-align: center;
@@ -48,7 +50,13 @@
       text-align: center;
       font-size: 0.88rem;
       color: var(--gw-text-soft);
-      margin-bottom: 14px;
+      margin-bottom: 6px;
+    }
+    .season-countdown {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(185, 215, 196, 0.85);
+      margin-bottom: 10px;
     }
     .hud {
       display: flex;
@@ -68,10 +76,6 @@
     .hud-right {
       text-align: right;
     }
-    .ribbon {
-      font-size: 0.9rem;
-      margin: 0 2px;
-    }
     .lives-hearts {
       margin-left: 4px;
       font-size: 0.82rem;
@@ -84,7 +88,7 @@
       margin: 6px 0 10px;
       padding: 8px;
       border-radius: 20px;
-      background: radial-gradient(circle at top, #08281c 0, #020a07 75%);
+      background: radial-gradient(circle at top, #020805 0, #000000 75%);
       box-shadow: inset 0 0 0 1px rgba(126, 224, 138, 0.06);
     }
     canvas {
@@ -92,22 +96,24 @@
       height: auto;
       border-radius: 18px;
       display: block;
-      background: radial-gradient(circle at bottom, #041b12 0, #000605 75%);
+      background: #000000;
     }
     .buttons {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin: 10px 0 6px;
+      flex-wrap: wrap;
     }
     button {
       border-radius: 999px;
       border: none;
-      padding: 9px 22px;
-      font-size: 0.95rem;
+      padding: 9px 18px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+      white-space: nowrap;
     }
     #startBtn {
       background: linear-gradient(135deg, var(--gw-accent), #a6ffb6);
@@ -118,6 +124,19 @@
       background: rgba(21, 70, 47, 0.95);
       color: var(--gw-text-soft);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    }
+    #shareBtn {
+      background: rgba(8, 35, 26, 0.95);
+      color: #e8f6ec;
+      border: 1px solid rgba(126, 224, 138, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.86rem;
+    }
+    #shareBtn span {
+      font-size: 0.86rem;
     }
     button:active {
       transform: translateY(1px) scale(0.98);
@@ -142,6 +161,68 @@
       color: rgba(185, 215, 196, 0.78);
       margin-top: 4px;
     }
+
+    /* Share modal */
+    .share-modal {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(2, 21, 15, 0.96), rgba(0, 0, 0, 0.96));
+      backdrop-filter: blur(6px);
+      padding: 16px;
+    }
+    .share-modal.active {
+      display: flex;
+    }
+    .share-modal-card {
+      width: 100%;
+      max-width: 360px;
+      background: rgba(4, 26, 18, 0.98);
+      border-radius: 20px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(126, 224, 138, 0.4);
+      text-align: center;
+      font-size: 0.84rem;
+    }
+    .share-modal-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .share-modal-sub {
+      font-size: 0.78rem;
+      color: var(--gw-text-soft);
+      margin-bottom: 10px;
+    }
+    .share-modal-stats {
+      font-size: 0.78rem;
+      color: rgba(232, 246, 236, 0.9);
+      background: rgba(3, 40, 22, 0.95);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .share-modal-stats strong {
+      color: var(--gw-accent);
+      font-weight: 600;
+    }
+    .share-modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    #closeShareBtn {
+      background: rgba(5, 24, 18, 0.9);
+      color: var(--gw-text-soft);
+      border: 1px solid rgba(90, 140, 110, 0.7);
+      padding-inline: 16px;
+      font-size: 0.86rem;
+    }
   </style>
 </head>
 <body>
@@ -149,6 +230,9 @@
     <h1>HEART DEFENDER</h1>
     <p class="subtitle">
       Guard the emerald heart. Every quiet block is a small act of care.
+    </p>
+    <p id="seasonCountdown" class="season-countdown">
+      Loading weekly battle timer…
     </p>
 
     <div class="hud">
@@ -180,12 +264,31 @@
       Best score: <span id="bestScore">0</span> · Combo: <span id="comboLabel">0</span>
     </p>
 
-    <!-- NEW: Leaderboard (Top 10 players, best run only) -->
+    <!-- Leaderboard (Top 10 players, weekly) -->
     <div id="leaderboard" style="margin-top:8px; font-size:0.72rem; text-align:center; color:rgba(185,215,196,0.85);">
-      <div style="font-weight:600; margin-bottom:2px;">Top 10 players (best runs)</div>
+      <div style="font-weight:600; margin-bottom:2px;">Top 10 players (weekly)</div>
       <ol id="leaderboardList" style="padding-left:18px; text-align:left; display:inline-block; margin:0;">
         <!-- filled by JS -->
       </ol>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal">
+      <div class="share-modal-card">
+        <div class="share-modal-title">Share your run</div>
+        <div class="share-modal-sub">
+          Tell X how you guarded the emerald heart this run.
+        </div>
+        <div id="shareStats" class="share-modal-stats">
+          <!-- filled by JS -->
+        </div>
+        <div class="share-modal-buttons">
+          <button id="shareBtn">
+            <span>Share on X</span>
+          </button>
+          <button id="closeShareBtn">Close</button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -203,6 +306,12 @@
     const resetBtn = document.getElementById("resetBtn");
     const livesHeartsEl = document.getElementById("livesHearts");
     const leaderboardListEl = document.getElementById("leaderboardList");
+    const seasonCountdownEl = document.getElementById("seasonCountdown");
+
+    const shareModal = document.getElementById("shareModal");
+    const shareStatsEl = document.getElementById("shareStats");
+    const shareBtn = document.getElementById("shareBtn");
+    const closeShareBtn = document.getElementById("closeShareBtn");
 
     const heartImg = new Image();
     heartImg.src = "heart-emblem.png";
@@ -213,11 +322,74 @@
     const BASE_SHIELD_WIDTH = 120;
     const MAX_LIVES = 5;
 
-    // Leaderboard keys
+    // Leaderboard + season keys
     const playerNameKey = "gw_heart_player_name";
     const leaderboardKey = "gw_heart_leaderboard";
-    let currentPlayerName = null;
+    const seasonKey = "gw_heart_season_id";
 
+    let currentPlayerName = null;
+    let lastRunRank = null;
+
+    // ---- Season / weekly reset helpers (Monday UTC) ----
+    function isoWeekId(date = new Date()) {
+      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
+    }
+
+    function currentSeasonId() {
+      return isoWeekId() + "-heart-v2";
+    }
+
+    function ensureSeason() {
+      try {
+        const nowSeason = currentSeasonId();
+        const stored = localStorage.getItem(seasonKey);
+        if (stored !== nowSeason) {
+          localStorage.setItem(seasonKey, nowSeason);
+          localStorage.removeItem(leaderboardKey);
+          localStorage.removeItem("gw_shield_best_score");
+        }
+      } catch (e) {}
+    }
+
+    function getNextMondayUTC() {
+      const now = new Date();
+      const day = now.getUTCDay(); // 0=Sun,1=Mon...
+      let diff = (1 - day + 7) % 7;
+      if (diff === 0) diff = 7;
+      return new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + diff,
+        0, 0, 0
+      ));
+    }
+
+    const nextMonday = getNextMondayUTC();
+
+    function updateSeasonCountdown() {
+      if (!seasonCountdownEl) return;
+      const diffMs = nextMonday - new Date();
+      if (diffMs <= 0) {
+        seasonCountdownEl.textContent = "New weekly battle is starting. Refresh to join the next season.";
+        return;
+      }
+      const totalSec = Math.floor(diffMs / 1000);
+      const d = Math.floor(totalSec / 86400);
+      const h = Math.floor((totalSec % 86400) / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      seasonCountdownEl.textContent =
+        `Weekly battle resets in: ${d}d ${h}h ${m}m ${s}s (UTC)`;
+    }
+
+    updateSeasonCountdown();
+    setInterval(updateSeasonCountdown, 1000);
+
+    // ---------------- GAME STATE ----------------
     const gameState = {
       score: 0,
       lives: 3,
@@ -240,9 +412,9 @@
       projectiles: [],
       powerUps: [],
       spawnTimer: 0,
-      spawnInterval: 800,
-      baseFallSpeed: 170,
-      fallSpeed: 170,
+      spawnInterval: 950,   // softer S2
+      baseFallSpeed: 150,
+      fallSpeed: 150,
       damageFlash: 0,
       shieldImpactFlash: 0,
       shake: 0,
@@ -263,6 +435,7 @@
       return a + (b - a) * t;
     }
 
+    // ---------------- BEST SCORE (per device, per season) ----------------
     function loadBestScore() {
       try {
         const stored = localStorage.getItem("gw_shield_best_score");
@@ -293,10 +466,10 @@
 
     function ensurePlayerName() {
       if (currentPlayerName) return;
-      let name = prompt("Enter your name for the leaderboard:", "") || "";
+      let name = prompt("Enter your name for the weekly board:", "") || "";
       name = name.trim();
       if (!name) name = "Player";
-      currentPlayerName = name.slice(0, 16); // limit length
+      currentPlayerName = name.slice(0, 16);
       try {
         localStorage.setItem(playerNameKey, currentPlayerName);
       } catch (e) {}
@@ -324,11 +497,11 @@
       if (!leaderboardListEl) return;
       const list = loadLeaderboard();
       if (!list.length) {
-        leaderboardListEl.innerHTML = "<li>No runs yet</li>";
+        leaderboardListEl.innerHTML = "<li>No runs yet this week</li>";
         return;
       }
       leaderboardListEl.innerHTML = list
-        .map((run, i) => {
+        .map((run) => {
           return `<li>${run.name}: ${run.score} pts · W${run.wave} · C${run.maxCombo}</li>`;
         })
         .join("");
@@ -365,12 +538,19 @@
         return b.maxCombo - a.maxCombo;
       });
 
-      board = board.slice(0, 10); // top 10 players
+      lastRunRank = board.findIndex(r => r.name === currentPlayerName);
+      if (lastRunRank !== -1) {
+        lastRunRank = lastRunRank + 1;
+      } else {
+        lastRunRank = null;
+      }
+
+      board = board.slice(0, 10);
       saveLeaderboard(board);
       renderLeaderboard();
     }
 
-    // ---------- END LEADERBOARD HELPERS ----------
+    // ---------------- VISUAL BACKGROUND & FX ----------------
 
     function initDust() {
       gameState.dust = [];
@@ -394,6 +574,28 @@
       livesHeartsEl.innerHTML = html;
     }
 
+    function hideShareModal() {
+      if (shareModal) shareModal.classList.remove("active");
+    }
+
+    function showShareModal() {
+      if (!shareModal || !shareStatsEl) return;
+
+      const score = gameState.score;
+      const wave = gameState.wave;
+      const combo = gameState.maxCombo;
+      const rankText = lastRunRank
+        ? `Rank <strong>#${lastRunRank}</strong> this week`
+        : `On the weekly board`;
+
+      shareStatsEl.innerHTML =
+        `Score: <strong>${score}</strong> · Wave <strong>${wave}</strong><br>` +
+        `Best combo: <strong>${combo}</strong><br>` +
+        `${rankText}`;
+
+      shareModal.classList.add("active");
+    }
+
     function resetGameState() {
       gameState.score = 0;
       gameState.lives = 3;
@@ -403,9 +605,9 @@
       gameState.projectiles = [];
       gameState.powerUps = [];
       gameState.spawnTimer = 0;
-      gameState.spawnInterval = 800;
-      gameState.baseFallSpeed = 170;
-      gameState.fallSpeed = 170;
+      gameState.spawnInterval = 950;
+      gameState.baseFallSpeed = 150;
+      gameState.fallSpeed = 150;
       gameState.damageFlash = 0;
       gameState.shieldImpactFlash = 0;
       gameState.shake = 0;
@@ -424,6 +626,8 @@
       gameState.waveOverlayTimer = 2.5;
       gameState.bgPhase = 0;
       gameState.gentleMomentTimer = 0;
+      lastRunRank = null;
+      hideShareModal();
 
       updateHUD();
       comboLabel.textContent = "0";
@@ -440,13 +644,16 @@
     function spawnProjectile() {
       const padding = 30;
       const x = Math.random() * (canvas.width - padding * 2) + padding;
-      const zigzag = gameState.wave >= 8 ? (Math.random() - 0.5) * 45 : 0;
+      const zigzag =
+        gameState.wave >= 10
+          ? (Math.random() - 0.5) * 30
+          : 0;
 
       gameState.projectiles.push({
         x,
         y: -20,
         radius: 10,
-        speed: gameState.fallSpeed + Math.random() * 50,
+        speed: gameState.fallSpeed + Math.random() * 40,
         vx: zigzag
       });
     }
@@ -466,9 +673,9 @@
     function adjustShieldBaseWidthForWave() {
       const w = gameState.wave;
       let base = BASE_SHIELD_WIDTH;
-      if (w >= 4 && w < 7) base = 110;
-      else if (w >= 7 && w < 10) base = 100;
-      else if (w >= 10) base = 92;
+      if (w >= 5 && w < 9) base = 110;
+      else if (w >= 9 && w < 13) base = 102;
+      else if (w >= 13) base = 96;
 
       gameState.baseShieldWidth = base;
       if (gameState.powerUpState.shieldWideTimer <= 0) {
@@ -504,14 +711,14 @@
       gameState.wave++;
 
       if (gameState.wave <= 3) {
-        gameState.spawnInterval = Math.max(650, gameState.spawnInterval - 60);
-        gameState.baseFallSpeed += 15;
+        gameState.spawnInterval = Math.max(750, gameState.spawnInterval - 40);
+        gameState.baseFallSpeed += 10;
       } else if (gameState.wave <= 6) {
-        gameState.spawnInterval = Math.max(540, gameState.spawnInterval - 80);
-        gameState.baseFallSpeed += 20;
+        gameState.spawnInterval = Math.max(650, gameState.spawnInterval - 50);
+        gameState.baseFallSpeed += 12;
       } else {
-        gameState.spawnInterval = Math.max(430, gameState.spawnInterval - 90);
-        gameState.baseFallSpeed += 24;
+        gameState.spawnInterval = Math.max(600, gameState.spawnInterval - 50);
+        gameState.baseFallSpeed += 15;
       }
       gameState.fallSpeed = gameState.baseFallSpeed;
 
@@ -542,13 +749,13 @@
         g.spawnTimer = 0;
         spawnProjectile();
 
-        if (g.wave >= 3 && Math.random() < 0.25) {
+        if (g.wave >= 3 && Math.random() < 0.18) {
           spawnProjectile();
         }
-        if (g.wave >= 7 && Math.random() < 0.35) {
+        if (g.wave >= 7 && Math.random() < 0.25) {
           spawnProjectile();
         }
-        if (g.wave >= 10 && Math.random() < 0.45) {
+        if (g.wave >= 11 && Math.random() < 0.30) {
           spawnProjectile();
         }
       }
@@ -632,11 +839,11 @@
             });
           }
 
-          if (g.combo >= 15 && g.gentleMomentTimer <= 0) {
+          if (g.combo >= 12 && g.gentleMomentTimer <= 0) {
             triggerGentleMoment();
           }
 
-          if (g.wave >= 3 && g.combo >= 8 && Math.random() < 0.09) {
+          if (g.wave >= 3 && g.combo >= 6 && Math.random() < 0.14) {
             spawnPowerUp(p.x);
           }
 
@@ -666,7 +873,8 @@
             g.gameOver = true;
             running = false;
             saveBestScore();
-            recordRunToLeaderboard(); // NEW: save best run per player to leaderboard
+            recordRunToLeaderboard();
+            showShareModal();
             break;
           }
         }
@@ -714,36 +922,27 @@
       updateHUD();
     }
 
+    // ---------------- DRAWING ----------------
+
     function drawBackground() {
       const phase = gameState.bgPhase || 0;
       const t = 0.5 + 0.5 * Math.sin(phase);
 
-      const topR = lerp(4, 8, t);
-      const topG = lerp(24, 44, t);
-      const topB = lerp(18, 26, t);
-      const bottomR = lerp(1, 2, t);
-      const bottomG = lerp(7, 12, t);
-      const bottomB = lerp(5, 8, t);
+      const topG = lerp(18, 30, t);
+      const bottomG = lerp(6, 10, t);
 
       const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, `rgb(${topR.toFixed(0)},${topG.toFixed(0)},${topB.toFixed(0)})`);
-      grad.addColorStop(1, `rgb(${bottomR.toFixed(0)},${bottomG.toFixed(0)},${bottomB.toFixed(0)})`);
+      grad.addColorStop(0, `rgb(4,${topG.toFixed(0)},10)`);
+      grad.addColorStop(1, `rgb(0,${bottomG.toFixed(0)},3)`);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Floating dust
       for (const d of gameState.dust) {
-        ctx.fillStyle = `rgba(170, 220, 190, ${d.alpha.toFixed(2)})`;
+        ctx.fillStyle = `rgba(130, 230, 180, ${d.alpha.toFixed(2)})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      // Symbolism glyphs
-      drawSymbolGlyphs();
-
-      // Warrior silhouette
-      drawWarriorSilhouette();
 
       const vGrad = ctx.createRadialGradient(
         canvas.width / 2,
@@ -757,98 +956,6 @@
       vGrad.addColorStop(1, "rgba(0,0,0,0.75)");
       ctx.fillStyle = vGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function drawSymbolGlyphs() {
-      ctx.save();
-      ctx.globalAlpha = 0.12;
-      ctx.lineWidth = 1.2;
-      ctx.strokeStyle = "#65c97c";
-
-      // Heart glyph (top-left)
-      const hx = canvas.width * 0.22;
-      const hy = canvas.height * 0.2;
-      const hSize = 14;
-      ctx.beginPath();
-      ctx.moveTo(hx, hy + hSize * 0.4);
-      ctx.bezierCurveTo(
-        hx - hSize, hy - hSize * 0.4,
-        hx - hSize * 0.2, hy - hSize,
-        hx, hy - hSize * 0.2
-      );
-      ctx.bezierCurveTo(
-        hx + hSize * 0.2, hy - hSize,
-        hx + hSize, hy - hSize * 0.4,
-        hx, hy + hSize * 0.4
-      );
-      ctx.stroke();
-
-      // Shield glyph (top-right)
-      const sx = canvas.width * 0.78;
-      const sy = canvas.height * 0.22;
-      const sW = 20;
-      const sH = 24;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy - sH / 2);
-      ctx.lineTo(sx + sW / 2, sy - 2);
-      ctx.lineTo(sx + sW / 4, sy + sH / 2);
-      ctx.lineTo(sx - sW / 4, sy + sH / 2);
-      ctx.lineTo(sx - sW / 2, sy - 2);
-      ctx.closePath();
-      ctx.stroke();
-
-      // Sword glyph (left side)
-      const swx = canvas.width * 0.15;
-      const swy = canvas.height * 0.52;
-      ctx.beginPath();
-      ctx.moveTo(swx, swy - 16);
-      ctx.lineTo(swx, swy + 12);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(swx - 6, swy + 4);
-      ctx.lineTo(swx + 6, swy + 4);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(swx - 3, swy - 16);
-      ctx.lineTo(swx, swy - 22);
-      ctx.lineTo(swx + 3, swy - 16);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    function drawWarriorSilhouette() {
-      ctx.save();
-      const cx = canvas.width / 2;
-      const cy = canvas.height * 0.66;
-
-      ctx.globalAlpha = 0.11;
-      ctx.fillStyle = "#0f3926";
-
-      // Cape
-      ctx.beginPath();
-      ctx.moveTo(cx - 32, cy + 8);
-      ctx.lineTo(cx + 32, cy + 8);
-      ctx.lineTo(cx + 6, cy + 64);
-      ctx.lineTo(cx - 18, cy + 64);
-      ctx.closePath();
-      ctx.fill();
-
-      // Shoulders / torso
-      ctx.beginPath();
-      ctx.moveTo(cx - 18, cy - 4);
-      ctx.lineTo(cx + 18, cy - 4);
-      ctx.lineTo(cx + 12, cy + 18);
-      ctx.lineTo(cx - 12, cy + 18);
-      ctx.closePath();
-      ctx.fill();
-
-      // Head
-      ctx.beginPath();
-      ctx.arc(cx, cy - 16, 12, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
     }
 
     function drawCardFrame() {
@@ -1110,7 +1217,7 @@
       ctx.globalAlpha = alpha * 0.9;
       ctx.fillStyle = "#e8f6ec";
       ctx.textAlign = "center";
-      ctx.font = "bold 14px system-ui";  // smaller than original 16px
+      ctx.font = "bold 14px system-ui";
       ctx.fillText(
         gameState.waveOverlayText,
         canvas.width / 2,
@@ -1128,7 +1235,7 @@
       ctx.globalAlpha = alpha * 0.85;
       ctx.fillStyle = "#fff5d5";
       ctx.textAlign = "center";
-      ctx.font = "bold 13px system-ui"; // smaller than original 15px
+      ctx.font = "bold 13px system-ui";
       ctx.fillText(
         "Gentle Moment — The heart feels safe.",
         canvas.width / 2,
@@ -1162,16 +1269,16 @@
         ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#e8f6ec";
-        ctx.font = "bold 18px system-ui";  // smaller than 20px
+        ctx.font = "bold 18px system-ui";
         ctx.textAlign = "center";
         ctx.fillText("Run ended", canvas.width / 2, canvas.height / 2 - 6);
-        ctx.font = "12px system-ui";       // smaller than 14px
+        ctx.font = "12px system-ui";
         ctx.fillText(
           "Score " + gameState.score + ". The heart is grateful.",
           canvas.width / 2,
           canvas.height / 2 + 16
         );
-        ctx.font = "11px system-ui";       // smaller than 12px
+        ctx.font = "11px system-ui";
         ctx.fillText(
           "Best combo: " + gameState.maxCombo,
           canvas.width / 2,
@@ -1297,7 +1404,7 @@
     });
 
     startBtn.addEventListener("click", () => {
-      ensurePlayerName(); // make sure may name bago maglaro
+      ensurePlayerName();
       if (gameState.gameOver) resetGameState();
       running = true;
       statusMessage.textContent = "Breathe, focus, and guard the heart.";
@@ -1309,6 +1416,47 @@
       running = false;
     });
 
+    // ---- SHARE ON X AFTER RUN (from modal) ----
+    function buildShareText() {
+      const score = gameState.score;
+      const wave = gameState.wave;
+      const combo = gameState.maxCombo;
+      const rank = lastRunRank;
+
+      if (gameState.gameOver && score > 0) {
+        const rankText = rank ? `Rank #${rank} this week` : "On the weekly board";
+        return `I just finished a run in HEART DEFENDER — Gentle Warrior.\n${rankText}: ${score} pts · Wave ${wave} · Best combo ${combo}.\n\nJoin our gentle battle and help protect the emerald heart. #GentleWarrior #HeartDefender`;
+      } else {
+        const best = parseInt(bestScoreSpan.textContent || "0", 10);
+        if (best > 0) {
+          return `I'm playing HEART DEFENDER — Gentle Warrior.\nMy best score so far is ${best} pts.\n\nTry to beat my run and help guard the emerald heart. #GentleWarrior #HeartDefender`;
+        }
+        return `I'm trying HEART DEFENDER — Gentle Warrior for the first time.\nQuiet focus, gentle defense.\n\nCome play and help protect the emerald heart. #GentleWarrior #HeartDefender`;
+      }
+    }
+
+    if (shareBtn) {
+      shareBtn.addEventListener("click", () => {
+        const text = buildShareText();
+        const gameUrl = "https://gentlewarrior.example/heart-defender"; // TODO: palitan sa real URL
+        const tweetUrl =
+          "https://twitter.com/intent/tweet?text=" +
+          encodeURIComponent(text) +
+          "&url=" +
+          encodeURIComponent(gameUrl);
+
+        window.open(tweetUrl, "_blank", "noopener");
+      });
+    }
+
+    if (closeShareBtn) {
+      closeShareBtn.addEventListener("click", () => {
+        hideShareModal();
+      });
+    }
+
+    // ---- INIT ----
+    ensureSeason();
     initDust();
     loadBestScore();
     loadPlayerName();
