@@ -20,7 +20,7 @@
           gtag('event', name, params || {});
         }
       } catch (e) {
-          console && console.warn && console.warn('trackEvent error', e);
+        console && console.warn && console.warn('trackEvent error', e);
       }
     }
   </script>
@@ -795,7 +795,7 @@
 
       <h3>What Is Cerebral Palsy?</h3>
       <p>
-        Cerebral palsy is a group of conditions that affect how the brain
+        Cerebral palsy is a group of conditions that affect how the the brain
         controls movement and balance. It usually develops before birth,
         during birth, or in early childhood.
       </p>
@@ -1185,114 +1185,120 @@
         to families living with cerebral palsy.
       </p>
     </section>
-
-    <!-- GAME -->
-<section id="game" class="panel">
-
-  <!-- Game list / hub -->
-  <div class="chess-corner" style="margin-top:0;margin-bottom:1.4rem;">
-    <h3 style="margin-bottom:0.6rem;">Gentle Warrior Games</h3>
-    <ul style="list-style:none;padding:0;margin:0;font-size:14px;text-align:left;">
-      <li>🧠 <a href="#play" style="color:#9ae07a;text-decoration:none;">Memory Game</a></li>
-      <li>🛡 <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">Heart Defender</a></li>
-      <li>🧠 <a href="cp-myths-quiz.html" style="color:#9ae07a;text-decoration:none;">CP Myths Quiz</a></li>
-    </ul>
-  </div>
-
-  <!-- MEMORY GAME -->
-  <h2 style="text-align:center;margin-top:0">
-    <a href="#play" style="color:#9ae07a;text-decoration:none;">
-      🧠 Memory Game — Weekly Challenge
-    </a>
-  </h2>
-
-  <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
-    Loading season timer…
-  </div>
-
-  <p id="deviceNote" class="game-hint">
-    Best experienced on mobile — just tap Start to play.
-  </p>
-
-  <p class="game-hint">
-    Clear <strong>Stage 7</strong> to fully complete this week's Gentle Warrior Memory Trial.
-  </p>
-
-  <div id="controls">
-    <input id="gw-player-name" placeholder="Your public name">
-    <button id="gw-save-name" class="btn">Save</button>
-  </div>
-
-  <div style="text-align:center;margin-bottom:8px;font-size:12px;color:var(--muted);">
-    Use the SAME name every run so your best score stays under one identity.
-  </div>
-
-  <div style="text-align:center;margin-bottom:8px;">
-    <button id="startBtn" class="btn">Start</button>
-    <button id="resetBtn" class="btn btn-secondary">Reset</button>
-  </div>
-
-  <div id="stats">Time: 00:00 • Moves: 0</div>
-  <div id="stageInfo">Stage 1 of 7</div>
-
-  <div id="gameBoard"></div>
-
-  <div id="myBestRun" style="text-align:center;margin-top:10px;margin-bottom:6px;font-size:13px;color:var(--muted);">
-    Loading your best run…
-  </div>
-
-  <div id="sessionHook" style="text-align:center;margin-bottom:10px;font-size:12px;color:var(--muted);">
-    Keep playing to beat your best run this week.
-  </div>
-
-  <div class="leaderboard-box">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
-      <strong>Weekly Leaderboard (Top 10)</strong>
-      <span style="color:var(--muted);font-size:12px;">Season resets every Monday (UTC).</span>
-    </div>
-    <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
-  </div>
-
-  <!-- HEART DEFENDER -->
-  <hr style="margin:2rem 0; opacity:0.35;">
-  <div class="chess-corner">
-    <h3>
-      <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">
-        🛡 Heart Defender
-      </a>
-    </h3>
-    <p>
-      Protect the emerald heart. Every block is a small act of care.
-    </p>
-    <a href="heart-defender.html" class="btn">
-      Play Heart Defender
-    </a>
-    <p class="chess-note">
-      Built inside the Gentle Warrior universe.
-    </p>
-  </div>
-
-  <!-- CP MYTHS QUIZ -->
-  <hr style="margin:2rem 0; opacity:0.35;">
-  <div class="chess-corner">
-    <h3>
-      <a href="cp-myths-quiz.html" style="color:#9ae07a;text-decoration:none;">
-        🧠 CP Myths Quiz
-      </a>
-    </h3>
-    <p>
-      Gently bust myths about cerebral palsy.  
-      Every question is a small act of awareness.
-    </p>
-    <a href="cp-myths-quiz.html" class="btn">
-      Play CP Myths Quiz
-    </a>
-    <p class="chess-note">
-      Learn about inclusion, therapy, and rights — one myth at a time.
-    </p>
-  </div>
-
 </section>
+<!-- GAME -->
+    <section id="game" class="panel">
+
+      <!-- Game list / hub -->
+      <div class="chess-corner" style="margin-top:0;margin-bottom:1.4rem;">
+        <h3 style="margin-bottom:0.6rem;">Gentle Warrior Games</h3>
+        <ul style="list-style:none;padding:0;margin:0;font-size:14px;text-align:left;">
+          <li>🧠 <a href="#play" style="color:#9ae07a;text-decoration:none;">Memory Game</a></li>
+          <li>🛡 <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">Heart Defender</a></li>
+          <li>🧠 <a href="cp-myths-quiz.html" style="color:#9ae07a;text-decoration:none;">CP Myths Quiz</a></li>
+          <li>♟ <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">Chess</a></li>
+        </ul>
+      </div>
+
+      <h2 style="text-align:center;margin-top:0">
+        <a href="#play" style="color:#9ae07a;text-decoration:none;">
+          🧠 Memory Game — Weekly Challenge
+        </a>
+      </h2>
+      <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
+        Loading season timer…
+      </div>
+
+      <!-- helper hints -->
+      <p id="deviceNote" class="game-hint">
+        Best experienced on mobile — just tap Start to play.
+      </p>
+      <p class="game-hint">
+        Clear <strong>Stage 7</strong> to fully complete this week's Gentle Warrior Memory Trial.
+      </p>
+
+      <div id="controls">
+        <input id="gw-player-name" placeholder="Your public name">
+        <button id="gw-save-name" class="btn">Save</button>
+      </div>
+
+      <div style="text-align:center;margin-bottom:8px;font-size:12px;color:var(--muted);">
+        Use the SAME name every run so your best score stays under one identity.
+      </div>
+
+      <div style="text-align:center;margin-bottom:8px;">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+      </div>
+
+      <div id="stats">Time: 00:00 • Moves: 0</div>
+      <div id="stageInfo">Stage 1 of 7</div>
+
+      <div id="gameBoard"></div>
+
+      <div id="myBestRun" style="text-align:center;margin-top:10px;margin-bottom:6px;font-size:13px;color:var(--muted);">
+        Loading your best run…
+      </div>
+      <div id="sessionHook" style="text-align:center;margin-bottom:10px;font-size:12px;color:var(--muted);">
+        Keep playing to beat your best run this week.
+      </div>
+
+      <div class="leaderboard-box">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+          <strong>Weekly Leaderboard (Top 10)</strong>
+          <span style="color:var(--muted);font-size:12px;">Season resets automatically every Monday (UTC).</span>
+        </div>
+        <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
+      </div>
+
+      <!-- ======================= -->
+      <!-- ♟ CHESS CORNER -->
+      <!-- ======================= -->
+      <hr style="margin:2rem 0; opacity:0.35;">
+
+      <div class="chess-corner">
+        <h3>
+          <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">
+            ♟ Gentle Warrior Chess Corner
+          </a>
+        </h3>
+        <p>
+          Want a calm strategy game? Train patience, focus, and quiet strength through chess.
+        </p>
+
+        <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" class="btn">
+          Play Chess (opens in new tab)
+        </a>
+
+        <p class="chess-note">
+          We link to a trusted free chess platform while we build our own Gentle Warrior Chess mode.
+        </p>
+      </div>
+
+      <!-- ======================= -->
+      <!-- 🛡 HEART DEFENDER -->
+      <!-- ======================= -->
+      <hr style="margin:2rem 0; opacity:0.35;">
+
+      <div class="chess-corner">
+        <h3>
+          <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">
+            🛡 Heart Defender
+          </a>
+        </h3>
+        <p>
+          Protect the emerald heart. Every block is a small act of care.
+        </p>
+
+        <a href="heart-defender.html" class="btn">
+          Play Heart Defender
+        </a>
+
+        <p class="chess-note">
+          Built inside the Gentle Warrior universe.
+        </p>
+      </div>
+    </section>
 
     <!-- ANNOUNCEMENTS -->
     <section id="announcements" class="panel" style="display:none">
@@ -1956,8 +1962,7 @@
 
     winShareBtn.addEventListener('click', shareOnX);
   </script>
-
-  <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
       getFirestore,
@@ -1989,15 +1994,18 @@
     const runsCol    = collection(db, "runs");
 
     function isoWeekId(date = new Date()){
-      const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getDate()));
+      const d = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() // instead of date.getDate()
+      ));
       d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
       const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
       return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
     }
     function currentSeasonId(){
-      const base = isoWeekId();
-      return `${base}-ms1`;
+      return isoWeekId();
     }
 
     function getDeviceTag(){
@@ -2152,15 +2160,32 @@
       lb.textContent = "Loading leaderboard…";
 
       const seasonId = currentSeasonId();
+      const oldSeasonId = seasonId + "-ms1";  // para masalo yung luma
 
       try{
-        const qRef = query(
-          playersCol,
-          where("currentSeasonId", "==", seasonId)
-        );
-        const snaps = await getDocs(qRef);
         const arr = [];
-        snaps.forEach(s=>{
+
+        // NEW: kunin parehong bagong seasonId at lumang may -ms1
+        const snapsNew = await getDocs(
+          query(playersCol, where("currentSeasonId", "==", seasonId))
+        );
+        snapsNew.forEach(s => {
+          const d = s.data();
+          if(d.currentWeekStage != null){
+            arr.push({
+              name: d.name || "Warrior",
+              moves: d.currentWeekMoves,
+              time: d.currentWeekTimeMs || 0,
+              stage: d.currentWeekStage,
+              completed: !!d.currentWeekCompleted
+            });
+          }
+        });
+
+        const snapsOld = await getDocs(
+          query(playersCol, where("currentSeasonId", "==", oldSeasonId))
+        );
+        snapsOld.forEach(s => {
           const d = s.data();
           if(d.currentWeekStage != null){
             arr.push({
@@ -2188,10 +2213,8 @@
         );
 
         const finalLeaderboard = [...cleared, ...others];
-        arr.length = 0;
-        arr.push(...finalLeaderboard);
 
-        if(!arr.length){
+        if(!finalLeaderboard.length){
           lb.textContent = "No runs recorded for this week yet. Be the first!";
           window.myCurrentRank = null;
           return;
@@ -2200,31 +2223,24 @@
         const myName = localStorage.getItem("gw_player_name") || "Warrior";
         window.myCurrentRank = null;
 
-        const lines = [];
-        finalLeaderboard.slice(0,10).forEach((p,idx)=>{
+        lb.innerHTML = finalLeaderboard.slice(0,10).map((p,idx)=>{
           const rank = idx+1;
           const seconds = Math.round((p.time || 0)/1000);
           const label = p.completed && p.stage === 7
             ? `Stage 7 • ${p.moves} moves • ${seconds}s`
             : `Stage ${p.stage} • ${p.moves} moves • ${seconds}s`;
 
-          lines.push({
-            rank,
-            name: p.name,
-            label
-          });
-
           if(p.name === myName && window.myCurrentRank == null){
             window.myCurrentRank = rank;
           }
-        });
 
-        lb.innerHTML = lines.map(row=>`
-          <div class="leader-row">
-            <div>#${row.rank} — ${row.name}</div>
-            <div>${row.label}</div>
-          </div>
-        `).join('');
+          return `
+            <div class="leader-row">
+              <div>#${rank} — ${p.name}</div>
+              <div>${label}</div>
+            </div>
+          `;
+        }).join('');
 
       } catch(e){
         console.error(e);
@@ -2237,4 +2253,4 @@
     renderLeaderboard().then(loadMyBestRun).catch(()=>{});
   </script>
 </body>
-</html>
+  </html>
