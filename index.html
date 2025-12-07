@@ -512,7 +512,6 @@
       <button class="tab-btn" data-tab="caregivers">Care Team</button>
       <button class="tab-btn" data-tab="faq">FAQ</button>
       <button class="tab-btn active" data-tab="game">Game</button>
-      <button class="tab-btn" data-tab="chart">Chart</button>
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
 
@@ -718,7 +717,7 @@
              data-name="Emerald"
              data-lore="Emerald represents healing, life, growth, and hope. It is also connected to cerebral palsy awareness — a reminder that even within limits, there is life and possibility.">
           <img src="symbol-emerald.png" alt="Emerald" loading="lazy">
-          <div class="symbol-name">Emerald Color</div>
+          <div class="symbol-name">Emerald</div>
           <div class="symbol-desc">Healing, growth, hope</div>
         </div>
 
@@ -1289,17 +1288,6 @@
       </div>
     </section>
 
-    <!-- CHART -->
-    <section id="chart" class="panel" style="display:none">
-      <h2 style="text-align:center;margin-top:0;">Live Token Chart</h2>
-      <p style="text-align:center;font-size:14px;color:var(--muted);">
-        Once the token is live, the official chart will appear here. Always verify the contract address in the green box above.
-      </p>
-      <div id="chartContent" style="margin-top:12px;">
-        <p style="text-align:center;font-size:13px;color:var(--muted);">Loading chart…</p>
-      </div>
-    </section>
-
     <!-- ANNOUNCEMENTS -->
     <section id="announcements" class="panel" style="display:none">
       <h2>Announcements</h2>
@@ -1319,6 +1307,9 @@
       <p class="footer-disclaimer">
         All games, NFTs, and any future tokens are for education, awareness, and community participation only —
         they are NOT investment products and no profit is promised or implied.
+      </p>
+      <p class="footer-disclaimer">
+        This project does not offer investments, securities, or financial services in any country.
       </p>
       <p class="footer-disclaimer">
         Participation is voluntary and at your own risk. Never spend money you cannot afford to lose.
@@ -1361,7 +1352,7 @@
         tabButtons.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        ['home','symbols','symbolism','awareness','families','caregivers','faq','game','chart','announcements'].forEach(id=>{
+        ['home','symbols','symbolism','awareness','families','caregivers','faq','game','announcements'].forEach(id=>{
           const el = document.getElementById(id);
           if(el) el.style.display = (id===tab?'block':'none');
         });
@@ -1438,17 +1429,6 @@
         if (box) box.innerHTML = '<p>Unable to load announcements right now.</p>';
       });
 
-    fetch('chart.html')
-      .then(r => r.text())
-      .then(html => {
-        const box = document.getElementById('chartContent');
-        if (box) box.innerHTML = html || '<p style="text-align:center;font-size:13px;color:var(--muted);">Chart will appear here when live.</p>';
-      })
-      .catch(()=>{
-        const box = document.getElementById('chartContent');
-        if (box) box.innerHTML = '<p style="text-align:center;font-size:13px;color:var(--muted);">Unable to load chart right now.</p>';
-      });
-
     function loadSocials(){
       fetch('socials.html')
         .then(r=>r.text())
@@ -1486,15 +1466,69 @@
       if(e.target === modal) modal.classList.remove('active');
     });
 
+    // Sa halip na i-load ang lumang token card, kunin lang natin ang address sa ca.html
+    // at buuin dito ang mas conservative na card + neutral DEX button.
     fetch('ca.html')
-      .then(r=>r.text())
-      .then(html=>{
+      .then(r => r.text())
+      .then(text => {
         const box = document.getElementById('caBox');
-        if(box) box.innerHTML = html;
+        if (!box) return;
+
+        // Hanapin ang unang mukhang base58 address (Solana-style)
+        const match = text.match(/[1-9A-HJ-NP-Za-km-z]{32,64}/);
+        const ca = match ? match[0] : 'Contract address unavailable';
+        const dexUrl = match ? `https://dexscreener.com/solana/${ca}` : '#';
+
+        box.innerHTML = `
+          <div style="font-weight:700;margin-bottom:6px;">
+            $GWAR — Awareness Token
+          </div>
+          <p style="margin-bottom:6px;font-size:13px;">
+            $GWAR is a community &amp; awareness token used inside the Gentle Warrior universe.
+            It is <strong>not</strong> an investment product and does not promise any profit, yield, or financial return.
+          </p>
+          <p style="margin-bottom:8px;font-size:13px;">
+            Buying or selling $GWAR is completely optional and <strong>not required</strong> to join our games, content, or community.
+          </p>
+          <div style="margin-bottom:6px;font-size:13px;">
+            Contract address and links are provided for reference only. They are not a buy or sell recommendation:
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;">
+            <div style="flex:1;min-width:180px;padding:6px 8px;border-radius:10px;background:#020f08;font-family:monospace;font-size:12px;word-break:break-all;">
+              ${ca}
+            </div>
+            <button id="copyCaBtn" class="btn" style="padding:6px 10px;font-size:13px;">
+              Copy
+            </button>
+            <a id="openDexBtn" href="${dexUrl}" target="_blank" rel="noopener noreferrer"
+               class="btn btn-secondary" style="padding:6px 10px;font-size:13px;">
+              Token Details
+            </a>
+          </div>
+          <p style="margin-top:4px;font-size:12px;">
+            We do not operate any exchange or provide trading services. If you choose to trade $GWAR on third-party platforms,
+            you do so independently and at your own risk.
+          </p>
+        `;
+
+        const copyBtn = document.getElementById('copyCaBtn');
+        if (copyBtn && match) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(match[0]).then(() => {
+              alert('Contract address copied.');
+            }).catch(() => {
+              alert('Unable to copy. Please copy manually.');
+            });
+          });
+        } else if (copyBtn) {
+          copyBtn.disabled = true;
+        }
       })
-      .catch(()=>{
+      .catch(() => {
         const box = document.getElementById('caBox');
-        if(box) box.textContent = 'Unable to load contract info right now.';
+        if (box) {
+          box.textContent = 'Unable to load contract info right now.';
+        }
       });
 
     const nameInput = document.getElementById('gw-player-name');
@@ -1564,14 +1598,15 @@
       'symbol-zeratheon.png'
     ];
 
+    /* 🔧 SEASON 2 DIFFICULTY (TUNED) */
     const STAGES = [
-      { stage:1, pairs:3, cols:3, rows:2,              moveLimit:14, mistakeLimit:4 },
-      { stage:2, pairs:4, cols:4, rows:2,              moveLimit:16, mistakeLimit:4 },
-      { stage:3, pairs:5, cols:5, rows:2,              moveLimit:18, mistakeLimit:3 },
-      { stage:4, pairs:6, cols:4, rows:3,              moveLimit:20, mistakeLimit:3 },
-      { stage:5, pairs:7, cols:4, rows:4, gapSlots:[5,10], moveLimit:22, mistakeLimit:2 },
-      { stage:6, pairs:8, cols:4, rows:4,              moveLimit:24, mistakeLimit:1 },
-      { stage:7, pairs:9, cols:5, rows:4, gapSlots:[7,12], moveLimit:26, mistakeLimit:1 }
+      { stage:1, pairs:3, cols:3, rows:2,                 moveLimit:16, mistakeLimit:6 },
+      { stage:2, pairs:4, cols:4, rows:2,                 moveLimit:18, mistakeLimit:5 },
+      { stage:3, pairs:5, cols:5, rows:2,                 moveLimit:22, mistakeLimit:5 },
+      { stage:4, pairs:6, cols:4, rows:3,                 moveLimit:26, mistakeLimit:4 },
+      { stage:5, pairs:7, cols:4, rows:4, gapSlots:[5,10], moveLimit:30, mistakeLimit:4 },
+      { stage:6, pairs:8, cols:4, rows:4,                 moveLimit:34, mistakeLimit:3 },
+      { stage:7, pairs:9, cols:5, rows:4, gapSlots:[7,12], moveLimit:38, mistakeLimit:3 }
     ];
 
     let currentStageIndex = 0;
@@ -2197,4 +2232,3 @@
   </script>
 </body>
 </html>
-
