@@ -267,9 +267,15 @@
     <!-- Leaderboard (Top 10 players, weekly) -->
     <div id="leaderboard" style="margin-top:8px; font-size:0.72rem; text-align:center; color:rgba(185,215,196,0.85);">
       <div style="font-weight:600; margin-bottom:2px;">Top 10 players (weekly)</div>
+      <div style="margin-bottom:3px; font-size:0.7rem; opacity:0.8;">
+        Weekly battle resets every Monday (UTC).
+      </div>
       <ol id="leaderboardList" style="padding-left:18px; text-align:left; display:inline-block; margin:0;">
         <!-- filled by JS -->
       </ol>
+      <div id="rankLine" style="margin-top:4px; font-size:0.7rem; opacity:0.9;">
+        Your rank this week: Play a full run to appear on the board.
+      </div>
     </div>
 
     <!-- Share Modal -->
@@ -292,6 +298,7 @@
     </div>
   </main>
 
+  <!-- MAIN GAME LOGIC SCRIPT (UNTOUCHED) -->
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
@@ -1463,6 +1470,262 @@
     renderLeaderboard();
     resetGameState();
     render();
+  </script>
+
+  <!-- STEP 2 – FIRESTORE MODULE (GLOBAL LEADERBOARD) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      setDoc,
+      addDoc,
+      updateDoc,
+      serverTimestamp,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+      authDomain: "gentle-warrior.firebaseapp.com",
+      projectId: "gentle-warrior",
+      storageBucket: "gentle-warrior.firebasestorage.app",
+      messagingSenderId: "206508766648",
+      appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    const playersCol = collection(db, "heartPlayers");
+    const runsCol    = collection(db, "heartRuns");
+
+    function isoWeekId(date = new Date()){
+      const d = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
+      ));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
+    }
+
+    function currentSeasonId(){
+      return isoWeekId() + "-heart-v2";
+    }
+
+    function getDeviceTag(){
+      let tag = localStorage.getItem("gw_heart_device_tag");
+      if(!tag){
+        tag = "heart_" + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem("gw_heart_device_tag", tag);
+      }
+      return tag;
+    }
+
+    async function ensurePlayer(deviceTag, name){
+      const pRef = doc(playersCol, deviceTag);
+      const snap = await getDoc(pRef);
+      if(!snap.exists()){
+        await setDoc(pRef, {
+          name,
+          deviceTag,
+          seasonId: currentSeasonId(),
+          bestSeasonScore: null,
+          bestSeasonWave:  null,
+          bestSeasonCombo: null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        return { pRef, data: null };
+      } else {
+        const data = snap.data();
+        try{
+          await updateDoc(pRef, {
+            name,
+            updatedAt: serverTimestamp()
+          });
+        }catch(e){}
+        return { pRef, data };
+      }
+    }
+
+    function isBetterRun(newRun, oldRun){
+      if(!oldRun) return true;
+      if(newRun.score !== oldRun.score) return newRun.score > oldRun.score;
+      if(newRun.wave !== oldRun.wave)   return newRun.wave > oldRun.wave;
+      return newRun.maxCombo > oldRun.maxCombo;
+    }
+
+    async function computeRank(deviceTag, seasonId){
+      const qRef = query(playersCol, where("seasonId", "==", seasonId));
+      const snap = await getDocs(qRef);
+      const rows = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        if(d.bestSeasonScore != null){
+          rows.push({
+            id: docSnap.id,
+            name: d.name || "Player",
+            score: d.bestSeasonScore,
+            wave:  d.bestSeasonWave  ?? 1,
+            maxCombo: d.bestSeasonCombo ?? 0
+          });
+        }
+      });
+
+      rows.sort((a,b)=>{
+        if(b.score !== a.score) return b.score - a.score;
+        if(b.wave  !== a.wave)  return b.wave  - a.wave;
+        return b.maxCombo - a.maxCombo;
+      });
+
+      const idx = rows.findIndex(r => r.id === deviceTag);
+      return idx >= 0 ? idx + 1 : null;
+    }
+
+    async function renderLeaderboard(seasonId = currentSeasonId()){
+      const listEl = document.getElementById("leaderboardList");
+      const rankLine = document.getElementById("rankLine");
+      if(!listEl) return;
+
+      const qRef = query(playersCol, where("seasonId", "==", seasonId));
+      const snap = await getDocs(qRef);
+      const rows = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        if(d.bestSeasonScore != null){
+          rows.push({
+            name: d.name || "Player",
+            score: d.bestSeasonScore,
+            wave:  d.bestSeasonWave  ?? 1,
+            maxCombo: d.bestSeasonCombo ?? 0
+          });
+        }
+      });
+
+      rows.sort((a,b)=>{
+        if(b.score !== a.score) return b.score - a.score;
+        if(b.wave  !== a.wave)  return b.wave  - a.wave;
+        return b.maxCombo - a.maxCombo;
+      });
+
+      const top = rows.slice(0,10);
+      if(!top.length){
+        listEl.innerHTML = "<li>No runs yet this week</li>";
+        if (rankLine){
+          rankLine.textContent = "Your rank this week: Play a full run to appear on the board.";
+        }
+        return;
+      }
+
+      listEl.innerHTML = top.map(r =>
+        `<li>${r.name}: ${r.score} pts · W${r.wave} · C${r.maxCombo}</li>`
+      ).join("");
+
+      if (rankLine){
+        const myName = (localStorage.getItem("gw_heart_player_name") || "Player").trim() || "Player";
+        const idx = rows.findIndex(r => r.name === myName);
+        if (idx >= 0){
+          const rank = idx + 1;
+          rankLine.textContent = `Your rank this week: #${rank}`;
+          window.heartLastRunRank = rank;
+        } else {
+          rankLine.textContent = "Your rank this week: Play a full run to appear on the board.";
+          window.heartLastRunRank = null;
+        }
+      }
+    }
+
+    async function recordRun(score, wave, maxCombo){
+      const deviceTag = getDeviceTag();
+      let name = localStorage.getItem("gw_heart_player_name") || "Player";
+      name = (name || "").trim() || "Player";
+      const seasonId = currentSeasonId();
+
+      const { pRef, data } = await ensurePlayer(deviceTag, name);
+
+      try{
+        await addDoc(runsCol, {
+          deviceTag,
+          playerName: name,
+          score,
+          wave,
+          maxCombo,
+          seasonId,
+          createdAt: serverTimestamp()
+        });
+      }catch(e){}
+
+      const prevSeasonId = data?.seasonId || null;
+      const oldRun = (prevSeasonId === seasonId && data?.bestSeasonScore != null)
+        ? {
+            score: data.bestSeasonScore,
+            wave:  data.bestSeasonWave  ?? 1,
+            maxCombo: data.bestSeasonCombo ?? 0
+          }
+        : null;
+
+      const newRun = { score, wave, maxCombo };
+
+      if(isBetterRun(newRun, oldRun)){
+        try{
+          await updateDoc(pRef, {
+            name,
+            seasonId,
+            bestSeasonScore: score,
+            bestSeasonWave:  wave,
+            bestSeasonCombo: maxCombo,
+            updatedAt: serverTimestamp()
+          });
+        }catch(e){}
+      }
+
+      const rank = await computeRank(deviceTag, seasonId);
+      await renderLeaderboard(seasonId);
+      window.heartLastRunRank = rank;
+      return rank;
+    }
+
+    window.hdRecordRun = recordRun;
+    window.hdRenderLeaderboard = () => renderLeaderboard();
+
+    renderLeaderboard().catch(console.error);
+  </script>
+
+  <!-- STEP 3 – OVERRIDE recordRunToLeaderboard TO USE FIREBASE -->
+  <script>
+    function recordRunToLeaderboard(){
+      if (window.hdRecordRun && typeof gameState !== "undefined"){
+        window.hdRecordRun(
+          gameState.score,
+          gameState.wave,
+          gameState.maxCombo
+        ).then(function(rank){
+          // sync Firebase rank -> in-game rank + UI line
+          if (typeof rank === "number"){
+            lastRunRank = rank;
+          }
+          const rankLine = document.getElementById("rankLine");
+          if (rankLine){
+            if (typeof rank === "number"){
+              rankLine.textContent = `Your rank this week: #${rank}`;
+            } else {
+              rankLine.textContent = "Your rank this week: Play a full run to appear on the board.";
+            }
+          }
+        }).catch(function(e){
+          console && console.warn && console.warn("HD Firebase run error", e);
+        });
+      }
+      // local best score handling is still done separately via saveBestScore().
+    }
   </script>
 </body>
 </html>
