@@ -1185,9 +1185,20 @@
         to families living with cerebral palsy.
       </p>
     </section>
-
-    <!-- GAME -->
+<!-- GAME -->
     <section id="game" class="panel">
+
+      <!-- Game list / hub -->
+      <div class="chess-corner" style="margin-top:0;margin-bottom:1.4rem;">
+        <h3 style="margin-bottom:0.6rem;">Gentle Warrior Games</h3>
+        <ul style="list-style:none;padding:0;margin:0;font-size:14px;text-align:left;">
+          <li>🧠 <a href="#play" style="color:#9ae07a;text-decoration:none;">Memory Game</a></li>
+          <li>🛡 <a href="heart-defender.html" style="color:#9ae07a;text-decoration:none;">Heart Defender</a></li>
+          <li>🧠 <a href="cp-myths-quiz.html" style="color:#9ae07a;text-decoration:none;">CP Myths Quiz</a></li>
+          <li>♟ <a href="https://lichess.org" target="_blank" rel="noopener noreferrer" style="color:#9ae07a;text-decoration:none;">Chess</a></li>
+        </ul>
+      </div>
+
       <h2 style="text-align:center;margin-top:0">
         <a href="#play" style="color:#9ae07a;text-decoration:none;">
           🧠 Memory Game — Weekly Challenge
@@ -1951,7 +1962,7 @@
     winShareBtn.addEventListener('click', shareOnX);
   </script>
 
-  <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import {
       getFirestore,
@@ -2231,4 +2242,4 @@
     renderLeaderboard().then(loadMyBestRun).catch(()=>{});
   </script>
 </body>
-</html>
+  </html>
