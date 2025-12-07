@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CP Myths Quiz — Gentle Warrior</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+        content="CP Myths Quiz by Gentle Warrior — gently bust myths about cerebral palsy. Awareness, not hype.">
+
+  <style>
+    :root{
+      --bg:#03110a;
+      --card:#0b2a1b;
+      --card-soft:#123524;
+      --accent:#9ae07a;
+      --accent-soft:#21472f;
+      --text:#f4fff7;
+      --muted:#a2b7a6;
+      --danger:#ff8080;
+      --shadow:0 18px 40px rgba(0,0,0,0.6);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    body{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:center;
+      padding:20px 14px;
+      background:radial-gradient(circle at top,#123822 0,#020806 55%);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 15% 80%, rgba(154,224,122,0.08), transparent),
+        radial-gradient(circle at 90% 15%, rgba(154,224,122,0.06), transparent);
+      z-index:-1;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:480px;
+      background:linear-gradient(145deg,#071911,#0f2b1d);
+      border-radius:22px;
+      padding:18px 16px 20px;
+      box-shadow:var(--shadow);
+    }
+
+    .title{
+      text-align:center;
+      margin-bottom:4px;
+      font-size:26px;
+      letter-spacing:.04em;
+    }
+    .title span{
+      margin-right:6px;
+      font-size:24px;
+    }
+    .subtitle{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .helper-top{
+      font-size:11px;
+      color:var(--muted);
+      text-align:center;
+      margin-bottom:10px;
+    }
+
+    .meta-strip{
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:8px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .meta-strip-strong{
+      font-weight:600;
+    }
+
+    .level-buttons{
+      display:flex;
+      gap:6px;
+      margin-bottom:8px;
+    }
+    .level-chip{
+      flex:1;
+      padding:6px 0;
+      font-size:12px;
+      border-radius:999px;
+      border:1px solid rgba(154,224,122,0.5);
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+    }
+    .level-chip.active{
+      background:var(--accent-soft);
+    }
+    .level-chip.locked{
+      border-style:dashed;
+      opacity:0.45;
+      cursor:default;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:18px;
+      padding:12px 14px 18px;
+      box-shadow:0 10px 24px rgba(0,0,0,0.55);
+    }
+
+    .q-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .progress{
+      width:100%;
+      height:6px;
+      border-radius:999px;
+      background:#04140c;
+      overflow:hidden;
+      margin-bottom:10px;
+    }
+    .progress-inner{
+      height:100%;
+      width:0%;
+      background:var(--accent);
+      transition:width .25s ease;
+    }
+
+    .question-text{
+      font-size:18px;
+      line-height:1.5;
+      margin-top:4px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    button{
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn-myth{
+      flex:1;
+      background:#4d1116;
+      color:#ffe6e6;
+    }
+    .btn-fact{
+      flex:1;
+      background:#14582f;
+      color:#ecffef;
+    }
+
+    .feedback{
+      margin-top:12px;
+      font-size:14px;
+      line-height:1.5;
+      padding:10px 12px;
+      border-radius:12px;
+      background:var(--card-soft);
+      border:1px solid rgba(154,224,122,0.3);
+    }
+    .feedback.correct{
+      border-color:rgba(154,224,122,0.9);
+    }
+    .feedback.wrong{
+      border-color:rgba(255,128,128,0.9);
+    }
+    .hidden{display:none;}
+
+    .result{
+      margin-top:14px;
+      background:var(--card-soft);
+      border-radius:18px;
+      padding:16px 14px 18px;
+      text-align:center;
+      box-shadow:0 10px 24px rgba(0,0,0,0.55);
+    }
+
+    .result h2{
+      font-size:20px;
+      margin-bottom:6px;
+    }
+
+    .badge{
+      margin-top:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      display:inline-block;
+      font-size:13px;
+      background:#18442c;
+      border:1px solid rgba(154,224,122,0.8);
+    }
+
+    .collection-text{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .share-x{
+      margin-top:12px;
+      background:#1d9bf0;
+      color:#f5f8fa;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:9px 16px;
+      font-size:14px;
+      border-radius:999px;
+      font-weight:700;
+    }
+    .share-x span.icon{
+      font-size:16px;
+    }
+
+    .btn-secondary{
+      margin-top:8px;
+      display:block;
+      width:100%;
+      background:var(--accent-soft);
+      color:var(--text);
+      font-size:13px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+    }
+    .btn-secondary.hidden{
+      display:none;
+    }
+
+    .footer{
+      margin-top:12px;
+      font-size:11px;
+      color:var(--muted);
+      text-align:center;
+      line-height:1.5;
+    }
+
+    .learn-more{
+      margin-top:10px;
+      max-height:260px;
+      overflow-y:auto;
+      text-align:left;
+    }
+    .learn-more h3{
+      font-size:15px;
+      margin-bottom:6px;
+      text-align:center;
+    }
+    .learn-more-item{
+      margin-bottom:8px;
+      font-size:13px;
+      line-height:1.5;
+    }
+    .learn-more-item strong{
+      display:block;
+    }
+
+    /* ===== BOTTOM GENTLE WARRIOR UNIVERSE AREA ===== */
+
+    .gw-bottom-area{
+      width:100%;
+      max-width:480px;
+      margin:16px auto 4px;
+      padding:0 4px;
+      font-size:13px;
+      color:var(--text);
+    }
+
+    .gw-quote-box{
+      padding:10px 14px;
+      border-radius:14px;
+      background:rgba(0,0,0,0.35);
+      border:1px solid rgba(154,224,122,0.35);
+      line-height:1.5;
+    }
+
+    .gw-next-games{
+      margin-top:12px;
+      padding:10px 14px;
+      border-radius:14px;
+      background:rgba(0,0,0,0.3);
+      border:1px solid rgba(60,120,80,0.8);
+      line-height:1.5;
+    }
+
+    .gw-next-games-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+
+    .gw-next-games-list{
+      list-style:none;
+      padding-left:0;
+      margin:2px 0 0;
+    }
+
+    .gw-next-games-list li{
+      margin-bottom:3px;
+    }
+
+    .gw-link{
+      color:var(--accent);
+      text-decoration:none;
+      border-bottom:1px dashed rgba(154,224,122,0.7);
+    }
+    .gw-link:hover,
+    .gw-link:focus{
+      border-bottom-style:solid;
+    }
+
+    .gw-footer-msg{
+      margin-top:12px;
+      font-size:11px;
+      text-align:center;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .gw-footer-tagline{
+      margin-top:4px;
+      font-size:12px;
+      text-align:center;
+      font-weight:600;
+    }
+
+    @media (max-width:480px){
+      .wrap{border-radius:0;box-shadow:none;}
+      .gw-bottom-area{padding:0 2px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="title"><span>🧠</span>CP MYTHS QUIZ</h1>
+    <p class="subtitle">Gently bust myths about cerebral palsy. Each question is a small act of awareness.</p>
+    <p class="helper-top">
+      This quiz is for learning only. It does not provide medical, legal, or financial advice.
+    </p>
+
+    <div class="meta-strip">
+      <div id="metaLevel" class="meta-strip-strong"></div>
+      <div id="metaStats"></div>
+    </div>
+
+    <div id="levelButtons" class="level-buttons"></div>
+
+    <!-- QUIZ CARD -->
+    <div id="quizCard" class="card">
+      <div class="q-header">
+        <div id="qnum">Question 1 of 7</div>
+        <div id="scoreMini">Score: 0</div>
+      </div>
+
+      <div class="progress">
+        <div id="progressInner" class="progress-inner"></div>
+      </div>
+
+      <div id="questionText" class="question-text"></div>
+
+      <div class="buttons">
+        <button class="btn-myth" onclick="answer('MYTH')">MYTH</button>
+        <button class="btn-fact" onclick="answer('FACT')">FACT</button>
+      </div>
+
+      <div id="feedback" class="feedback hidden"></div>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="resultCard" class="result hidden">
+      <h2 id="scoreText"></h2>
+      <div id="runBadge" class="badge"></div>
+      <div id="collectionText" class="collection-text"></div>
+
+      <button class="share-x" onclick="shareOnX()">
+        <span class="icon">𝕏</span>
+        <span>Share awareness on X</span>
+      </button>
+
+      <button class="btn-secondary" onclick="playAgain()">
+        Try another set in this level
+      </button>
+
+      <button id="continueBtn" class="btn-secondary hidden" onclick="continueToNextLevel()">
+        Continue to next level
+      </button>
+
+      <button class="btn-secondary" onclick="toggleLearnMore()">
+        Review all myths with explanations
+      </button>
+
+      <p class="footer">
+        Gentle Warrior is an awareness and education project.
+        This content does not provide medical, legal, or financial advice.
+        No financial benefit or investment expectancy is implied.
+      </p>
+    </div>
+
+    <!-- LEARN MORE CARD -->
+    <div id="learnMoreCard" class="result hidden learn-more">
+      <h3>All myths & facts in this quiz</h3>
+      <div id="learnMoreList"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM UNIVERSE SECTION -->
+  <div class="gw-bottom-area">
+    <div id="gwQuote" class="gw-quote-box">
+      <!-- random quote injected by JS -->
+    </div>
+
+    <div class="gw-next-games">
+      <div class="gw-next-games-title">
+        Next in the Gentle Warrior Games
+      </div>
+      <ul class="gw-next-games-list">
+        <li>🧠 <a href="index.html#play" class="gw-link">Memory Game</a> — train quiet focus and patience.</li>
+        <li>🛡️ <a href="heart-defender.html" class="gw-link">Heart Defender</a> — protect the emerald heart with gentle defense.</li>
+      </ul>
+    </div>
+
+    <div class="gw-footer-msg">
+      Gentle Warrior is an awareness and education project for children with cerebral palsy.
+      This experience is for learning and reflection only.
+    </div>
+    <div class="gw-footer-tagline">
+      Soft Heart. Strong Spirit. 💚
+    </div>
+  </div>
+
+  <script>
+    /* ========= QUESTION POOL (30 ITEMS, 3 LEVELS) ========= */
+
+    const allQuestions = [
+      // LEVEL 1 – BASIC CP MYTHS
+      {
+        id:1, level:1,
+        q:"Cerebral palsy is contagious.",
+        a:"MYTH",
+        e:"CP is not contagious. It is usually caused by an early brain injury or a difference in brain development."
+      },
+      {
+        id:2, level:1,
+        q:"CP is caused by bad parenting or something the mother did on purpose.",
+        a:"MYTH",
+        e:"CP is not a punishment or anyone’s fault. It is linked to brain development and medical factors, not blame."
+      },
+      {
+        id:3, level:1,
+        q:"All people with cerebral palsy use wheelchairs.",
+        a:"MYTH",
+        e:"CP is a spectrum. Some people walk independently, some use walkers or wheelchairs, and some switch between tools."
+      },
+      {
+        id:4, level:1,
+        q:"Cerebral palsy is a non-progressive condition.",
+        a:"FACT",
+        e:"The original brain injury does not worsen over time. Needs may change as a child grows, but CP itself is non-progressive."
+      },
+      {
+        id:5, level:1,
+        q:"Every child with CP looks and moves in the same way.",
+        a:"MYTH",
+        e:"CP affects people differently. Movement, speech, and posture can vary a lot from one person to another."
+      },
+      {
+        id:6, level:1,
+        q:"Children with CP can learn, play, and enjoy hobbies with support.",
+        a:"FACT",
+        e:"With access, patience, and tools, children with CP can join games, school, hobbies, and family life."
+      },
+      {
+        id:7, level:1,
+        q:"Having cerebral palsy always means a child is in constant pain.",
+        a:"MYTH",
+        e:"Some people with CP do experience pain or fatigue, but not everyone. Any pain they feel deserves respect and care."
+      },
+      {
+        id:8, level:1,
+        q:"Only babies can be diagnosed with CP. If you miss it early, it’s too late.",
+        a:"MYTH",
+        e:"CP is often noticed in early childhood, but sometimes it is confirmed later. Support can still help at any age."
+      },
+      {
+        id:9, level:1,
+        q:"Cerebral palsy affects movement and posture because of differences in the brain.",
+        a:"FACT",
+        e:"CP is caused by an injury or difference in the developing brain that affects movement, posture, and sometimes speech."
+      },
+      {
+        id:10, level:1,
+        q:"Children with CP will never be able to communicate their thoughts or feelings.",
+        a:"MYTH",
+        e:"Many children with CP communicate in different ways — speech, devices, signs, eye-gaze, or a mix of tools."
+      },
+
+      // LEVEL 2 – DAILY LIFE & SCHOOL
+      {
+        id:11, level:2,
+        q:"Children with CP should avoid sports and games completely.",
+        a:"MYTH",
+        e:"With the right support, many children with CP enjoy play, sports, and movement in ways that are safe for them."
+      },
+      {
+        id:12, level:2,
+        q:"Simple adaptations like extra time or different seating can help children with CP join classroom activities.",
+        a:"FACT",
+        e:"Small changes — seating, pacing, tools — can make school tasks more comfortable and inclusive."
+      },
+      {
+        id:13, level:2,
+        q:"If a child with CP uses a communication device, it means they don’t understand what is happening.",
+        a:"MYTH",
+        e:"Communication tools help children express themselves. Many fully understand what is going on around them."
+      },
+      {
+        id:14, level:2,
+        q:"It is okay to talk directly to a child with CP, not only to their parents.",
+        a:"FACT",
+        e:"Respectful, age-appropriate conversation treats the child as a person first, not just a diagnosis."
+      },
+      {
+        id:15, level:2,
+        q:"Kids with CP prefer to be left out of group activities so they don’t feel different.",
+        a:"MYTH",
+        e:"Most children want to be included. Asking what helps them join in is better than assuming they want to sit out."
+      },
+      {
+        id:16, level:2,
+        q:"Bullying and staring can hurt children with CP just as much as physical barriers.",
+        a:"FACT",
+        e:"Unkind words, stares, and exclusion can deeply affect a child’s confidence and mental health."
+      },
+      {
+        id:17, level:2,
+        q:"Children with CP cannot be good friends or classmates because they need too much help.",
+        a:"MYTH",
+        e:"Children with CP can be loyal friends, creative classmates, and strong teammates when given access and respect."
+      },
+      {
+        id:18, level:2,
+        q:"Letting a child with CP try tasks on their own, even slowly, can build confidence.",
+        a:"FACT",
+        e:"Safety matters, but chances to try, practice, and make choices support independence and self-belief."
+      },
+      {
+        id:19, level:2,
+        q:"You should never ask questions about a child’s disability.",
+        a:"MYTH",
+        e:"Every family is different, but respectful, gentle questions — when they are open to it — can support understanding."
+      },
+      {
+        id:20, level:2,
+        q:"Children with CP can enjoy online games, art, or music clubs as part of their social life.",
+        a:"FACT",
+        e:"Digital spaces and creative clubs can be more accessible and help children with CP find friends and community."
+      },
+
+      // LEVEL 3 – THERAPY, RIGHTS & INCLUSION
+      {
+        id:21, level:3,
+        q:"Only very expensive private therapy can help children with CP.",
+        a:"MYTH",
+        e:"Different families use different services. Helpful support can come from many places — clinics, schools, community teams, and home programs."
+      },
+      {
+        id:22, level:3,
+        q:"Different types of therapy, equipment, and support teams can work together to help a child.",
+        a:"FACT",
+        e:"Physio, occupational, speech support, equipment, and school teams can all work together around the child’s needs."
+      },
+      {
+        id:23, level:3,
+        q:"If therapy is hard, the child is being lazy or ungrateful.",
+        a:"MYTH",
+        e:"Therapy can be tiring and emotional. Children with CP work hard; they deserve patience, not judgment."
+      },
+      {
+        id:24, level:3,
+        q:"Rest, play, and family time are also important parts of life with CP.",
+        a:"FACT",
+        e:"Children are not only their therapy sessions. Joy, play, and connection matter for wellbeing."
+      },
+      {
+        id:25, level:3,
+        q:"Accessibility features like ramps and lifts are extras, not rights.",
+        a:"MYTH",
+        e:"Access is about rights and safety, not special treatment. Children with CP deserve to enter spaces like everyone else."
+      },
+      {
+        id:26, level:3,
+        q:"Children with CP have the same human rights to education, safety, and respect as any other child.",
+        a:"FACT",
+        e:"Every child deserves school, safety, and dignity — including children with CP."
+      },
+      {
+        id:27, level:3,
+        q:"Families of children with CP must face everything alone.",
+        a:"MYTH",
+        e:"Support can come from relatives, friends, therapists, schools, and community projects — no family should feel isolated."
+      },
+      {
+        id:28, level:3,
+        q:"Support groups and community projects can help families feel less isolated.",
+        a:"FACT",
+        e:"Sharing experiences, information, and encouragement can make a big difference for families."
+      },
+      {
+        id:29, level:3,
+        q:"If a child cannot walk, therapy is pointless.",
+        a:"MYTH",
+        e:"Therapy can focus on comfort, communication, movement, and independence in many different ways — walking is only one goal."
+      },
+      {
+        id:30, level:3,
+        q:"Progress with CP can be small and slow, but every step matters.",
+        a:"FACT",
+        e:"Tiny changes — in strength, comfort, or confidence — are still real progress and worth celebrating."
+      }
+    ];
+
+    const LEVEL_INFO = {
+      1:{label:"Level 1 · Basic CP Myths"},
+      2:{label:"Level 2 · Daily Life & School"},
+      3:{label:"Level 3 · Therapy, Rights & Inclusion"}
+    };
+
+    const TOTAL_QUESTIONS = allQuestions.length;
+
+    /* ========= STATE / LOCALSTORAGE ========= */
+
+    let currentLevel = 1;
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let answeredCorrectThisRun = new Set();
+
+    const metaLevelEl = document.getElementById('metaLevel');
+    const metaStatsEl = document.getElementById('metaStats');
+    const levelButtonsEl = document.getElementById('levelButtons');
+
+    const qNumEl = document.getElementById('qnum');
+    const scoreMiniEl = document.getElementById('scoreMini');
+    const questionTextEl = document.getElementById('questionText');
+    const feedbackEl = document.getElementById('feedback');
+    const progressInnerEl = document.getElementById('progressInner');
+
+    const quizCard = document.getElementById('quizCard');
+    const resultCard = document.getElementById('resultCard');
+    const scoreTextEl = document.getElementById('scoreText');
+    const runBadgeEl = document.getElementById('runBadge');
+    const collectionTextEl = document.getElementById('collectionText');
+    const continueBtnEl = document.getElementById('continueBtn');
+
+    const learnMoreCard = document.getElementById('learnMoreCard');
+    const learnMoreList = document.getElementById('learnMoreList');
+
+    // persistent stats
+    let maxLevelUnlocked = parseInt(localStorage.getItem('cpQuizMaxLevelUnlocked') || '1',10);
+    if(isNaN(maxLevelUnlocked) || maxLevelUnlocked < 1) maxLevelUnlocked = 1;
+
+    let runsCompleted = parseInt(localStorage.getItem('cpQuizRunsCompleted') || '0',10) || 0;
+    let perfectRuns = parseInt(localStorage.getItem('cpQuizPerfectRuns') || '0',10) || 0;
+
+    let levelsPerfect = [];
+    try{
+      levelsPerfect = JSON.parse(localStorage.getItem('cpQuizLevelsPerfect') || '[]');
+    }catch(e){
+      levelsPerfect = [];
+    }
+    if(!Array.isArray(levelsPerfect) || levelsPerfect.length < 4){
+      levelsPerfect = [false,false,false,false]; // index 1..3
+    }
+
+    let collectionCorrectIds;
+    try{
+      collectionCorrectIds = new Set(JSON.parse(localStorage.getItem('cpQuizCorrectIds') || '[]'));
+    }catch(e){
+      collectionCorrectIds = new Set();
+    }
+
+    let streakCount = parseInt(localStorage.getItem('cpQuizStreakCount') || '0',10) || 0;
+    let lastPlayDate = localStorage.getItem('cpQuizLastPlayDate') || '';
+    let streakWeek = localStorage.getItem('cpQuizStreakWeek') || '';
+
+    /* ========= HELPERS ========= */
+
+    function saveState(){
+      localStorage.setItem('cpQuizMaxLevelUnlocked', String(maxLevelUnlocked));
+      localStorage.setItem('cpQuizRunsCompleted', String(runsCompleted));
+      localStorage.setItem('cpQuizPerfectRuns', String(perfectRuns));
+      localStorage.setItem('cpQuizLevelsPerfect', JSON.stringify(levelsPerfect));
+      localStorage.setItem('cpQuizCorrectIds', JSON.stringify(Array.from(collectionCorrectIds)));
+      localStorage.setItem('cpQuizStreakCount', String(streakCount));
+      localStorage.setItem('cpQuizLastPlayDate', lastPlayDate);
+      localStorage.setItem('cpQuizStreakWeek', streakWeek);
+    }
+
+    function getWeekKey(date){
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+      return d.getUTCFullYear() + '-W' + weekNo;
+    }
+
+    function daysBetween(dateStr1, dateStr2){
+      const d1 = new Date(dateStr1);
+      const d2 = new Date(dateStr2);
+      const diff = (d2 - d1) / 86400000;
+      return Math.round(diff);
+    }
+
+    function updateStreak(){
+      const today = new Date();
+      const todayKey = today.toISOString().slice(0,10);
+      const weekKey = getWeekKey(today);
+
+      if(streakWeek !== weekKey){
+        // new week, start fresh
+        streakWeek = weekKey;
+        streakCount = 1;
+      }else{
+        if(lastPlayDate === todayKey){
+          // already counted today
+        }else if(!lastPlayDate){
+          streakCount = 1;
+        }else{
+          const diffDays = daysBetween(lastPlayDate, todayKey);
+          if(diffDays === 1){
+            streakCount += 1;
+          }else{
+            // break in days but same week: restart from 1 for this week
+            streakCount = 1;
+          }
+        }
+      }
+      lastPlayDate = todayKey;
+    }
+
+    function computeHighestBadge(){
+      const allLevelsPerfect = levelsPerfect[1] && levelsPerfect[2] && levelsPerfect[3];
+      if(allLevelsPerfect){
+        return 'Gentle Educator';
+      }
+      if(perfectRuns >= 3){
+        return 'Myth Breaker II';
+      }
+      if(runsCompleted >= 3){
+        return 'Truth Fighter I';
+      }
+      if(runsCompleted > 0){
+        return 'Myth Explorer';
+      }
+      return 'New Explorer';
+    }
+
+    function renderMeta(){
+      const info = LEVEL_INFO[currentLevel];
+      metaLevelEl.textContent = info ? info.label : `Level ${currentLevel}`;
+      const badge = computeHighestBadge();
+      metaStatsEl.textContent =
+        `Highest badge: ${badge} · Awareness streak this week: ${streakCount} day(s)`;
+    }
+
+    function renderLevelButtons(){
+      levelButtonsEl.innerHTML = '';
+      for(let lvl=1; lvl<=3; lvl++){
+        const btn = document.createElement('button');
+        btn.textContent = `Level ${lvl}`;
+        btn.className = 'level-chip';
+        if(lvl === currentLevel) btn.classList.add('active');
+        if(lvl > maxLevelUnlocked){
+          btn.classList.add('locked');
+          btn.disabled = true;
+        }else{
+          btn.addEventListener('click', () => startQuiz(lvl));
+        }
+        levelButtonsEl.appendChild(btn);
+      }
+    }
+
+    function pickQuestionsForLevel(level){
+      const pool = allQuestions.filter(q => q.level === level);
+      const copy = pool.slice();
+      const picked = [];
+      while(picked.length < 7 && copy.length > 0){
+        const idx = Math.floor(Math.random() * copy.length);
+        picked.push(copy.splice(idx,1)[0]);
+      }
+      return picked;
+    }
+
+    function loadQuestion(){
+      const q = questions[currentIndex];
+      if(!q) return;
+
+      qNumEl.textContent = `Question ${currentIndex+1} of ${questions.length}`;
+      scoreMiniEl.textContent = `Score: ${score}`;
+      questionTextEl.textContent = q.q;
+
+      const progress = (currentIndex / questions.length) * 100;
+      progressInnerEl.style.width = progress + '%';
+
+      feedbackEl.classList.add('hidden');
+      feedbackEl.classList.remove('correct','wrong');
+    }
+
+    /* ========= GAME FLOW ========= */
+
+    function startQuiz(level){
+      currentLevel = level || currentLevel;
+      questions = pickQuestionsForLevel(currentLevel);
+      currentIndex = 0;
+      score = 0;
+      answeredCorrectThisRun = new Set();
+
+      quizCard.classList.remove('hidden');
+      resultCard.classList.add('hidden');
+      learnMoreCard.classList.add('hidden');
+      feedbackEl.classList.add('hidden');
+
+      renderMeta();
+      renderLevelButtons();
+      loadQuestion();
+    }
+
+    function answer(choice){
+      const q = questions[currentIndex];
+      if(!q) return;
+
+      feedbackEl.classList.remove('hidden');
+
+      if(choice === q.a){
+        score++;
+        answeredCorrectThisRun.add(q.id);
+        collectionCorrectIds.add(q.id);
+
+        feedbackEl.classList.add('correct');
+        feedbackEl.classList.remove('wrong');
+        feedbackEl.innerHTML = `✅ Correct<br>${q.e}`;
+      }else{
+        feedbackEl.classList.add('wrong');
+        feedbackEl.classList.remove('correct');
+        feedbackEl.innerHTML = `❌ Incorrect<br>${q.e}`;
+      }
+
+      setTimeout(nextQuestion, 1900);
+    }
+
+    function nextQuestion(){
+      currentIndex++;
+      if(currentIndex < questions.length){
+        loadQuestion();
+      }else{
+        endQuiz();
+      }
+    }
+
+    function endQuiz(){
+      progressInnerEl.style.width = '100%';
+      quizCard.classList.add('hidden');
+      resultCard.classList.remove('hidden');
+
+      // Update stats
+      runsCompleted++;
+      const perfectThisRun = (score === questions.length);
+      if(perfectThisRun){
+        perfectRuns++;
+        levelsPerfect[currentLevel] = true;
+        if(currentLevel < 3 && maxLevelUnlocked < currentLevel + 1){
+          maxLevelUnlocked = currentLevel + 1;
+        }
+      }
+
+      updateStreak();
+      saveState();
+
+      // Result text & badges
+      scoreTextEl.textContent =
+        `You corrected ${score} out of ${questions.length} myths in Level ${currentLevel}.`;
+
+      const runBadge =
+        score === questions.length ? 'Gentle Educator (this run)' :
+        score >= 6 ? 'Myth Breaker (this run)' :
+        score >= 3 ? 'Truth Fighter (this run)' :
+        'Myth Explorer (this run)';
+
+      runBadgeEl.textContent = `Badge earned: ${runBadge}`;
+
+      const uniqueCount = collectionCorrectIds.size;
+      collectionTextEl.textContent =
+        `${uniqueCount} / ${TOTAL_QUESTIONS} myths and facts corrected so far (all levels).`;
+
+      // Continue button visibility
+      if(currentLevel < maxLevelUnlocked){
+        continueBtnEl.classList.remove('hidden');
+        continueBtnEl.textContent = `Continue to Level ${currentLevel+1}`;
+      }else{
+        continueBtnEl.classList.add('hidden');
+      }
+
+      renderMeta();
+      renderLevelButtons();
+    }
+
+    function playAgain(){
+      startQuiz(currentLevel);
+    }
+
+    function continueToNextLevel(){
+      if(currentLevel < maxLevelUnlocked){
+        startQuiz(currentLevel + 1);
+      }
+    }
+
+    function shareOnX(){
+      const total = questions.length || 7;
+      const quizUrl = 'https://officialgentlewarrior.github.io/gentlewarrior-universe/cp-myths-quiz.html';
+
+      const lines = [
+        'I just played the CP Myths Quiz 🧠',
+        `I corrected ${score} out of ${total} myths about cerebral palsy.`,
+        '',
+        'This is awareness, not hype.',
+        '',
+        'Play it here 👇',
+        quizUrl
+      ];
+      const text = lines.join('\n');
+      const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    }
+
+    function toggleLearnMore(){
+      learnMoreCard.classList.toggle('hidden');
+    }
+
+    function buildLearnMoreList(){
+      learnMoreList.innerHTML = '';
+      allQuestions.forEach(q => {
+        const div = document.createElement('div');
+        div.className = 'learn-more-item';
+        div.innerHTML = `<strong>${q.q}</strong><span>${q.e}</span>`;
+        learnMoreList.appendChild(div);
+      });
+    }
+
+    /* ===== AWARENESS QUOTE BOX ===== */
+    const gwQuotes = [
+      "“Being different does not mean being less.”",
+      "“Children with cerebral palsy work harder than most people ever see.”",
+      "“Accessibility is not a favor. It is a right.”",
+      "“Support the child first, then the diagnosis.”",
+      "“Gentle does not mean weak. It means aware, patient, and brave.”",
+      "“Inclusion is not extra. It is essential.”"
+    ];
+
+    function showRandomQuote(){
+      const box = document.getElementById('gwQuote');
+      if(!box) return;
+      const q = gwQuotes[Math.floor(Math.random()*gwQuotes.length)];
+      box.textContent = q;
+    }
+
+    /* ===== INITIALISE ===== */
+    buildLearnMoreList();
+    showRandomQuote();
+    renderMeta();
+    renderLevelButtons();
+    startQuiz(1);
+  </script>
+</body>
+</html>
