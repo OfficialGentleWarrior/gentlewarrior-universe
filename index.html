@@ -2267,5 +2267,49 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
+<script>
+  // Helper: check if app is running as an installed PWA
+  function isRunningStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true; // for older iOS Safari
+  }
+
+  // Log when the installed app is opened for the first time on this device
+  (function logInstalledOpenOnce() {
+    try {
+      if (!isRunningStandalone()) return; // only when opened as an installed app
+
+      const key = 'gw_pwa_open_logged';
+      if (localStorage.getItem(key)) return; // only log once per device
+
+      localStorage.setItem(key, '1');
+
+      if (typeof gtag === 'function') {
+        gtag('event', 'pwa_open_installed', {
+          event_category: 'pwa',
+          event_label: 'gentlewarrior_universe'
+        });
+      }
+    } catch(e) {
+      console && console.warn && console.warn('PWA open log error', e);
+    }
+  })();
+
+  // Log when the PWA gets installed
+  window.addEventListener('appinstalled', () => {
+    try {
+      localStorage.setItem('gw_pwa_installed', '1');
+      if (typeof gtag === 'function') {
+        gtag('event', 'pwa_installed', {
+          event_category: 'pwa',
+          event_label: 'gentlewarrior_universe'
+        });
+      }
+    } catch(e) {
+      console && console.warn && console.warn('PWA installed log error', e);
+    }
+  });
+</script>
+
 </body>
-  </html>
+</html>
