@@ -536,8 +536,7 @@
       <button class="tab-btn active" data-tab="game">Game</button>
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
-
-    <!-- HOME -->
+<!-- HOME -->
     <section id="home" class="panel" style="display:none">
       <h2>Gentle Warrior</h2>
       <p><strong>Soft Heart. Strong Spirit.</strong></p>
@@ -1211,7 +1210,7 @@
     <!-- GAME -->
     <section id="game" class="panel">
 
-      <!-- Game list / hub: 3 games only -->
+      <!-- Game list / hub -->
       <h2 style="text-align:center;margin-top:0;">Gentle Warrior Games</h2>
       <p class="game-hint">Choose a game to play.</p>
 
@@ -1248,6 +1247,17 @@
           </p>
           <a href="cp-myths-quiz.html" class="btn game-card-btn">
             Open CP Myths Quiz
+          </a>
+        </div>
+
+        <!-- Kindness Counter card -->
+        <div class="game-card">
+          <div class="game-card-title">💚 Kindness Counter</div>
+          <p>
+            Record the gentle things you do each day in a private kindness tracker saved only on your device.
+          </p>
+          <a href="kindness-counter.html" class="btn game-card-btn">
+            Open Kindness Counter
           </a>
         </div>
       </div>
@@ -1360,8 +1370,7 @@
   <div class="floating-play-cta">
     <button id="floatingPlayBtn" class="btn">Play Memory Game</button>
   </div>
-
-  <script>
+<script>
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -2255,61 +2264,60 @@
 
     window.gwRecordRun = recordRun;
     renderLeaderboard().then(loadMyBestRun).catch(()=>{});
-</script>
+  </script>
 
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/gentlewarrior-universe/service-worker.js")
-      .catch(err => console.log("SW registration failed", err));
-  });
-}
-</script>
-
-<script>
-  // Helper: check if app is running as an installed PWA
-  function isRunningStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true; // for older iOS Safari
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/gentlewarrior-universe/service-worker.js")
+        .catch(err => console.log("SW registration failed", err));
+    });
   }
+  </script>
 
-  // Log when the installed app is opened for the first time on this device
-  (function logInstalledOpenOnce() {
-    try {
-      if (!isRunningStandalone()) return; // only when opened as an installed app
-
-      const key = 'gw_pwa_open_logged';
-      if (localStorage.getItem(key)) return; // only log once per device
-
-      localStorage.setItem(key, '1');
-
-      if (typeof gtag === 'function') {
-        gtag('event', 'pwa_open_installed', {
-          event_category: 'pwa',
-          event_label: 'gentlewarrior_universe'
-        });
-      }
-    } catch(e) {
-      console && console.warn && console.warn('PWA open log error', e);
+  <script>
+    // Helper: check if app is running as an installed PWA
+    function isRunningStandalone() {
+      return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true; // for older iOS Safari
     }
-  })();
 
-  // Log when the PWA gets installed
-  window.addEventListener('appinstalled', () => {
-    try {
-      localStorage.setItem('gw_pwa_installed', '1');
-      if (typeof gtag === 'function') {
-        gtag('event', 'pwa_installed', {
-          event_category: 'pwa',
-          event_label: 'gentlewarrior_universe'
-        });
+    // Log when the installed app is opened for the first time on this device
+    (function logInstalledOpenOnce() {
+      try {
+        if (!isRunningStandalone()) return; // only when opened as an installed app
+
+        const key = 'gw_pwa_open_logged';
+        if (localStorage.getItem(key)) return; // only log once per device
+
+        localStorage.setItem(key, '1');
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'pwa_open_installed', {
+            event_category: 'pwa',
+            event_label: 'gentlewarrior_universe'
+          });
+        }
+      } catch(e) {
+        console && console.warn && console.warn('PWA open log error', e);
       }
-    } catch(e) {
-      console && console.warn && console.warn('PWA installed log error', e);
-    }
-  });
-</script>
+    })();
 
+    // Log when the PWA gets installed
+    window.addEventListener('appinstalled', () => {
+      try {
+        localStorage.setItem('gw_pwa_installed', '1');
+        if (typeof gtag === 'function') {
+          gtag('event', 'pwa_installed', {
+            event_category: 'pwa',
+            event_label: 'gentlewarrior_universe'
+          });
+        }
+      } catch(e) {
+        console && console.warn && console.warn('PWA installed log error', e);
+      }
+    });
+  </script>
 </body>
 </html>
