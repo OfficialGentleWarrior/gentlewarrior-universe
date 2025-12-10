@@ -2319,5 +2319,95 @@
       }
     });
   </script>
+
+<!-- ✅ Gentle Warrior Auto Game Tracker (NO BUTTON CHANGES NEEDED) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    serverTimestamp,
+    increment
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  // === SAME FIREBASE PROJECT ===
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+    authDomain: "gentle-warrior.firebaseapp.com",
+    projectId: "gentle-warrior",
+    storageBucket: "gentle-warrior.firebasestorage.app",
+    messagingSenderId: "206508766648",
+    appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // === SHARED DEVICE ID ===
+  function getGwDeviceTag() {
+    let tag = localStorage.getItem("gw_device_tag");
+    if (!tag) {
+      tag = "gw_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("gw_device_tag", tag);
+    }
+    return tag;
+  }
+
+  // === TRACK PLAY ===
+  async function trackGamePlayer(gameId) {
+    const deviceTag = getGwDeviceTag();
+    const docId = `${gameId}_${deviceTag}`;
+    const ref = doc(db, "gamePlayers", docId);
+
+    await setDoc(ref, {
+      gameId,
+      deviceTag,
+      firstPlayedAt: serverTimestamp(),
+      lastPlayedAt: serverTimestamp(),
+      playCount: increment(1)
+    }, { merge: true });
+  }
+
+  // === AUTO-DETECT CLICKS ON LINKS & BUTTONS ===
+  document.addEventListener("click", async function (e) {
+    const el = e.target.closest("a, button");
+    if (!el) return;
+
+    const text = (el.innerText || "").toLowerCase();
+    const href = (el.getAttribute("href") || "").toLowerCase();
+
+    let gameId = null;
+
+    // 🧠 Memory Game
+    if (text.includes("memory") || href.includes("memory")) {
+      gameId = "memory";
+    }
+
+    // 🛡 Heart Defender
+    else if (text.includes("heart defender") || href.includes("heart-defender")) {
+      gameId = "heart-defender";
+    }
+
+    // ✨ CP Myths Quiz
+    else if (text.includes("cp myths") || text.includes("quiz") || href.includes("cp")) {
+      gameId = "cp-myths";
+    }
+
+    // 💚 Kindness Counter
+    else if (text.includes("kindness") || href.includes("kindness")) {
+      gameId = "kindness-counter";
+    }
+
+    if (!gameId) return;
+
+    // fire-and-forget (won't block navigation)
+    try {
+      trackGamePlayer(gameId);
+    } catch (e) {
+      console.warn("Tracker error:", e);
+    }
+  });
+</script>
 </body>
 </html>
