@@ -2321,7 +2321,11 @@
  
 <!-- ✅ Gentle Warrior Auto Game Tracker (NO BUTTON CHANGES NEEDED) -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import {
+    initializeApp,
+    getApps,
+    getApp
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
   import {
     getFirestore,
     doc,
@@ -2340,7 +2344,8 @@
     appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
   };
 
-  const app = initializeApp(firebaseConfig);
+  // ✅ reuse existing app kung meron na (Memory Game, etc)
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   const db  = getFirestore(app);
 
   // === SHARED DEVICE ID ===
@@ -2372,8 +2377,9 @@
       { merge: true }
     );
 
-    // optional simple run log
-    const runRef = doc(db, "gameRuns", `${Date.now()}_${deviceTag}_${gameId}`);
+    // simple run log (optional, pang-history)
+    const runId = `${Date.now()}_${deviceTag}_${gameId}`;
+    const runRef = doc(db, "gameRuns", runId);
     await setDoc(runRef, {
       gameId,
       deviceTag,
@@ -2414,16 +2420,19 @@
     try {
       trackGameClick(gameId);
     } catch (err) {
-      console && console.warn && console.warn("Tracker error", err);
+      console && console.warn && console.warn("GW tracker error", err);
     }
   });
 
-  // ✅ create at least one doc when the home page opens
-  try {
-    trackGameClick("index-open");
-  } catch (err) {
-    console && console.warn && console.warn("Tracker init error", err);
-  }
+  // ✅ log na nag-open yung games page mismo
+  (async () => {
+    try {
+      await trackGameClick("index-open");
+      console && console.log && console.log("GW tracker init ok");
+    } catch (err) {
+      console && console.warn && console.warn("GW tracker init error", err);
+    }
+  })();
 </script>
 </body>
-</html>
+        </html>
