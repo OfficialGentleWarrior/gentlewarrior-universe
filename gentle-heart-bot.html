@@ -372,32 +372,156 @@ html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(
   // 2) check exact match against pairs (preferred)
   // 3) check 'includes' match against pairs
   // 4) fallback simple regex checks (hi/sad/breathing/crisis)
-  function detectIntent(text){
-    const t = norm(text);
+  <script>
+// --- Replace your existing findIntent / detectIntent with this ---
+function normalizeText(s){
+  return (s||'').toLowerCase()
+    .normalize('NFKD') // normalize accents
+    .replace(/[\u0300-\u036f]/g,'') // remove accents
+    .replace(/[^a-z0-9\s\+\-']/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
 
-    // user-requested hotline triggers (case-insensitive, lenient)
-    if(/\b(show\s+)?hotlines?\b/.test(t)) return { id: 'hotline' };
-
-    // exact pair match (highest priority)
-    for(const p of pairs){
-      if(!p.input) continue;
-      if(t === norm(p.input)) return { id: p.intent || ('pair_'+p.input), sourceResponse: p.response };
+// simple Levenshtein distance
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const an = a.length, bn = b.length;
+  if (an === 0) return bn;
+  if (bn === 0) return an;
+  const v0 = new Array(bn + 1);
+  const v1 = new Array(bn + 1);
+  for (let j = 0; j <= bn; j++) v0[j] = j;
+  for (let i = 0; i < an; i++) {
+    v1[0] = i + 1;
+    for (let j = 0; j < bn; j++) {
+      const cost = a[i] === b[j] ? 0 : 1;
+      v1[j + 1] = Math.min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
     }
-    // includes / contains match (looser)
-    for(const p of pairs){
-      if(!p.input) continue;
-      const pi = norm(p.input);
-      if(pi && t.includes(pi)) return { id: p.intent || ('pair_'+p.input), sourceResponse: p.response };
-    }
-
-    // quick built-in fallbacks
-    if(t.includes('breath') || t.includes('hinga') || /\b(breathe|breathing)\b/.test(t)) return { id: 'breathing' };
-    if(t.includes('i want to die') || t.includes('kill myself') || t.includes('gusto kong mamatay')) return { id: 'crisis' };
-    if(/\b(sad|malungkot|lonely|down|depressed|hopeless)\b/.test(t)) return { id: 'sad' };
-    if(/\b(hi|hello|hey|kamusta|hiya)\b/.test(t)) return { id: 'greeting' };
-
-    return { id: 'fallback' };
+    for (let j = 0; j <= bn; j++) v0[j] = v1[j];
   }
+  return v1[bn];
+}
+
+function similarity(a, b){
+  // returns 0..1 similarity
+  if(!a && !b) return 1;
+  a = a || ''; b = b || '';
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  if(maxLen === 0) return 1;
+  return 1 - (dist / maxLen);
+}
+
+function tokenOverlapScore(a, b){
+  if(!a || !b) return 0;
+  const as = a.split(' ').filter(Boolean);
+  const bs = new Set(b.split(' ').filter(Boolean));
+  if(as.length === 0) return 0;
+  let common = 0;
+  for(const t of as) if(bs.has(t)) common++;
+  return common / Math.max(as.length, 1); // 0..1
+}
+
+/**
+ * detectIntent(text)
+ * - returns { id: string, pair: object|null }
+ * - pair is matched qa.pairs entry if available (exact / fuzzy)
+ *
+ * It checks:
+ * 1) explicit high-risk / direct phrase list (kept in code if present)
+ * 2) exact / substring matches in qa.pairs inputs
+ * 3) token overlap + levenshtein similarity scoring (fuzzy)
+ * 4) fallback to intent_fallback
+ */
+function detectIntent(rawText){
+  const tNorm = normalizeText(rawText);
+  if(!tNorm) return { id: 'intent_fallback', pair: null };
+
+  // quick direct patterns (still useful)
+  if(/\b(i want to die|i want to kill myself|gusto kong mamatay|i will kill myself|i'm going to kill myself)\b/.test(tNorm)) {
+    return { id: 'intent_self_harm_direct', pair: null };
+  }
+  if(/\b(breathe|breathing|hinga)\b/.test(tNorm)) {
+    return { id: 'intent_breathing', pair: null };
+  }
+  if(/\b(i m in the philippines|im in the philippines|nasa pilipinas|pilipinas|pinoy)\b/.test(tNorm)) {
+    return { id: 'intent_region_detect', pair: null };
+  }
+
+  // 1) Try qa.intents exact / pattern match (if qa.intents exists and has patterns)
+  if(Array.isArray(qa.intents)){
+    for(const it of qa.intents){
+      if(!it.patterns) continue;
+      for(const p of it.patterns){
+        if(!p) continue;
+        const pp = normalizeText(p);
+        if(!pp) continue;
+        // exact phrase or substring (normalized)
+        if(tNorm === pp || tNorm.includes(pp) || pp.includes(tNorm)) {
+          return { id: it.id, pair: null };
+        }
+      }
+    }
+  }
+
+  // 2) Try qa.pairs (preferred: pairs is array of {input, response, intent?})
+  if(Array.isArray(qa.pairs) && qa.pairs.length){
+    let best = { score: 0, idx: -1 };
+    for(let i=0;i<qa.pairs.length;i++){
+      const p = qa.pairs[i];
+      const inputText = normalizeText(p.input || (p.pattern || ''));
+      if(!inputText) continue;
+
+      // direct exact / substring fast path
+      if(tNorm === inputText || tNorm.includes(inputText) || inputText.includes(tNorm)) {
+        // strong match -> return immediately
+        return { id: p.intent || 'matched_pair', pair: p };
+      }
+
+      // score via token overlap + similarity
+      const tokScore = tokenOverlapScore(inputText, tNorm);
+      const sim = similarity(inputText, tNorm); // 0..1
+      // combine — weight token overlap higher
+      const combined = (tokScore * 0.6) + (sim * 0.4);
+
+      // small boost if either contains short word 'hotline' etc.
+      if(/hotline|hotlines|crisis|help|emergency/.test(inputText) && /hotline|hotlines|crisis|help|emergency/.test(tNorm)) {
+        // boost for hotline keywords match
+        combined += 0.12;
+      }
+
+      if(combined > best.score){
+        best.score = combined;
+        best.idx = i;
+      }
+    }
+
+    // thresholding: pick best if above threshold
+    // threshold tuned for reasonable balance between tolerance and false positives
+    const THRESHOLD = 0.58; // you can lower to ~0.5 for more permissive matching
+    if(best.idx >= 0 && best.score >= THRESHOLD){
+      const matched = qa.pairs[best.idx];
+      return { id: matched.intent || 'matched_pair', pair: matched };
+    }
+  }
+
+  // 3) As a last attempt, check qa.hotlines keywords to trigger hotline card reliably
+  if(/\b(hotline|hotlines|crisis hotline|crisis|help line|help me|emergency numbers|show hotline|show hotlines)\b/.test(tNorm)){
+    // choose PH if user set country PH else fallback
+    return { id: 'intent_ph_hotline_request', pair: null };
+  }
+
+  // fallback: see if qa.intents has intent_fallback
+  if(Array.isArray(qa.intents)){
+    const fb = qa.intents.find(x => x.id === 'intent_fallback');
+    if(fb) return { id: 'intent_fallback', pair: null };
+  }
+
+  return { id: 'intent_fallback', pair: null };
+}
+// --- End replacement ---
+</script>
 
   // show hotline card for a region key
   function showHotlines(regionKey){
