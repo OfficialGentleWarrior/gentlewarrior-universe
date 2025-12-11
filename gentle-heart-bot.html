@@ -1,549 +1,251 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Gentle Heart — Companion (Patched)</title>
-<style>
-:root{
-  --bg-top:#043022; --bg-bot:#052d21;
-  --card:#0f3f2f; --bot-grad-start:#2a6f4f; --bot-grad-end:#18503a;
-  --user-grad-start:#214834; --user-grad-end:#133825;
-  --accent:#e6ffd0; --muted:#98b199; --white:#eaf6ea;
-  --shadow:0 20px 40px rgba(0,0,0,0.55);
-}
-html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(--bg-bot));font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:var(--white);-webkit-font-smoothing:antialiased}
-.container{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px}
-.card{width:94%;max-width:720px;background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative;overflow:hidden;transition:height 160ms ease}
-.header{display:flex;align-items:center;gap:12px;padding:4px 6px 12px}
-.avatar{width:64px;height:64px;border-radius:12px;overflow:hidden;flex:0 0 64px;background:#083d2f}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.title{flex:1}
-.title h1{margin:0;font-size:22px;color:var(--accent);font-weight:700;line-height:1}
-.title p{margin:6px 0 0;font-size:12px;color:var(--muted)}
-.controls{display:flex;gap:8px;align-items:center}
-.btn-circle{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.messages{flex:1;overflow:auto;padding:12px;border-radius:10px;min-height:200px;max-height:calc(100vh - 320px);display:flex;flex-direction:column;gap:10px}
-
-/* chat message rows and smooth animations */
-.msg-row{display:flex;align-items:flex-start;margin-bottom:0;gap:10px;opacity:0;transform:translateY(6px);transition:opacity .28s ease, transform .28s ease}
-.msg-row.show{opacity:1;transform:translateY(0)}
-.msg-row.bot{justify-content:flex-start}
-.msg-row.user{justify-content:flex-end}
-
-.avatar-mini{width:44px;height:44px;border-radius:10px;overflow:hidden;background:#0b3e2f;flex:0 0 44px;box-shadow:0 8px 18px rgba(0,0,0,0.4)}
-.avatar-mini img{width:100%;height:100%;object-fit:cover}
-.bubble-bot{background:linear-gradient(180,var(--bot-grad-start),var(--bot-grad-end));color:var(--white);border-radius:14px 14px 14px 6px;padding:14px;max-width:78%;box-shadow:0 8px 18px rgba(0,0,0,0.45);font-size:15px;line-height:1.35;white-space:pre-wrap}
-.bubble-user{background:linear-gradient(180,var(--user-grad-start),var(--user-grad-end));color:var(--white);border-radius:999px;padding:10px 14px;display:inline-block;max-width:66%;box-shadow:0 8px 18px rgba(0,0,0,0.45);font-size:14px}
-.card-response{background:linear-gradient(180, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:12px;margin-top:6px;box-shadow:inset 0 2px 0 rgba(0,0,0,0.06);color:var(--white)}
-.card-response.show{opacity:1;transform:none;transition:opacity .28s ease}
-.card-response a{color:var(--accent);text-decoration:none;font-weight:700}
-.footer{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;margin-top:10px;background:linear-gradient(180, rgba(255,255,255,0.02), rgba(255,255,255,0.01));position:relative;z-index:5}
-.input{flex:1;padding:12px;border-radius:26px;border:0;background:rgba(255,255,255,0.03);color:var(--white);font-size:15px;outline:none}
-.send{width:84px;padding:10px;border-radius:999px;border:0;background:var(--accent);color:#0d4028;font-weight:700}
-.muted{font-size:12px;color:var(--muted);padding:10px 12px}
-.floating{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:999px;background:#163e2f;display:flex;align-items:center;justify-content:center;z-index:150;box-shadow:0 14px 30px rgba(0,0,0,0.5);cursor:pointer}
-.floating img{width:48px;height:48px;border-radius:999px}
-
-/* typing indicator */
-.typing {
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.typing-dots {
-  width:46px;height:18px;background:rgba(0,0,0,0.06);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:2px 6px;
-}
-.typing-dots span {
-  display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.85);opacity:0.25;margin:0 3px;animation:blink 1s infinite;
-}
-.typing-dots span:nth-child(2){animation-delay:0.15s}
-.typing-dots span:nth-child(3){animation-delay:0.3s}
-@keyframes blink {0%{opacity:0.25}40%{opacity:1}100%{opacity:0.25}}
-
-/* Settings modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:400}
-.modal{width:92%;max-width:420px;background:var(--card);border-radius:12px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,0.6);color:var(--white)}
-.modal h3{margin:0 0 8px}
-.modal .row{margin:8px 0;display:flex;flex-direction:column;opacity:1;transform:none}
-.country-select{width:100%;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);color:var(--white);border:0;outline:none}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-.toggle-row label{color:var(--muted);font-size:14px}
-.toggle{appearance:none;width:44px;height:24px;border-radius:14px;background:rgba(255,255,255,0.06);position:relative;cursor:pointer}
-.toggle:before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .18s}
-.toggle.checked{background:#2a6f4f}
-.toggle.checked:before{transform:translateX(20px)}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px 12px;border-radius:8px;cursor:pointer}
-.btn-primary{background:var(--accent);color:#0d4028;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-
-/* mobile tweaks */
-@media (max-width:420px){
-  .avatar{width:52px;height:52px;border-radius:10px}
-  .avatar-mini{width:40px;height:40px}
-  .title h1{font-size:18px}
-  .messages{max-height:calc(100vh - 360px)}
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gentle Heart — Bot</title>
+  <style>
+    :root {
+      --bg: #0f3a2f;
+      --card: #113a2f;
+      --muted: #9aa89d;
+      --accent: #e3f8df;
+      --send-bg: #e8f6d9;
+      --send-text: #0b3a2c;
+    }
+    html,body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:#07281f; color:var(--accent); }
+    .app {
+      max-width:420px;
+      margin:18px auto;
+      background:linear-gradient(180deg,var(--card),#0e3a31);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.35);
+      min-height:calc(100vh - 36px);
+      display:flex;
+      flex-direction:column;
+    }
+    header { display:flex; gap:12px; align-items:center; margin-bottom:12px }
+    .avatar { width:56px; height:56px; background:#0b5; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#023; font-weight:700; }
+    h1 { margin:0; font-size:20px; color:#dff6e1 }
+    main { flex:1; overflow:auto; padding:8px 2px; }
+    .qa-error { background:rgba(255,255,255,0.03); border-radius:10px; padding:12px; margin:8px 0; color:var(--muted); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02); }
+    .qa-error strong { color:#fff; display:block; margin-bottom:6px; }
+    .messages { display:flex; flex-direction:column; gap:10px; padding-bottom:28px; }
+    .input-row {
+      display:flex; gap:12px; align-items:center;
+      padding:14px; margin-top:8px; background:transparent;
+    }
+    .input-field {
+      flex:1;
+      background:rgba(0,0,0,0.15);
+      border-radius:28px;
+      padding:12px 16px;
+      color:var(--accent);
+      border:1px solid rgba(255,255,255,0.02);
+      outline:none;
+      min-height:44px;
+    }
+    .send-btn {
+      min-width:84px;
+      height:44px;
+      border-radius:22px;
+      background:var(--send-bg);
+      color:var(--send-text);
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .send-btn:active { transform:translateY(1px) }
+    footer { font-size:12px; color:var(--muted); text-align:center; padding:8px 0 20px 0; }
+    /* ensure nothing overlays input area */
+    .nonblocking { pointer-events:auto; }
+    /* small responsive */
+    @media (max-width:460px) {
+      .app { margin:8px; border-radius:14px; padding:12px; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card" id="chatCard" role="application" aria-label="Gentle Heart chat">
-      <div class="header">
-        <div class="avatar"><img id="avatarImg" src="avatar.png" alt="Gentle Heart"></div>
-        <div class="title">
-          <h1>Gentle Heart</h1>
-          <p>Your gentle companion</p>
-        </div>
-
-        <div class="controls" title="Controls">
-          <select id="countrySelectTop" class="country-select" aria-label="Select country (top)">
-            <option value="PH">Philippines</option>
-            <option value="GLOBAL_GENERAL">International</option>
-          </select>
-          <div class="btn-circle" id="settingsBtn" title="Settings">⚙</div>
-          <div class="btn-circle" id="minBtn" title="Minimize">—</div>
-        </div>
+  <div class="app" role="application" aria-label="Gentle Heart bot">
+    <header>
+      <div class="avatar">GH</div>
+      <div>
+        <h1>Gentle Heart</h1>
+        <div style="font-size:13px;color:var(--muted)">Your gentle companion</div>
       </div>
+    </header>
 
-      <div class="messages" id="messages" aria-live="polite" role="log"></div>
+    <main id="main">
+      <!-- messages and QA load notices appear here -->
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <!-- QA load container - non-blocking -->
+      <div id="qa-notice-container"></div>
+    </main>
 
-      <div class="footer" id="footer">
-        <input id="inputBox" class="input" placeholder="Say hello — ask gently" autocomplete="off" />
-        <button id="sendBtn" class="send">Send</button>
+    <div class="input-row" role="region" aria-label="chat input">
+      <div style="flex:1">
+        <div id="input" class="input-field" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Say hello — ask gently" spellcheck="true">Say hello — ask gently</div>
       </div>
-
-      <div class="muted">Bot only. For info & emotional support — not medical advice.</div>
+      <button id="sendBtn" class="send-btn" aria-label="Send">Send</button>
     </div>
+
+    <footer>Bot only. For info & emotional support — not medical advice.</footer>
   </div>
 
-  <div class="floating" id="floatingBtn" aria-hidden="false" title="Open Gentle Heart"><img src="avatar.png" alt="GH"></div>
-
-  <!-- Settings modal (Country / Kids mode / Private / Clear history) -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" id="modal" role="document" aria-labelledby="settingsTitle">
-      <h3 id="settingsTitle">Settings</h3>
-
-      <div class="row">
-        <label for="countrySelectModal" style="display:block;margin-bottom:6px;color:var(--muted)">Country for hotlines</label>
-        <select id="countrySelectModal" class="country-select" aria-label="Country selector">
-          <option value="PH">Philippines</option>
-          <option value="GLOBAL_GENERAL">International</option>
-        </select>
-      </div>
-
-      <div class="row toggle-row">
-        <div>
-          <div style="font-weight:600">Kids mode</div>
-          <div style="color:var(--muted);font-size:13px">If on — replies are gentler and simpler for children.</div>
-        </div>
-        <div id="toggleKids" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
-      </div>
-
-      <div class="row toggle-row">
-        <div>
-          <div style="font-weight:600">Private</div>
-          <div style="color:var(--muted);font-size:13px">If on — chat history will not be saved locally.</div>
-        </div>
-        <div id="togglePrivate" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
-      </div>
-
-      <div class="modal-actions" style="align-items:center">
-        <button id="clearHistory" class="btn-ghost">Clear history</button>
-        <div style="flex:1"></div>
-        <button id="modalCancel" class="btn-ghost">Cancel</button>
-        <button id="modalSave" class="btn-primary">Save</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-(() => {
-  // start-closed behavior
-  const START_CLOSED_BY_DEFAULT = true;
-
-  // elements
-  const messagesEl = document.getElementById('messages');
-  const input = document.getElementById('inputBox');
-  const sendBtn = document.getElementById('sendBtn');
-  const minBtn = document.getElementById('minBtn');
-  const floating = document.getElementById('floatingBtn');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const countryTop = document.getElementById('countrySelectTop');
-  const countryModal = document.getElementById('countrySelectModal');
-  const modalBackdrop = document.getElementById('modalBackdrop');
-  const modalSave = document.getElementById('modalSave');
-  const modalCancel = document.getElementById('modalCancel');
-  const clearHistoryBtn = document.getElementById('clearHistory');
-  const toggleKids = document.getElementById('toggleKids');
-  const togglePrivate = document.getElementById('togglePrivate');
-  const chatCard = document.getElementById('chatCard');
-  const avatarSrc = 'avatar.png';
-
-  // defaults
-  const DEFAULTS = { country: 'PH', kidsMode: false, isPrivate: false };
-  function loadSettings(){
-    try {
-      const raw = localStorage.getItem('gh_settings');
-      if(raw) return Object.assign({}, DEFAULTS, JSON.parse(raw));
-    } catch(e){}
-    return Object.assign({}, DEFAULTS);
+  <!-- Inline JSON fallback: the loader will try this first -->
+  <script id="qa-inline" type="application/json">
+  {
+    "greetings": [
+      "Hello! I'm here to listen.",
+      "Hi — what's on your mind today?"
+    ],
+    "fallback_hotlines": [
+      "If you need urgent help, please contact local emergency services."
+    ]
   }
-  function saveSettings(s){
-    try { localStorage.setItem('gh_settings', JSON.stringify(s)); } catch(e){}
-  }
-  let settings = loadSettings();
-  countryTop.value = settings.country;
-  countryModal.value = settings.country;
-  if(settings.kidsMode) toggleKids.classList.add('checked'), toggleKids.setAttribute('aria-checked','true'); else toggleKids.classList.remove('checked'), toggleKids.setAttribute('aria-checked','false');
-  if(settings.isPrivate) togglePrivate.classList.add('checked'), togglePrivate.setAttribute('aria-checked','true'); else togglePrivate.classList.remove('checked'), togglePrivate.setAttribute('aria-checked','false');
+  </script>
 
-  // built-in hotlines (will be overridden by qa.json hotlines if present)
-  const hotlines = {
-    PH: {
-      name: "Philippines - Crisis Hotlines",
-      entries: [
-        { label: "NCMH Crisis Hotline (Luzon landline)", value: "1553" },
-        { label: "NCMH Mobile", value: "0966-351-4518" },
-        { label: "NCMH Mobile (alt)", value: "0908-639-2672" },
-        { label: "NCMH USAP", value: "0917-899-8727" },
-        { label: "Hopeline PH (mobile)", value: "0917-558-4673" },
-        { label: "Hopeline PH (mobile alt)", value: "0918-873-4673" },
-        { label: "Hopeline PH (landline)", value: "(02) 8804-4673" }
-      ],
-      notes: "If in immediate danger, contact local emergency services (e.g., 911 or local equivalent)."
-    },
-    GLOBAL_GENERAL: {
-      name: "General international guidance",
-      entries: [
-        { label: "Local emergency services", value: "Contact local emergency services" },
-        { label: "Samaritans (UK)", value: "116 123" },
-        { label: "IFRC/Local help", value: "Check local national resources" }
-      ]
+  <script>
+    // Global QA store
+    let qaData = null;
+
+    // DOM refs
+    const messages = document.getElementById('messages');
+    const qaNoticeContainer = document.getElementById('qa-notice-container');
+    const sendBtn = document.getElementById('sendBtn');
+    const inputEl = document.getElementById('input');
+
+    // Utility to append a message
+    function addMessage(text, cls = '') {
+      const el = document.createElement('div');
+      el.textContent = text;
+      el.style.background = 'rgba(255,255,255,0.02)';
+      el.style.padding = '10px';
+      el.style.borderRadius = '8px';
+      el.style.color = 'var(--accent)';
+      messages.appendChild(el);
+      messages.scrollTop = messages.scrollHeight;
     }
-  };
 
-  // attempt to load ./qa.json and merge hotlines (non-blocking)
-  (async function loadQA(){
-    try {
-      const resp = await fetch('./qa.json', {cache:'no-store'});
-      if(resp.ok){
-        const json = await resp.json();
-        if(json && json.hotlines && typeof json.hotlines === 'object'){
-          Object.assign(hotlines, json.hotlines);
-          console.log('qa.json hotlines merged');
-        }
+    // Show QA load error in a non-blocking way (does NOT overlay input)
+    function showQALoadError(reason) {
+      qaNoticeContainer.innerHTML = ''; // clear previous
+      const box = document.createElement('div');
+      box.className = 'qa-error nonblocking';
+      const title = document.createElement('strong');
+      title.textContent = 'QA load problem';
+      const p = document.createElement('div');
+      p.textContent = "We couldn't load qa.json. The bot will still work with fallback data. Check console for details.";
+      box.appendChild(title);
+      box.appendChild(p);
+      if (reason) {
+        const small = document.createElement('div');
+        small.style.marginTop = '8px';
+        small.style.fontSize = '12px';
+        small.style.color = 'var(--muted)';
+        small.textContent = 'Reason: ' + reason;
+        box.appendChild(small);
       }
-    } catch(e){}
-    // restore/persist
-    if(!settings.isPrivate) restoreChat();
-    applyStartClosedState();
-  })();
+      qaNoticeContainer.appendChild(box);
+    }
 
-  // persistence keys
-  const CHAT_KEY = 'gh_chat';
-  function persistChat(){
-    if(settings.isPrivate) return;
-    try {
-      const nodes = Array.from(messagesEl.children).map(n=>({html:n.innerHTML, classes:n.className}));
-      localStorage.setItem(CHAT_KEY, JSON.stringify(nodes));
-    } catch(e){}
-  }
-  function restoreChat(){
-    try {
-      const raw = localStorage.getItem(CHAT_KEY);
-      if(!raw) return;
-      const nodes = JSON.parse(raw);
-      nodes.forEach(n=>{
-        const el = document.createElement('div');
-        el.className = n.classes || 'msg-row bot';
-        el.innerHTML = n.html;
-        messagesEl.appendChild(el);
-        // show animation class if it's a msg-row
-        if(el.classList.contains('msg-row')) el.classList.add('show');
-      });
-      scrollToBottom();
-    } catch(e){}
-  }
-  function clearChatStorage(){ try { localStorage.removeItem(CHAT_KEY); } catch(e){} }
+    // Robust QA loader (tries inline first, then external file)
+    async function loadQAJSON() {
+      // 1. Try inline JSON first (most robust)
+      try {
+        const inline = document.getElementById('qa-inline');
+        if (inline && inline.textContent && inline.textContent.trim()) {
+          qaData = JSON.parse(inline.textContent);
+          console.log('Loaded QA from inline JSON');
+          return;
+        }
+      } catch (err) {
+        console.error('Inline QA load error:', err);
+        // continue to try external
+      }
 
-  // helpers for UI messages
-  function createRow(classes){
-    const row = document.createElement('div');
-    row.className = classes + ' msg-row';
-    return row;
-  }
-  function appendUser(text){
-    const row = createRow('user');
-    const bubble = document.createElement('div'); bubble.className='bubble-user'; bubble.textContent = text;
-    row.appendChild(bubble);
-    messagesEl.appendChild(row);
-    requestAnimationFrame(()=> row.classList.add('show'));
-    persistChat();
-    scrollToBottom();
-  }
-  function showTypingIndicator(){
-    const row = createRow('bot typing-row');
-    const av = document.createElement('div'); av.className='avatar-mini'; av.innerHTML = `<img src="${avatarSrc}" alt="GH">`;
-    const bubble = document.createElement('div'); bubble.className='bubble-bot';
-    bubble.innerHTML = `<div class="typing"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-    row.appendChild(av); row.appendChild(bubble);
-    messagesEl.appendChild(row);
-    requestAnimationFrame(()=> row.classList.add('show'));
-    scrollToBottom();
-    return row;
-  }
-  function appendBotText(text){
-    const row = createRow('bot');
-    const av = document.createElement('div'); av.className='avatar-mini'; av.innerHTML = `<img src="${avatarSrc}" alt="GH">`;
-    const bubble = document.createElement('div'); bubble.className='bubble-bot'; bubble.textContent = text;
-    row.appendChild(av); row.appendChild(bubble);
-    messagesEl.appendChild(row);
-    requestAnimationFrame(()=> row.classList.add('show'));
-    persistChat();
-    scrollToBottom();
-  }
-  function appendCardHtml(html){
-    const el = document.createElement('div'); el.className='card-response';
-    el.innerHTML = html;
-    messagesEl.appendChild(el);
-    // give show animation
-    requestAnimationFrame(()=> el.classList.add('show'));
-    persistChat();
-    scrollToBottom();
-  }
-  function scrollToBottom(){ requestAnimationFrame(()=> { messagesEl.scrollTop = messagesEl.scrollHeight; }); }
-  function escapeHtml(s){ return (''+s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+      // 2. Try external qa.json (relative path)
+      try {
+        const res = await fetch('./qa.json', {cache: "no-store"});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        qaData = await res.json();
+        console.log('Loaded QA from qa.json');
+      } catch (err) {
+        console.error('External QA load error:', err);
+        showQALoadError(err.message || String(err));
+        // fallback to safe defaults (keep bot usable)
+        qaData = { greetings: ["Hello!"], fallback_hotlines: [] };
+      }
+    }
 
-  // normalize for match
-  function normalizeForMatch(s){
-    return (s||'').toLowerCase().replace(/[^\w\s\+\-']/g,' ').replace(/\s+/g,' ').trim();
-  }
+    // sendMessage - uses qaData for canned replies when possible
+    function sendMessage() {
+      const text = inputEl.textContent.trim();
+      if (!text || text === 'Say hello — ask gently') {
+        // do subtle prompt if empty
+        inputEl.textContent = '';
+        inputEl.focus();
+        return;
+      }
 
-  // intent detection with explicit hotline patterns that match the user's list
-  function intent(text){
-    const n = normalizeForMatch(text||'');
+      addMessage('You: ' + text);
+      inputEl.textContent = '';
+      // quick simulated reply using qaData
+      try {
+        if (qaData && qaData.greetings && /hi|hello|hey/i.test(text)) {
+          const reply = qaData.greetings[0];
+          setTimeout(() => addMessage('Gentle Heart: ' + reply), 350);
+          return;
+        } else {
+          setTimeout(() => addMessage('Gentle Heart: I hear you. Tell me more.'), 500);
+        }
+      } catch (err) {
+        console.error('Reply error', err);
+        setTimeout(() => addMessage('Gentle Heart: I\'m here.'), 450);
+      }
+    }
 
-    // Explicit matches for the user's requested phrases:
-    // "Show hotline", "show hotline", "Hotline", "Hotlines", "hotlines", "Show hotlines"
-    // Using a forgiving regex that catches "show" optional + "hotline" or "hotlines"
-    if(/\b(show\s+)?hotlines?\b/.test(n)) return 'hotline';
-
-    // more intents: happy / crisis / sad / hi
-    if(/\b(happy|masaya|i m happy|im happy|i feel good|i feel better)\b/.test(n)) return 'happy';
-    if(n.includes('i want to die') || n.includes('kill myself') || n.includes('i will kill myself') || n.includes('gusto kong mamatay')) return 'crisis';
-    if(/\b(sad|lonely|down|depressed|hopeless|malungkot)\b/.test(n)) return 'sad';
-    if(/\b(hi|hello|hey|kamusta|hiya)\b/.test(n)) return 'hi';
-
-    return 'fallback';
-  }
-
-  // show hotlines for region
-  function showHotlinesForRegion(regionKey){
-    const key = regionKey || settings.country || 'PH';
-    const data = hotlines[key] || hotlines['PH'];
-    let html = `<strong>${escapeHtml(data.name || 'Hotlines')}</strong><div style="margin-top:8px">`;
-    (data.entries||[]).forEach(e=>{
-      const label = escapeHtml(e.label || '');
-      const value = escapeHtml(e.value || '');
-      const telOnly = (e.value || '').replace(/[^\d\+]/g,'');
-      if(/\d/.test(telOnly)){
-        html += `<div style="margin-top:6px"><strong>${label}:</strong> <a href="tel:${telOnly}">${value}</a></div>`;
-      } else {
-        html += `<div style="margin-top:6px"><strong>${label}:</strong> ${value}</div>`;
+    // Ensure input Enter key sends
+    inputEl.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' && !ev.shiftKey) {
+        ev.preventDefault();
+        sendMessage();
       }
     });
-    if(data.notes) html += `<div style="color:var(--muted);margin-top:8px">${escapeHtml(data.notes)}</div>`;
-    html += `</div>`;
-    appendCardHtml(html);
-  }
 
-  // main responder (uses typing indicator, then reply)
-  async function respondToUser(text){
-    const tag = intent(text);
-    appendUser(text);
+    // Wire send button to sendMessage; defensive: remove any previous listeners
+    (function wireSendButton() {
+      // remove previous onclick if present
+      sendBtn.onclick = null;
+      sendBtn.addEventListener('click', sendMessage);
+      // make sure it's focusable and accessible
+      sendBtn.tabIndex = 0;
+    })();
 
-    // show typing UI
-    const typingEl = showTypingIndicator();
-    // simulate a natural short delay (can be adjusted)
-    await new Promise(r=>setTimeout(r, 650));
-    // remove typing indicator
-    if(typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
-
-    // handle intents
-    if(tag === 'hi'){
-      appendBotText(settings.kidsMode
-        ? "Hi — I'm Gentle Heart. How can I help you today? I'm here to listen."
-        : "Hi — I'm Gentle Heart. How can I help you today?");
-      return;
-    }
-    if(tag === 'happy'){
-      appendBotText(settings.kidsMode
-        ? "Ang saya marinig na masaya ka ngayon. 💚 Kung gusto mo, puwede mong ikuwento kung ano ang nagpapasaya sa'yo."
-        : "That's wonderful to hear — I'm happy for you. If you want, you can share what's making you feel good today.");
-      return;
-    }
-    if(tag === 'hotline'){
-      appendBotText("Here are crisis hotlines you can reach:");
-      // show hotlines card based on selected country
-      showHotlinesForRegion(settings.country);
-      return;
-    }
-    if(tag === 'sad'){
-      appendBotText(settings.kidsMode
-        ? "I'm sorry you're feeling sad. Would you like a short breathing exercise or a simple calm activity?"
-        : "I'm sorry you're feeling sad. I can help with a breathing exercise, a grounding step, or you can type 'show hotline' to see support numbers.");
-      return;
-    }
-    if(tag === 'crisis'){
-      appendBotText("I'm really sorry you're feeling this. If you're in immediate danger, please call local emergency services now or someone nearby.");
-      // always show hotlines card in crisis situations
-      showHotlinesForRegion(settings.country);
-      return;
-    }
-
-    // fallback reply
-    appendBotText("Sorry, I didn't catch that yet. Try 'Show hotline' to see support numbers, 'breathing' for a short exercise, or ask about CP.");
-  }
-
-  // escape + scroll helpers already defined above
-
-  // send handlers
-  sendBtn.addEventListener('click', ()=> {
-    const v = input.value.trim();
-    if(!v) return;
-    respondToUser(v);
-    input.value = '';
-    input.focus();
-  });
-  input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); sendBtn.click(); } });
-
-  // minimize / restore
-  minBtn.addEventListener('click', ()=> { chatCard.style.display='none'; floating.style.display='flex'; });
-  floating.addEventListener('click', ()=> { chatCard.style.display='flex'; floating.style.display='none'; input.focus(); });
-
-  // settings modal open/close
-  settingsBtn.addEventListener('click', ()=> {
-    modalBackdrop.style.display = 'flex';
-    modalBackdrop.setAttribute('aria-hidden','false');
-    countryModal.value = settings.country || 'PH';
-    toggleKids.classList.toggle('checked', !!settings.kidsMode);
-    toggleKids.setAttribute('aria-checked', !!settings.kidsMode);
-    togglePrivate.classList.toggle('checked', !!settings.isPrivate);
-    togglePrivate.setAttribute('aria-checked', !!settings.isPrivate);
-  });
-  modalCancel.addEventListener('click', ()=> { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
-  modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); } });
-
-  modalSave.addEventListener('click', ()=> {
-    settings.country = countryModal.value || 'PH';
-    settings.kidsMode = toggleKids.classList.contains('checked');
-    settings.isPrivate = togglePrivate.classList.contains('checked');
-    countryTop.value = settings.country;
-    saveSettings(settings);
-    modalBackdrop.style.display='none';
-    modalBackdrop.setAttribute('aria-hidden','true');
-  });
-
-  clearHistoryBtn.addEventListener('click', ()=> {
-    messagesEl.innerHTML = '';
-    clearChatStorage();
-    if(!START_CLOSED_BY_DEFAULT) showInitialGreeting();
-    if(!settings.isPrivate) persistChat();
-    modalBackdrop.style.display='none';
-  });
-
-  // toggles accessible
-  function toggleFlip(el){
-    el.classList.toggle('checked');
-    const checked = el.classList.contains('checked');
-    el.setAttribute('aria-checked', checked ? 'true' : 'false');
-  }
-  toggleKids.addEventListener('click', ()=> toggleFlip(toggleKids));
-  toggleKids.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleFlip(toggleKids); }});
-  togglePrivate.addEventListener('click', ()=> toggleFlip(togglePrivate));
-  togglePrivate.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleFlip(togglePrivate); }});
-
-  // keep selectors in sync and persist settings
-  countryTop.addEventListener('change', ()=> { countryModal.value = countryTop.value; settings.country = countryTop.value; saveSettings(settings); });
-  countryModal.addEventListener('change', ()=> { countryTop.value = countryModal.value; });
-
-  // visualViewport handling — keep chat visible when keyboard opens
-  function applyViewportAdjust(){
-    const vv = window.visualViewport;
-    if(!vv) {
-      chatCard.style.maxHeight = 'calc(100vh - 36px)';
-      messagesEl.style.maxHeight = 'calc(100vh - 320px)';
-      return;
-    }
-    const viewportH = vv.height;
-    const windowH = window.innerHeight;
-    const available = Math.max(220, Math.min(windowH - 20, viewportH - 24));
-    chatCard.style.height = (available) + 'px';
-    const headerH = document.querySelector('.header').offsetHeight || 86;
-    const footerH = document.querySelector('.footer').offsetHeight || 70;
-    const mutedH = document.querySelector('.muted').offsetHeight || 28;
-    const messagesMax = available - headerH - footerH - mutedH - 36;
-    messagesEl.style.maxHeight = (messagesMax > 120 ? messagesMax : 120) + 'px';
-    scrollToBottom();
-  }
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', applyViewportAdjust);
-    window.visualViewport.addEventListener('scroll', applyViewportAdjust);
-  } else {
-    window.addEventListener('resize', applyViewportAdjust);
-  }
-  window.addEventListener('orientationchange', ()=> setTimeout(applyViewportAdjust, 260));
-  input.addEventListener('focus', ()=> setTimeout(()=> { applyViewportAdjust(); scrollToBottom(); }, 200));
-  input.addEventListener('blur', ()=> setTimeout(()=> { applyViewportAdjust(); scrollToBottom(); }, 120));
-  setTimeout(()=> { applyViewportAdjust(); }, 400);
-
-  // start-closed behavior
-  function applyStartClosedState(){
-    if(START_CLOSED_BY_DEFAULT){
-      chatCard.style.display = 'none';
-      floating.style.display = 'flex';
-      floating.setAttribute('aria-hidden','false');
-    } else {
-      chatCard.style.display = 'flex';
-      floating.style.display = 'none';
-      if(messagesEl.children.length === 0 && !settings.isPrivate){
-        showInitialGreeting();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await loadQAJSON();
+      } catch (err) {
+        console.error('Loader crash', err);
+        showQALoadError('loader crash');
       }
-    }
-  }
+      // Add an initial gentle greeting from the bot
+      if (qaData && qaData.greetings && qaData.greetings[0]) {
+        addMessage('Gentle Heart: ' + qaData.greetings[0]);
+      } else {
+        addMessage('Gentle Heart: Hello — I am here to listen.');
+      }
+    });
 
-  // greeting
-  function showInitialGreeting(){
-    const hasAny = messagesEl.querySelectorAll('.msg-row').length || messagesEl.querySelectorAll('.card-response').length;
-    if(hasAny) return;
-    const text = settings.kidsMode ? "Hello — I'm Gentle Heart. I'm here to help. You can ask about staying strong, breathing, or caring for children." : "Hello — I'm Gentle Heart. Ask me about cerebral palsy, caregiving tips, or say 'Show hotline' for crisis numbers.";
-    appendBotText(text);
-  }
-
-  // floating open action
-  floating.addEventListener('click', ()=> {
-    chatCard.style.display='flex';
-    floating.style.display='none';
-    if(messagesEl.children.length === 0 && !settings.isPrivate) {
-      showInitialGreeting();
-    }
-    input.focus();
-    applyViewportAdjust();
-  });
-
-  // expose a small public function if needed by other pages
-  window.GENTLE_HEART = {
-    open(){ chatCard.style.display='flex'; floating.style.display='none'; input.focus(); applyViewportAdjust(); },
-    close(){ chatCard.style.display='none'; floating.style.display='flex'; },
-    sendMessage(msg){ if(msg && msg.trim()) respondToUser(msg); }
-  };
-
-  // initial state
-  applyStartClosedState();
-
-})();
-</script>
+    // Safety: make sure nothing overlays bottom on resize
+    window.addEventListener('resize', () => {
+      // keep main area scrollable so input remains visible
+      const main = document.getElementById('main');
+      main.style.maxHeight = (window.innerHeight - 220) + 'px';
+    });
+  </script>
 </body>
 </html>
