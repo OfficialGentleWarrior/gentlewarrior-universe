@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial
+-scale=1,viewport-fit=cover" />
+<title>Gentle Heart — Companion (QA via qa.json)</title>
+<style>
+:root{
+  --bg-top:#043022; --bg-bot:#052d21;
+  --card:#0f3f2f; --bot-grad-start:#2a6f4f; --bot-grad-end:#18503a;
+  --user-grad-start:#214834; --user-grad-end:#133825;
+  --accent:#e6ffd0; --muted:#98b199; --white:#eaf6ea;
+  --shadow:0 20px 40px rgba(0,0,0,0.55);
+}
+html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(--bg-bot));font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:var(--white);-webkit-font-smoothing:antialiased}
+.container{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px}
+.card{width:94%;max-width:720px;background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative;overflow:hidden;transition:height 160ms ease}
+.header{display:flex;align-items:center;gap:12px;padding:4px 6px 12px}
+.avatar{width:64px;height:64px;border-radius:12px;overflow:hidden;flex:0 0 64px;background:#083d2f}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.title{flex:1}
+.title h1{margin:0;font-size:22px;color:var(--accent);font-weight:700;line-height:1}
+.title p{margin:6px 0 0;font-size:12px;color:var(--muted)}
+.controls{display:flex;gap:8px;align-items:center}
+.btn-circle{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.messages{flex:1;overflow:auto;padding:12px;border-radius:10px;min-height:200px;max-height:calc(100vh - 320px);display:flex;flex-direction:column;gap:10px}
+
+/* chat message rows and smooth animations */
+.msg-row{display:flex;align-items:flex-start;margin-bottom:0;gap:10px;opacity:0;transform:translateY(6px);transition:opacity .28s ease, transform .28s ease}
+.msg-row.show{opacity:1;transform:translateY(0)}
+.msg-row.bot{justify-content:flex-start}
+.msg-row.user{justify-content:flex-end}
+
+.avatar-mini{width:44px;height:44px;border-radius:10px;overflow:hidden;background:#0b3e2f;flex:0 0 44px;box-shadow:0 8px 18px rgba(0,0,0,0.4)}
+.avatar-mini img{width:100%;height:100%;object-fit:cover}
+.bubble-bot{background:linear-gradient(180,var(--bot-grad-start),var(--bot-grad-end));color:var(--white);border-radius:14px 14px 14px 6px;padding:14px;max-width:78%;box-shadow:0 8px 18px rgba(0,0,0,0.45);font-size:15px;line-height:1.35;white-space:pre-wrap}
+.bubble-user{background:linear-gradient(180,var(--user-grad-start),var(--user-grad-end));color:var(--white);border-radius:999px;padding:10px 14px;display:inline-block;max-width:66%;box-shadow:0 8px 18px rgba(0,0,0,0.45);font-size:14px}
+.card-response{background:linear-gradient(180, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:12px;margin-top:6px;box-shadow:inset 0 2px 0 rgba(0,0,0,0.06);color:var(--white)}
+.card-response.show{opacity:1;transform:none;transition:opacity .28s ease}
+.card-response a{color:var(--accent);text-decoration:none;font-weight:700}
+.footer{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;margin-top:10px;background:linear-gradient(180, rgba(255,255,255,0.02), rgba(255,255,255,0.01));position:relative;z-index:5}
+.input{flex:1;padding:12px;border-radius:26px;border:0;background:rgba(255,255,255,0.03);color:var(--white);font-size:15px;outline:none}
+.send{width:84px;padding:10px;border-radius:999px;border:0;background:var(--accent);color:#0d4028;font-weight:700}
+.muted{font-size:12px;color:var(--muted);padding:10px 12px}
+.floating{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:999px;background:#163e2f;display:flex;align-items:center;justify-content:center;z-index:150;box-shadow:0 14px 30px rgba(0,0,0,0.5);cursor:pointer}
+.floating img{width:48px;height:48px;border-radius:999px}
+
+/* typing indicator */
+.typing {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.typing-dots {
+  width:46px;height:18px;background:rgba(0,0,0,0.06);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:2px 6px;
+}
+.typing-dots span {
+  display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.85);opacity:0.25;margin:0 3px;animation:blink 1s infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:0.15s}
+.typing-dots span:nth-child(3){animation-delay:0.3s}
+@keyframes blink {0%{opacity:0.25}40%{opacity:1}100%{opacity:0.25}}
+
+/* Settings modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:400}
+.modal{width:92%;max-width:420px;background:var(--card);border-radius:12px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,0.6);color:var(--white)}
+.modal h3{margin:0 0 8px}
+.modal .row{margin:8px 0;display:flex;flex-direction:column;opacity:1;transform:none}
+.country-select{width:100%;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);color:var(--white);border:0;outline:none}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.toggle-row label{color:var(--muted);font-size:14px}
+.toggle{appearance:none;width:44px;height:24px;border-radius:14px;background:rgba(255,255,255,0.06);position:relative;cursor:pointer}
+.toggle:before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .18s}
+.toggle.checked{background:#2a6f4f}
+.toggle.checked:before{transform:translateX(20px)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn-primary{background:var(--accent);color:#0d4028;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+
+/* mobile tweaks */
+@media (max-width:420px){
+  .avatar{width:52px;height:52px;border-radius:10px}
+  .avatar-mini{width:40px;height:40px}
+  .title h1{font-size:18px}
+  .messages{max-height:calc(100vh - 360px)}
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="chatCard" role="application" aria-label="Gentle Heart chat">
+      <div class="header">
+        <div class="avatar"><img id="avatarImg" src="avatar.png" alt="Gentle Heart"></div>
+        <div class="title">
+          <h1>Gentle Heart</h1>
+          <p>Your gentle companion</p>
+        </div>
+
+        <div class="controls" title="Controls">
+          <select id="countrySelectTop" class="country-select" aria-label="Select country (top)">
+            <option value="PH">Philippines</option>
+            <option value="GLOBAL_GENERAL">International</option>
+          </select>
+          <div class="btn-circle" id="settingsBtn" title="Settings">⚙</div>
+          <div class="btn-circle" id="minBtn" title="Minimize">—</div>
+        </div>
+      </div>
+
+      <div class="messages" id="messages" aria-live="polite" role="log"></div>
+
+      <div class="footer" id="footer">
+        <input id="inputBox" class="input" placeholder="Say hello — ask gently" autocomplete="off" />
+        <button id="sendBtn" class="send">Send</button>
+      </div>
+
+      <div class="muted">Bot only. For info & emotional support — not medical advice.</div>
+    </div>
+  </div>
+
+  <div class="floating" id="floatingBtn" aria-hidden="false" title="Open Gentle Heart"><img src="avatar.png" alt="GH"></div>
+
+  <!-- Settings modal (Country / Kids mode / Private / Clear history) -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" id="modal" role="document" aria-labelledby="settingsTitle">
+      <h3 id="settingsTitle">Settings</h3>
+
+      <div class="row">
+        <label for="countrySelectModal" style="display:block;margin-bottom:6px;color:var(--muted)">Country for hotlines</label>
+        <select id="countrySelectModal" class="country-select" aria-label="Country selector">
+          <option value="PH">Philippines</option>
+          <option value="GLOBAL_GENERAL">International</option>
+        </select>
+      </div>
+
+      <div class="row toggle-row">
+        <div>
+          <div style="font-weight:600">Kids mode</div>
+          <div style="color:var(--muted);font-size:13px">If on — replies are gentler and simpler for children.</div>
+        </div>
+        <div id="toggleKids" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
+      </div>
+
+      <div class="row toggle-row">
+        <div>
+          <div style="font-weight:600">Private</div>
+          <div style="color:var(--muted);font-size:13px">If on — chat history will not be saved locally.</div>
+        </div>
+        <div id="togglePrivate" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
+      </div>
+
+      <div class="modal-actions" style="align-items:center">
+        <button id="clearHistory" class="btn-ghost">Clear history</button>
+        <div style="flex:1"></div>
+        <button id="modalCancel" class="btn-ghost">Cancel</button>
+        <button id="modalSave" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // START CONFIG
+  const START_CLOSED_BY_DEFAULT = true;
+
+  // elements
+  const messagesEl = document.getElementById('messages');
+  const input = document.getElementById('inputBox');
+  const sendBtn = document.getElementById('sendBtn');
+  const minBtn = document.getElementById('minBtn');
+  const floating = document.getElementById('floatingBtn');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const countryTop = document.getElementById('countrySelectTop');
+  const countryModal = document.getElementById('countrySelectModal');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalSave = document.getElementById('modalSave');
+  const modalCancel = document.getElementById('modalCancel');
+  const clearHistoryBtn = document.getElementById('clearHistory');
+  const toggleKids = document.getElementById('toggleKids');
+  const togglePrivate = document.getElementById('togglePrivate');
+  const chatCard = document.getElementById('chatCard');
+  const avatarSrc = 'avatar.png';
+
+  // settings storage
+  const DEFAULTS = { country: 'PH', kidsMode: false, isPrivate: false };
+  function loadSettings(){
+    try {
+      const raw = localStorage.getItem('gh_settings');
+      if(raw) return Object.assign({}, DEFAULTS, JSON.parse(raw));
+    } catch(e){}
+    return Object.assign({}, DEFAULTS);
+  }
+  function saveSettings(s){
+    try { localStorage.setItem('gh_settings', JSON.stringify(s)); } catch(e){}
+  }
+  let settings = loadSettings();
+  countryTop.value = settings.country;
+  countryModal.value = settings.country;
+  if(settings.kidsMode) toggleKids.classList.add('checked'), toggleKids.setAttribute('aria-checked','true'); else toggleKids.classList.remove('checked'), toggleKids.setAttribute('aria-checked','false');
+  if(settings.isPrivate) togglePrivate.classList.add('checked'), togglePrivate.setAttribute('aria-checked','true'); else togglePrivate.classList.remove('checked'), togglePrivate.setAttribute('aria-checked','false');
+
+  // persistence keys
+  const CHAT_KEY = 'gh_chat';
+  function persistChat(){
+    if(settings.isPrivate) return;
+    try {
+      const nodes = Array.from(messagesEl.children).map(n=>({html:n.innerHTML, classes:n.className}));
+      localStorage.setItem(CHAT_KEY, JSON.stringify(nodes));
+    } catch(e){}
+  }
+  function restoreChat(){
+    try {
+      const raw = localStorage.getItem(CHAT_KEY);
+      if(!raw) return;
+      const nodes = JSON.parse(raw);
+      nodes.forEach(n=>{
+        const el = document.createElement('div');
+        el.className = n.classes || 'msg-row bot';
+        el.innerHTML = n.html;
+        messagesEl.appendChild(el);
+        if(el.classList.contains('msg-row')) el.classList.add('show');
+      });
+      scrollToBottom();
+    } catch(e){}
+  }
+  function clearChatStorage(){ try { localStorage.removeItem(CHAT_KEY); } catch(e){} }
+
+  // runtime QA structures (populated from qa.json)
+  let qaData = null;
+  let hotlines = {}; // will be filled from qa.json.hotlines or fallback
+  let pairs = [];    // array of {input, intent, response}
+
+  // fallback hotlines (used only if qa.json lacks hotlines)
+  const FALLBACK_HOTLINES = {
+    PH: {
+      name: "Philippines - Crisis Hotlines",
+      entries: [
+        { label: "NCMH Crisis Hotline (Luzon landline)", value: "1553" },
+        { label: "NCMH Mobile", value: "0966-351-4518" },
+        { label: "Hopeline PH (mobile)", value: "0917-558-4673" }
+      ],
+      notes: "If in immediate danger, contact local emergency services (e.g., 911 or local equivalent)."
+    },
+    GLOBAL_GENERAL: {
+      name: "General international guidance",
+      entries: [
+        { label: "Local emergency services", value: "Contact local emergency services" },
+        { label: "Samaritans (UK)", value: "116 123" }
+      ]
+    }
+  };
+
+ // Improved loadQAJSON() - place this in your script replacing the current function
+  async function loadQAJSON(){
+    const QA_PATH = './qa.json';
+    let tried = 0;
+    const maxTries = 2;
+    const tryDelay = 700;
+
+    async function attempt(){
+      tried++;
+      console.log(`[GentleHeart] Attempting to load qa.json (try ${tried}/${maxTries}) from: ${QA_PATH}`);
+      try {
+        const r = await fetch(QA_PATH, { cache: 'no-store' });
+        if(!r.ok){
+          const text = await r.text().catch(()=>'<no body>');
+          const errMsg = `[GentleHeart] fetch returned ${r.status} ${r.statusText} — body: ${text}`;
+          console.warn(errMsg);
+          throw new Error(errMsg);
+        }
+        // Parse JSON, show parsing errors clearly
+        let j;
+        try {
+          j = await r.json();
+        } catch(parseErr){
+          const body = await r.text().catch(()=>'<unavailable>');
+          const parseMsg = `[GentleHeart] qa.json parse error: ${parseErr.message}. Body snapshot: ${body.slice(0,1000)}`;
+          console.error(parseMsg, parseErr);
+          throw new Error(parseMsg);
+        }
+
+        qaData = j;
+        if(j.hotlines && typeof j.hotlines === 'object'){
+          hotlines = Object.assign({}, FALLBACK_HOTLINES, j.hotlines);
+        } else {
+          hotlines = Object.assign({}, FALLBACK_HOTLINES);
+        }
+        if(Array.isArray(j.pairs)){
+          pairs = j.pairs.map(p => ({ input: (p.input||'').toLowerCase().trim(), intent: p.intent||null, response: p.response||null }));
+        } else {
+          pairs = [];
+        }
+        console.log(`[GentleHeart] qa.json loaded — pairs: ${pairs.length}, hotlines keys: ${Object.keys(hotlines).join(',')}`);
+        // success -> return
+        return true;
+
+      } catch(err){
+        console.warn('[GentleHeart] loadQAJSON error:', err);
+        // if we can retry, wait then retry
+        if(tried < maxTries){
+          await new Promise(res => setTimeout(res, tryDelay));
+          return attempt();
+        }
+        // last resort: show an error card for visibility and use fallback
+        hotlines = Object.assign({}, FALLBACK_HOTLINES);
+        pairs = [];
+        const cardHtml = `<strong>QA load problem</strong>
+          <div style="margin-top:8px">
+            We couldn't load <code>qa.json</code>. The bot will still work with fallback hotlines.
+            <div style="color:var(--muted);margin-top:8px">Check the console for details (Open DevTools &gt; Console).</div>
+          </div>`;
+        try { appendCardHtml(cardHtml); } catch(e){ console.warn('Could not append error card', e); }
+        return false;
+      }
+    }
+
+    return attempt();
+  }
+
+  // helpers for UI messages
+  function createRow(classes){
+    const row = document.createElement('div');
+    row.className = classes + ' msg-row';
+    return row;
+  }
+  function appendUser(text){
+    const row = createRow('user');
+    const bubble = document.createElement('div'); bubble.className='bubble-user'; bubble.textContent = text;
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    requestAnimationFrame(()=> row.classList.add('show'));
+    persistChat();
+    scrollToBottom();
+  }
+  function showTypingIndicator(){
+    const row = createRow('bot typing-row');
+    const av = document.createElement('div'); av.className='avatar-mini'; av.innerHTML = `<img src="${avatarSrc}" alt="GH">`;
+    const bubble = document.createElement('div'); bubble.className='bubble-bot';
+    bubble.innerHTML = `<div class="typing"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+    row.appendChild(av); row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    requestAnimationFrame(()=> row.classList.add('show'));
+    scrollToBottom();
+    return row;
+  }
+  function appendBotText(text){
+    const row = createRow('bot');
+    const av = document.createElement('div'); av.className='avatar-mini'; av.innerHTML = `<img src="${avatarSrc}" alt="GH">`;
+    const bubble = document.createElement('div'); bubble.className='bubble-bot'; bubble.textContent = text;
+    row.appendChild(av); row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    requestAnimationFrame(()=> row.classList.add('show'));
+    persistChat();
+    scrollToBottom();
+  }
+  function appendCardHtml(html){
+    const el = document.createElement('div'); el.className = 'card-response';
+    el.innerHTML = html;
+    messagesEl.appendChild(el);
+    requestAnimationFrame(()=> el.classList.add('show'));
+    persistChat();
+    scrollToBottom();
+  }
+  function scrollToBottom(){ requestAnimationFrame(()=> { messagesEl.scrollTop = messagesEl.scrollHeight; }); }
+  function escapeHtml(s){ return (''+s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  // Normalize helper
+  function norm(s){ return (s||'').toLowerCase().replace(/[^\w\s\+\-']/g,' ').replace(/\s+/g,' ').trim(); }
+
+  // Intent detection:
+  // 1) check explicit "show hotline" variants (for the user's requested list)
+  // 2) check exact match against pairs (preferred)
+  // 3) check 'includes' match against pairs
+  // 4) fallback simple regex checks (hi/sad/breathing/crisis)
+  function detectIntent(text){
+    const t = norm(text);
+
+    // user-requested hotline triggers (case-insensitive, lenient)
+    if(/\b(show\s+)?hotlines?\b/.test(t)) return { id: 'hotline' };
+
+    // exact pair match (highest priority)
+    for(const p of pairs){
+      if(!p.input) continue;
+      if(t === norm(p.input)) return { id: p.intent || ('pair_'+p.input), sourceResponse: p.response };
+    }
+    // includes / contains match (looser)
+    for(const p of pairs){
+      if(!p.input) continue;
+      const pi = norm(p.input);
+      if(pi && t.includes(pi)) return { id: p.intent || ('pair_'+p.input), sourceResponse: p.response };
+    }
+
+    // quick built-in fallbacks
+    if(t.includes('breath') || t.includes('hinga') || /\b(breathe|breathing)\b/.test(t)) return { id: 'breathing' };
+    if(t.includes('i want to die') || t.includes('kill myself') || t.includes('gusto kong mamatay')) return { id: 'crisis' };
+    if(/\b(sad|malungkot|lonely|down|depressed|hopeless)\b/.test(t)) return { id: 'sad' };
+    if(/\b(hi|hello|hey|kamusta|hiya)\b/.test(t)) return { id: 'greeting' };
+
+    return { id: 'fallback' };
+  }
+
+  // show hotline card for a region key
+  function showHotlines(regionKey){
+    const key = regionKey || settings.country || 'PH';
+    const data = (hotlines && hotlines[key]) ? hotlines[key] : (hotlines['PH'] || FALLBACK_HOTLINES['PH']);
+    let html = `<strong>${escapeHtml(data.name || 'Hotlines')}</strong><div style="margin-top:8px">`;
+    (data.entries||[]).forEach(e=>{
+      const label = escapeHtml(e.label || '');
+      const value = escapeHtml(e.value || '');
+      const telOnly = (e.value || '').replace(/[^\d\+]/g,'');
+      if(/\d/.test(telOnly)){
+        html += `<div style="margin-top:6px"><strong>${label}:</strong> <a href="tel:${telOnly}">${value}</a></div>`;
+      } else {
+        html += `<div style="margin-top:6px"><strong>${label}:</strong> ${value}</div>`;
+      }
+    });
+    if(data.notes) html += `<div style="color:var(--muted);margin-top:8px">${escapeHtml(data.notes)}</div>`;
+    html += `</div>`;
+    appendCardHtml(html);
+  }
+
+  // primary responder (typing indicator + use qa pairs if present)
+  async function respondToUser(text){
+    const d = detectIntent(text);
+    appendUser(text);
+
+    const typingEl = showTypingIndicator();
+    await new Promise(r => setTimeout(r, 550 + Math.min(800, text.length*8))); // small natural delay
+    if(typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+
+    // handle explicit intents
+    if(d.id === 'hotline'){
+      appendBotText("Here are crisis hotlines you can reach:");
+      showHotlines(settings.country);
+      return;
+    }
+    if(d.id === 'breathing'){
+      appendBotText("Let's do a short breathing exercise: breathe in 4 seconds — hold 2 — breathe out 6. Repeat three times.");
+      return;
+    }
+    if(d.id === 'crisis'){
+      appendBotText("I'm really sorry you're feeling this. If you're in immediate danger, call local emergency services now or someone nearby.");
+      showHotlines(settings.country);
+      return;
+    }
+    if(d.id === 'greeting'){
+      appendBotText(settings.kidsMode ? "Hi — I'm Gentle Heart. How can I help you today? I'm here to listen." : "Hi — I'm Gentle Heart. How can I help you today?");
+      return;
+    }
+    if(d.id === 'sad'){
+      appendBotText(settings.kidsMode ? "I'm sorry you're feeling sad. Would you like a breathing exercise or a simple calm activity?" : "I'm sorry you're feeling sad. I can guide breathing, grounding, or show hotlines.");
+      return;
+    }
+
+    // if d has a sourceResponse from pairs, use it:
+    if(d.sourceResponse){
+      appendBotText(d.sourceResponse);
+      return;
+    }
+
+    // if not matched to pairs, but qaData.intents mapping exists (legacy), try
+    if(qaData && Array.isArray(qaData.pairs)){
+      // attempt fuzzy single-token lookup: find pair where input is included
+      const t = norm(text);
+      for(const p of qaData.pairs){
+        const pi = norm(p.input || '');
+        if(pi && t.includes(pi)){
+          appendBotText(p.response || "I'm here to help.");
+          return;
+        }
+      }
+    }
+
+    // fallback
+    appendBotText("Sorry, I didn't catch that yet. Try 'Show hotline' for support numbers, 'breathing' for a short exercise, or ask about CP-related care.");
+  }
+
+  // send handlers
+  sendBtn.addEventListener('click', ()=> {
+    const v = input.value.trim();
+    if(!v) return;
+    respondToUser(v);
+    input.value = '';
+    input.focus();
+  });
+  input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); sendBtn.click(); } });
+
+  // minimize / restore
+  minBtn.addEventListener('click', ()=> { chatCard.style.display='none'; floating.style.display='flex'; });
+  floating.addEventListener('click', ()=> { chatCard.style.display='flex'; floating.style.display='none'; input.focus(); });
+
+  // settings modal open/close
+  settingsBtn.addEventListener('click', ()=> {
+    modalBackdrop.style.display = 'flex';
+    modalBackdrop.setAttribute('aria-hidden','false');
+    countryModal.value = settings.country || 'PH';
+    toggleKids.classList.toggle('checked', !!settings.kidsMode);
+    toggleKids.setAttribute('aria-checked', !!settings.kidsMode);
+    togglePrivate.classList.toggle('checked', !!settings.isPrivate);
+    togglePrivate.setAttribute('aria-checked', !!settings.isPrivate);
+  });
+  modalCancel.addEventListener('click', ()=> { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
+  modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); } });
+
+  modalSave.addEventListener('click', ()=> {
+    settings.country = countryModal.value || 'PH';
+    settings.kidsMode = toggleKids.classList.contains('checked');
+    settings.isPrivate = togglePrivate.classList.contains('checked');
+    countryTop.value = settings.country;
+    saveSettings(settings);
+    modalBackdrop.style.display='none';
+    modalBackdrop.setAttribute('aria-hidden','true');
+  });
+
+  clearHistoryBtn.addEventListener('click', ()=> {
+    messagesEl.innerHTML = '';
+    clearChatStorage();
+    if(!START_CLOSED_BY_DEFAULT) showInitialGreeting();
+    if(!settings.isPrivate) persistChat();
+    modalBackdrop.style.display='none';
+  });
+
+  // toggles accessible
+  function toggleFlip(el){
+    el.classList.toggle('checked');
+    const checked = el.classList.contains('checked');
+    el.setAttribute('aria-checked', checked ? 'true' : 'false');
+  }
+  toggleKids.addEventListener('click', ()=> toggleFlip(toggleKids));
+  toggleKids.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleFlip(toggleKids); }});
+  togglePrivate.addEventListener('click', ()=> toggleFlip(togglePrivate));
+  togglePrivate.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleFlip(togglePrivate); }});
+
+  // keep selectors in sync and persist settings
+  countryTop.addEventListener('change', ()=> { countryModal.value = countryTop.value; settings.country = countryTop.value; saveSettings(settings); });
+  countryModal.addEventListener('change', ()=> { countryTop.value = countryModal.value; });
+
+  // viewport adjustments
+  function applyViewportAdjust(){
+    const vv = window.visualViewport;
+    if(!vv) {
+      chatCard.style.maxHeight = 'calc(100vh - 36px)';
+      messagesEl.style.maxHeight = 'calc(100vh - 320px)';
+      return;
+    }
+    const viewportH = vv.height;
+    const windowH = window.innerHeight;
+    const available = Math.max(220, Math.min(windowH - 20, viewportH - 24));
+    chatCard.style.height = (available) + 'px';
+    const headerH = document.querySelector('.header').offsetHeight || 86;
+    const footerH = document.querySelector('.footer').offsetHeight || 70;
+    const mutedH = document.querySelector('.muted').offsetHeight || 28;
+    const messagesMax = available - headerH - footerH - mutedH - 36;
+    messagesEl.style.maxHeight = (messagesMax > 120 ? messagesMax : 120) + 'px';
+    scrollToBottom();
+  }
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', applyViewportAdjust);
+    window.visualViewport.addEventListener('scroll', applyViewportAdjust);
+  } else {
+    window.addEventListener('resize', applyViewportAdjust);
+  }
+  window.addEventListener('orientationchange', ()=> setTimeout(applyViewportAdjust, 260));
+  input.addEventListener('focus', ()=> setTimeout(()=> { applyViewportAdjust(); scrollToBottom(); }, 200));
+  input.addEventListener('blur', ()=> setTimeout(()=> { applyViewportAdjust(); scrollToBottom(); }, 120));
+  setTimeout(()=> { applyViewportAdjust(); }, 400);
+
+  // start closed behavior
+  function applyStartClosedState(){
+    if(START_CLOSED_BY_DEFAULT){
+      chatCard.style.display = 'none';
+      floating.style.display = 'flex';
+      floating.setAttribute('aria-hidden','false');
+    } else {
+      chatCard.style.display = 'flex';
+      floating.style.display = 'none';
+      if(messagesEl.children.length === 0 && !settings.isPrivate){
+        showInitialGreeting();
+      }
+    }
+  }
+
+  // greeting
+  function showInitialGreeting(){
+    const hasAny = messagesEl.querySelectorAll('.msg-row').length || messagesEl.querySelectorAll('.card-response').length;
+    if(hasAny) return;
+    const text = settings.kidsMode ? "Hello — I'm Gentle Heart. I'm here to help. You can ask about staying strong, breathing, or caring for children." : "Hello — I'm Gentle Heart. Ask me about cerebral palsy, caregiving tips, or say 'Show hotline' for crisis numbers.";
+    appendBotText(text);
+  }
+
+  // public API for integration
+  window.GENTLE_HEART = {
+    open(){ chatCard.style.display='flex'; floating.style.display='none'; input.focus(); applyViewportAdjust(); },
+    close(){ chatCard.style.display='none'; floating.style.display='flex'; },
+    sendMessage(msg){ if(msg && msg.trim()) respondToUser(msg); }
+  };
+
+  // initial load sequence
+  (async function init(){
+    await loadQAJSON();
+    if(!settings.isPrivate) restoreChat();
+    applyStartClosedState();
+  })();
+
+})();
+</script>
+</body>
+</html>
