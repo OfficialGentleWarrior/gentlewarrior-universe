@@ -249,9 +249,30 @@ html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(
     }
   };
 
- // Improved loadQAJSON() - place this in your script replacing the current function
+  // Robust loadQAJSON(): first try inline <script id="qa-inline">, then fetch('./qa.json') with retries
   async function loadQAJSON(){
     const QA_PATH = './qa.json';
+    // 1) try inline script first (helps for file:// or bundles)
+    try {
+      const inline = document.getElementById('qa-inline');
+      if(inline && inline.textContent && inline.textContent.trim()){
+        try {
+          const j = JSON.parse(inline.textContent);
+          qaData = j;
+          hotlines = (j.hotlines && typeof j.hotlines === 'object') ? Object.assign({}, FALLBACK_HOTLINES, j.hotlines) : Object.assign({}, FALLBACK_HOTLINES);
+          pairs = Array.isArray(j.pairs) ? j.pairs.map(p => ({ input: (p.input||'').toLowerCase().trim(), intent: p.intent||null, response: p.response||null })) : [];
+          console.log('[GentleHeart] loaded qa.json from inline script — pairs:', pairs.length);
+          return true;
+        } catch(e){
+          console.warn('[GentleHeart] inline qa parse error', e);
+          // fall through to fetch
+        }
+      }
+    } catch(e){
+      console.warn('[GentleHeart] inline qa access error', e);
+    }
+
+    // 2) fallback to network fetch with retry logic
     let tried = 0;
     const maxTries = 2;
     const tryDelay = 700;
@@ -262,12 +283,11 @@ html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(
       try {
         const r = await fetch(QA_PATH, { cache: 'no-store' });
         if(!r.ok){
-          const text = await r.text().catch(()=>'<no body>');
-          const errMsg = `[GentleHeart] fetch returned ${r.status} ${r.statusText} — body: ${text}`;
+          const body = await r.text().catch(()=>'<no body>');
+          const errMsg = `[GentleHeart] fetch returned ${r.status} ${r.statusText} — body: ${body.slice(0,800)}`;
           console.warn(errMsg);
           throw new Error(errMsg);
         }
-        // Parse JSON, show parsing errors clearly
         let j;
         try {
           j = await r.json();
@@ -290,17 +310,14 @@ html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(
           pairs = [];
         }
         console.log(`[GentleHeart] qa.json loaded — pairs: ${pairs.length}, hotlines keys: ${Object.keys(hotlines).join(',')}`);
-        // success -> return
         return true;
-
       } catch(err){
         console.warn('[GentleHeart] loadQAJSON error:', err);
-        // if we can retry, wait then retry
         if(tried < maxTries){
           await new Promise(res => setTimeout(res, tryDelay));
           return attempt();
         }
-        // last resort: show an error card for visibility and use fallback
+        // last-resort fallback UI + fallback data
         hotlines = Object.assign({}, FALLBACK_HOTLINES);
         pairs = [];
         const cardHtml = `<strong>QA load problem</strong>
@@ -430,7 +447,6 @@ function tokenOverlapScore(a, b){
  * 3) token overlap + levenshtein similarity scoring (fuzzy)
  * 4) fallback to intent_fallback
  */
-// REPLACE existing detectIntent(...) with this improved version
 function detectIntent(rawText){
   // small debug helper - set to true to print matching diagnostics in console
   const DEBUG = false;
@@ -472,7 +488,7 @@ function detectIntent(rawText){
 
   // 2) Try qa.pairs (improved fuzzy + fast token overlap shortcut)
   if(Array.isArray(pairs) && pairs.length){
-    // quick token overlap short-circuit: if > 0.6 token overlap treat as match immediately
+    // quick token overlap short-circuit: if > 0.7 token overlap treat as match immediately
     const tokensA = tNorm.split(' ').filter(Boolean);
     let best = { score: 0, idx: -1, reason: null };
 
@@ -538,6 +554,7 @@ function detectIntent(rawText){
   if(DEBUG) console.log('[detectIntent] fallback');
   return { id: 'intent_fallback', pair: null };
 }
+
   // show hotline card for a region key
   function showHotlines(regionKey){
     const key = regionKey || settings.country || 'PH';
