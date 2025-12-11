@@ -55,6 +55,394 @@
     { "input": "im sad", "intent": "sad", "response": "I hear you — I'm sorry you're feeling sad. Do you want a breathing exercise, grounding steps, or hotlines?" },
     { "input": "malungkot ako", "intent": "sad", "response": "Nalulungkot ka — pasensya. Maaari kitang samahan: breathing exercise, grounding prompt, o hotline. Ano pipiliin mo?" },
 
+[
+  {
+    "input": "what causes cp",
+    "intent": "cp_overview",
+    "response": "CP can be caused by early brain development differences, lack of oxygen at birth, infections, or premature birth. Many times the exact cause isn’t known."
+  },
+  {
+    "input": "types of cp",
+    "intent": "cp_overview",
+    "response": "The main types are spastic, dyskinetic, ataxic, and mixed CP. They describe how muscle tone and movement are affected."
+  },
+  {
+    "input": "can babies with cp smile",
+    "intent": "cp_signs",
+    "response": "Yes, babies with CP can smile and interact just like other babies. Movement challenges don’t affect their ability to show joy."
+  },
+  {
+    "input": "early signs in infants",
+    "intent": "cp_signs",
+    "response": "Early signs may include stiff or floppy muscles, trouble lifting the head, or delays in rolling. A pediatrician can help evaluate concerns."
+  },
+  {
+    "input": "is cp common",
+    "intent": "cp_overview",
+    "response": "CP is one of the most common childhood movement conditions. Many families worldwide live with and manage it successfully."
+  },
+  {
+    "input": "can people with cp live independently",
+    "intent": "cp_overview",
+    "response": "Many can live independently with the right supports. Independence looks different for everyone — and that’s okay."
+  },
+  {
+    "input": "how to motivate a child with cp",
+    "intent": "care_tips_child",
+    "response": "Use praise, fun goals, and short activities. Celebrate small wins — they build confidence and momentum."
+  },
+  {
+    "input": "how to build confidence for child with cp",
+    "intent": "emotional_support",
+    "response": "Give choices, celebrate progress, allow independence in small tasks, and show consistent encouragement."
+  },
+  {
+    "input": "how to talk to relatives about cp",
+    "intent": "family_support",
+    "response": "Explain things simply: the child moves differently but learns and grows like other kids. Ask relatives to support routines and be patient."
+  },
+  {
+    "input": "how to encourage mobility",
+    "intent": "therapy",
+    "response": "Use play-based activities, safe surfaces, short standing practice, and follow guidance from a physical therapist."
+  },
+  {
+    "input": "what equipment helps cp",
+    "intent": "therapy",
+    "response": "Adaptive equipment may include walkers, braces, standing frames, supportive seating, or communication tools — based on the child’s needs."
+  },
+  {
+    "input": "how to reduce muscle tightness",
+    "intent": "medical",
+    "response": "Warm baths, stretching routines, and guided therapy may help. A doctor can recommend medical options if needed."
+  },
+  {
+    "input": "is therapy painful",
+    "intent": "therapy",
+    "response": "Therapy shouldn’t be painful. It may feel challenging at times, but therapists adjust exercises to keep them safe and manageable."
+  },
+  {
+    "input": "how to prepare child for doctor visits",
+    "intent": "parenting_cp",
+    "response": "Explain what will happen, bring comfort items, and show short videos or pictures to help them feel ready."
+  },
+  {
+    "input": "best way to track progress",
+    "intent": "care_tips",
+    "response": "Use a simple notebook or app to record small wins, new skills, and therapy notes. Progress is easier to see over time."
+  },
+  {
+    "input": "can children with cp play with other kids",
+    "intent": "daily_life_cp",
+    "response": "Yes! With small adaptations, kids with CP can enjoy group play. Focus on games that match their abilities."
+  },
+  {
+    "input": "how to prevent burnout as a parent",
+    "intent": "emotional_support",
+    "response": "Take small breaks, ask for help, join support groups, and be kind to yourself. Even parents need rest."
+  },
+  {
+    "input": "is cp a disability",
+    "intent": "cp_overview",
+    "response": "Yes, CP is considered a disability, but it doesn’t define someone’s potential. Many children grow strong skills through therapy and support."
+  },
+  {
+    "input": "can cp affect emotions",
+    "intent": "cp_overview",
+    "response": "CP mainly affects movement, but frustration or fatigue can impact emotions. Gentle routines and support help a lot."
+  },
+  {
+    "input": "why does my child walk on toes",
+    "intent": "cp_signs",
+    "response": "Toe-walking can be related to tight muscles or balance differences. A physical therapist can guide safe stretches and strategies."
+  },
+  {
+    "input": "how to make therapy routine easier",
+    "intent": "therapy",
+    "response": "Keep sessions short, mix in play, use timers, and celebrate small wins. Consistency matters more than intensity."
+  },
+  {
+    "input": "can cp affect only one side",
+    "intent": "cp_overview",
+    "response": "Yes — that’s called hemiplegic CP. It affects one side more than the other."
+  },
+  {
+    "input": "is swimming good for cp",
+    "intent": "therapy",
+    "response": "Yes, swimming is great because the water supports the body and makes movement easier and more fun."
+  },
+  {
+    "input": "what is early intervention",
+    "intent": "therapy",
+    "response": "Early intervention means starting therapy and support as soon as possible to help children build skills during their early developmental years."
+  },
+  {
+    "input": "how to handle tantrums",
+    "intent": "parenting_cp",
+    "response": "Stay calm, offer a quiet space, and use simple words. Fatigue or overstimulation can trigger tantrums, so gentle breaks help."
+  },
+  {
+    "input": "how to explain braces to classmates",
+    "intent": "education",
+    "response": "You can say, 'These help me walk better.' Kids usually understand simple honest explanations."
+  },
+  {
+    "input": "why does my child get tired fast",
+    "intent": "cp_overview",
+    "response": "Children with CP use more effort to move, so they tire faster. Breaks and pacing help a lot."
+  },
+  {
+    "input": "can cp affect handwriting",
+    "intent": "education",
+    "response": "Yes, fine motor challenges can affect writing. OT can help with strategies, grips, and adaptive tools."
+  },
+  {
+    "input": "how to make school transitions smoother",
+    "intent": "education",
+    "response": "Meet the teacher early, share therapy recommendations, and prepare visual schedules to help your child feel secure."
+  }
+]
+
+[
+  {
+    "input": "how are you",
+    "intent": "casual_chat",
+    "response": "I'm good! Just hanging out here. How about you — how’s your day going?"
+  },
+  {
+    "input": "what are you doing",
+    "intent": "casual_chat",
+    "response": "Just chilling and ready to chat. Ikaw, busy ba or relaxing?"
+  },
+  {
+    "input": "i'm bored",
+    "intent": "casual_chat",
+    "response": "Same vibes minsan. Want a random fun question, a joke, or something to talk about?"
+  },
+  {
+    "input": "tell me a joke",
+    "intent": "casual_fun",
+    "response": "Why did the laptop go to therapy? Because it had too many tabs open — same as us sometimes!"
+  },
+  {
+    "input": "give me a fun fact",
+    "intent": "casual_fun",
+    "response": "Fun fact: Bananas are berries, but strawberries aren’t. Wild, di ba?"
+  },
+  {
+    "input": "kamusta ka",
+    "intent": "casual_chat",
+    "response": "Ayos naman! Ikaw, kumusta araw mo?"
+  },
+  {
+    "input": "good morning",
+    "intent": "casual_chat",
+    "response": "Good morning! Hope today treats you kindly. May breakfast ka na?"
+  },
+  {
+    "input": "good night",
+    "intent": "casual_chat",
+    "response": "Good night! Rest well — you deserve a calm break."
+  },
+  {
+    "input": "i'm tired",
+    "intent": "casual_emotion",
+    "response": "Understandable. Long day? Gusto mo mag-rant or chill talk lang?"
+  },
+  {
+    "input": "i had a bad day",
+    "intent": "casual_emotion",
+    "response": "Sorry to hear that. Want to talk about what happened, or gusto mo muna distraction?"
+  },
+  {
+    "input": "help me decide something",
+    "intent": "casual_chat",
+    "response": "Game! Ano ba yan — outfit, food, life choices? Sabihin mo lang."
+  },
+  {
+    "input": "what should i eat",
+    "intent": "casual_fun",
+    "response": "Depends — craving something light, something heavy, or something comforting?"
+  },
+  {
+    "input": "i can't focus",
+    "intent": "casual_emotion",
+    "response": "Try a tiny break. Stretch, breathe for 20 seconds, then go back. Want a quick focus trick?"
+  },
+  {
+    "input": "i feel lonely",
+    "intent": "casual_emotion",
+    "response": "Sorry you’re feeling that. I'm here to talk — want company for a bit?"
+  },
+  {
+    "input": "what music do you like",
+    "intent": "casual_fun",
+    "response": "Anything chill and relaxing. Ikaw, anong vibe mo ngayon — Lofi, pop, acoustic?"
+  },
+  {
+    "input": "what movie should i watch",
+    "intent": "casual_fun",
+    "response": "What mood? Funny, chill, or something emotional? I can recommend one."
+  },
+  {
+    "input": "i'm procrastinating",
+    "intent": "casual_emotion",
+    "response": "Same minsan. Let’s break it down — what’s one small step you can do in 2 minutes?"
+  },
+  {
+    "input": "i'm hungry",
+    "intent": "casual_chat",
+    "response": "Same here minsan. What are you craving — sweet, salty, or anything basta mabilis?"
+  },
+  {
+    "input": "tell me something nice",
+    "intent": "casual_chat",
+    "response": "Here’s something wholesome: Someone out there smiled today because of something small you did."
+  },
+  {
+    "input": "cheer me up",
+    "intent": "casual_emotion",
+    "response": "Okay, here’s one: You survived 100% of your bad days so far. Solid track record, friend."
+  }
+]
+[
+  {
+    "input": "what are you up to",
+    "intent": "casual_chat",
+    "response": "Just vibing here, waiting for you to drop tea. Ikaw, nasaang energy level tayo today?"
+  },
+  {
+    "input": "i'm bored help",
+    "intent": "casual_fun",
+    "response": "Say less. Want a random question, a mini game, or chismis-level convo?"
+  },
+  {
+    "input": "give me tea",
+    "intent": "casual_fun",
+    "response": "Hmm tea? Spill mo muna sayo, tapos sasali ako."
+  },
+  {
+    "input": "i want to rant",
+    "intent": "casual_chat",
+    "response": "Rant mode activated. Go — I’m listening, zero judgement."
+  },
+  {
+    "input": "i feel lazy",
+    "intent": "casual_emotion",
+    "response": "Honestly, mood. Pero kahit small step lang today, panalo na."
+  },
+  {
+    "input": "should i nap",
+    "intent": "casual_fun",
+    "response": "If your soul is whispering ‘pahinga’, go. If work is shouting, maybe 10 minutes lang."
+  },
+  {
+    "input": "tell me something funny",
+    "intent": "casual_fun",
+    "response": "My life. Joke lang. Here’s a real one: Why don’t skeletons fight? Wala silang guts."
+  },
+  {
+    "input": "i'm overthinking",
+    "intent": "casual_emotion",
+    "response": "Take one slow breath. Your brain is just doing extra — sabihin mo, 'calm ka lang.'"
+  },
+  {
+    "input": "i'm tired of everything",
+    "intent": "casual_emotion",
+    "response": "Hey. Deep breath. It's okay to pause. You don’t have to carry the world today."
+  },
+  {
+    "input": "tell me a secret",
+    "intent": "casual_fun",
+    "response": "Secret ko? I lowkey think you’re cooler than you admit."
+  },
+  {
+    "input": "i'm lonely",
+    "intent": "casual_emotion",
+    "response": "I’m here with you. Gusto mo usap mode or distraction mode?"
+  },
+  {
+    "input": "i feel empty",
+    "intent": "casual_emotion",
+    "response": "That’s a heavy feeling. Sometimes a small talk or tiny break helps. Want company for a bit?"
+  },
+  {
+    "input": "i wanna disappear",
+    "intent": "casual_emotion",
+    "response": "Sounds like you’re overwhelmed. Breathe with me? You’re not handling this alone right now."
+  },
+  {
+    "input": "i'm stressed with life",
+    "intent": "casual_chat",
+    "response": "Life be lifing sometimes. Tell me which part is hitting hardest today?"
+  },
+  {
+    "input": "i need motivation",
+    "intent": "casual_fun",
+    "response": "Let's go! Do one tiny thing — kahit 2 minutes lang. Future-you will thank you."
+  },
+  {
+    "input": "i don't wanna adult today",
+    "intent": "casual_fun",
+    "response": "Valid. Approved leave from adulting: 5 minutes. What do you wanna do instead?"
+  },
+
+  { "input": "what should i eat today", "intent": "food_chat", "response": "What’s the vibe — comfy food, lutong bahay, or chaotic cravings?" },
+  { "input": "i want dessert", "intent": "food_chat", "response": "Same. Ice cream? Cake? Or the chaotic combo: ice cream + bread?" },
+  { "input": "coffee or tea", "intent": "food_chat", "response": "Coffee for chaos energy, tea for calm main character moment." },
+  { "input": "i'm craving something salty", "intent": "food_chat", "response": "Chips? Fries? Or classy salty — like buttered popcorn?" },
+  { "input": "what's a good midnight snack", "intent": "food_chat", "response": "Something low-key but happy: toasted bread, yogurt, or leftover anything." },
+  { "input": "favorite food mo", "intent": "food_chat", "response": "Anything na hindi ako nilalaglag — so basically, chocolate." },
+
+  { "input": "i like someone", "intent": "crush_chat", "response": "Ooooh spill. Friend ka ba niya? Chat kayo? Ano status niyo?" },
+  { "input": "should i confess",
+    "intent": "crush_chat",
+    "response": "Depends — green flag ba siya? Or magulo? Pero if safe and chill, go small hint muna." },
+  { "input": "my crush ignored me", "intent": "crush_chat", "response": "Big oof. Breathe. Sometimes people get busy — not always personal." },
+  { "input": "crush advice", "intent": "crush_chat", "response": "Be chill, be kind, be yourself. Umiwas sa clingy arc. And hydrate. Cute yun." },
+  { "input": "does my crush like me",
+    "intent": "crush_chat",
+    "response": "Hard to tell. Signs: replies fast, remembers small things, or nagsesend ng memes sayo." },
+  { "input": "why do i fall easily", "intent": "crush_chat", "response": "Because you have a soft heart. Not a flaw — just protect it a bit." },
+
+  { "input": "i need a new hobby", "intent": "hobby_chat", "response": "Try something low-pressure: drawing, plants, short walks, or random YouTube skills." },
+  { "input": "what hobby should i try", "intent": "hobby_chat", "response": "What do you vibe with — artsy, sporty, comfy, or introvert-friendly hobbies?" },
+  { "input": "i want to learn cooking", "intent": "hobby_chat", "response": "Start with eggs or garlic rice. Once you master that, you’re unstoppable." },
+  { "input": "i want to start reading", "intent": "hobby_chat", "response": "Pick a short book or comics para chill. No pressure, just vibes." },
+  { "input": "i want to try gaming", "intent": "hobby_chat", "response": "Start with cozy games — Stardew, Minecraft, or mobile chill games." },
+  { "input": "i'm not good at anything", "intent": "hobby_chat", "response": "You probably just haven’t found your thing yet. Try small experiments — one might surprise you." },
+
+  { "input": "i feel cute today", "intent": "genz_chat", "response": "As you should! Confidence is glowing — keep it, queen/king." },
+  { "input": "hype me up", "intent": "genz_chat", "response": "Okay bet — you’re smart, funny, and lowkey unstoppable. Let’s go." },
+  { "input": "i need a pep talk", "intent": "genz_chat", "response": "Here’s the tea: you’ve survived worse. Today? Kaya mo ‘to." },
+  { "input": "give me a compliment", "intent": "genz_chat", "response": "Your vibe? Immaculate. Your energy? Delicious. Your presence? 10/10." },
+  { "input": "i feel ugly", "intent": "genz_chat", "response": "You’re not. Sometimes the brain lies — but your glow stays real." },
+  { "input": "i feel good today", "intent": "genz_chat", "response": "Yesss we love a good mood arc! Keep that energy rolling." },
+
+  { "input": "can we be friends", "intent": "casual_chat", "response": "Of course! I’m here to chat, hype, listen, or chill anytime." },
+  { "input": "talk to me", "intent": "casual_chat", "response": "Sure! What’s the vibe — deep talk, nonsense talk, or meme talk?" },
+  { "input": "im shy", "intent": "casual_chat", "response": "That's okay. We can go slow. I’ll match your energy." },
+  { "input": "i want chaos",
+    "intent": "casual_fun",
+    "response": "Chaos? Say no more. Step 1: make a weird food combo. Step 2: try it. Step 3: regret it." },
+  { "input": "give me a dare", 
+    "intent": "casual_fun",
+    "response": "Dare: Drink water. Yes, hydration dare. Responsible chaos." },
+  { "input": "im so sleepy",
+    "intent": "casual_chat",
+    "response": "Sleep is flirting with you. Maybe let it win? 😂" },
+  {
+    "input": "im so kilig",
+    "intent": "crush_chat",
+    "response": "Ayyyy love arc unlocked! Ano ginawa niya? Spill the cute details."
+  },
+  {
+    "input": "i miss someone",
+    "intent": "casual_emotion",
+    "response": "Missing someone hits different. Want to talk about them?"
+  }
+]
+
     { "input": "i feel lonely", "intent": "sad", "response": "I'm sorry that you're lonely. Would you like to talk about what's happened, or try a short grounding exercise?" },
     { "input": "i feel down", "intent": "sad", "response": "I'm sorry you're feeling down. If it's urgent or you feel like harming yourself, please call local emergency services. Otherwise I can offer breathing steps or resources." },
 
