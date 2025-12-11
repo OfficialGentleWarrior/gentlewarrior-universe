@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial
--scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Gentle Heart — Companion (QA via qa.json)</title>
 <style>
 :root{
@@ -367,13 +366,10 @@ html,body{height:100%;margin:0;background:linear-gradient(180,var(--bg-top),var(
   // Normalize helper
   function norm(s){ return (s||'').toLowerCase().replace(/[^\w\s\+\-']/g,' ').replace(/\s+/g,' ').trim(); }
 
-  // Intent detection:
-  // 1) check explicit "show hotline" variants (for the user's requested list)
-  // 2) check exact match against pairs (preferred)
-  // 3) check 'includes' match against pairs
-  // 4) fallback simple regex checks (hi/sad/breathing/crisis)
-  <script>
-// --- Replace your existing findIntent / detectIntent with this ---
+  // --------------------
+  // FUZZY / INTENT DETECTION
+  // --------------------
+
 function normalizeText(s){
   return (s||'').toLowerCase()
     .normalize('NFKD') // normalize accents
@@ -424,7 +420,7 @@ function tokenOverlapScore(a, b){
 }
 
 /**
- * detectIntent(text)
+ * detectIntent(rawText)
  * - returns { id: string, pair: object|null }
  * - pair is matched qa.pairs entry if available (exact / fuzzy)
  *
@@ -439,7 +435,7 @@ function detectIntent(rawText){
   if(!tNorm) return { id: 'intent_fallback', pair: null };
 
   // quick direct patterns (still useful)
-  if(/\b(i want to die|i want to kill myself|gusto kong mamatay|i will kill myself|i'm going to kill myself)\b/.test(tNorm)) {
+  if(/\b(i want to die|i want to kill myself|gusto kong mamatay|i will kill myself|im going to kill myself|i'm going to kill myself)\b/.test(tNorm)) {
     return { id: 'intent_self_harm_direct', pair: null };
   }
   if(/\b(breathe|breathing|hinga)\b/.test(tNorm)) {
@@ -450,8 +446,8 @@ function detectIntent(rawText){
   }
 
   // 1) Try qa.intents exact / pattern match (if qa.intents exists and has patterns)
-  if(Array.isArray(qa.intents)){
-    for(const it of qa.intents){
+  if(Array.isArray(qaData && qaData.intents ? qaData.intents : [])){
+    for(const it of (qaData.intents || [])){
       if(!it.patterns) continue;
       for(const p of it.patterns){
         if(!p) continue;
@@ -466,10 +462,10 @@ function detectIntent(rawText){
   }
 
   // 2) Try qa.pairs (preferred: pairs is array of {input, response, intent?})
-  if(Array.isArray(qa.pairs) && qa.pairs.length){
+  if(Array.isArray(pairs) && pairs.length){
     let best = { score: 0, idx: -1 };
-    for(let i=0;i<qa.pairs.length;i++){
-      const p = qa.pairs[i];
+    for(let i=0;i<pairs.length;i++){
+      const p = pairs[i];
       const inputText = normalizeText(p.input || (p.pattern || ''));
       if(!inputText) continue;
 
@@ -488,7 +484,10 @@ function detectIntent(rawText){
       // small boost if either contains short word 'hotline' etc.
       if(/hotline|hotlines|crisis|help|emergency/.test(inputText) && /hotline|hotlines|crisis|help|emergency/.test(tNorm)) {
         // boost for hotline keywords match
-        combined += 0.12;
+        // (clamp to not exceed 1)
+        const boosted = Math.min(1, combined + 0.12);
+        if(boosted > best.score){ best.score = boosted; best.idx = i; }
+        continue;
       }
 
       if(combined > best.score){
@@ -498,30 +497,21 @@ function detectIntent(rawText){
     }
 
     // thresholding: pick best if above threshold
-    // threshold tuned for reasonable balance between tolerance and false positives
-    const THRESHOLD = 0.58; // you can lower to ~0.5 for more permissive matching
+    const THRESHOLD = 0.58; // tuneable
     if(best.idx >= 0 && best.score >= THRESHOLD){
-      const matched = qa.pairs[best.idx];
-      return { id: matched.intent || 'matched_pair', pair: matched };
+      const matched = pairs[best.idx];
+      return { id: matched.intent || 'matched_pair', pair: matched, score: best.score };
     }
   }
 
-  // 3) As a last attempt, check qa.hotlines keywords to trigger hotline card reliably
+  // 3) As a last attempt, check hotline-like keywords to trigger hotline card reliably
   if(/\b(hotline|hotlines|crisis hotline|crisis|help line|help me|emergency numbers|show hotline|show hotlines)\b/.test(tNorm)){
-    // choose PH if user set country PH else fallback
     return { id: 'intent_ph_hotline_request', pair: null };
   }
 
-  // fallback: see if qa.intents has intent_fallback
-  if(Array.isArray(qa.intents)){
-    const fb = qa.intents.find(x => x.id === 'intent_fallback');
-    if(fb) return { id: 'intent_fallback', pair: null };
-  }
-
+  // fallback
   return { id: 'intent_fallback', pair: null };
 }
-// --- End replacement ---
-</script>
 
   // show hotline card for a region key
   function showHotlines(regionKey){
@@ -553,16 +543,16 @@ function detectIntent(rawText){
     if(typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
 
     // handle explicit intents
-    if(d.id === 'hotline'){
+    if(d.id === 'hotline' || d.id === 'intent_ph_hotline_request' || d.id === 'intent_ph_hotline_request'){
       appendBotText("Here are crisis hotlines you can reach:");
       showHotlines(settings.country);
       return;
     }
-    if(d.id === 'breathing'){
+    if(d.id === 'intent_breathing' || d.id === 'breathing' ){
       appendBotText("Let's do a short breathing exercise: breathe in 4 seconds — hold 2 — breathe out 6. Repeat three times.");
       return;
     }
-    if(d.id === 'crisis'){
+    if(d.id === 'crisis' || d.id === 'intent_self_harm_direct'){
       appendBotText("I'm really sorry you're feeling this. If you're in immediate danger, call local emergency services now or someone nearby.");
       showHotlines(settings.country);
       return;
@@ -576,15 +566,14 @@ function detectIntent(rawText){
       return;
     }
 
-    // if d has a sourceResponse from pairs, use it:
-    if(d.sourceResponse){
-      appendBotText(d.sourceResponse);
+    // if matched pair present
+    if(d.pair){
+      appendBotText(d.pair.response || "I'm here to help.");
       return;
     }
 
-    // if not matched to pairs, but qaData.intents mapping exists (legacy), try
+    // if not matched to pairs, but qaData.pairs exists, attempt simple include match
     if(qaData && Array.isArray(qaData.pairs)){
-      // attempt fuzzy single-token lookup: find pair where input is included
       const t = norm(text);
       for(const p of qaData.pairs){
         const pi = norm(p.input || '');
