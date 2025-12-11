@@ -55,7 +55,6 @@
     { "input": "im sad", "intent": "sad", "response": "I hear you — I'm sorry you're feeling sad. Do you want a breathing exercise, grounding steps, or hotlines?" },
     { "input": "malungkot ako", "intent": "sad", "response": "Nalulungkot ka — pasensya. Maaari kitang samahan: breathing exercise, grounding prompt, o hotline. Ano pipiliin mo?" },
 
-[
   {
     "input": "what causes cp",
     "intent": "cp_overview",
@@ -201,9 +200,7 @@
     "intent": "education",
     "response": "Meet the teacher early, share therapy recommendations, and prepare visual schedules to help your child feel secure."
   }
-]
 
-[
   {
     "input": "how are you",
     "intent": "casual_chat",
@@ -304,8 +301,6 @@
     "intent": "casual_emotion",
     "response": "Okay, here’s one: You survived 100% of your bad days so far. Solid track record, friend."
   }
-]
-[
   {
     "input": "what are you up to",
     "intent": "casual_chat",
@@ -441,7 +436,6 @@
     "intent": "casual_emotion",
     "response": "Missing someone hits different. Want to talk about them?"
   }
-]
 
     { "input": "i feel lonely", "intent": "sad", "response": "I'm sorry that you're lonely. Would you like to talk about what's happened, or try a short grounding exercise?" },
     { "input": "i feel down", "intent": "sad", "response": "I'm sorry you're feeling down. If it's urgent or you feel like harming yourself, please call local emergency services. Otherwise I can offer breathing steps or resources." },
