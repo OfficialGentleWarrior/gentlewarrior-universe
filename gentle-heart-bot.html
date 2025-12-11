@@ -430,22 +430,31 @@ function tokenOverlapScore(a, b){
  * 3) token overlap + levenshtein similarity scoring (fuzzy)
  * 4) fallback to intent_fallback
  */
+// REPLACE existing detectIntent(...) with this improved version
 function detectIntent(rawText){
+  // small debug helper - set to true to print matching diagnostics in console
+  const DEBUG = false;
+
   const tNorm = normalizeText(rawText);
   if(!tNorm) return { id: 'intent_fallback', pair: null };
 
-  // HIGH-RISK / QUICK KEYWORD PATTERNS (unchanged)
+  if(DEBUG) console.log('[detectIntent] inputNorm:', tNorm);
+
+  // HIGH-RISK QUICK CHECKS (unchanged)
   if(/\b(i want to die|i want to kill myself|gusto kong mamatay|i will kill myself|im going to kill myself|i'm going to kill myself)\b/.test(tNorm)) {
+    if(DEBUG) console.log('[detectIntent] HIGH-RISK matched');
     return { id: 'intent_self_harm_direct', pair: null };
   }
   if(/\b(breathe|breathing|hinga)\b/.test(tNorm)) {
+    if(DEBUG) console.log('[detectIntent] BREATHING matched');
     return { id: 'intent_breathing', pair: null };
   }
   if(/\b(i m in the philippines|im in the philippines|nasa pilipinas|pilipinas|pinoy)\b/.test(tNorm)) {
+    if(DEBUG) console.log('[detectIntent] REGION matched');
     return { id: 'intent_region_detect', pair: null };
   }
 
-  // 1) if qaData.intents exists (optional structured intent list)
+  // 1) structured qaData.intents (if provided)
   if(Array.isArray(qaData && qaData.intents ? qaData.intents : [])){
     for(const it of (qaData.intents || [])){
       if(!it.patterns) continue;
@@ -454,35 +463,43 @@ function detectIntent(rawText){
         const pp = normalizeText(p);
         if(!pp) continue;
         if(tNorm === pp || tNorm.includes(pp) || pp.includes(tNorm)) {
+          if(DEBUG) console.log('[detectIntent] qadata.intent matched', it.id, pp);
           return { id: it.id, pair: null };
         }
       }
     }
   }
 
-  // 2) Try qa.pairs (improved fuzzy)
+  // 2) Try qa.pairs (improved fuzzy + fast token overlap shortcut)
   if(Array.isArray(pairs) && pairs.length){
-    let best = { score: 0, idx: -1 };
+    // quick token overlap short-circuit: if > 0.6 token overlap treat as match immediately
+    const tokensA = tNorm.split(' ').filter(Boolean);
+    let best = { score: 0, idx: -1, reason: null };
+
     for(let i=0;i<pairs.length;i++){
       const p = pairs[i];
       const inputText = normalizeText(p.input || (p.pattern || ''));
       if(!inputText) continue;
 
-      // fast exact / substring path
-      if(tNorm === inputText || tNorm.includes(inputText) || inputText.includes(tNorm)) {
+      // 1) exact / substring quick path (highest priority)
+      if(tNorm === inputText || tNorm.includes(inputText) || inputText.includes(tNorm)){
+        if(DEBUG) console.log('[detectIntent] exact/substr match idx', i, inputText);
         return { id: p.intent || 'matched_pair', pair: p };
       }
 
-      // compute token-overlap and similarity
-      const tokScoreA = tokenOverlapScore(inputText, tNorm); // fraction tokens of input in text
-      const tokScoreB = tokenOverlapScore(tNorm, inputText); // fraction tokens of text in input
-      const tokScore = Math.max(tokScoreA, tokScoreB); // be flexible
-      const sim = similarity(inputText, tNorm); // levenshtein similarity 0..1
+      // fast token-overlap shortcut
+      const tokScoreA = tokenOverlapScore(inputText, tNorm);
+      const tokScoreB = tokenOverlapScore(tNorm, inputText);
+      const maxTok = Math.max(tokScoreA, tokScoreB);
+      if(maxTok >= 0.70){
+        if(DEBUG) console.log('[detectIntent] token-overlap early match idx', i, maxTok, inputText);
+        return { id: p.intent || 'matched_pair', pair: p, score: maxTok };
+      }
 
-      // length-based bias:
-      // longer queries (natural sentences) should rely more on token overlap,
-      // short queries rely more on direct similarity.
-      const lenFactor = Math.min(1, Math.max(inputText.length, tNorm.length) / 40); // 0..1
+      // compute similarity + token overlap to pick best
+      const sim = similarity(inputText, tNorm); // 0..1
+      const tokScore = maxTok;
+      const lenFactor = Math.min(1, Math.max(inputText.length, tNorm.length) / 40);
       const combined = (tokScore * (0.65 * (0.5 + lenFactor/2))) + (sim * (0.35 * (1.5 - lenFactor)));
 
       // small keyword boost for hotline-like words
@@ -494,28 +511,33 @@ function detectIntent(rawText){
       if(boosted > best.score){
         best.score = boosted;
         best.idx = i;
+        best.reason = { tokScore, sim, boosted, inputText };
       }
     }
 
-    // dynamic threshold: accept lower threshold for longer inputs (user typed a sentence)
-    const baseThreshold = 0.56;
-    const len = Math.max( (tNorm.split(' ').length), 1 );
-    const dynamicThreshold = Math.max(0.46, baseThreshold - Math.min(0.12, (len-3) * 0.03)); // lowers threshold for longer queries
+    // dynamic thresholding: accept lower threshold for longer queries and increase len bump for short queries
+    const baseThreshold = 0.54; // slightly lower baseline
+    const wordCount = Math.max( (tNorm.split(' ').length), 1 );
+    const dynamicThreshold = Math.max(0.42, baseThreshold - Math.min(0.14, (wordCount-3) * 0.03));
+    if(DEBUG) console.log('[detectIntent] best', best, 'dynTh', dynamicThreshold, 'words', wordCount);
+
     if(best.idx >= 0 && best.score >= dynamicThreshold){
       const matched = pairs[best.idx];
+      if(DEBUG) console.log('[detectIntent] fuzzy matched idx', best.idx, 'score', best.score, best.reason);
       return { id: matched.intent || 'matched_pair', pair: matched, score: best.score };
     }
   }
 
-  // 3) Last attempt: hotline keyword
+  // 3) Last attempt: hotline keyword fallback
   if(/\b(hotline|hotlines|crisis hotline|crisis|help line|help me|emergency numbers|show hotline|show hotlines)\b/.test(tNorm)){
+    if(DEBUG) console.log('[detectIntent] hotline fallback matched');
     return { id: 'intent_ph_hotline_request', pair: null };
   }
 
   // final fallback
+  if(DEBUG) console.log('[detectIntent] fallback');
   return { id: 'intent_fallback', pair: null };
 }
-
   // show hotline card for a region key
   function showHotlines(regionKey){
     const key = regionKey || settings.country || 'PH';
