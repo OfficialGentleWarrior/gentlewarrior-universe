@@ -165,7 +165,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
      * reliable drag + tap discrimination (clone cleanup)
      * 2s typing animation
      * no intro message
-     * qa.json background fetch with tolerant parsing + normalization
+     * qa.json background fetch with tolerant parsing + normalization + GitHub raw attempt
      * solid settings modal
      * pinned input so keyboard won't hide it
 */
@@ -233,13 +233,44 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     }catch(e){ console.warn('buildMapFromInline failed', e); }
   })();
 
+  // attempt to construct candidate paths including raw GitHub if relevant
+  function candidatePathsForQA(){
+    const paths = ['./qa.json','qa.json'];
+    try{
+      const loc = window.location;
+      // same folder: derive base path by removing filename
+      if(loc && loc.pathname){
+        const base = loc.origin + loc.pathname.replace(/\/[^\/]*$/, '/');
+        paths.push(base + 'qa.json');
+        // try replacing .html -> .json
+        const maybeJson = loc.href.replace(/\.html?($|\?)/, '.json$1');
+        if(maybeJson && maybeJson !== loc.href) paths.push(maybeJson);
+      }
+      // if we're viewing via github.com, convert to raw.githubusercontent URL
+      if(location.hostname && location.hostname.includes('github.com')){
+        // example: /user/repo/blob/branch/path/file.html -> user/repo/branch/path/qa.json
+        const parts = location.pathname.split('/');
+        const blobIndex = parts.indexOf('blob');
+        if(blobIndex > 0 && parts.length > blobIndex + 2){
+          const user = parts[1], repo = parts[2], branch = parts[blobIndex+1];
+          const pathParts = parts.slice(blobIndex+2, parts.length-1); // omit file
+          const pathPrefix = pathParts.length ? pathParts.join('/') + '/' : '';
+          const raw = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${pathPrefix}qa.json`;
+          paths.push(raw);
+        }
+      }
+    }catch(e){}
+    // dedupe
+    const seen = new Set(); return paths.filter(p => { if(!p) return false; const n = p.toString(); if(seen.has(n)) return false; seen.add(n); return true; });
+  }
+
   async function fetchQA(){
     // try multiple paths & tolerant parsing
-    const paths = ['./qa.json','qa.json'];
+    const paths = candidatePathsForQA();
     for(const p of paths){
       try{
         const r = await fetch(p, {cache:'no-store'});
-        if(!r.ok) continue;
+        if(!r.ok) { console.warn('qa.json fetch not ok', p, r.status); continue; }
         const txt = await r.text();
         if(!txt || txt.trim().length === 0) continue;
         let parsed;
@@ -311,6 +342,11 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       // direct key match (original keys)
       for(const k of Object.keys(qaData)){
         if(normalizeKeyForMap(k) === key) return qaData[k];
+      }
+      // includes check (if user typed longer phrase and qa key is short)
+      for(const k of Object.keys(qaData)){
+        const nk = normalizeKeyForMap(k);
+        if(nk && key.includes(nk)) return qaData[k];
       }
     }
 
