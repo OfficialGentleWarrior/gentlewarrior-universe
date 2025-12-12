@@ -25,7 +25,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
   cursor:grab; touch-action:none; user-select:none;
-  transition:box-shadow .12s ease, transform .12s ease;
+  transition:box-shadow .12s ease, transform .12s ease, left .12s ease, top .12s ease, right .12s ease, bottom .12s ease;
 }
 #bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
 #bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block;}
@@ -36,7 +36,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
-  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
+  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,left .12s ease,max-height .12s ease;
   pointer-events:none;
   box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
@@ -309,7 +309,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     }catch(e){}
 
     // word-match: check each word of user input against keys
-    const words = s.split(/\\s+/).filter(Boolean);
+    const words = s.split(/\s+/).filter(Boolean);
     if(words.length){
       if(typeof qaData === 'object' && !Array.isArray(qaData)){
         for(const k of Object.keys(qaData)){
@@ -374,12 +374,45 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
-      const br = bubble.getBoundingClientRect();
-      const right = Math.max(12, window.innerWidth - (br.left + br.width));
-      panel.style.right = right + 'px';
-      const desiredBottom = Math.max(12, window.innerHeight - br.top + 18);
-      panel.style.bottom = Math.min(desiredBottom, window.innerHeight - 80) + 'px';
-      panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
+      // Reset both left/right to allow accurate positioning
+      panel.style.left = 'auto'; panel.style.right = 'auto';
+      const panelRect = panel.getBoundingClientRect();
+      const bubbleRect = bubble.getBoundingClientRect();
+
+      // Prefer placing panel above the bubble and either to its left or right depending on space
+      const spaceRight = window.innerWidth - bubbleRect.right;
+      const spaceLeft = bubbleRect.left;
+      const margin = 12;
+
+      // compute target left coordinate for panel
+      if(spaceRight >= panelRect.width + margin){
+        // place panel to right of bubble
+        panel.style.left = (bubbleRect.right + margin) + 'px';
+        // ensure not exceeding viewport
+        const leftVal = parseFloat(panel.style.left);
+        if(leftVal + panelRect.width > window.innerWidth - margin) panel.style.left = (window.innerWidth - margin - panelRect.width) + 'px';
+      } else if(spaceLeft >= panelRect.width + margin){
+        // place panel to left of bubble
+        panel.style.left = Math.max(margin, bubbleRect.left - margin - panelRect.width) + 'px';
+      } else {
+        // default: align horizontally centered near bubble but keep inside viewport
+        const centered = Math.min(Math.max(margin, bubbleRect.left + bubbleRect.width/2 - panelRect.width/2), window.innerWidth - panelRect.width - margin);
+        panel.style.left = centered + 'px';
+      }
+
+      // vertical: try to place above bubble if there's room, otherwise below
+      const aboveSpace = bubbleRect.top;
+      const belowSpace = window.innerHeight - bubbleRect.bottom;
+      if(aboveSpace > panelRect.height + margin){
+        panel.style.top = Math.max(margin, bubbleRect.top - panelRect.height - margin) + 'px';
+      } else if (belowSpace > panelRect.height + margin){
+        panel.style.top = Math.min(window.innerHeight - panelRect.height - margin, bubbleRect.bottom + margin) + 'px';
+      } else {
+        // fit into viewport centered vertically
+        const topCentered = Math.min(Math.max(margin, window.innerHeight/2 - panelRect.height/2), window.innerHeight - panelRect.height - margin);
+        panel.style.top = topCentered + 'px';
+      }
+
     }catch(e){
       panel.style.right = '18px';
       panel.style.bottom = '110px';
@@ -394,8 +427,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // bubble interactions
-  bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
+  // bubble interactions: click toggles, but drag has priority
   bubble.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
 
   // click outside closes panel unless modal open
@@ -435,59 +467,111 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   // minimize button
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
-  // drag bubble (unchanged behavior)
+  // DRAG: use left/top coordinates and clamp to viewport. snap to edges on release.
   (function enableDrag(){
     if(!bubble) return;
-    let active=false, sx=0, sy=0, tx=0, ty=0, moved=false;
+    let dragging = false;
+    let startX = 0, startY = 0;
+    let startLeft = null, startTop = null;
+    let moved = false;
     const threshold = 6;
+    const margin = 12;
+
+    // initialize saved position
     try{
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
-      if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
+      if(saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
+        bubble.style.left = saved.left + 'px';
+        bubble.style.top = saved.top + 'px';
+        bubble.style.right = 'auto';
+        bubble.style.bottom = 'auto';
+      }
     }catch(e){}
-    function onDown(e){
-      active=true; moved=false;
-      sx = (e.touches ? e.touches[0].clientX : e.clientX); sy = (e.touches ? e.touches[0].clientY : e.clientY);
-      const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); tx = p[4]||0; ty = p[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
-      (e.preventDefault && e.preventDefault());
+
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function pointerDown(e){
+      e.preventDefault();
+      dragging = true;
+      moved = false;
+      const p = e.touches ? e.touches[0] : e;
+      startX = p.clientX; startY = p.clientY;
+      const rect = bubble.getBoundingClientRect();
+      // compute startLeft/startTop (resolve either left/top or compute from right/bottom)
+      const computed = window.getComputedStyle(bubble);
+      if(computed.left && computed.left !== 'auto'){
+        startLeft = parseFloat(computed.left);
+      } else {
+        // derive from right/bottom if left not set
+        startLeft = rect.left;
+      }
+      if(computed.top && computed.top !== 'auto'){
+        startTop = parseFloat(computed.top);
+      } else {
+        startTop = rect.top;
+      }
+      // ensure absolute positioning values are set
+      bubble.style.left = startLeft + 'px';
+      bubble.style.top = startTop + 'px';
+      bubble.style.right = 'auto';
+      bubble.style.bottom = 'auto';
     }
-    function onMove(e){
-      if(!active) return;
-      const cx = (e.touches ? e.touches[0].clientX : e.clientX); const cy = (e.touches ? e.touches[0].clientY : e.clientY);
-      const dx = cx - sx, dy = cy - sy;
-      if(!moved && (Math.abs(dx)>threshold || Math.abs(dy)>threshold)) moved = true;
-      const nx = tx + dx, ny = ty + dy;
-      bubble.style.transform = `translate(${nx}px, ${ny}px)`;
-      (e.preventDefault && e.preventDefault());
+
+    function pointerMove(e){
+      if(!dragging) return;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - startX;
+      const dy = p.clientY - startY;
+      if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
+      const newLeft = startLeft + dx;
+      const newTop = startTop + dy;
+      const rect = bubble.getBoundingClientRect();
+      const maxLeft = window.innerWidth - rect.width - margin;
+      const maxTop = window.innerHeight - rect.height - margin;
+      const clampedLeft = clamp(newLeft, margin, Math.max(margin, maxLeft));
+      const clampedTop = clamp(newTop, margin, Math.max(margin, maxTop));
+      bubble.style.left = clampedLeft + 'px';
+      bubble.style.top = clampedTop + 'px';
+      e.preventDefault && e.preventDefault();
     }
-    function onUp(e){
-      if(!active) return;
-      active=false;
+
+    function pointerUp(e){
+      if(!dragging) return;
+      dragging = false;
+      // if not moved => click toggle
       if(!moved){
-        setTimeout(()=>{ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }, 0);
+        // treat as click / toggle
+        if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel();
         return;
       }
+      // else snap to nearest horizontal edge while preserving vertical within bounds
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
-      const screenMid = window.innerWidth/2;
-      const m = window.getComputedStyle(bubble).transform;
-      let finalX = 0, finalY = 0;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
-      if(centerX < screenMid) finalX = finalX - rect.left + 12;
-      else finalX = finalX + (window.innerWidth - rect.right) - 12;
-      finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
-      bubble.style.transform = `translate(${finalX}px, ${finalY}px)`;
-      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: finalX, y: finalY})); }catch(e){}
+      const snappedLeft = centerX < window.innerWidth/2 ? margin : window.innerWidth - rect.width - margin;
+      const clampedTop = clamp(rect.top, margin, Math.max(margin, window.innerHeight - rect.height - margin));
+      // animate to snapped position
+      bubble.style.transition = 'left .16s ease, top .12s ease';
+      bubble.style.left = snappedLeft + 'px';
+      bubble.style.top = clampedTop + 'px';
+      setTimeout(()=> bubble.style.transition = '', 220);
+      // persist
+      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({ left: snappedLeft, top: clampedTop })); }catch(e){}
+      // reposition panel to follow
+      setTimeout(positionPanelAboveBubble, 60);
     }
-    bubble.addEventListener('pointerdown', function(ev){ onDown(ev); bubble.setPointerCapture && bubble.setPointerCapture(ev.pointerId); }, {passive:false});
-    window.addEventListener('pointermove', function(ev){ onMove(ev); }, {passive:false});
-    window.addEventListener('pointerup', function(ev){ onUp(ev); }, {passive:false});
-    bubble.addEventListener('touchstart', onDown, {passive:false});
-    window.addEventListener('touchmove', onMove, {passive:false});
-    window.addEventListener('touchend', onUp, {passive:false});
-    bubble.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
+
+    // pointer events
+    bubble.addEventListener('pointerdown', pointerDown, {passive:false});
+    window.addEventListener('pointermove', pointerMove, {passive:false});
+    window.addEventListener('pointerup', pointerUp, {passive:false});
+    // support touch as well (some browsers)
+    bubble.addEventListener('touchstart', pointerDown, {passive:false});
+    window.addEventListener('touchmove', pointerMove, {passive:false});
+    window.addEventListener('touchend', pointerUp, {passive:false});
+    // mouse fallback
+    bubble.addEventListener('mousedown', pointerDown);
+    window.addEventListener('mousemove', pointerMove);
+    window.addEventListener('mouseup', pointerUp);
   })();
 
   // keyboard & mobile safety (keep input visible)
