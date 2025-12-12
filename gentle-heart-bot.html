@@ -6,37 +6,43 @@
 <title>Gentle Heart — Your gentle companion</title>
 <style>
 :root{
-  --emerald-900:#04331f; --emerald-800:#06442a; --emerald-700:#0b5b39;
-  --emerald-600:#0e6e47; --emerald-500:#1aa667; --emerald-400:#49c88f;
-  --bg:#f6fbf8; --white:#f7fff9; --muted:#cfe9d9;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --emerald-900:#04331f;
+  --emerald-800:#06442a;
+  --emerald-700:#0b5b39;
+  --emerald-600:#0e6e47;
+  --emerald-500:#1aa667;
+  --emerald-400:#49c88f;
+  --bg:#f6fbf8;
+  --white:#f7fff9;
+  --muted:#cfe9d9;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
-html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%}
 
 /* Bubble */
 #bubble{
-  position:fixed; right:18px; bottom:18px; z-index:100000;
+  position:fixed; right:18px; bottom:18px; z-index:99999;
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
-  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(3,30,20,.45);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
   cursor:grab; touch-action:none; -webkit-user-drag:none; user-select:none;
   transition:box-shadow .12s ease, transform .12s ease;
 }
-#bubble:active{ cursor:grabbing; box-shadow:0 14px 40px rgba(3,30,20,.55); transform:scale(.98); }
+#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
 #bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block}
 
 /* Panel */
 #panel{
-  position:fixed; right:18px; bottom:110px; z-index:100001;
+  position:fixed; right:18px; bottom:110px; z-index:99998;
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
   transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
-  pointer-events:none; box-shadow:0 26px 70px rgba(3,30,20,.45);
+  pointer-events:none; box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
 #panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
-.header img{width:46px;height:46px;border-radius:10px;object-fit:cover}
+.header img{width:46px;height:46px;border-radius:10px;object-fit:cover;}
 .title{font-weight:700;font-size:18px}
 .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
 .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
@@ -61,21 +67,24 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
 /* Modal: solid backdrop */
-.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100010;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
+.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
 .modal-backdrop.show{pointer-events:auto; opacity:1}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
 
-/* Error overlay */
+/* Small helpers */
 #errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
 
-@media(max-width:420px){ #panel{width:92vw;height:86vh;right:6px;left:6px} .header img{width:40px;height:40px} }
+@media(max-width:420px){
+  #panel{width:92vw;height:86vh;right:6px;left:6px}
+  .header img{width:40px;height:40px}
+}
 </style>
 </head>
 <body>
 
-<!-- Inline fallback QA (optional) -->
+<!-- Inline fallback QA (so widget works even without qa.json) -->
 <script id="qa-inline" type="application/json">
 {
   "hi":"Hello! I'm Gentle Heart — how can I help you today?",
@@ -108,6 +117,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       </select>
 
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
+        <!-- gear icon -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 .95l-.21.72a.5.5 0 0 1-.48.34h-2.82a.5.5 0 0 1-.48-.34l-.21-.72a1.65 1.65 0 0 0-1-.95 1.65 1.65 0 0 0-1.82.33l-.06.06a.5.5 0 0 1-.71 0L4.6 18.6a.5.5 0 0 1 0-.71l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.95-1l-.72-.21a.5.5 0 0 1-.34-.48V9.59a.5.5 0 0 1 .34-.48l.72-.21a1.65 1.65 0 0 0 .95-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a.5.5 0 0 1 0-.71L6.5 2.6a.5.5 0 0 1 .71 0l.06.06a1.65 1.65 0 0 0 1.82.33l.72-.21a.5.5 0 0 1 .48.34v2.82a.5.5 0 0 1-.34.48l-.72.21a1.65 1.65 0 0 0-.95 1 1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
@@ -130,7 +140,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   </div>
 </div>
 
-<!-- Settings modal -->
+<!-- Settings modal (solid) -->
 <div id="modalBackdrop" class="modal-backdrop hidden" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
     <h3 style="margin:0 0 8px 0">Settings</h3>
@@ -149,25 +159,35 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Small, targeted fixes applied to your working file:
-   - No intro messages
-   - Proper drag vs tap discrimination (prevents accidental open after drag)
-   - Robust qa.json load (background)
-   - 2s typing animation preserved
-   - keyboard-safe input area
+/* Gentle Heart widget
+   - Moveable bubble (drag vs tap discrimination)
+   - Opens panel only on tap
+   - Solid settings modal
+   - Fetch qa.json in background, fallback to inline
+   - 2s typing animation, left bot / right user
+   - No intro messages (wait for user to send first)
+   - Input pinned so keyboard doesn't hide it
 */
 
 (function(){
-  // show runtime errors
+  // runtime errors shown in top overlay
   window.addEventListener('error', function(ev){
     try{
-      const box=document.getElementById('errorBox'), txt=document.getElementById('errorText');
-      box.style.display='block'; txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
+      const box = document.getElementById('errorBox');
+      const txt = document.getElementById('errorText');
+      box.style.display = 'block';
+      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
       console.error('Captured error', ev);
     }catch(e){}
   });
   window.addEventListener('unhandledrejection', function(ev){
-    try{ const box=document.getElementById('errorBox'), txt=document.getElementById('errorText'); box.style.display='block'; txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason)); }catch(e){}
+    try{
+      const box = document.getElementById('errorBox');
+      const txt = document.getElementById('errorText');
+      box.style.display = 'block';
+      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
+      console.error('Unhandled rejection', ev);
+    }catch(e){}
   });
 })();
 
@@ -183,106 +203,170 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const clearHistoryBtn = document.getElementById('clearHistory');
   const minBtn = document.getElementById('minBtn');
 
-  // initial inline fallback qa
+  // load inline fallback QA first
   let qaData = {};
   try{ const inline = document.getElementById('qa-inline'); if(inline && inline.textContent) qaData = JSON.parse(inline.textContent); }catch(e){ qaData = {}; }
 
-  // background fetch (best effort)
-  async function fetchQA(){ try{ const res = await fetch('./qa.json', {cache:'no-store'}); if(!res.ok) throw new Error('no qa.json'); const j = await res.json(); if(j) { qaData = j; console.info('qa.json loaded'); return true; } }catch(e){ console.warn('qa.json not available — using fallback', e); } return false; }
+  // background fetch for qa.json (best-effort)
+  async function fetchQA(){
+    try{
+      const res = await fetch('./qa.json', {cache:'no-store'});
+      if(!res.ok) throw new Error('no qa.json');
+      const j = await res.json();
+      if(j) { qaData = j; console.info('qa.json loaded'); return true; }
+    }catch(e){
+      console.warn('qa.json not available (or blocked)', e);
+    }
+    return false;
+  }
+  // attempt at load on start (won't block UI)
   fetchQA().catch(()=>{});
 
-  // normalize text
+  // helpers
   function normalizeText(s){ return String(s||'').toLowerCase().replace(/[.,!?;:“”"'()\\[\\]{}<>\\/\\|@#\$%\\^&\\*_+=~`:-]/g,' ').replace(/\\s+/g,' ').trim(); }
 
-  // history (no welcome added)
+  // history (no auto-welcome)
   let history = [];
   try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
 
-  function renderHistory(){ if(!chatArea) return; chatArea.innerHTML = ''; for(const h of history){ if(h.role==='user') addUserBubble(h.text); else addBotBubble(h.text); } requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
+  function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
+
+  // rendering
+  function renderHistory(){
+    if(!chatArea) return;
+    chatArea.innerHTML = '';
+    for(const h of history){
+      if(h.role === 'user') addUserBubble(h.text);
+      else addBotBubble(h.text);
+    }
+    requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight);
+  }
 
   function addBotBubble(text, opts){
     if(!chatArea) return;
     const w = document.createElement('div'); w.className = 'msg bot-msg';
     const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
     const t = document.createElement('div'); t.className = 'text';
-    if(opts && opts.isTyping){ const typ=document.createElement('div'); typ.className='typing'; typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; t.appendChild(typ); }
-    else t.textContent = text || '';
-    w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight; return w;
+    if(opts && opts.isTyping){
+      const typ = document.createElement('div'); typ.className='typing';
+      typ.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      t.appendChild(typ);
+    } else {
+      t.textContent = text || '';
+    }
+    w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
+    return w;
   }
-  function addUserBubble(text){ if(!chatArea) return; const d=document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; }
+  function addUserBubble(text){
+    if(!chatArea) return;
+    const d = document.createElement('div'); d.className = 'msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
+  }
 
-  // lookup
+  // reply lookup (supports object map or array of {q,a})
   function lookupReply(q){
     if(!q) return "Tell me more — I'm listening.";
     const inp = normalizeText(q);
 
+    // object exact match
     if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      for(const k of Object.keys(qaData)){ if(normalizeText(k) === inp) return qaData[k]; }
+      for(const k of Object.keys(qaData)){
+        if(normalizeText(k) === inp) return qaData[k];
+      }
       if(qaData[q]) return qaData[q];
     }
-    if(Array.isArray(qaData)){ const found = qaData.find(x=> normalizeText(x.q||'') === inp); if(found) return found.a; }
-
-    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      for(const k of Object.keys(qaData)){ const nk = normalizeText(k); if(nk && inp.includes(nk)) return qaData[k]; }
-    } else if(Array.isArray(qaData)){
-      for(const it of qaData){ const nk = normalizeText(it.q||''); if(nk && inp.includes(nk)) return it.a; }
+    // array exact match mapping
+    if(Array.isArray(qaData)){
+      const found = qaData.find(x => normalizeText(x.q || '') === inp);
+      if(found) return found.a;
     }
 
-    const words = inp.split(' ').filter(Boolean);
-    if(words.length){ const mins = words.filter(w=>w.length>2); if(mins.length){
-      if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-        for(const k of Object.keys(qaData)){ const nk = normalizeText(k); for(const w of mins) if(nk.includes(w)) return qaData[k]; }
-      } else if(Array.isArray(qaData)){
-        for(const it of qaData){ const nk = normalizeText(it.q||''); for(const w of mins) if(nk.includes(w)) return it.a; }
+    // includes match
+    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
+      for(const k of Object.keys(qaData)){
+        const nk = normalizeText(k);
+        if(nk && inp.includes(nk)) return qaData[k];
       }
-    }}
+    } else if(Array.isArray(qaData)){
+      for(const it of qaData){
+        const nk = normalizeText(it.q || '');
+        if(nk && inp.includes(nk)) return it.a;
+      }
+    }
 
+    // token match fallback
+    const words = inp.split(' ').filter(Boolean);
+    if(words.length){
+      const mins = words.filter(w => w.length > 2);
+      if(mins.length){
+        if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
+          for(const k of Object.keys(qaData)){
+            const nk = normalizeText(k);
+            for(const w of mins) if(nk.includes(w)) return qaData[k];
+          }
+        } else if(Array.isArray(qaData)){
+          for(const it of qaData){
+            const nk = normalizeText(it.q || '');
+            for(const w of mins) if(nk.includes(w)) return it.a;
+          }
+        }
+      }
+    }
+
+    // simple emotion shortcuts
     if(/\b(sad|depressed|unhappy|down)\b/.test(inp)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
     if(/\b(happy|glad|good|great|joy)\b/.test(inp)) return qaData['happy'] || "That's great — tell me what's making you happy!";
+
     return qaData['default'] || qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
-  // send
-  let sendLock=false;
+  // send flow with 2s typing
+  let sendLock = false;
   async function handleSend(text){
     if(sendLock) return;
     if(!text || !text.trim()) return;
-    sendLock=true;
-    history.push({role:'user', text}); try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
+    sendLock = true;
+    history.push({role:'user', text}); saveHistory();
     addUserBubble(text);
     if(userInput) userInput.value = '';
 
     const typingNode = addBotBubble('', {isTyping:true});
+    // re-try loading qa.json if user added it while open
     fetchQA().catch(()=>{});
-    await new Promise(r=>setTimeout(r,2000));
+    await new Promise(r => setTimeout(r, 2000));
     const reply = lookupReply(text);
     const container = typingNode.querySelector('.text');
     if(container) container.textContent = reply;
-    history.push({role:'bot', text:reply}); try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
+    history.push({role:'bot', text:reply}); saveHistory();
     chatArea.scrollTop = chatArea.scrollHeight;
-    sendLock=false;
+    sendLock = false;
   }
 
-  // initial render (but do NOT auto-add any welcome)
+  // initial render (NO welcome)
   renderHistory();
 
-  if(inputForm) inputForm.addEventListener('submit', function(e){ e.preventDefault(); try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }});
+  // form submit
+  if(inputForm){
+    inputForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }
+    });
+  }
 
-  // positioning panel
+  // panel positioning relative to bubble
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
-      const br=bubble.getBoundingClientRect();
+      const br = bubble.getBoundingClientRect();
       const right = Math.max(12, window.innerWidth - (br.left + br.width));
       panel.style.right = right + 'px';
       panel.style.bottom = Math.min(Math.max(12, window.innerHeight - br.top + 18), window.innerHeight - 80) + 'px';
       panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
     }catch(e){}
   }
-  async function openPanel(){ if(!panel) return; await fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; } }catch(e){} },60); }
+  async function openPanel(){ if(!panel) return; await fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput) userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 60); }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // gear modal
+  // gear modal handlers
   if(gearBtn){
     gearBtn.addEventListener('click', function(ev){
       ev && ev.stopPropagation();
@@ -291,18 +375,23 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       try{ document.getElementById('kidsMode').checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); document.getElementById('privateMode').checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){}
     });
   }
-  if(closeModal) closeModal.addEventListener('click', function(){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){} });
+  if(closeModal){
+    closeModal.addEventListener('click', function(){
+      modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden');
+      try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){}
+    });
+  }
   modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
 
   if(clearHistoryBtn){
     clearHistoryBtn.addEventListener('click', function(ev){
       ev && ev.preventDefault();
-      history = []; try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
-      renderHistory();
+      history = []; saveHistory(); renderHistory();
     });
   }
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
+  // close panel on outside click (when panel open and modal not showing)
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -311,21 +400,24 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // DRAG engine with reliable tap/drag discrimination
+  // Drag engine: pointer events + tap/drag discrimination
   (function enableDrag(){
     if(!bubble) return;
     let active=false, sx=0, sy=0, tx=0, ty=0, moved=false, lastUp=0;
     const threshold = 4;
-    try{ const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null'); if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`; }catch(e){}
+    try{
+      const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
+      if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
+    }catch(e){}
 
     function onDown(e){
       active=true; moved=false;
       const p = e.touches ? e.touches[0] : e;
       sx = p.clientX; sy = p.clientY;
       const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
       try{ if(e.pointerId) bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
-      e.preventDefault && e.preventDefault();
+      (e.preventDefault && e.preventDefault());
     }
     function onMove(e){
       if(!active) return;
@@ -334,18 +426,15 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
       const nx = tx + dx, ny = ty + dy;
       bubble.style.transform = `translate(${nx}px, ${ny}px)`;
-      e.preventDefault && e.preventDefault();
+      (e.preventDefault && e.preventDefault());
     }
     function onUp(e){
       if(!active) return;
       active=false;
       lastUp = Date.now();
       if(!moved){
-        // quick tap: only open if not a recent drag (debounce)
-        setTimeout(()=> {
-          // if pointer was moved recently skip open
-          if(Date.now() - lastUp < 80) { if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }
-        }, 20);
+        // quick tap -> toggle panel (debounce tiny)
+        setTimeout(()=>{ if(Date.now() - lastUp < 120){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } }, 20);
         return;
       }
       // persist snapped position
@@ -354,7 +443,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       const screenMid = window.innerWidth/2;
       const m = window.getComputedStyle(bubble).transform;
       let finalX=0, finalY=0;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
       if(centerX < screenMid) finalX = finalX - rect.left + 12;
       else finalX = finalX + (window.innerWidth - rect.right) - 12;
       finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
@@ -372,23 +461,17 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
 
-    // make sure quick click toggles only when not dragging
-    bubble.addEventListener('click', function(e){
-      // if transform changed very recently due to drag, ignore this click
-      try{
-        const t = bubble.getBoundingClientRect();
-      }catch(e){}
-      // rely on onUp debounce above; do nothing here to avoid double events
-    });
+    // avoid double click handling; onUp handles taps
+    bubble.addEventListener('click', function(e){ /* intentionally empty to avoid double events */ });
     bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }});
   })();
 
-  // keyboard safety
+  // keyboard safety: adjust panel maxHeight when keyboard appears
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
       try{ const vh = window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; userInput.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
-    },250));
+    }, 250));
     userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
     let lastInner = window.innerHeight;
     window.addEventListener('resize', function(){
@@ -401,10 +484,11 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     });
   }
 
+  // reposition on orientation/resize
   window.addEventListener('orientationchange', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 300));
   window.addEventListener('resize', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 160));
 
-})(); // end IIFE
+})(); // end widget IIFE
 </script>
 </body>
 </html>
