@@ -165,7 +165,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
      * reliable drag + tap discrimination (clone cleanup)
      * 2s typing animation
      * no intro message
-     * qa.json background fetch with tolerant parsing + normalization + GitHub raw attempt
+     * qa.json background fetch with fallback (normalized)
      * solid settings modal
      * pinned input so keyboard won't hide it
 */
@@ -212,7 +212,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     if(inline && inline.textContent) qaData = JSON.parse(inline.textContent);
   }catch(e){ qaData = {}; }
 
-  // --- REPLACE THE OLD fetchQA() BLOCK WITH THIS NEW IMPLEMENTATION ---
+ // --- REPLACE THE OLD fetchQA() BLOCK WITH THIS NEW IMPLEMENTATION ---
   // normalized map (key => answer) populated from inline or fetched file
   let qaDataNormalized = {};
 
@@ -220,57 +220,61 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
   }
 
+  // helper to add entry from various shapes
+  function addNormalizedEntry(k, v){
+    try{
+      const nk = normalizeKeyForMap(k);
+      if(nk) qaDataNormalized[nk] = String(v || '');
+    }catch(e){}
+  }
+
   // populate qaDataNormalized from current qaData (inline fallback)
   (function buildMapFromInline(){
     try{
-      if(qaData && typeof qaData === 'object'){
-        if(Array.isArray(qaData)){
-          qaData.forEach(item => { if(item && item.q && item.a) qaDataNormalized[normalizeKeyForMap(item.q)] = item.a; });
-        } else {
-          Object.keys(qaData).forEach(k => { qaDataNormalized[normalizeKeyForMap(k)] = qaData[k]; });
+      if(!qaData) return;
+      // object form: { "hello": "..." }
+      if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
+        Object.keys(qaData).forEach(k => {
+          // skip metadata-like keys that aren't q->a (simple heuristic)
+          if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'pairs' || k === 'items') return;
+          addNormalizedEntry(k, qaData[k]);
+        });
+        // if there's an items or pairs array inside object, include them
+        if(Array.isArray(qaData.items)){
+          qaData.items.forEach(it => {
+            if(it && (it.q || it.input) && (it.a || it.response)){
+              addNormalizedEntry(it.q || it.input, it.a || it.response);
+            }
+          });
         }
+        if(Array.isArray(qaData.pairs)){
+          qaData.pairs.forEach(it => {
+            if(it && (it.q || it.input) && (it.a || it.response)){
+              addNormalizedEntry(it.q || it.input, it.a || it.response);
+            }
+          });
+        }
+        return;
+      }
+      // array form: [{q,a}] or [{input,response}]
+      if(Array.isArray(qaData)){
+        qaData.forEach(item => {
+          if(!item) return;
+          if(item.q && item.a) addNormalizedEntry(item.q, item.a);
+          else if(item.input && item.response) addNormalizedEntry(item.input, item.response);
+          else if(item.prompt && item.reply) addNormalizedEntry(item.prompt, item.reply);
+        });
       }
     }catch(e){ console.warn('buildMapFromInline failed', e); }
   })();
 
-  // attempt to construct candidate paths including raw GitHub if relevant
-  function candidatePathsForQA(){
-    const paths = ['./qa.json','qa.json'];
-    try{
-      const loc = window.location;
-      // same folder: derive base path by removing filename
-      if(loc && loc.pathname){
-        const base = loc.origin + loc.pathname.replace(/\/[^\/]*$/, '/');
-        paths.push(base + 'qa.json');
-        // try replacing .html -> .json
-        const maybeJson = loc.href.replace(/\.html?($|\?)/, '.json$1');
-        if(maybeJson && maybeJson !== loc.href) paths.push(maybeJson);
-      }
-      // if we're viewing via github.com, convert to raw.githubusercontent URL
-      if(location.hostname && location.hostname.includes('github.com')){
-        // example: /user/repo/blob/branch/path/file.html -> user/repo/branch/path/qa.json
-        const parts = location.pathname.split('/');
-        const blobIndex = parts.indexOf('blob');
-        if(blobIndex > 0 && parts.length > blobIndex + 2){
-          const user = parts[1], repo = parts[2], branch = parts[blobIndex+1];
-          const pathParts = parts.slice(blobIndex+2, parts.length-1); // omit file
-          const pathPrefix = pathParts.length ? pathParts.join('/') + '/' : '';
-          const raw = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${pathPrefix}qa.json`;
-          paths.push(raw);
-        }
-      }
-    }catch(e){}
-    // dedupe
-    const seen = new Set(); return paths.filter(p => { if(!p) return false; const n = p.toString(); if(seen.has(n)) return false; seen.add(n); return true; });
-  }
-
   async function fetchQA(){
     // try multiple paths & tolerant parsing
-    const paths = candidatePathsForQA();
+    const paths = ['./qa.json','qa.json'];
     for(const p of paths){
       try{
         const r = await fetch(p, {cache:'no-store'});
-        if(!r.ok) { console.warn('qa.json fetch not ok', p, r.status); continue; }
+        if(!r.ok) continue;
         const txt = await r.text();
         if(!txt || txt.trim().length === 0) continue;
         let parsed;
@@ -278,17 +282,33 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
           // sometimes editors add BOM or comments — try to strip BOM and retry
           try{ parsed = JSON.parse(txt.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')); } catch(err){ throw err; }
         }
-        // transform into normalized map
-        if(Array.isArray(parsed)){
-          parsed.forEach(item => { if(item && item.q && item.a) qaDataNormalized[normalizeKeyForMap(item.q)] = item.a; });
-        } else if(parsed && typeof parsed === 'object'){
-          // if object with q->a mapping
-          Object.keys(parsed).forEach(k => { qaDataNormalized[normalizeKeyForMap(k)] = parsed[k]; });
-          // also handle case where parsed has form {items:[{q,a}]}
-          if(Array.isArray(parsed.items)){
-            parsed.items.forEach(it => { if(it && it.q && it.a) qaDataNormalized[normalizeKeyForMap(it.q)] = it.a; });
+        // transform into normalized map (handle many shapes)
+        try{
+          if(Array.isArray(parsed)){
+            parsed.forEach(item => {
+              if(!item) return;
+              if(item.q && item.a) addNormalizedEntry(item.q, item.a);
+              else if(item.input && item.response) addNormalizedEntry(item.input, item.response);
+              else if(item.prompt && item.reply) addNormalizedEntry(item.prompt, item.reply);
+            });
+          } else if(parsed && typeof parsed === 'object'){
+            // object map: keys -> values
+            Object.keys(parsed).forEach(k => {
+              if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'items' || k === 'pairs') return;
+              if(typeof parsed[k] === 'string') addNormalizedEntry(k, parsed[k]);
+            });
+            // items/pairs array support
+            if(Array.isArray(parsed.items)){
+              parsed.items.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+            }
+            if(Array.isArray(parsed.pairs)){
+              parsed.pairs.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+            }
           }
+        }catch(e){
+          console.warn('error normalizing parsed qa.json', e);
         }
+
         console.info('qa.json loaded and normalized from', p);
         // Also merge into qaData for backward compatibility
         if(parsed) qaData = parsed;
@@ -326,7 +346,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   // utilities for text normalization & reply lookup
   function normalizeText(s){ return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim(); }
 
-  // --- MINIMAL CHANGED lookupReply USING qaDataNormalized ---
+  // Miminimal change sa lookuoReply (per your instruction)
   function lookupReply(q){
     if(!q) return "Tell me more — I'm listening.";
     const key = normalizeKeyForMap(q);
@@ -343,11 +363,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       for(const k of Object.keys(qaData)){
         if(normalizeKeyForMap(k) === key) return qaData[k];
       }
-      // includes check (if user typed longer phrase and qa key is short)
-      for(const k of Object.keys(qaData)){
-        const nk = normalizeKeyForMap(k);
-        if(nk && key.includes(nk)) return qaData[k];
-      }
     }
 
     // 3) emotion shortcuts (unchanged)
@@ -356,7 +371,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
     return qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
-  // --- END lookupReply replacement ---
 
   // message renderers
   function addBotBubble(text, opts){
