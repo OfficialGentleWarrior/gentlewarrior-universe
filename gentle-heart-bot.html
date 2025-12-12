@@ -17,28 +17,29 @@
   --muted:#cfe9d9;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
-html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;}
+html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased;}
 /* Bubble */
 #bubble{
-  position:fixed; right:18px; bottom:18px; z-index:99999;
+  position:fixed; right:18px; bottom:18px;
+  z-index:100000; /* lower than panel now */
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
   cursor:grab; touch-action:none; user-select:none;
-  transition:box-shadow .12s ease;
+  transition:box-shadow .12s ease, transform .12s ease;
 }
-#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); }
+#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
 #bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block;}
 
 /* Panel */
 #panel{
-  position:fixed; right:18px; bottom:110px; z-index:99998;
+  position:fixed; right:18px; bottom:110px;
+  z-index:100001; /* ensure panel is above bubble */
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
   transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
-  pointer-events:none;
-  box-shadow:0 20px 60px rgba(3,30,20,.5);
+  pointer-events:none; box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
 #panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
@@ -64,8 +65,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 /* Solid modal (non-transparent) */
 .modal-backdrop{
-  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;
-  background: rgba(4,51,31,0.95); /* solid emerald-ish backdrop */
+  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100010;
+  background: rgba(4,51,31,0.95);
   transition:opacity .12s ease; pointer-events:none; opacity:0;
 }
 .modal-backdrop.show{pointer-events:auto; opacity:1;}
@@ -83,6 +84,17 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </style>
 </head>
 <body>
+
+<!-- Inline fallback QA (ensures file never blank) -->
+<script id="qa-inline" type="application/json">
+{
+  "hi":"Hello! I'm Gentle Heart — how can I help you today?",
+  "hello":"Hi there — tell me what's on your mind.",
+  "help":"You can ask about breathing exercises, CP info, or just share how you feel.",
+  "breathing":"Try this: Inhale for 4, hold 2, exhale 6. Repeat 4 times.",
+  "clear history success":"History cleared."
+}
+</script>
 
 <!-- Error overlay (shows if runtime error occurs) -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
@@ -105,7 +117,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
-        <!-- simple gear -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a1 1 0 0 1 0 1.4l-1 1a1 1 0 0 1-1.4 0l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 .9l-1 .3a1 1 0 0 1-1.1-.4l-1-1a1 1 0 0 1 0-1.4l.3-1a1.7 1.7 0 0 0-.9-1 1.7 1.7 0 0 0-1.9.3l-.1.1a1 1 0 0 1-1.4 0l-1-1a1 1 0 0 1 0-1.4l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-.9-1l-.3-1a1 1 0 0 1 .4-1.1l1-1a1 1 0 0 1 1.4 0l.3.3a1.7 1.7 0 0 0 1-.3 1.7 1.7 0 0 0 .3-1.9l-.1-.1a1 1 0 0 1 0-1.4l1-1a1 1 0 0 1 1.4 0l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-.9l1-.3a1 1 0 0 1 1.1.4l1 1a1 1 0 0 1 0 1.4l-.3 1a1.7 1.7 0 0 0 .9 1 1.7 1.7 0 0 0 1.9-.3l.1-.1a1 1 0 0 1 1.4 0l1 1a1 1 0 0 1 0 1.4l-.1.1a1.7 1.7 0 0 0-.3 1.9z"/></svg>
       </button>
       <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize">
@@ -143,37 +154,13 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Defensive, non-blocking initialization - UI visible immediately.
-   - background fetch for qa.json (won't block UI)
-   - onerror overlay shows runtime errors so user doesn't see blank
-   - fallback qaData included
-*/
-
 (function(){
-  // error overlay
-  window.addEventListener('error', function(ev){
-    try{
-      const box = document.getElementById('errorBox');
-      const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
-      console.error('Captured error', ev);
-    }catch(e){}
-  });
-
-  window.addEventListener('unhandledrejection', function(ev){
-    try{
-      const box = document.getElementById('errorBox');
-      const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
-      console.error('Unhandled rejection', ev);
-    }catch(e){}
-  });
+  // Error overlay handlers
+  window.addEventListener('error', function(ev){ try{ const box=document.getElementById('errorBox'); const txt=document.getElementById('errorText'); box.style.display='block'; txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : ''); }catch(e){} });
+  window.addEventListener('unhandledrejection', function(ev){ try{ const box=document.getElementById('errorBox'); const txt=document.getElementById('errorText'); box.style.display='block'; txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason)); }catch(e){} });
 })();
 
 (function(){
-  // Elements (guarded)
   const bubble = document.getElementById('bubble');
   const panel = document.getElementById('panel');
   const chatArea = document.getElementById('chatArea');
@@ -184,146 +171,105 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const closeModal = document.getElementById('closeModal');
   const clearHistoryBtn = document.getElementById('clearHistory');
   const minBtn = document.getElementById('minBtn');
-  const countrySelect = document.getElementById('countrySelect');
-  const countryInModal = document.getElementById('countryInModal');
   const kidsModeCheckbox = document.getElementById('kidsMode');
   const privateModeCheckbox = document.getElementById('privateMode');
 
-  // built-in fallback QA (used if qa.json missing)
-  let qaData = {
-    "hi":"Hello! I'm Gentle Heart — how can I help you today?",
-    "hello":"Hi there — tell me what's on your mind.",
-    "help":"You can ask about breathing exercises, CP info, or just share how you feel."
-  };
+  // load inline QA
+  let qaData = {};
+  try{ const inline = document.getElementById('qa-inline'); if(inline && inline.textContent) qaData = JSON.parse(inline.textContent); }catch(e){ qaData = {}; }
+
+  // try external qa.json in background
+  (function tryFetchQA(){ fetch('./qa.json', {cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('no qa.json'); return r.json(); }).then(j=>{ if(j) qaData = j; console.info('qa.json loaded'); }).catch(()=>{}); })();
 
   // history
-  let history = JSON.parse(localStorage.getItem('gh_history') || '[]');
+  let history = [];
+  try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
+  if(!history || history.length === 0){ history = [{role:'bot', text:"Welcome — tap the bubble to open chat. I'm Gentle Heart."}]; try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
 
-  // render history function
-  function renderHistory(){
-    if(!chatArea) return;
-    chatArea.innerHTML = '';
-    history.forEach(h=>{
-      if(h.role === 'user') addUserBubble(h.text);
-      else addBotBubble(h.text);
-    });
-    // ensure scrolled to bottom
-    requestAnimationFrame(()=> { chatArea.scrollTop = chatArea.scrollHeight; });
-  }
+  function renderHistory(){ if(!chatArea) return; chatArea.innerHTML=''; history.forEach(h=>{ if(h.role==='user') createUserBubble(h.text); else createBotBubble(h.text); }); requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
 
-  // safe element creation
-  function addBotBubble(text, opts){
-    if(!chatArea) return;
-    const w = document.createElement('div'); w.className = 'msg bot-msg';
+  function createBotBubble(text, opts){
+    const w = document.createElement('div'); w.className='msg bot-msg';
     const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
-    const t = document.createElement('div'); t.className = 'text';
-    if(opts && opts.isTyping){
-      const typ = document.createElement('div'); typ.className='typing';
-      typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-      t.appendChild(typ);
-    } else {
-      // sanitize (simple)
-      t.textContent = text || '';
-    }
+    const t = document.createElement('div'); t.className='text';
+    if(opts && opts.typing){ const typ=document.createElement('div'); typ.className='typing'; typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; t.appendChild(typ); }
+    else t.textContent = text || '';
     w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
     return w;
   }
-  function addUserBubble(text){
-    if(!chatArea) return;
-    const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
-  }
+  function createUserBubble(text){ const d=document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; return d; }
 
-  // safe text lookup
   function lookupReply(q){
     if(!q) return "Tell me more — I'm listening.";
     const key = q.trim().toLowerCase();
-    if(Array.isArray(qaData)){
-      const found = qaData.find(x => (x.q||'').trim().toLowerCase() === key);
-      if(found) return found.a;
-    } else if(qaData && qaData[key]) return qaData[key];
+    if(Array.isArray(qaData)){ const found = qaData.find(x => (x.q||'').trim().toLowerCase() === key); if(found) return found.a; }
+    else if(qaData && typeof qaData === 'object'){ if(qaData[key]) return qaData[key]; }
+    try{ const keys = Object.keys(qaData||{}); for(let k of keys){ if(key.includes(k)) return qaData[k]; } }catch(e){}
     return "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
-  // send handler
+  let sendLock=false;
   async function handleSend(text){
+    if(sendLock) return;
     if(!text || !text.trim()) return;
-    history.push({role:'user', text}); localStorage.setItem('gh_history', JSON.stringify(history));
-    addUserBubble(text);
-    if(userInput) userInput.value = '';
-    const typingNode = addBotBubble('', {isTyping:true});
-    // 2s typing animation
+    sendLock=true;
+    history.push({role:'user', text}); persistHistory();
+    createUserBubble(text);
+    if(userInput) userInput.value='';
+    const typingNode = createBotBubble('', {typing:true});
     await new Promise(r=>setTimeout(r,2000));
     const reply = lookupReply(text) || "Okay — tell me more.";
-    // replace typing with reply
     const container = typingNode.querySelector('.text');
     if(container) container.textContent = reply;
-    history.push({role:'bot', text:reply}); localStorage.setItem('gh_history', JSON.stringify(history));
+    history.push({role:'bot', text:reply}); persistHistory();
     chatArea.scrollTop = chatArea.scrollHeight;
+    sendLock=false;
   }
+  function persistHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
 
-  // init UI immediately
-  (function initUI(){
-    renderHistory();
-    // ensure panel hidden
-    if(panel) panel.classList.remove('show');
-    // if no history, add welcome bot message but keep UI as bubble-only
-    if(history.length === 0){
-      history.push({role:'bot', text:"Welcome — tap the bubble to open chat. I'm Gentle Heart."});
-      localStorage.setItem('gh_history', JSON.stringify(history));
-    }
-    renderHistory();
-    // ensure panel positioned relative to bubble
-    positionPanelAboveBubble();
-  })();
+  renderHistory();
 
-  // Setup submission
   if(inputForm){
-    inputForm.addEventListener('submit', function(e){ e.preventDefault(); try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }});
+    inputForm.addEventListener('submit', function(e){ e.preventDefault(); handleSend(userInput && userInput.value); });
   }
 
-  // panel open/minimize helpers
+  // Ensure panel appears on top and not offscreen — also fallback coords if something odd
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
       const br = bubble.getBoundingClientRect();
+      // compute right as distance from bubble's right edge to viewport right
       const right = Math.max(12, window.innerWidth - (br.left + br.width));
       panel.style.right = right + 'px';
-      // default bottom space
-      panel.style.bottom = (window.innerHeight - br.top + 18) + 'px';
-      // keep max-height sensible relative to viewport
+      // bottom should be such that panel sits above bubble, but clamp to viewport
+      const desiredBottom = Math.max(12, window.innerHeight - br.top + 18);
+      const clampedBottom = Math.min(desiredBottom, window.innerHeight - 80);
+      panel.style.bottom = clampedBottom + 'px';
       panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
-    }catch(e){}
+    }catch(e){
+      // fallback to safe defaults
+      panel.style.right = '18px';
+      panel.style.bottom = '110px';
+      panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
+    }
   }
-  function openPanel(){ if(!panel) return; panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ if(userInput) userInput.focus(); }, 60); }
+
+  function openPanel(){
+    if(!panel) return;
+    // make sure panel z-index sits above bubble (defensive)
+    panel.style.zIndex = '100001';
+    positionPanelAboveBubble();
+    panel.classList.add('show'); panel.setAttribute('aria-hidden','false');
+    // focus input after a short delay so keyboard doesn't block layout
+    setTimeout(()=>{ try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; } }catch(e){} }, 60);
+  }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // gear modal
-  if(gearBtn){
-    gearBtn.addEventListener('click', function(ev){
-      ev && ev.stopPropagation();
-      if(!modalBackdrop) return;
-      modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden');
-      // load saved toggles
-      try{ document.getElementById('kidsMode').checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); document.getElementById('privateMode').checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){}
-    });
-  }
-  if(closeModal){
-    closeModal.addEventListener('click', function(){
-      modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden');
-      try{ localStorage.setItem('gh_kids', JSON.stringify(kidsModeCheckbox.checked)); localStorage.setItem('gh_private', JSON.stringify(privateModeCheckbox.checked)); }catch(e){}
-    });
-  }
-  if(modalBackdrop){
-    modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
-  }
-  if(clearHistoryBtn){
-    clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history=[]; localStorage.setItem('gh_history', JSON.stringify(history)); renderHistory(); });
-  }
+  // bubble interactions
+  bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
+  bubble.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
 
-  // minimize button
-  if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
-
-  // small click outside to close panel
+  // outside click closes panel (unless modal open)
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -332,21 +278,37 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // Drag: pointer events with fallback to touch/mouse (defensive)
+  // settings modal
+  if(gearBtn){
+    gearBtn.addEventListener('click', function(ev){ ev.stopPropagation(); modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden'); try{ kidsModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); privateModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){} });
+  }
+  if(closeModal){
+    closeModal.addEventListener('click', function(){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); try{ localStorage.setItem('gh_kids', JSON.stringify(kidsModeCheckbox.checked)); localStorage.setItem('gh_private', JSON.stringify(privateModeCheckbox.checked)); }catch(e){} });
+  }
+  modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
+
+  // clear history
+  if(clearHistoryBtn){
+    clearHistoryBtn.addEventListener('click', function(ev){ ev.preventDefault(); history = [{role:'bot', text:(qaData['clear history success'] || 'History cleared.')}]; persistHistory(); renderHistory(); });
+  }
+
+  // minimize button
+  if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
+
+  // Drag bubble (keeps same behavior)
   (function enableDrag(){
     if(!bubble) return;
-    let active = false, sx=0, sy=0, tx=0, ty=0, moved=false;
+    let active=false, sx=0, sy=0, tx=0, ty=0, moved=false;
     const threshold = 6;
-    // restore position
     try{
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
     function onDown(e){
-      active = true; moved=false;
+      active=true; moved=false;
       sx = (e.touches ? e.touches[0].clientX : e.clientX); sy = (e.touches ? e.touches[0].clientY : e.clientY);
       const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); tx = p[4]||0; ty = p[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); tx = p[4]||0; ty = p[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
       (e.preventDefault && e.preventDefault());
     }
     function onMove(e){
@@ -360,104 +322,46 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     }
     function onUp(e){
       if(!active) return;
-      active = false;
-      // if not moved enough -> click open
+      active=false;
       if(!moved){
-        setTimeout(()=>{ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }, 0);
+        // rely on click to toggle
         return;
       }
-      // else persist position and snap roughly
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
-      // read transform
       const m = window.getComputedStyle(bubble).transform;
       let finalX = 0, finalY = 0;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
-      // snap
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
       if(centerX < screenMid) finalX = finalX - rect.left + 12;
       else finalX = finalX + (window.innerWidth - rect.right) - 12;
       finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
       bubble.style.transform = `translate(${finalX}px, ${finalY}px)`;
       try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: finalX, y: finalY})); }catch(e){}
     }
-    // pointer support best-effort
     bubble.addEventListener('pointerdown', function(ev){ onDown(ev); bubble.setPointerCapture && bubble.setPointerCapture(ev.pointerId); }, {passive:false});
     window.addEventListener('pointermove', function(ev){ onMove(ev); }, {passive:false});
     window.addEventListener('pointerup', function(ev){ onUp(ev); }, {passive:false});
-    // touch fallback
     bubble.addEventListener('touchstart', onDown, {passive:false});
     window.addEventListener('touchmove', onMove, {passive:false});
     window.addEventListener('touchend', onUp, {passive:false});
-    // mouse fallback
     bubble.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-    // click fallback for quick taps (if not moved)
-    bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
-    bubble.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { if(panel && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
   })();
 
-  // quick safe external fetch (background) - won't block UI
-  (function loadQA(){
-    fetch('./qa.json', {cache:'no-store'}).then(r=>{
-      if(!r.ok) throw new Error('no qa.json');
-      return r.json();
-    }).then(j=>{
-      // if array or object, use it
-      if(j) qaData = j;
-      console.info('qa.json loaded (background)');
-    }).catch(err=>{
-      console.warn('qa.json not available — used fallback', err);
-    });
-  })();
-
-  // keyboard visibility & focus handling - keep input visible
-  (function keyboardSafety(){
-    // when input focuses, ensure panel visible and input scrolled into view
-    if(userInput){
-      userInput.addEventListener('focus', ()=> {
-        // open if not open
-        if(panel && !panel.classList.contains('show')) openPanel();
-        // small delay to allow virtual keyboard to appear then adjust sizes
-        setTimeout(()=> {
-          try{
-            // make sure chat area and panel adjust to viewport height
-            const vh = window.innerHeight || document.documentElement.clientHeight;
-            panel.style.maxHeight = Math.max(300, vh - 120) + 'px';
-            chatArea.scrollTop = chatArea.scrollHeight;
-            // scroll input into view
-            userInput.scrollIntoView({behavior:'smooth', block:'center'});
-          }catch(e){}
-        }, 250);
-      });
-      userInput.addEventListener('blur', ()=> {
-        // restore maxHeight
-        setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150);
-      });
-    }
-    // listen for resize changes (mobile keyboard open/close)
+  // keyboard & resize safety
+  if(userInput){
+    userInput.addEventListener('focus', ()=> setTimeout(()=> { if(panel && !panel.classList.contains('show')) openPanel(); try{ const vh=window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 250));
+    userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
     let lastInner = window.innerHeight;
-    window.addEventListener('resize', function(){
-      try{
-        const now = window.innerHeight;
-        // if shrunk significantly, likely keyboard open — increase panel max-height to fit visible area
-        if(now < lastInner - 80){
-          panel.style.maxHeight = Math.max(260, now - 120) + 'px';
-          // keep chat scrolled
-          setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60);
-        } else {
-          panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
-        }
-        lastInner = now;
-      }catch(e){}
-    });
-  })();
+    window.addEventListener('resize', function(){ try{ const now = window.innerHeight; if(now < lastInner - 80){ panel.style.maxHeight = Math.max(260, now - 120) + 'px'; setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60); } else panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px'; lastInner = now; }catch(e){} });
+  }
 
-  // allow opening panel via keyboard when bubble focused
-  bubble.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
+  window.addEventListener('orientationchange', ()=> setTimeout(positionPanelAboveBubble, 320));
+  window.addEventListener('resize', ()=> setTimeout(positionPanelAboveBubble, 120));
 
-})(); // end main IIFE
+})(); // end IIFE
 </script>
 </body>
 </html>
