@@ -1,31 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- GENTLE HEART: Floating chatbot styles (paste inside <head>) -->
 <style>
-/* Floating bubble */
-#gh-floating {
+#gh-launcher {
   position: fixed;
   right: 20px;
   bottom: 20px;
   width: 64px;
   height: 64px;
   border-radius: 999px;
-  background: #163e2f;
-  box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+  background: linear-gradient(180deg,#1a4f39,#0f3f2f);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
   z-index: 99999;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:grab;
+  cursor:pointer;
   user-select:none;
-  transition:transform .12s ease, left .12s ease, top .12s ease;
-  touch-action: none; /* critical for touch dragging */
+  transition: transform .12s ease;
 }
-#gh-floating:active{ cursor:grabbing; transform:scale(.98); }
-#gh-floating img{ width:48px;height:48px;border-radius:999px;pointer-events:none; }
+#gh-launcher:active{ transform: scale(.97); }
+#gh-launcher img{ width:48px;height:48px;border-radius:999px;pointer-events:none; }
 
-/* Modal/iframe container */
+/* Modal backdrop */
 #gh-modal-backdrop{
   position:fixed;
   inset:0;
@@ -35,37 +32,51 @@
   justify-content:center;
   z-index:100000;
 }
+
+/* Modal */
 #gh-modal{
   width:94%;
   max-width:780px;
   height:80vh;
-  background: #0f3f2f;
+  background:#0f3f2f;
   border-radius:14px;
   overflow:hidden;
   box-shadow:0 20px 50px rgba(0,0,0,0.6);
   display:flex;
   flex-direction:column;
 }
+
+/* Header */
 #gh-modal header{
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:8px 12px;
-  background:linear-gradient(180,#123e2f,#0b362a);
+  background:linear-gradient(180deg,#123e2f,#0b362a);
   color:#eaf6ea;
-  gap:12px;
+  font-weight:700;
 }
-#gh-modal header .gh-title{display:flex;align-items:center;gap:10px;font-weight:700}
-#gh-modal iframe{border:0;width:100%;height:100%;flex:1;background:transparent}
 #gh-close-btn{
-  background:transparent;border:0;color:#eaf6ea;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;
+  background:transparent;
+  border:0;
+  color:#eaf6ea;
+  font-size:18px;
+  cursor:pointer;
 }
 
-/* Small responsive tweaks */
+/* iFrame */
+#gh-iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  flex:1;
+}
+
+/* Responsive */
 @media (max-width:520px){
-  #gh-modal{ height:90vh; max-width: 94%; }
-  #gh-floating{ width:58px; height:58px; }
-  #gh-floating img{ width:40px; height:40px; }
+  #gh-launcher{ width:58px; height:58px; }
+  #gh-launcher img{ width:40px; height:40px; }
+  #gh-modal{ height:90vh; }
 }
 </style>
 
@@ -600,6 +611,8 @@
       <button class="tab-btn" data-tab="families">Families</button>
       <button class="tab-btn" data-tab="caregivers">Care Team</button>
       <button class="tab-btn" data-tab="faq">FAQ</button>
+      <button class="tab-btn"
+data-tab="chat">Chat</button>
       <button class="tab-btn active" data-tab="game">Game</button>
       <button class="tab-btn" data-tab="announcements">Announcements</button>
     </div>
@@ -1380,7 +1393,109 @@
         <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
       </div>
     </section>
+<!-- CHAT SECTION -->
+<section id="chat" class="panel" style="display:none">
+  <h2 style="text-align:center;margin-top:0;">Chat</h2>
 
+  <p style="text-align:center;color:var(--muted)">
+    Open Gentle Heart chat to ask questions or get help.
+  </p>
+
+  <div style="text-align:center;margin-top:12px;">
+    <button id="openGentleChatBtn" class="btn">Open Gentle Heart Chat</button>
+  </div>
+
+  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center;">
+    The chat opens in a safe embedded window.  
+    It loads only when you open it.
+  </p>
+</section>
+<!-- CHAT MODAL (lazy iframe) -->
+<div id="gh-chat-backdrop"
+     style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:120000;">
+  <div id="gh-chat-modal"
+       style="width:94%;max-width:820px;height:84vh;background:#0f3f2f;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 40px rgba(0,0,0,0.6);">
+
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(180deg,#123e2f,#0b362a);color:#eaf6ea;font-weight:700;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="avatar.png" alt="Gentle Heart"
+             style="width:36px;height:36px;border-radius:8px;object-fit:cover;">
+        <div>Gentle Heart Chat</div>
+      </div>
+
+      <button id="gh-chat-close" aria-label="Close chat"
+              style="background:transparent;border:0;color:#eaf6ea;font-size:20px;cursor:pointer;">
+        ✕
+      </button>
+    </header>
+
+    <iframe id="gh-chat-iframe"
+            src="about:blank"
+            title="Gentle Heart chat"
+            loading="lazy"
+            style="width:100%;height:100%;border:0;background:transparent;flex:1;display:block;">
+    </iframe>
+
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const openBtn   = document.getElementById('openGentleChatBtn');
+  const backdrop  = document.getElementById('gh-chat-backdrop');
+  const closeBtn  = document.getElementById('gh-chat-close');
+  const iframe    = document.getElementById('gh-chat-iframe');
+  let iframeLoaded = false;
+
+  function openChat(){
+    if(!backdrop) return;
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden','false');
+
+    // lazy-load iframe only once
+    if(!iframeLoaded){
+      try {
+        // if you host gentle-heart-bot in same folder, this is fine
+        iframe.src = 'gentle-heart-bot.html?embed=1';
+        iframeLoaded = true;
+      } catch(e){
+        console && console.warn && console.warn('Chat iframe load error', e);
+      }
+    }
+  }
+
+  function closeChat(){
+    if(!backdrop) return;
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden','true');
+    // keep iframe loaded for faster re-open; do not unload
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openChat);
+  if (closeBtn) closeBtn.addEventListener('click', closeChat);
+
+  // click outside to close
+  if (backdrop) backdrop.addEventListener('click', function(e){
+    if (e.target === backdrop) closeChat();
+  });
+
+  // ESC to close
+  window.addEventListener('keydown', function(e){
+    if ((e.key === 'Escape' || e.key === 'Esc') && backdrop && backdrop.style.display === 'flex') {
+      closeChat();
+    }
+  });
+
+  // safety: guard if button is created after this script runs
+  // reattach if needed
+  setTimeout(()=>{
+    const reOpen = document.getElementById('openGentleChatBtn');
+    if(reOpen && !reOpen.onclick) reOpen.addEventListener('click', openChat);
+  }, 500);
+
+})();
+</script>
     <!-- ANNOUNCEMENTS -->
     <section id="announcements" class="panel" style="display:none">
       <h2>Announcements</h2>
@@ -1444,7 +1559,7 @@
         tabButtons.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        ['home','symbols','symbolism','awareness','families','caregivers','faq','game','announcements'].forEach(id=>{
+        ['home','symbols','symbolism','awareness','families','caregivers','faq','chat','game','announcements'].forEach(id=>{
           const el = document.getElementById(id);
           if(el) el.style.display = (id===tab?'block':'none');
         });
@@ -2385,7 +2500,7 @@
         console && console.warn && console.warn('PWA installed log error', e);
       }
     });
- 
+ </script>
 <!-- ✅ Gentle Warrior Auto Game Tracker (NO BUTTON CHANGES NEEDED) -->
 <script type="module">
   import {
@@ -2500,190 +2615,93 @@
       console && console.warn && console.warn("GW tracker init error", err);
     }
   })();
-</script>
-<!-- GENTLE HEART: Floating button + modal (paste inside <body>) -->
-<!-- Floating button (draggable) -->
-<div id="gh-floating" role="button" aria-label="Open Gentle Heart" tabindex="0">
-  <img src="avatar.png" alt="Gentle Heart">
-</div>
 
-<!-- Modal with iframe that loads the chatbot file -->
-<div id="gh-modal-backdrop" aria-hidden="true">
-  <div id="gh-modal" role="dialog" aria-modal="true" aria-label="Gentle Heart chat">
-    <header>
-      <div class="gh-title">
-        <img src="avatar.png" alt="GH" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
-        <div>Gentle Heart</div>
+</script>
+<!-- CHAT SECTION -->
+<section id="chat" class="panel" style="display:none">
+  <h2 style="text-align:center;margin-top:0;">Chat</h2>
+  <p style="text-align:center;color:var(--muted);">
+    Open Gentle Heart chat to ask questions or get help.
+  </p>
+
+  <div style="text-align:center;margin-top:12px;">
+    <button id="openGentleChatBtn" class="btn">Open Gentle Heart Chat</button>
+  </div>
+
+  <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center;">
+    The chat opens in a safe embedded window. It loads only when you open it.
+  </p>
+</section>
+
+<!-- CHAT MODAL (lazy iframe) -->
+<div id="gh-chat-backdrop"
+     style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:120000;">
+  <div id="gh-chat-modal"
+       style="width:94%;max-width:820px;height:84vh;background:#0f3f2f;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 40px rgba(0,0,0,0.6);">
+
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(180deg,#123e2f,#0b362a);color:#eaf6ea;font-weight:700;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="avatar.png" alt="Gentle Heart"
+             style="width:36px;height:36px;border-radius:8px;object-fit:cover;">
+        <div>Gentle Heart Chat</div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="gh-close-btn" aria-label="Close chat">✕</button>
-      </div>
+
+      <button id="gh-chat-close" aria-label="Close chat"
+              style="background:transparent;border:0;color:#eaf6ea;font-size:20px;cursor:pointer;">
+        ✕
+      </button>
     </header>
 
-    <!-- Make sure gentle-heart-bot.html sits next to your index.html -->
-    <iframe 
-  src="gentle-heart-bot.html?embed=1"
-  style="width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;border:0"
-  aria-hidden="true">
-</iframe>
+    <iframe id="gh-chat-iframe"
+            src="about:blank"
+            title="Gentle Heart chat"
+            loading="lazy"
+            style="width:100%;height:100%;border:0;background:transparent;flex:1;display:block;">
+    </iframe>
+
   </div>
 </div>
-<!-- GENTLE HEART: Fixed Drag / Open-Close / Persist script (replace existing one) -->
+
 <script>
 (function(){
-  const floatEl = document.getElementById('gh-floating');
-  const modalBackdrop = document.getElementById('gh-modal-backdrop');
-  const closeBtn = document.getElementById('gh-close-btn');
-  const STORAGE_KEY = 'gh_floating_pos_v1';
 
-  // restore position if saved
-  function restorePosition(){
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      const pos = JSON.parse(raw);
-      if(typeof pos.left === 'number' && typeof pos.top === 'number'){
-        floatEl.style.left = pos.left + 'px';
-        floatEl.style.top  = pos.top  + 'px';
-        floatEl.style.right = 'auto'; floatEl.style.bottom = 'auto';
-        floatEl.style.position = 'fixed';
+  const openBtn   = document.getElementById('openGentleChatBtn');
+  const backdrop  = document.getElementById('gh-chat-backdrop');
+  const closeBtn  = document.getElementById('gh-chat-close');
+  const iframe    = document.getElementById('gh-chat-iframe');
+  let iframeLoaded = false;
+
+  function openChat(){
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden','false');
+
+    if(!iframeLoaded){
+      try {
+        iframe.src = 'gentle-heart-bot.html?embed=1';
+        iframeLoaded = true;
+      } catch(e){
+        console.warn('Chat iframe load error', e);
       }
-    } catch(e){}
-  }
-
-  // save position
-  function savePosition(left, top){
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: Math.round(left), top: Math.round(top) }));
-    } catch(e){}
-  }
-
-  // center fallback init
-  function ensureInitPosition(){
-    const rect = floatEl.getBoundingClientRect();
-    if(!floatEl.style.left && !floatEl.style.top){
-      floatEl.style.left = rect.left + 'px';
-      floatEl.style.top = rect.top + 'px';
-      floatEl.style.right = 'auto';
-      floatEl.style.bottom = 'auto';
-      floatEl.style.position = 'fixed';
     }
   }
 
-  // open modal helper
-  function openModal(){
-    modalBackdrop.style.display = 'flex';
-    modalBackdrop.setAttribute('aria-hidden','false');
+  function closeChat(){
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden','true');
   }
 
-  // close modal
-  function closeModal(){
-    modalBackdrop.style.display = 'none';
-    modalBackdrop.setAttribute('aria-hidden','true');
-  }
+  openBtn && openBtn.addEventListener('click', openChat);
+  closeBtn && closeBtn.addEventListener('click', closeChat);
 
-  // attach basic open/close events
-  closeBtn.addEventListener('click', closeModal);
-  modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) closeModal(); });
-
-  /* Pointer drag with click detection */
-  let isPointerDown = false;
-  let pointerId = null;
-  let startX = 0, startY = 0;
-  let elX = 0, elY = 0;
-  let moved = false;
-
-  floatEl.addEventListener('pointerdown', function(e){
-    if(e.button && e.button !== 0) return; // only primary
-    ensureInitPosition();
-    isPointerDown = true;
-    pointerId = e.pointerId;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = floatEl.getBoundingClientRect();
-    elX = rect.left;
-    elY = rect.top;
-    moved = false;
-    try { floatEl.setPointerCapture(pointerId); } catch(err){}
+  backdrop && backdrop.addEventListener('click', function(e){
+    if(e.target === backdrop) closeChat();
   });
 
-  window.addEventListener('pointermove', function(e){
-    if(!isPointerDown || e.pointerId !== pointerId) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    // treat as move only if past small threshold
-    if(!moved && Math.hypot(dx,dy) > 6){
-      moved = true;
-    }
-    if(moved){
-      e.preventDefault();
-      const newLeft = Math.max(8, Math.min(window.innerWidth - floatEl.offsetWidth - 8, elX + dx));
-      const newTop  = Math.max(8, Math.min(window.innerHeight - floatEl.offsetHeight - 8, elY + dy));
-      floatEl.style.left = newLeft + 'px';
-      floatEl.style.top  = newTop  + 'px';
-      floatEl.style.right = 'auto';
-      floatEl.style.bottom = 'auto';
-    }
-  }, {passive:false});
-
-  window.addEventListener('pointerup', function(e){
-    if(!isPointerDown || e.pointerId !== pointerId) return;
-    try { floatEl.releasePointerCapture(pointerId); } catch(err){}
-    isPointerDown = false;
-    pointerId = null;
-
-    // if pointer did NOT move -> treat as click/open
-    if(!moved){
-      // small safety: ensure the modal toggles open
-      openModal();
-      return;
-    }
-
-    // if moved -> snap to edge and save
-    const rect = floatEl.getBoundingClientRect();
-    const centerX = rect.left + rect.width/2;
-    const snapToRight = centerX >= (window.innerWidth/2);
-    const finalLeft = snapToRight ? (window.innerWidth - rect.width - 12) : 12;
-    const finalTop = Math.max(8, Math.min(window.innerHeight - rect.height - 8, rect.top));
-    floatEl.style.left = finalLeft + 'px';
-    floatEl.style.top  = finalTop + 'px';
-    savePosition(finalLeft, finalTop);
-  });
-
-  // keyboard accessibility (open on Enter/Space)
-  floatEl.setAttribute('tabindex','0');
-  floatEl.addEventListener('keydown', function(e){
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModal(); }
-    // arrow keys move bubble for accessibility
-    if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
-      ensureInitPosition();
-      const step = (e.shiftKey ? 40 : 8);
-      const rect = floatEl.getBoundingClientRect();
-      let L = rect.left, T = rect.top;
-      if(e.key === 'ArrowLeft')  L = Math.max(8, L - step);
-      if(e.key === 'ArrowRight') L = Math.min(window.innerWidth - rect.width - 8, L + step);
-      if(e.key === 'ArrowUp')    T = Math.max(8, T - step);
-      if(e.key === 'ArrowDown')  T = Math.min(window.innerHeight - rect.height - 8, T + step);
-      floatEl.style.left = L + 'px';
-      floatEl.style.top  = T + 'px';
-      savePosition(L, T);
-      e.preventDefault();
-    }
-  });
-
-  // restore saved pos on load
-  restorePosition();
-
-  // on resize keep bubble inside viewport
-  window.addEventListener('resize', function(){
-    const rect = floatEl.getBoundingClientRect();
-    let L = rect.left, T = rect.top, changed = false;
-    if(rect.left + rect.width > window.innerWidth - 8){ L = Math.max(8, window.innerWidth - rect.width - 12); changed = true; }
-    if(rect.top + rect.height > window.innerHeight - 8){ T = Math.max(8, window.innerHeight - rect.height - 12); changed = true; }
-    if(changed){ floatEl.style.left = L + 'px'; floatEl.style.top = T + 'px'; savePosition(L,T); }
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && backdrop.style.display === 'flex') closeChat();
   });
 
 })();
 </script>
 </body>
-  </html>
+</html>
