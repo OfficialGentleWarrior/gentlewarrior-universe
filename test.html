@@ -1579,6 +1579,21 @@ data-tab="chat">Chat</button>
     }
     window.addEventListener('load', openTabFromHash);
     window.addEventListener('hashchange', openTabFromHash);
+// --- Gentle Heart: open chat panel when Chat tab is selected ---
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  if (btn.dataset.tab === "chat") {
+    btn.addEventListener("click", () => {
+      // small delay so tab content loads first
+      setTimeout(() => {
+        try {
+          if (window.GentleHeart && window.GentleHeart.openPanel) {
+            window.GentleHeart.openPanel();
+          }
+        } catch (e) { console.error(e); }
+      }, 150);
+    });
+  }
+});
 
     function wireCtaButtons(){
       document.querySelectorAll('.cta-play-btn').forEach(btn=>{
@@ -2699,4 +2714,4 @@ data-tab="chat">Chat</button>
 })();
 </script>
 </body>
-  </html>
+</html>
