@@ -240,7 +240,15 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 (function(){
   // DOM elements
-  const originalBubble = document.getElementById('bubble');
+  let originalBubble = document.getElementById('bubble');
+// If bubble was removed intentionally, create a hidden placeholder so the script doesn't crash.
+// This keeps the rest of the widget logic (panel open/minimize, API exposure) working.
+if (!originalBubble) {
+  originalBubble = document.createElement('div');
+  originalBubble.id = 'bubble';
+  originalBubble.style.display = 'none'; // hidden placeholder
+  document.body.appendChild(originalBubble);
+}
   const panel = document.getElementById('panel');
   const chatArea = document.getElementById('chatArea');
   const inputForm = document.getElementById('inputForm');
