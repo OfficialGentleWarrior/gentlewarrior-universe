@@ -275,7 +275,12 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
   // robust fetchQA (tries multiple paths, tolerant parsing)
   async function fetchQA(){
-    const paths = ['./qa.json','qa.json'];
+    const paths = [
+  'qa.json',
+  './qa.json',
+  '../qa.json',
+  '/qa.json'
+];
     for(const p of paths){
       try{
         const r = await fetch(p, {cache:'no-store'});
