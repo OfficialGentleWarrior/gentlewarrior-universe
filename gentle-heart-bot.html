@@ -165,7 +165,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
      * reliable drag + tap discrimination (clone cleanup)
      * 2s typing animation
      * no intro message
-     * qa.json background fetch with fallback
+     * qa.json background fetch with tolerant parsing + normalization
      * solid settings modal
      * pinned input so keyboard won't hide it
 */
@@ -212,20 +212,67 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     if(inline && inline.textContent) qaData = JSON.parse(inline.textContent);
   }catch(e){ qaData = {}; }
 
-  // background fetch of qa.json
-  async function fetchQA(){
+  // --- REPLACE THE OLD fetchQA() BLOCK WITH THIS NEW IMPLEMENTATION ---
+  // normalized map (key => answer) populated from inline or fetched file
+  let qaDataNormalized = {};
+
+  function normalizeKeyForMap(s){
+    return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
+
+  // populate qaDataNormalized from current qaData (inline fallback)
+  (function buildMapFromInline(){
     try{
-      const r = await fetch('./qa.json', {cache:'no-store'});
-      if(!r.ok) throw new Error('no qa.json');
-      const j = await r.json();
-      if(j) { qaData = j; console.info('qa.json loaded'); return true; }
-    }catch(err){
-      console.warn('qa.json not available', err);
+      if(qaData && typeof qaData === 'object'){
+        if(Array.isArray(qaData)){
+          qaData.forEach(item => { if(item && item.q && item.a) qaDataNormalized[normalizeKeyForMap(item.q)] = item.a; });
+        } else {
+          Object.keys(qaData).forEach(k => { qaDataNormalized[normalizeKeyForMap(k)] = qaData[k]; });
+        }
+      }
+    }catch(e){ console.warn('buildMapFromInline failed', e); }
+  })();
+
+  async function fetchQA(){
+    // try multiple paths & tolerant parsing
+    const paths = ['./qa.json','qa.json'];
+    for(const p of paths){
+      try{
+        const r = await fetch(p, {cache:'no-store'});
+        if(!r.ok) continue;
+        const txt = await r.text();
+        if(!txt || txt.trim().length === 0) continue;
+        let parsed;
+        try{ parsed = JSON.parse(txt); } catch(e){
+          // sometimes editors add BOM or comments — try to strip BOM and retry
+          try{ parsed = JSON.parse(txt.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')); } catch(err){ throw err; }
+        }
+        // transform into normalized map
+        if(Array.isArray(parsed)){
+          parsed.forEach(item => { if(item && item.q && item.a) qaDataNormalized[normalizeKeyForMap(item.q)] = item.a; });
+        } else if(parsed && typeof parsed === 'object'){
+          // if object with q->a mapping
+          Object.keys(parsed).forEach(k => { qaDataNormalized[normalizeKeyForMap(k)] = parsed[k]; });
+          // also handle case where parsed has form {items:[{q,a}]}
+          if(Array.isArray(parsed.items)){
+            parsed.items.forEach(it => { if(it && it.q && it.a) qaDataNormalized[normalizeKeyForMap(it.q)] = it.a; });
+          }
+        }
+        console.info('qa.json loaded and normalized from', p);
+        // Also merge into qaData for backward compatibility
+        if(parsed) qaData = parsed;
+        return true;
+      }catch(fetchErr){
+        // continue to next path
+        console.warn('fetch failed for', p, fetchErr);
+      }
     }
+    console.warn('qa.json not found or unreadable; using inline fallback.');
     return false;
   }
-  // start background fetch
+  // start background fetch (non-blocking)
   fetchQA().catch(()=>{});
+  // --- END REPLACEMENT ---
 
   // history (no auto welcome)
   let history = [];
@@ -248,37 +295,32 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   // utilities for text normalization & reply lookup
   function normalizeText(s){ return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim(); }
 
+  // --- MINIMAL CHANGED lookupReply USING qaDataNormalized ---
   function lookupReply(q){
     if(!q) return "Tell me more — I'm listening.";
-    const inp = normalizeText(q);
+    const key = normalizeKeyForMap(q);
 
-    // object map exact or includes
-    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      // exact keys check
-      for(const k of Object.keys(qaData)){
-        if(normalizeText(k) === inp) return qaData[k];
-      }
-      // includes check
-      for(const k of Object.keys(qaData)){
-        const nk = normalizeText(k);
-        if(nk && inp.includes(nk)) return qaData[k];
-      }
-    }
+    // 1) exact match via normalized map
+    if(qaDataNormalized && qaDataNormalized[key]) return qaDataNormalized[key];
 
-    // array form [{q,a}]
+    // 2) fallback to older logic (object keys / array)
     if(Array.isArray(qaData)){
-      const foundExact = qaData.find(x => normalizeText(x.q||'') === inp);
-      if(foundExact) return foundExact.a;
-      const foundIncludes = qaData.find(x => inp.includes(normalizeText(x.q||'')));
-      if(foundIncludes) return foundIncludes.a;
+      const found = qaData.find(x => normalizeKeyForMap(x.q||'') === key);
+      if(found) return found.a;
+    } else if(qaData && typeof qaData === 'object'){
+      // direct key match (original keys)
+      for(const k of Object.keys(qaData)){
+        if(normalizeKeyForMap(k) === key) return qaData[k];
+      }
     }
 
-    // emotion shortcuts
-    if(/\b(sad|unhappy|depressed|down)\b/.test(inp)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
-    if(/\b(happy|glad|good|great|joy)\b/.test(inp)) return qaData['happy'] || "That's great to hear! Tell me what's making you happy?";
+    // 3) emotion shortcuts (unchanged)
+    if(/\b(sad|unhappy|depressed|down)\b/.test(key)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
+    if(/\b(happy|glad|good|great|joy)\b/.test(key)) return qaData['happy'] || "That's great — tell me what's making you happy?";
 
     return qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
+  // --- END lookupReply replacement ---
 
   // message renderers
   function addBotBubble(text, opts){
