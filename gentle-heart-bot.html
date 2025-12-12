@@ -6,15 +6,9 @@
 <title>Gentle Heart — Your gentle companion</title>
 <style>
 :root{
-  --emerald-900:#04331f;
-  --emerald-800:#06442a;
-  --emerald-700:#0b5b39;
-  --emerald-600:#0e6e47;
-  --emerald-500:#1aa667;
-  --emerald-400:#49c88f;
-  --bg:#f6fbf8;
-  --white:#f7fff9;
-  --muted:#cfe9d9;
+  --emerald-900:#04331f; --emerald-800:#06442a; --emerald-700:#0b5b39;
+  --emerald-600:#0e6e47; --emerald-500:#1aa667; --emerald-400:#49c88f;
+  --bg:#f6fbf8; --white:#f7fff9; --muted:#cfe9d9;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;}
@@ -24,8 +18,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
-  cursor:grab; touch-action:none; user-select:none;
-  transition:box-shadow .12s ease, transform .12s ease, left .12s ease, top .12s ease, right .12s ease, bottom .12s ease;
+  cursor:grab; touch-action:none; -webkit-user-drag:none; user-select:none;
+  transition:box-shadow .12s ease, transform .12s ease;
 }
 #bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
 #bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block;}
@@ -36,9 +30,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
-  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,left .12s ease,max-height .12s ease;
-  pointer-events:none;
-  box-shadow:0 20px 60px rgba(3,30,20,.5);
+  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
+  pointer-events:none; box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
 #panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
@@ -48,28 +41,26 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .icon-btn{background:transparent;border:0;color:var(--white);padding:6px;border-radius:8px;cursor:pointer}
 
-/* Chat area: fixed padding-bottom so input never covers last messages */
-.chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto;background:linear-gradient(180deg,#05291822,transparent);scroll-behavior:smooth;padding-bottom:110px;}
+/* Chat area: reserve space so input never covers last messages */
+.chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto;background:linear-gradient(180deg,#05291822,transparent);scroll-behavior:smooth;padding-bottom:120px;}
 .msg{max-width:78%;padding:12px 14px;border-radius:12px;line-height:1.3;display:inline-block;word-break:break-word}
 .bot-msg{background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));align-self:flex-start;display:flex;gap:10px;align-items:flex-start;color:var(--white)}
 .bot-msg img{width:36px;height:36px;border-radius:8px;flex:0 0 36px;object-fit:cover}
 .user-msg{background:var(--white);color:var(--emerald-900);align-self:flex-end;border-radius:12px;padding:10px 14px;}
 
-/* Input area - fixed in panel, not overlapping chat because chat has padding-bottom */
+/* Input area fixed to bottom of panel */
 .controls{position:absolute;left:0;right:0;bottom:0;padding:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;align-items:center;background:linear-gradient(180deg, rgba(2,20,12,0.06), rgba(2,20,12,0.02));}
 .input-wrap{flex:1;background:rgba(255,255,255,0.04);padding:10px 12px;border-radius:999px;display:flex;align-items:center}
 #userInput{flex:1;background:transparent;border:0;outline:0;color:var(--white);font-size:15px}
 .send-btn{background:var(--emerald-400);border:0;color:var(--emerald-900);padding:8px 12px;border-radius:999px;cursor:pointer}
+
+/* typing dots */
 .typing{display:flex;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
 /* Solid modal (non-transparent) */
-.modal-backdrop{
-  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100010;
-  background: rgba(4,51,31,0.95);
-  transition:opacity .12s ease; pointer-events:none; opacity:0;
-}
+.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100010;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0;}
 .modal-backdrop.show{pointer-events:auto; opacity:1;}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
@@ -78,15 +69,12 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 #errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
 
-@media(max-width:420px){
-  #panel{width:92vw;height:86vh;right:6px;left:6px}
-  .header img{width:40px;height:40px}
-}
+@media(max-width:420px){ #panel{width:92vw;height:86vh;right:6px;left:6px} .header img{width:40px;height:40px} }
 </style>
 </head>
 <body>
 
-<!-- Inline fallback QA (ensures file never blank) -->
+<!-- Inline fallback QA -->
 <script id="qa-inline" type="application/json">
 {
   "hi":"Hello! I'm Gentle Heart — how can I help you today?",
@@ -94,11 +82,13 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   "help":"You can ask about breathing exercises, CP info, or just share how you feel.",
   "breathing":"Try this: Inhale for 4, hold 2, exhale 6. Repeat 4 times.",
   "cp":"CP stands for Cerebral Palsy — it's a group of movement disorders. Ask me more if you want details.",
+  "sad":"I'm sorry you're feeling sad. Would you like a breathing exercise or to share more?",
+  "happy":"That's wonderful — tell me what's making you happy!",
   "clear history success":"History cleared."
 }
 </script>
 
-<!-- Error overlay (shows if runtime error occurs) -->
+<!-- Error overlay -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
 
 <!-- Bubble -->
@@ -119,7 +109,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
 
-      <!-- REPLACED: cleaner gear icon (simple, crisp) -->
+      <!-- Cleaner gear icon -->
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
@@ -162,32 +152,19 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Robust chat widget
-   - inline qa fallback ensures not blank
-   - background fetch for external qa.json (retries on panel open)
-   - better reply matching (exact -> includes -> word-match)
-   - chat area fixed padding so input never hides messages
-*/
+/* Improved drag + improved qa matching + background qa.json load + stable chat layout */
 
 (function(){
-  // error overlay handlers
+  // error overlay
   window.addEventListener('error', function(ev){
     try{
-      const box = document.getElementById('errorBox');
-      const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
+      const box=document.getElementById('errorBox'), txt=document.getElementById('errorText');
+      box.style.display='block'; txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
       console.error('Captured error', ev);
     }catch(e){}
   });
   window.addEventListener('unhandledrejection', function(ev){
-    try{
-      const box = document.getElementById('errorBox');
-      const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
-      console.error('Unhandled rejection', ev);
-    }catch(e){}
+    try{ const box=document.getElementById('errorBox'), txt=document.getElementById('errorText'); box.style.display='block'; txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason)); }catch(e){}
   });
 })();
 
@@ -205,43 +182,33 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const kidsModeCheckbox = document.getElementById('kidsMode');
   const privateModeCheckbox = document.getElementById('privateMode');
 
-  // qa data object — may be object map or array of {q,a}
+  // inline fallback qa
   let qaData = {};
-  // load inline fallback immediately
-  try{
-    const inline = document.getElementById('qa-inline');
-    if(inline && inline.textContent) qaData = JSON.parse(inline.textContent);
-  }catch(e){
-    qaData = {};
-  }
+  try{ const inline = document.getElementById('qa-inline'); if(inline && inline.textContent) qaData = JSON.parse(inline.textContent); }catch(e){ qaData = {}; }
 
-  // function to fetch external qa.json (background). Safe: won't throw.
+  // defensive fetch for qa.json
   async function fetchQA(){
     try{
       const res = await fetch('./qa.json', {cache:'no-store'});
       if(!res.ok) throw new Error('no qa.json');
       const j = await res.json();
-      if(j) {
-        qaData = j;
-        console.info('qa.json loaded');
-        return true;
-      }
-    }catch(e){
-      console.warn('qa.json not loaded', e);
-      return false;
-    }
+      if(j) { qaData = j; return true; }
+    }catch(e){ console.warn('qa.json not loaded:', e); }
     return false;
   }
-
-  // call fetchQA once at init, and again each time panel opens (to pick up file added later)
+  // initial background attempt
   fetchQA().catch(()=>{});
 
-  // history persisted
+  // normalize helper: remove punctuation, extra spaces, lowercase
+  function normalizeText(s){
+    return String(s||'').toLowerCase().replace(/[.,!?;:“”"'()\\[\\]{}<>\\/\\|@#\$%\\^&\\*_+=~`:-]/g,' ').replace(/\\s+/g,' ').trim();
+  }
+
+  // history
   let history = [];
   try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
   if(!history || history.length === 0){ history = [{role:'bot', text:"Welcome — tap the bubble to open chat. I'm Gentle Heart."}]; try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
 
-  // RENDERING (keeps conversation layout stable)
   function renderHistory(){
     if(!chatArea) return;
     chatArea.innerHTML = '';
@@ -249,11 +216,9 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       if(h.role === 'user') createUserBubble(h.text);
       else createBotBubble(h.text);
     }
-    // keep scroll at bottom
     requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight);
   }
 
-  // create message nodes (bot left, user right). Non-destructive (no layout jumps).
   function createBotBubble(text, opts){
     const w = document.createElement('div'); w.className='msg bot-msg';
     const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
@@ -263,77 +228,72 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
     return w;
   }
-  function createUserBubble(text){
-    const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
-    return d;
-  }
+  function createUserBubble(text){ const d=document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; return d; }
 
-  // Smarter reply matching:
-  // - exact key (case-insensitive)
-  // - if qaData is array of {q,a}, exact match by q
-  // - includes (key includes known key)
-  // - word-match: break user input words, look for any qa key that contains those words
+  // robust matching: exact(normalized) -> array exact -> includes -> token match -> emotion -> fallback
   function lookupReply(raw){
     if(!raw) return "Tell me more — I'm listening.";
-    const s = raw.trim().toLowerCase();
+    const inp = normalizeText(raw);
 
-    // direct exact in object map
+    // if qaData is object map
     if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      // direct key
-      if(qaData[s]) return qaData[s];
-      // try keys normalized
+      // attempt normalized exact key match
       for(const k of Object.keys(qaData)){
-        if(k && typeof k === 'string' && k.trim().toLowerCase() === s) return qaData[k];
+        if(normalizeText(k) === inp) return qaData[k];
       }
+      // direct key exact (unchanged)
+      if(qaData[raw]) return qaData[raw];
     }
 
-    // if array of {q,a}
+    // if qaData is array of {q,a}
     if(Array.isArray(qaData)){
-      const exact = qaData.find(x => (x.q||'').trim().toLowerCase() === s);
+      const exact = qaData.find(x => normalizeText(x.q||'') === inp);
       if(exact) return exact.a;
     }
 
-    // includes matching (long keys)
-    try{
-      if(typeof qaData === 'object' && !Array.isArray(qaData)){
-        for(const k of Object.keys(qaData)){
-          const nk = k.trim().toLowerCase();
-          if(nk && s.includes(nk)) return qaData[k];
-        }
-      } else if(Array.isArray(qaData)){
-        for(const item of qaData){
-          const nk = (item.q||'').trim().toLowerCase();
-          if(nk && s.includes(nk)) return item.a;
-        }
+    // includes match (key appears inside input)
+    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
+      for(const k of Object.keys(qaData)){
+        const nk = normalizeText(k);
+        if(nk && inp.includes(nk)) return qaData[k];
       }
-    }catch(e){}
+    } else if(Array.isArray(qaData)){
+      for(const item of qaData){
+        const nk = normalizeText(item.q||'');
+        if(nk && inp.includes(nk)) return item.a;
+      }
+    }
 
-    // word-match: check each word of user input against keys
-    const words = s.split(/\s+/).filter(Boolean);
+    // token match (check significant words)
+    const words = inp.split(' ').filter(Boolean);
     if(words.length){
-      if(typeof qaData === 'object' && !Array.isArray(qaData)){
-        for(const k of Object.keys(qaData)){
-          const nk = k.trim().toLowerCase();
-          for(const w of words){
-            if(w.length>2 && nk.includes(w)) return qaData[k];
+      const mins = words.filter(w=>w.length>2);
+      if(mins.length){
+        if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
+          for(const k of Object.keys(qaData)){
+            const nk = normalizeText(k);
+            for(const w of mins){ if(nk.includes(w)) return qaData[k]; }
           }
-        }
-      } else if(Array.isArray(qaData)){
-        for(const item of qaData){
-          const nk = (item.q||'').trim().toLowerCase();
-          for(const w of words){
-            if(w.length>2 && nk.includes(w)) return item.a;
+        } else if(Array.isArray(qaData)){
+          for(const item of qaData){
+            const nk = normalizeText(item.q||'');
+            for(const w of mins){ if(nk.includes(w)) return item.a; }
           }
         }
       }
     }
 
-    // fallback suggestions
-    const fallback = qaData['default'] || qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
-    return fallback;
+    // quick emotion mapping
+    if(/\b(sad|depressed|unhappy|down)\b/.test(inp)) return qaData['sad'] || "I'm sorry you're feeling sad. Do you want a breathing exercise?";
+    if(/\b(happy|glad|good|great|joy)\b/.test(inp)) return qaData['happy'] || "That's great — tell me what's making you happy!";
+
+    // fallback: help/default
+    if(qaData['default']) return qaData['default'];
+    if(qaData['help']) return qaData['help'];
+    return "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
-  // SEND handler with 2s typing
+  // send handler
   let sendLock = false;
   async function handleSend(text){
     if(sendLock) return;
@@ -342,14 +302,12 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     history.push({role:'user', text}); persistHistory();
     createUserBubble(text);
     if(userInput) userInput.value = '';
-
-    // add typing bubble
     const typingNode = createBotBubble('', {typing:true});
-    // ensure QA is refreshed when panel opened (try once more)
-    // (non-blocking)
+
+    // Try reloading qa.json (in case user added it while app open) - non-blocking
     fetchQA().catch(()=>{});
 
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r=>setTimeout(r,2000));
     const reply = lookupReply(text);
     const container = typingNode.querySelector('.text');
     if(container) container.textContent = reply;
@@ -362,75 +320,33 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   // initial render
   renderHistory();
 
-  // Submission
+  // submit
   if(inputForm){
-    inputForm.addEventListener('submit', function(e){
-      e.preventDefault();
-      handleSend(userInput && userInput.value);
-    });
+    inputForm.addEventListener('submit', function(e){ e.preventDefault(); handleSend(userInput && userInput.value); });
   }
 
-  // panel helpers
+  // panel positioning
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
-      // Reset both left/right to allow accurate positioning
-      panel.style.left = 'auto'; panel.style.right = 'auto';
-      const panelRect = panel.getBoundingClientRect();
-      const bubbleRect = bubble.getBoundingClientRect();
-
-      // Prefer placing panel above the bubble and either to its left or right depending on space
-      const spaceRight = window.innerWidth - bubbleRect.right;
-      const spaceLeft = bubbleRect.left;
-      const margin = 12;
-
-      // compute target left coordinate for panel
-      if(spaceRight >= panelRect.width + margin){
-        // place panel to right of bubble
-        panel.style.left = (bubbleRect.right + margin) + 'px';
-        // ensure not exceeding viewport
-        const leftVal = parseFloat(panel.style.left);
-        if(leftVal + panelRect.width > window.innerWidth - margin) panel.style.left = (window.innerWidth - margin - panelRect.width) + 'px';
-      } else if(spaceLeft >= panelRect.width + margin){
-        // place panel to left of bubble
-        panel.style.left = Math.max(margin, bubbleRect.left - margin - panelRect.width) + 'px';
-      } else {
-        // default: align horizontally centered near bubble but keep inside viewport
-        const centered = Math.min(Math.max(margin, bubbleRect.left + bubbleRect.width/2 - panelRect.width/2), window.innerWidth - panelRect.width - margin);
-        panel.style.left = centered + 'px';
-      }
-
-      // vertical: try to place above bubble if there's room, otherwise below
-      const aboveSpace = bubbleRect.top;
-      const belowSpace = window.innerHeight - bubbleRect.bottom;
-      if(aboveSpace > panelRect.height + margin){
-        panel.style.top = Math.max(margin, bubbleRect.top - panelRect.height - margin) + 'px';
-      } else if (belowSpace > panelRect.height + margin){
-        panel.style.top = Math.min(window.innerHeight - panelRect.height - margin, bubbleRect.bottom + margin) + 'px';
-      } else {
-        // fit into viewport centered vertically
-        const topCentered = Math.min(Math.max(margin, window.innerHeight/2 - panelRect.height/2), window.innerHeight - panelRect.height - margin);
-        panel.style.top = topCentered + 'px';
-      }
-
+      const br = bubble.getBoundingClientRect();
+      const right = Math.max(12, window.innerWidth - (br.left + br.width));
+      panel.style.right = right + 'px';
+      const desiredBottom = Math.max(12, window.innerHeight - br.top + 18);
+      panel.style.bottom = Math.min(desiredBottom, window.innerHeight - 80) + 'px';
+      panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
     }catch(e){
-      panel.style.right = '18px';
-      panel.style.bottom = '110px';
+      panel.style.right='18px'; panel.style.bottom='110px';
     }
   }
-  async function openPanel(){
-    if(!panel) return;
-    // attempt to (re)load qa.json before first interaction (best-effort)
-    await fetchQA().catch(()=>{});
-    panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble();
-    setTimeout(()=>{ try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; } }catch(e){} }, 60);
-  }
+  async function openPanel(){ if(!panel) return; await fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; } }catch(e){} },60); }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // bubble interactions: click toggles, but drag has priority
+  // bubble click/keyboard
+  bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
   bubble.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
 
-  // click outside closes panel unless modal open
+  // close on outside click (unless modal shown)
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -439,150 +355,91 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // modal behavior
+  // modal handlers
   if(gearBtn){
-    gearBtn.addEventListener('click', function(ev){
-      ev && ev.stopPropagation();
-      modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden');
-      try{ kidsModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); privateModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){}
-    });
+    gearBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden'); try{ kidsModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); privateModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){} });
   }
   if(closeModal){
-    closeModal.addEventListener('click', function(){
-      modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden');
-      try{ localStorage.setItem('gh_kids', JSON.stringify(kidsModeCheckbox.checked)); localStorage.setItem('gh_private', JSON.stringify(privateModeCheckbox.checked)); }catch(e){}
-    });
+    closeModal.addEventListener('click', function(){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); try{ localStorage.setItem('gh_kids', JSON.stringify(kidsModeCheckbox.checked)); localStorage.setItem('gh_private', JSON.stringify(privateModeCheckbox.checked)); }catch(e){} });
   }
   modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
 
-  // clear history button
+  // clear history
   if(clearHistoryBtn){
-    clearHistoryBtn.addEventListener('click', function(ev){
-      ev && ev.preventDefault();
-      history = [{role:'bot', text: (qaData['clear history success'] || 'History cleared.')}];
-      persistHistory(); renderHistory();
-    });
+    clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history = [{role:'bot', text:(qaData['clear history success'] || 'History cleared.')}]; persistHistory(); renderHistory(); });
   }
 
   // minimize button
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
-  // DRAG: use left/top coordinates and clamp to viewport. snap to edges on release.
+  // === Improved Drag ===
   (function enableDrag(){
     if(!bubble) return;
-    let dragging = false;
-    let startX = 0, startY = 0;
-    let startLeft = null, startTop = null;
-    let moved = false;
-    const threshold = 6;
-    const margin = 12;
-
-    // initialize saved position
+    let active=false, sx=0, sy=0, tx=0, ty=0, moved=false;
+    const threshold = 3; // reduced threshold to ensure responsiveness
     try{
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
-      if(saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
-        bubble.style.left = saved.left + 'px';
-        bubble.style.top = saved.top + 'px';
-        bubble.style.right = 'auto';
-        bubble.style.bottom = 'auto';
-      }
+      if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
-
-    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-    function pointerDown(e){
-      e.preventDefault();
-      dragging = true;
-      moved = false;
+    function onDown(e){
+      active=true; moved=false;
       const p = e.touches ? e.touches[0] : e;
-      startX = p.clientX; startY = p.clientY;
-      const rect = bubble.getBoundingClientRect();
-      // compute startLeft/startTop (resolve either left/top or compute from right/bottom)
-      const computed = window.getComputedStyle(bubble);
-      if(computed.left && computed.left !== 'auto'){
-        startLeft = parseFloat(computed.left);
-      } else {
-        // derive from right/bottom if left not set
-        startLeft = rect.left;
-      }
-      if(computed.top && computed.top !== 'auto'){
-        startTop = parseFloat(computed.top);
-      } else {
-        startTop = rect.top;
-      }
-      // ensure absolute positioning values are set
-      bubble.style.left = startLeft + 'px';
-      bubble.style.top = startTop + 'px';
-      bubble.style.right = 'auto';
-      bubble.style.bottom = 'auto';
-    }
-
-    function pointerMove(e){
-      if(!dragging) return;
-      const p = e.touches ? e.touches[0] : e;
-      const dx = p.clientX - startX;
-      const dy = p.clientY - startY;
-      if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
-      const newLeft = startLeft + dx;
-      const newTop = startTop + dy;
-      const rect = bubble.getBoundingClientRect();
-      const maxLeft = window.innerWidth - rect.width - margin;
-      const maxTop = window.innerHeight - rect.height - margin;
-      const clampedLeft = clamp(newLeft, margin, Math.max(margin, maxLeft));
-      const clampedTop = clamp(newTop, margin, Math.max(margin, maxTop));
-      bubble.style.left = clampedLeft + 'px';
-      bubble.style.top = clampedTop + 'px';
+      sx = p.clientX; sy = p.clientY;
+      const m = window.getComputedStyle(bubble).transform;
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
+      // capture pointer if available
+      try{ if(e.pointerId) bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
       e.preventDefault && e.preventDefault();
     }
-
-    function pointerUp(e){
-      if(!dragging) return;
-      dragging = false;
-      // if not moved => click toggle
+    function onMove(e){
+      if(!active) return;
+      const p = e.touches ? e.touches[0] : e;
+      const cx = p.clientX, cy = p.clientY;
+      const dx = cx - sx, dy = cy - sy;
+      if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
+      const nx = tx + dx, ny = ty + dy;
+      bubble.style.transform = `translate(${nx}px, ${ny}px)`;
+      e.preventDefault && e.preventDefault();
+    }
+    function onUp(e){
+      if(!active) return;
+      active=false;
       if(!moved){
-        // treat as click / toggle
-        if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel();
+        // click handled by click listener
         return;
       }
-      // else snap to nearest horizontal edge while preserving vertical within bounds
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
-      const snappedLeft = centerX < window.innerWidth/2 ? margin : window.innerWidth - rect.width - margin;
-      const clampedTop = clamp(rect.top, margin, Math.max(margin, window.innerHeight - rect.height - margin));
-      // animate to snapped position
-      bubble.style.transition = 'left .16s ease, top .12s ease';
-      bubble.style.left = snappedLeft + 'px';
-      bubble.style.top = clampedTop + 'px';
-      setTimeout(()=> bubble.style.transition = '', 220);
-      // persist
-      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({ left: snappedLeft, top: clampedTop })); }catch(e){}
-      // reposition panel to follow
-      setTimeout(positionPanelAboveBubble, 60);
+      const screenMid = window.innerWidth / 2;
+      const m = window.getComputedStyle(bubble).transform;
+      let finalX = 0, finalY = 0;
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      if(centerX < screenMid) finalX = finalX - rect.left + 12;
+      else finalX = finalX + (window.innerWidth - rect.right) - 12;
+      finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
+      bubble.style.transform = `translate(${finalX}px, ${finalY}px)`;
+      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: finalX, y: finalY})); }catch(e){}
     }
 
-    // pointer events
-    bubble.addEventListener('pointerdown', pointerDown, {passive:false});
-    window.addEventListener('pointermove', pointerMove, {passive:false});
-    window.addEventListener('pointerup', pointerUp, {passive:false});
-    // support touch as well (some browsers)
-    bubble.addEventListener('touchstart', pointerDown, {passive:false});
-    window.addEventListener('touchmove', pointerMove, {passive:false});
-    window.addEventListener('touchend', pointerUp, {passive:false});
+    // pointer events with capture
+    bubble.addEventListener('pointerdown', onDown, {passive:false});
+    window.addEventListener('pointermove', onMove, {passive:false});
+    window.addEventListener('pointerup', onUp, {passive:false});
+    // touch fallback
+    bubble.addEventListener('touchstart', onDown, {passive:false});
+    window.addEventListener('touchmove', onMove, {passive:false});
+    window.addEventListener('touchend', onUp, {passive:false});
     // mouse fallback
-    bubble.addEventListener('mousedown', pointerDown);
-    window.addEventListener('mousemove', pointerMove);
-    window.addEventListener('mouseup', pointerUp);
+    bubble.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   })();
 
-  // keyboard & mobile safety (keep input visible)
+  // mobile keyboard safety
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
-      try{
-        const vh = window.innerHeight || document.documentElement.clientHeight;
-        panel.style.maxHeight = Math.max(300, vh - 120) + 'px';
-        chatArea.scrollTop = chatArea.scrollHeight;
-      }catch(e){}
+      try{ const vh = window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; }catch(e){}
     }, 250));
     userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
     let lastInner = window.innerHeight;
@@ -596,11 +453,11 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     });
   }
 
-  // reposition on orientation/resize
+  // reposition helpers
   window.addEventListener('orientationchange', ()=> setTimeout(positionPanelAboveBubble, 320));
   window.addEventListener('resize', ()=> setTimeout(positionPanelAboveBubble, 120));
 
-})(); // end IIFE
+})(); // end main IIFE
 </script>
 </body>
 </html>
