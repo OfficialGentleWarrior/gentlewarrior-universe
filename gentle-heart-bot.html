@@ -103,6 +103,58 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 }
 </script>
 
+<!-- EMBED-MODE QUICK FIX
+     If this file is loaded inside an iframe OR called with ?embed=1
+     the internal panel and bubble will be hidden so the host page's
+     floating bubble/modal is the only visible UI.
+-->
+<script>
+/* Embed-mode quick fix — hide internal panel when loaded inside an iframe or when ?embed=1
+   Keeps the host page bubble/modal as the only visible UI.
+*/
+(function(){
+  function applyEmbedHide(){
+    try{
+      // detect iframe OR explicit ?embed=1
+      const inIframe = (window.self !== window.top) || (new URLSearchParams(window.location.search).get('embed') === '1');
+      if(!inIframe) return;
+
+      // make page background transparent (so modal shows your page behind it)
+      try{
+        document.documentElement.style.background = 'transparent';
+        document.body.style.background = 'transparent';
+      }catch(e){}
+
+      // hide the main panel (the white/green chat panel)
+      const panel = document.getElementById('panel');
+      if(panel) panel.style.display = 'none';
+
+      // optionally hide the header too (defensive)
+      const header = document.querySelector('#panel .header');
+      if(header) header.style.display = 'none';
+
+      // keep bubble hidden inside iframe (we rely on host page bubble)
+      const bubble = document.getElementById('bubble');
+      if(bubble) bubble.style.display = 'none';
+
+      // hide settings modal/backdrop (defensive)
+      const modal = document.getElementById('modalBackdrop');
+      if(modal) modal.style.display = 'none';
+
+      // hide the error overlay (defensive)
+      const err = document.getElementById('errorBox');
+      if(err) err.style.display = 'none';
+    }catch(e){
+      // fail silently
+      console && console.warn && console.warn('embed-hide error', e);
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyEmbedHide);
+  else applyEmbedHide();
+})();
+</script>
+
 <!-- Error overlay -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
 
