@@ -6,37 +6,43 @@
 <title>Gentle Heart — Your gentle companion</title>
 <style>
 :root{
-  --emerald-900:#04331f; --emerald-800:#06442a; --emerald-700:#0b5b39;
-  --emerald-600:#0e6e47; --emerald-500:#1aa667; --emerald-400:#49c88f;
-  --bg:#f6fbf8; --white:#f7fff9; --muted:#cfe9d9;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --emerald-900:#04331f;
+  --emerald-800:#06442a;
+  --emerald-700:#0b5b39;
+  --emerald-600:#0e6e47;
+  --emerald-500:#1aa667;
+  --emerald-400:#49c88f;
+  --bg:#f6fbf8;
+  --white:#f7fff9;
+  --muted:#cfe9d9;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
-html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
-
+html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;}
 /* Bubble */
 #bubble{
-  position:fixed; right:18px; bottom:18px; z-index:100000;
+  position:fixed; right:18px; bottom:18px; z-index:99999;
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
-  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(3,30,20,.45);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
   cursor:grab; touch-action:none; -webkit-user-drag:none; user-select:none;
   transition:box-shadow .12s ease, transform .12s ease;
 }
-#bubble:active{ cursor:grabbing; box-shadow:0 14px 40px rgba(3,30,20,.55); transform:scale(.98); }
-#bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block}
+#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
+#bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block;}
 
 /* Panel */
 #panel{
-  position:fixed; right:18px; bottom:110px; z-index:100001;
+  position:fixed; right:18px; bottom:110px; z-index:99998;
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
   transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
-  pointer-events:none; box-shadow:0 26px 70px rgba(3,30,20,.45);
+  pointer-events:none;
+  box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
 #panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
-.header img{width:46px;height:46px;border-radius:10px;object-fit:cover}
+.header img{width:46px;height:46px;border-radius:10px;object-fit:cover;}
 .title{font-weight:700;font-size:18px}
 .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
 .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
@@ -61,7 +67,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
 /* Modal: solid backdrop */
-.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100010;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
+.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
 .modal-backdrop.show{pointer-events:auto; opacity:1}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
@@ -70,26 +76,15 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 #errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
 
-@media(max-width:420px){ #panel{width:92vw;height:86vh;right:6px;left:6px} .header img{width:40px;height:40px} }
+@media(max-width:420px){
+  #panel{width:92vw;height:86vh;right:6px;left:6px}
+  .header img{width:40px;height:40px}
+}
 </style>
 </head>
 <body>
 
-<!-- Inline fallback QA -->
-<script id="qa-inline" type="application/json">
-{
-  "hi":"Hello! I'm Gentle Heart — how can I help you today?",
-  "hello":"Hi there — tell me what's on your mind.",
-  "help":"You can ask about breathing exercises, CP info, or just share how you feel.",
-  "breathing":"Try this: Inhale for 4, hold 2, exhale 6. Repeat 4 times.",
-  "cp":"CP stands for Cerebral Palsy — it's a group of movement disorders. Ask me more if you want details.",
-  "sad":"I'm sorry you're feeling sad. Would you like a breathing exercise or to share more?",
-  "happy":"That's wonderful — tell me what's making you happy!",
-  "clear history success":"History cleared."
-}
-</script>
-
-<!-- Error overlay -->
+<!-- Error overlay (shows if runtime error occurs) -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
 
 <!-- Bubble -->
@@ -110,8 +105,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
 
-      <!-- Clean gear -->
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
+        <!-- cleaner gear SVG -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 .95l-.21.72a.5.5 0 0 1-.48.34h-2.82a.5.5 0 0 1-.48-.34l-.21-.72a1.65 1.65 0 0 0-1-.95 1.65 1.65 0 0 0-1.82.33l-.06.06a.5.5 0 0 1-.71 0L4.6 18.6a.5.5 0 0 1 0-.71l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.95-1l-.72-.21a.5.5 0 0 1-.34-.48V9.59a.5.5 0 0 1 .34-.48l.72-.21a1.65 1.65 0 0 0 .95-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a.5.5 0 0 1 0-.71L6.5 2.6a.5.5 0 0 1 .71 0l.06.06a1.65 1.65 0 0 0 1.82.33l.72-.21a.5.5 0 0 1 .48.34v2.82a.5.5 0 0 1-.34.48l-.72.21a1.65 1.65 0 0 0-.95 1 1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
@@ -153,25 +148,37 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Full integrated chat widget with the working drag/open engine you confirmed.
-   - inline fallback qa + background fetch
-   - normalized matching (exact -> includes -> token -> emotion -> fallback)
-   - 2s typing
-   - stable chat layout (input fixed, chat padded)
-   - drag engine uses transform + pointer capture (same test engine)
+/* Kept structure of your working file and applied targeted fixes:
+   - NO intro message (wait for user to chat first)
+   - Robust qa.json fetch (background + refetch on open)
+   - Improved lookup (normalize + includes + token + emotion)
+   - 2s typing animation
+   - Moveable bubble using transform + pointer capture (persisted)
+   - Modal backdrop solid (non-transparent)
+   - Input fixed, chat padded so keyboard won't cover input
+   - Minimize returns to bubble
 */
 
 (function(){
-  // show runtime errors to user
+  // runtime error display
   window.addEventListener('error', function(ev){
     try{
-      const box=document.getElementById('errorBox'), txt=document.getElementById('errorText');
-      box.style.display='block'; txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
+      const box = document.getElementById('errorBox');
+      const txt = document.getElementById('errorText');
+      box.style.display = 'block';
+      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
       console.error('Captured error', ev);
     }catch(e){}
   });
+
   window.addEventListener('unhandledrejection', function(ev){
-    try{ const box=document.getElementById('errorBox'), txt=document.getElementById('errorText'); box.style.display='block'; txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason)); }catch(e){}
+    try{
+      const box = document.getElementById('errorBox');
+      const txt = document.getElementById('errorText');
+      box.style.display = 'block';
+      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
+      console.error('Unhandled rejection', ev);
+    }catch(e){}
   });
 })();
 
@@ -189,91 +196,104 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const kidsModeCheckbox = document.getElementById('kidsMode');
   const privateModeCheckbox = document.getElementById('privateMode');
 
-  // load inline fallback QA immediately
-  let qaData = {};
-  try{ const inline = document.getElementById('qa-inline'); if(inline && inline.textContent) qaData = JSON.parse(inline.textContent); }catch(e){ qaData = {}; }
+  // fallback inline QA (used only if qa.json absent)
+  let qaData = {
+    "hi":"Hello! I'm Gentle Heart — how can I help you today?",
+    "hello":"Hi there — tell me what's on your mind.",
+    "help":"You can ask about breathing exercises, CP info, or just share how you feel.",
+    "sad":"I'm sorry you're feeling sad. Would you like a breathing exercise or to share more?",
+    "happy":"That's wonderful — tell me what's making you happy!"
+  };
 
-  // fetch external qa.json (background)
+  // attempt to load external qa.json (background). Works if browser allows fetch via file:// or server.
   async function fetchQA(){
     try{
       const res = await fetch('./qa.json', {cache:'no-store'});
       if(!res.ok) throw new Error('no qa.json');
       const j = await res.json();
       if(j) { qaData = j; console.info('qa.json loaded'); return true; }
-    }catch(e){ console.warn('qa.json fetch failed', e); }
+    }catch(e){
+      console.warn('qa.json not available — using fallback', e);
+    }
     return false;
   }
-  // initial attempt
+  // initial background fetch
   fetchQA().catch(()=>{});
 
-  // normalize helper: remove punctuation and extra spaces, lowercase
+  // helpers
   function normalizeText(s){
     return String(s||'').toLowerCase().replace(/[.,!?;:“”"'()\\[\\]{}<>\\/\\|@#\$%\\^&\\*_+=~`:-]/g,' ').replace(/\\s+/g,' ').trim();
   }
 
-  // history persistence
+  // history (no auto welcome) - we keep whatever is stored; if none, start empty (user must send first)
   let history = [];
   try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
-  if(!history || history.length === 0){
-    history = [{role:'bot', text:"Welcome — tap the bubble to open chat. I'm Gentle Heart."}];
-    try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
-  }
 
-  // render history without shifting input area
+  // rendering
   function renderHistory(){
     if(!chatArea) return;
     chatArea.innerHTML = '';
     for(const h of history){
-      if(h.role === 'user') createUserBubble(h.text);
-      else createBotBubble(h.text);
+      if(h.role === 'user') addUserBubble(h.text);
+      else addBotBubble(h.text);
     }
     requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight);
   }
 
-  function createBotBubble(text, opts){
-    const w = document.createElement('div'); w.className='msg bot-msg';
+  // DOM bubble creation
+  function addBotBubble(text, opts){
+    if(!chatArea) return;
+    const w = document.createElement('div'); w.className = 'msg bot-msg';
     const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
-    const t = document.createElement('div'); t.className='text';
-    if(opts && opts.typing){ const typ=document.createElement('div'); typ.className='typing'; typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; t.appendChild(typ); }
-    else t.textContent = text || '';
+    const t = document.createElement('div'); t.className = 'text';
+    if(opts && opts.isTyping){
+      const typ = document.createElement('div'); typ.className='typing';
+      typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      t.appendChild(typ);
+    } else {
+      t.textContent = text || '';
+    }
     w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
     return w;
   }
-  function createUserBubble(text){ const d=document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; return d; }
+  function addUserBubble(text){
+    if(!chatArea) return;
+    const d = document.createElement('div'); d.className = 'msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
+  }
 
-  // robust reply lookup
-  function lookupReply(raw){
-    if(!raw) return "Tell me more — I'm listening.";
-    const inp = normalizeText(raw);
+  // robust matching: normalized exact -> includes -> token -> emotion -> fallback
+  function lookupReply(q){
+    if(!q) return "Tell me more — I'm listening.";
+    const inp = normalizeText(q);
 
-    // object map exact normalized key
+    // object map exact normalized
     if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
       for(const k of Object.keys(qaData)){
         if(normalizeText(k) === inp) return qaData[k];
       }
-      if(qaData[raw]) return qaData[raw];
+      if(qaData[q]) return qaData[q];
     }
 
-    // array exact match
+    // if array of {q,a}
     if(Array.isArray(qaData)){
-      const exact = qaData.find(x => normalizeText(x.q||'') === inp);
-      if(exact) return exact.a;
+      const found = qaData.find(x => normalizeText(x.q||'') === inp);
+      if(found) return found.a;
     }
 
-    // includes match
+    // includes
     if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
       for(const k of Object.keys(qaData)){
         const nk = normalizeText(k);
         if(nk && inp.includes(nk)) return qaData[k];
       }
     } else if(Array.isArray(qaData)){
-      for(const item of qaData){
-        const nk = normalizeText(item.q||'');
-        if(nk && inp.includes(nk)) return item.a;
+      for(const it of qaData){
+        const nk = normalizeText(it.q||'');
+        if(nk && inp.includes(nk)) return it.a;
       }
     }
 
-    // token match (significant words)
+    // token match
     const words = inp.split(' ').filter(Boolean);
     if(words.length){
       const mins = words.filter(w=>w.length>2);
@@ -281,18 +301,18 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
           for(const k of Object.keys(qaData)){
             const nk = normalizeText(k);
-            for(const w of mins){ if(nk.includes(w)) return qaData[k]; }
+            for(const w of mins) if(nk.includes(w)) return qaData[k];
           }
         } else if(Array.isArray(qaData)){
-          for(const item of qaData){
-            const nk = normalizeText(item.q||'');
-            for(const w of mins){ if(nk.includes(w)) return item.a; }
+          for(const it of qaData){
+            const nk = normalizeText(it.q||'');
+            for(const w of mins) if(nk.includes(w)) return it.a;
           }
         }
       }
     }
 
-    // emotion shortcuts
+    // emotion quick map
     if(/\b(sad|depressed|unhappy|down)\b/.test(inp)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
     if(/\b(happy|glad|good|great|joy)\b/.test(inp)) return qaData['happy'] || "That's great — tell me what's making you happy!";
 
@@ -300,79 +320,65 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     return qaData['default'] || qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
-  // send handler with 2s typing
-  let sendLock=false;
+  // send/receive
+  let sendLock = false;
   async function handleSend(text){
     if(sendLock) return;
     if(!text || !text.trim()) return;
-    sendLock=true;
-    history.push({role:'user', text}); persistHistory();
-    createUserBubble(text);
+    sendLock = true;
+    history.push({role:'user', text}); try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
+    addUserBubble(text);
     if(userInput) userInput.value = '';
+    const typingNode = addBotBubble('', {isTyping:true});
 
-    // typing bubble
-    const typingNode = createBotBubble('', {typing:true});
-    // reattempt qa fetch (best-effort)
+    // reattempt load qa.json (best effort) so if user added file while open it picks up
     fetchQA().catch(()=>{});
+
+    // 2s typing animation
     await new Promise(r=>setTimeout(r,2000));
     const reply = lookupReply(text);
     const container = typingNode.querySelector('.text');
     if(container) container.textContent = reply;
-    history.push({role:'bot', text:reply}); persistHistory();
+    history.push({role:'bot', text:reply}); try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
     chatArea.scrollTop = chatArea.scrollHeight;
-    sendLock=false;
+    sendLock = false;
   }
-  function persistHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
 
-  // initial render
+  // render any persisted history on load
   renderHistory();
 
-  // submission
+  // form submit
   if(inputForm){
-    inputForm.addEventListener('submit', function(e){ e.preventDefault(); handleSend(userInput && userInput.value); });
+    inputForm.addEventListener('submit', function(e){ e.preventDefault(); try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }});
   }
 
-  // panel position relative to bubble
+  // positioning panel relative to bubble
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
       const br = bubble.getBoundingClientRect();
       const right = Math.max(12, window.innerWidth - (br.left + br.width));
       panel.style.right = right + 'px';
-      const desiredBottom = Math.max(12, window.innerHeight - br.top + 18);
-      panel.style.bottom = Math.min(desiredBottom, window.innerHeight - 80) + 'px';
+      panel.style.bottom = Math.min(Math.max(12, window.innerHeight - br.top + 18), window.innerHeight - 80) + 'px';
       panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
-    }catch(e){ panel.style.right='18px'; panel.style.bottom='110px'; }
+    }catch(e){}
   }
 
-  // open/minimize panel
+  // open / minimize
   async function openPanel(){
     if(!panel) return;
     await fetchQA().catch(()=>{});
-    renderHistory();
     panel.classList.add('show'); panel.setAttribute('aria-hidden','false');
     positionPanelAboveBubble();
-    setTimeout(()=>{ try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; } }catch(e){} },60);
+    setTimeout(()=>{ try{ if(userInput) userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 60);
   }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // bubble click and keyboard
-  bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
-  bubble.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
-
-  // outside click closes panel (unless modal open)
-  document.addEventListener('click', function(ev){
-    if(!panel || !bubble) return;
-    if(!panel.classList.contains('show')) return;
-    if(modalBackdrop && modalBackdrop.classList.contains('show')) return;
-    if(panel.contains(ev.target) || bubble.contains(ev.target)) return;
-    minimizePanel();
-  });
-
-  // modal open/close
+  // gear modal handlers (solid backdrop)
   if(gearBtn){
     gearBtn.addEventListener('click', function(ev){
       ev && ev.stopPropagation();
+      if(!modalBackdrop) return;
       modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden');
       try{ kidsModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); privateModeCheckbox.checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){}
     });
@@ -385,60 +391,69 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
   modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
 
-  // clear history
+  // clear history button
   if(clearHistoryBtn){
     clearHistoryBtn.addEventListener('click', function(ev){
       ev && ev.preventDefault();
-      history = [{role:'bot', text:(qaData['clear history success'] || 'History cleared.')}];
-      persistHistory(); renderHistory();
+      history = []; try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){}
+      renderHistory();
     });
   }
 
   // minimize button
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
-  // === Drag engine (same as working test) ===
+  // close panel when clicking outside (unless modal open)
+  document.addEventListener('click', function(ev){
+    if(!panel || !bubble) return;
+    if(!panel.classList.contains('show')) return;
+    if(modalBackdrop && modalBackdrop.classList.contains('show')) return;
+    if(panel.contains(ev.target) || bubble.contains(ev.target)) return;
+    minimizePanel();
+  });
+
+  // === Drag engine (transform + pointer capture) ===
   (function enableDrag(){
     if(!bubble) return;
     let active=false, sx=0, sy=0, tx=0, ty=0, moved=false;
-    const threshold = 3; // responsive
+    const threshold = 3; // reduced threshold for responsiveness
     try{
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
-    function onDown(ev){
+    function onDown(e){
       active=true; moved=false;
-      const p = ev.touches ? ev.touches[0] : ev;
+      const p = e.touches ? e.touches[0] : e;
       sx = p.clientX; sy = p.clientY;
-      const style = window.getComputedStyle(bubble);
-      const m = style.transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
-      try{ if(ev.pointerId) bubble.setPointerCapture && bubble.setPointerCapture(ev.pointerId); }catch(err){}
-      ev.preventDefault && ev.preventDefault();
+      const m = window.getComputedStyle(bubble).transform;
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
+      try{ if(e.pointerId) bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
+      (e.preventDefault && e.preventDefault());
     }
-    function onMove(ev){
+    function onMove(e){
       if(!active) return;
-      const p = ev.touches ? ev.touches[0] : ev;
-      const cx = p.clientX, cy = p.clientY;
-      const dx = cx - sx, dy = cy - sy;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - sx, dy = p.clientY - sy;
       if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
       const nx = tx + dx, ny = ty + dy;
       bubble.style.transform = `translate(${nx}px, ${ny}px)`;
-      ev.preventDefault && ev.preventDefault();
+      (e.preventDefault && e.preventDefault());
     }
-    function onUp(ev){
+    function onUp(e){
       if(!active) return;
       active=false;
       if(!moved){
-        // tap, handled elsewhere
+        // treat as tap (open/close)
+        setTimeout(()=>{ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }, 0);
         return;
       }
+      // snap to side and persist
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
       const m = window.getComputedStyle(bubble).transform;
       let finalX = 0, finalY = 0;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\\((.+)\\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
       if(centerX < screenMid) finalX = finalX - rect.left + 12;
       else finalX = finalX + (window.innerWidth - rect.right) - 12;
       finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
@@ -459,24 +474,38 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     window.addEventListener('mouseup', onUp);
   })();
 
-  // keyboard & mobile safety
+  // keyboard safety: ensure input visible and panel resized when keyboard opens
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
-      try{ const vh = window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; }catch(e){}
-    },250));
+      try{
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        panel.style.maxHeight = Math.max(300, vh - 120) + 'px';
+        chatArea.scrollTop = chatArea.scrollHeight;
+        userInput.scrollIntoView({behavior:'smooth', block:'center'});
+      }catch(e){}
+    }, 250));
     userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
+
     let lastInner = window.innerHeight;
     window.addEventListener('resize', function(){
       try{
         const now = window.innerHeight;
-        if(now < lastInner - 80){ panel.style.maxHeight = Math.max(260, now - 120) + 'px'; setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60); }
-        else panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
+        if(now < lastInner - 80){
+          panel.style.maxHeight = Math.max(260, now - 120) + 'px';
+          setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60);
+        } else {
+          panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
+        }
         lastInner = now;
       }catch(e){}
     });
   }
 
+  // accessibility: allow open via keyboard
+  bubble.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
+
+  // reposition on orientation/resize
   window.addEventListener('orientationchange', ()=> setTimeout(positionPanelAboveBubble, 320));
   window.addEventListener('resize', ()=> setTimeout(positionPanelAboveBubble, 120));
 
