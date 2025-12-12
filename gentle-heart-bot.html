@@ -50,70 +50,17 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 .icon-btn{background:transparent;border:0;color:var(--white);padding:6px;border-radius:8px;cursor:pointer}
 
 /* Chat area reserves space for input so messages never hidden */
-/* --- FULL EMERALD PANEL BACKGROUND --- */
-#panel {
-  background: var(--emerald-900);
-  color: var(--white);
-}
+.chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto;background:linear-gradient(180deg,#05291822,transparent);scroll-behavior:smooth;padding-bottom:120px;}
+.msg{max-width:78%;padding:12px 14px;border-radius:12px;line-height:1.3;display:inline-block;word-break:break-word}
+.bot-msg{background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));align-self:flex-start;display:flex;gap:10px;align-items:flex-start;color:var(--white)}
+.bot-msg img{width:36px;height:36px;border-radius:8px;flex:0 0 36px;object-fit:cover}
+.user-msg{background:var(--white);color:var(--emerald-900);align-self:flex-end;border-radius:12px;padding:10px 14px;}
 
-/* --- CHAT AREA (messages zone) --- */
-.chat-area{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  padding:14px;
-  gap:12px;
-  overflow:auto;
-  background: var(--emerald-800); 
-  scroll-behavior:smooth;
-  padding-bottom:160px;
-}
-
-/* --- CONTROLS BAR --- */
-.controls{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:12px;
-  border-top:1px solid rgba(255,255,255,0.05);
-  display:flex;
-  gap:8px;
-  align-items:center;
-  background: var(--emerald-800);
-}
-
-/* --- WHITE INPUT FIELD --- */
-.input-wrap{
-  flex:1;
-  background:white;
-  padding:10px 14px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  box-shadow:0 2px 8px rgba(0,0,0,0.20);
-}
-
-/* --- TEXT FIELD --- */
-#userInput{
-  flex:1;
-  background:transparent;
-  border:0;
-  outline:0;
-  color:var(--emerald-900);
-  font-size:15px;
-}
-
-/* --- SEND BUTTON --- */
-.send-btn{
-  background:var(--emerald-400);
-  border:0;
-  color:var(--emerald-900);
-  padding:10px 14px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:600;
-}
+/* Input fixed at bottom of panel */
+.controls{position:absolute;left:0;right:0;bottom:0;padding:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;align-items:center;background:linear-gradient(180deg, rgba(2,20,12,0.06), rgba(2,20,12,0.02));}
+.input-wrap{flex:1;background:rgba(255,255,255,0.04);padding:10px 12px;border-radius:999px;display:flex;align-items:center}
+#userInput{flex:1;background:transparent;border:0;outline:0;color:var(--white);font-size:15px}
+.send-btn{background:var(--emerald-400);border:0;color:var(--emerald-900);padding:8px 12px;border-radius:999px;cursor:pointer}
 
 /* Typing dots */
 .typing{display:flex;gap:6px}
@@ -129,6 +76,13 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 /* Error overlay */
 #errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
+
+/* followup pill */
+.followup-pill{
+  padding:8px 12px;border-radius:999px;border:0;cursor:pointer;background:rgba(255,255,255,0.04);
+  color:var(--white);font-size:13px;
+}
+.followup-pill:hover{ filter:brightness(1.06); transform:translateY(-1px); transition:transform .12s ease; }
 
 @media(max-width:420px){
   #panel{width:92vw;height:86vh;right:6px;left:6px}
@@ -151,6 +105,12 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 <!-- Error overlay -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
+
+<!-- Bubble -->
+<div id="bubble" role="button" aria-label="Open Gentle Heart" tabindex="0" title="Gentle Heart — tap to open">
+  <img src="avatar.png" alt="Gentle Heart avatar" onerror="this.style.display='none'"/>
+</div>
+
 <!-- Panel -->
 <div id="panel" role="dialog" aria-modal="true" aria-hidden="true" class="">
   <div class="header" role="banner">
@@ -165,9 +125,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       </select>
 
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
+        <!-- gear icon -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 .95l-.21.72a.5.5 0 0 1-.48.34h-2.82a.5.5 0 0 1-.48-.34l-.21-.72a1.65 1.65 0 0 0-1-.95 1.65 1.65 0 0 0-1.82.33l-.06.06a.5.5 0 0 1-.71 0L4.6 18.6a.5.5 0 0 1 0-.71l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.95-1l-.72-.21a.5.5 0 0 1-.34-.48V9.59a.5.5 0 0 1 .34-.48l.72-.21a1.65 1.65 0 0 0 .95-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a.5.5 0 0 1 0-.71L6.5 2.6a.5.5 0 0 1 .71 0l.06.06a1.65 1.65 0 0 0 1.82.33l.72-.21a.5.5 0 0 1 .48.34v2.82a.5.5 0 0 1-.34.48l-.72.21a1.65 1.65 0 0 0-.95 1 1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
         </svg>
       </button>
 
@@ -206,22 +167,21 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Complete, fixed Gentle Heart widget
-   - robust fetchQA + normalization (supports common shapes)
-   - handleSend waits briefly for fetchQA (race) so qa.json is used if available
-   - bubble drag/tap + panel + history intact
+/* Full rebuilt Gentle Heart widget (Option B patch applied)
+   - Enhanced QA loading (arrays, pairs, followups)
+   - Random rotation of multiple responses
+   - Token-overlap scoring matching (Option B)
+   - Followup pill UI
 */
 
 (function(){
-  // global error overlay
+  // error overlay
   window.addEventListener('error', function(ev){
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      if(box && txt){
-        box.style.display = 'block';
-        txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
-      }
+      box.style.display = 'block';
+      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
       console.error('Captured error', ev);
     }catch(e){}
   });
@@ -229,10 +189,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      if(box && txt){
-        box.style.display = 'block';
-        txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
-      }
+      box.style.display = 'block';
+      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
       console.error('Unhandled rejection', ev);
     }catch(e){}
   });
@@ -240,15 +198,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 (function(){
   // DOM elements
-  let originalBubble = document.getElementById('bubble');
-// If bubble was removed intentionally, create a hidden placeholder so the script doesn't crash.
-// This keeps the rest of the widget logic (panel open/minimize, API exposure) working.
-if (!originalBubble) {
-  originalBubble = document.createElement('div');
-  originalBubble.id = 'bubble';
-  originalBubble.style.display = 'none'; // hidden placeholder
-  document.body.appendChild(originalBubble);
-}
+  const originalBubble = document.getElementById('bubble');
   const panel = document.getElementById('panel');
   const chatArea = document.getElementById('chatArea');
   const inputForm = document.getElementById('inputForm');
@@ -259,138 +209,177 @@ if (!originalBubble) {
   const clearHistoryBtn = document.getElementById('clearHistory');
   const minBtn = document.getElementById('minBtn');
 
-  // inline fallback QA
+  // load inline fallback QA
   let qaData = {};
   try{
     const inline = document.getElementById('qa-inline');
     if(inline && inline.textContent) qaData = JSON.parse(inline.textContent);
   }catch(e){ qaData = {}; }
 
-  // normalized map (string -> string)
+  // --- START: enhanced QA normalization + random rotation + followups (Option B) ---
+  // normalized map: key -> { responses: [strings], followups: [strings] }
   let qaDataNormalized = {};
 
-  function normalizeKeyForMap(s){ return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim(); }
+  function normalizeKeyForMap(s){
+    return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
 
-  // robust addNormalizedEntry
+  function ensureEntry(nk){
+    if(!qaDataNormalized[nk]) qaDataNormalized[nk] = { responses: [], followups: [] };
+    return qaDataNormalized[nk];
+  }
+
+  // Add entry: supports string, array, object shapes
   function addNormalizedEntry(k, v){
     try{
       const nk = normalizeKeyForMap(k);
       if(!nk) return;
-      // if value is string
-      if(typeof v === 'string'){
-        qaDataNormalized[nk] = v;
-        return;
-      }
-      // if v is an object with common fields
-      if(typeof v === 'object' && v !== null){
-        if(typeof v.response === 'string'){ qaDataNormalized[nk] = v.response; return; }
-        if(typeof v.a === 'string'){ qaDataNormalized[nk] = v.a; return; }
-        if(typeof v.reply === 'string'){ qaDataNormalized[nk] = v.reply; return; }
-        // array of strings
-        if(Array.isArray(v) && v.length && typeof v[0] === 'string'){ qaDataNormalized[nk] = v[0]; return; }
-        // find first string field
-        for(const prop of Object.keys(v)){
-          if(typeof v[prop] === 'string'){ qaDataNormalized[nk] = v[prop]; return; }
+      const entry = ensureEntry(nk);
+
+      if(Array.isArray(v)){
+        v.forEach(item => {
+          if(!item) return;
+          if(typeof item === 'string') entry.responses.push(item);
+          else if(typeof item === 'object'){
+            if(item.response) {
+              if(Array.isArray(item.response)) entry.responses.push(...item.response.map(String));
+              else entry.responses.push(String(item.response));
+            }
+            if(Array.isArray(item.followups)) entry.followups.push(...item.followups.map(String));
+          }
+        });
+      } else if(typeof v === 'object' && v !== null){
+        if(v.response){
+          if(Array.isArray(v.response)) entry.responses.push(...v.response.map(String));
+          else entry.responses.push(String(v.response));
         }
-        // fallback stringify
-        try{ qaDataNormalized[nk] = JSON.stringify(v); return; }catch(e){}
+        if(Array.isArray(v.followups)) entry.followups.push(...v.followups.map(String));
+      } else {
+        entry.responses.push(String(v || ''));
       }
-      // final fallback
-      qaDataNormalized[nk] = String(v || '');
-    }catch(e){
-      console.warn('addNormalizedEntry error', e);
-    }
+
+      // dedupe while preserving order
+      entry.responses = Array.from(new Set(entry.responses));
+      entry.followups = Array.from(new Set(entry.followups));
+    }catch(e){ console.warn('addNormalizedEntry error', e); }
   }
 
-  // build from inline
+  // Build normalized map from inline qaData (fallback) or preloaded structure
   (function buildMapFromInline(){
     try{
       if(!qaData) return;
       if(Array.isArray(qaData)){
         qaData.forEach(item => {
           if(!item) return;
-          if(item.q && (item.a || item.response || item.reply)) addNormalizedEntry(item.q, item.a || item.response || item.reply);
-          else if(item.input && (item.a || item.response || item.reply)) addNormalizedEntry(item.input, item.a || item.response || item.reply);
-          else if(item.prompt && (item.reply || item.response)) addNormalizedEntry(item.prompt, item.reply || item.response);
+          const q = item.q || item.input || item.prompt;
+          const a = item.a || item.response || item.reply;
+          const f = item.followups || item.next || item.suggested;
+          addNormalizedEntry(q, a);
+          if(f) {
+            const nk = normalizeKeyForMap(q);
+            ensureEntry(nk).followups.push(...(Array.isArray(f) ? f : [f]));
+            ensureEntry(nk).followups = Array.from(new Set(ensureEntry(nk).followups));
+          }
         });
         return;
       }
-      if(typeof qaData === 'object'){
+      if(qaData && typeof qaData === 'object'){
         Object.keys(qaData).forEach(k => {
           if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'items' || k === 'pairs') return;
-          const v = qaData[k];
-          if(typeof v === 'string') addNormalizedEntry(k, v);
-          else if(typeof v === 'object' && v !== null && (v.a || v.response || v.reply)) addNormalizedEntry(k, v.a || v.response || v.reply);
+          addNormalizedEntry(k, qaData[k]);
         });
-        if(Array.isArray(qaData.items)) qaData.items.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
-        if(Array.isArray(qaData.pairs)) qaData.pairs.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
+        if(Array.isArray(qaData.items)){
+          qaData.items.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
+        }
+        if(Array.isArray(qaData.pairs)){
+          qaData.pairs.forEach(it => {
+            if(!it) return;
+            addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply);
+            if(it.followups){
+              const nk = normalizeKeyForMap(it.q || it.input || it.prompt);
+              ensureEntry(nk).followups.push(...(Array.isArray(it.followups) ? it.followups : [it.followups]));
+              ensureEntry(nk).followups = Array.from(new Set(ensureEntry(nk).followups));
+            }
+          });
+        }
       }
     }catch(e){ console.warn('buildMapFromInline failed', e); }
   })();
 
-  // robust fetchQA (tries multiple paths, tolerant parsing)
   async function fetchQA(){
     const paths = [
-  'qa.json',
-  './qa.json',
-  '../qa.json',
-  '/qa.json'
-];
+      './qa.json',
+      'qa.json'
+    ];
     for(const p of paths){
       try{
         const r = await fetch(p, {cache:'no-store'});
         if(!r.ok) continue;
         const txt = await r.text();
-        if(!txt || !txt.trim()) continue;
+        if(!txt || txt.trim().length === 0) continue;
         let parsed;
-        try{ parsed = JSON.parse(txt); }catch(e){
-          try{ parsed = JSON.parse(txt.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')); }catch(err){ throw err; }
+        try{ parsed = JSON.parse(txt); } catch(e){
+          try{ parsed = JSON.parse(txt.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')); } catch(err){ throw err; }
         }
-        // normalize
         try{
           if(Array.isArray(parsed)){
             parsed.forEach(item => {
               if(!item) return;
-              if(item.q && (item.a || item.response || item.reply)) addNormalizedEntry(item.q, item.a || item.response || item.reply);
-              else if(item.input && (item.a || item.response || item.reply)) addNormalizedEntry(item.input, item.a || item.response || item.reply);
-              else if(item.prompt && (item.reply || item.response)) addNormalizedEntry(item.prompt, item.reply || item.response);
+              const q = item.q || item.input || item.prompt;
+              const a = item.a || item.response || item.reply;
+              addNormalizedEntry(q, a);
+              if(item.followups){
+                const nk = normalizeKeyForMap(q);
+                ensureEntry(nk).followups.push(...(Array.isArray(item.followups) ? item.followups : [item.followups]));
+                ensureEntry(nk).followups = Array.from(new Set(ensureEntry(nk).followups));
+              }
             });
           } else if(parsed && typeof parsed === 'object'){
             Object.keys(parsed).forEach(k => {
               if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'items' || k === 'pairs') return;
-              const val = parsed[k];
-              if(typeof val === 'string') addNormalizedEntry(k, val);
-              else if(typeof val === 'object' && val !== null){
-                if(val.a || val.response || val.reply) addNormalizedEntry(k, val.a || val.response || val.reply);
+              if(typeof parsed[k] === 'string' || Array.isArray(parsed[k]) || typeof parsed[k] === 'object'){
+                addNormalizedEntry(k, parsed[k]);
               }
             });
-            if(Array.isArray(parsed.items)) parsed.items.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
-            if(Array.isArray(parsed.pairs)) parsed.pairs.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+            if(Array.isArray(parsed.items)){
+              parsed.items.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+            }
+            if(Array.isArray(parsed.pairs)){
+              parsed.pairs.forEach(it => {
+                if(!it) return;
+                addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply);
+                if(it.followups){
+                  const nk = normalizeKeyForMap(it.q || it.input || it.prompt);
+                  ensureEntry(nk).followups.push(...(Array.isArray(it.followups) ? it.followups : [it.followups]));
+                  ensureEntry(nk).followups = Array.from(new Set(ensureEntry(nk).followups));
+                }
+              });
+            }
           }
-        }catch(normErr){
-          console.warn('error normalizing parsed qa.json', normErr);
-        }
+        }catch(e){ console.warn('error normalizing parsed qa.json', e); }
 
         if(parsed) qaData = parsed;
-        console.info('qa.json loaded and normalized from', p);
+        console.info('qa.json loaded/normalized from', p);
         return true;
-      }catch(err){
-        console.warn('fetchQA try failed for', p, err);
+      }catch(fetchErr){
+        console.warn('fetch failed for', p, fetchErr);
       }
     }
-    console.warn('qa.json not found or unreadable; using inline fallback.');
+    console.warn('qa.json not found; using inline fallback.');
     return false;
   }
-  // initial background fetch
+  // initial background fetch (non-blocking)
   fetchQA().catch(()=>{});
+  // --- END enhanced QA block ---
 
   // history
   let history = [];
   try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
+
   function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
   function renderHistory(){ if(!chatArea) return; chatArea.innerHTML=''; for(const h of history){ if(h.role==='user') addUserBubble(h.text); else addBotBubble(h.text); } requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
 
-  // bubble replacement to clear old listeners
+  // bubble clone to clear previous listeners
   let bubble = originalBubble;
   (function replaceBubble(){
     try{
@@ -401,40 +390,82 @@ if (!originalBubble) {
     }catch(e){}
   })();
 
-  // helpers
+  // small helpers
+  function normalizeText(s){ return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim(); }
+  function chooseRandom(arr){ if(!Array.isArray(arr)||!arr.length) return null; return arr[Math.floor(Math.random()*arr.length)]; }
   function tokensOf(s){ return String(s||'').split(/\s+/).filter(Boolean); }
-  function chooseRandom(a){ if(!Array.isArray(a)||!a.length) return null; return a[Math.floor(Math.random()*a.length)]; }
 
+  // Option B: token-overlap scoring lookup (returns {text, followups})
   function lookupReply(q){
-    if(!q) return "Tell me more — I'm listening.";
+    if(!q) return { text: "Tell me more — I'm listening.", followups: [] };
     const input = normalizeKeyForMap(q);
-    if(qaDataNormalized[input]) return qaDataNormalized[input];
 
-    // fuzzy match by token overlap
+    // 1) exact normalized match (best)
+    if(qaDataNormalized && qaDataNormalized[input] && qaDataNormalized[input].responses.length){
+      return { text: chooseRandom(qaDataNormalized[input].responses), followups: qaDataNormalized[input].followups || [] };
+    }
+
+    // 2) candidate scoring across normalized keys
     const candidates = Object.keys(qaDataNormalized || {});
     if(candidates.length){
-      const inputTokens = tokensOf(input), inputSet = new Set(inputTokens);
-      let best = { key:null, score:0 };
+      const inputTokens = tokensOf(input);
+      const inputSet = new Set(inputTokens);
+      let best = { key: null, score: 0, shared: 0 };
+
       for(const k of candidates){
+        if(!k) continue;
         const kTokens = tokensOf(k);
         if(!kTokens.length) continue;
         let shared = 0;
-        for(const t of kTokens) if(inputSet.has(t)) shared++;
+        for(const t of kTokens){
+          if(inputSet.has(t)) shared++;
+        }
         const score = shared / Math.sqrt(kTokens.length * Math.max(1, inputTokens.length));
-        if(score > best.score) best = { key:k, score };
+        if(score > best.score){
+          best = { key: k, score, shared };
+        }
       }
-      if(best.key && best.score >= 0.25) return qaDataNormalized[best.key];
+
+      // threshold for acceptance (tuneable)
+      const THRESH = 0.25;
+      if(best.key && best.score >= THRESH){
+        return { text: chooseRandom(qaDataNormalized[best.key].responses), followups: qaDataNormalized[best.key].followups || [] };
+      }
     }
 
-    if(/\b(sad|unhappy|depressed|down)\b/.test(input)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
-    if(/\b(happy|glad|good|great|joy)\b/.test(input)) return qaData['happy'] || "That's great — tell me what's making you happy?";
+    // 3) fallback to array/object shapes in qaData
+    if(Array.isArray(qaData)){
+      const found = qaData.find(x => normalizeKeyForMap(x.q||x.input||'') === input);
+      if(found){
+        const a = found.a || found.response || found.reply || '';
+        if(Array.isArray(a)) return { text: chooseRandom(a), followups: found.followups || [] };
+        return { text: String(a || ''), followups: found.followups || [] };
+      }
+    } else if(qaData && typeof qaData === 'object'){
+      for(const k of Object.keys(qaData)){
+        if(normalizeKeyForMap(k) === input){
+          const val = qaData[k];
+          if(Array.isArray(val)) return { text: chooseRandom(val), followups: [] };
+          if(typeof val === 'object' && val !== null){
+            if(val.response) return { text: Array.isArray(val.response) ? chooseRandom(val.response) : String(val.response), followups: Array.isArray(val.followups)? val.followups : [] };
+            return { text: String(val), followups: [] };
+          }
+          return { text: String(val || ''), followups: [] };
+        }
+      }
+    }
 
-    return qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
+    // 4) simple emotion shortcuts
+    if(/\b(sad|unhappy|depressed|down)\b/.test(input)) return { text: qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?", followups: [] };
+    if(/\b(happy|glad|good|great|joy)\b/.test(input)) return { text: qaData['happy'] || "That's great — tell me what's making you happy?", followups: [] };
+
+    // final fallback
+    return { text: qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.", followups: [] };
   }
 
-  // renderers
+  // message renderers
   function addBotBubble(text, opts){
-    if(!chatArea) return null;
+    if(!chatArea) return;
     const w = document.createElement('div'); w.className='msg bot-msg';
     const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
     const t = document.createElement('div'); t.className='text';
@@ -443,47 +474,67 @@ if (!originalBubble) {
     w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
     return w;
   }
-  function addUserBubble(text){ if(!chatArea) return; const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; }
+  function addUserBubble(text){
+    if(!chatArea) return;
+    const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
+  }
 
-  // send flow — waits briefly for fetchQA (race)
+  // render followup pills (below last messages)
+  function renderFollowups(list){
+    try{
+      if(!Array.isArray(list) || !list.length) return;
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.flexWrap = 'wrap';
+      wrap.style.gap = '8px';
+      wrap.style.padding = '10px 14px';
+      wrap.style.marginTop = '6px';
+
+      list.slice(0,6).forEach(f => {
+        const b = document.createElement('button');
+        b.className = 'followup-pill';
+        b.type = 'button';
+        b.textContent = f;
+        b.addEventListener('click', function(){ handleSend(f); });
+        wrap.appendChild(b);
+      });
+
+      chatArea.appendChild(wrap);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }catch(e){ console.warn('renderFollowups error', e); }
+  }
+
+  // send flow with 2s typing animation (updated to use reply object)
   let sendLock = false;
   async function handleSend(text){
     if(sendLock) return;
     if(!text || !text.trim()) return;
     sendLock = true;
-    try{
-      history.push({role:'user', text}); saveHistory();
-      addUserBubble(text);
-      if(userInput) userInput.value = '';
-
-      const typingNode = addBotBubble('', {isTyping:true});
-
-      // Try to fetch latest qa.json but bound the wait (race)
-      try{
-        const fetchPromise = fetchQA();
-        await Promise.race([fetchPromise, new Promise(r => setTimeout(r, 1600))]);
-      }catch(e){ console.warn('fetchQA race error', e); }
-
-      // small pacing for typing feel
-      await new Promise(r=>setTimeout(r, 400));
-
-      const reply = lookupReply(text);
-      const container = typingNode.querySelector('.text');
-      if(container) container.textContent = reply;
-      history.push({role:'bot', text:reply}); saveHistory();
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }catch(err){
-      console.error('handleSend error', err);
-      addBotBubble("Oops — something went wrong. Try again?");
-    }finally{
-      sendLock = false;
+    history.push({role:'user', text}); saveHistory();
+    addUserBubble(text);
+    if(userInput) userInput.value = '';
+    // show typing
+    const typingNode = addBotBubble('', {isTyping:true});
+    // try to reload qa.json in background (non-blocking)
+    fetchQA().catch(()=>{});
+    await new Promise(r=>setTimeout(r,2000));
+    const replyObj = lookupReply(text); // { text, followups }
+    const replyText = replyObj && replyObj.text ? String(replyObj.text) : "Thanks for sharing.";
+    const container = typingNode.querySelector('.text');
+    if(container) container.textContent = replyText;
+    history.push({role:'bot', text:replyText}); saveHistory();
+    // render followups if any
+    if(Array.isArray(replyObj.followups) && replyObj.followups.length){
+      renderFollowups(replyObj.followups);
     }
+    chatArea.scrollTop = chatArea.scrollHeight;
+    sendLock = false;
   }
 
-  // render history initially
+  // render existing history
   renderHistory();
 
-  // form submit
+  // form handling
   if(inputForm){
     inputForm.addEventListener('submit', function(e){
       e.preventDefault();
@@ -491,7 +542,7 @@ if (!originalBubble) {
     });
   }
 
-  // panel helpers
+  // panel & bubble helpers (unchanged)
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
@@ -499,26 +550,13 @@ if (!originalBubble) {
       const right = Math.max(12, window.innerWidth - (br.left + br.width));
       panel.style.right = right + 'px';
       panel.style.bottom = Math.min(Math.max(12, window.innerHeight - br.top + 18), window.innerHeight - 80) + 'px';
-      panel.style.maxHeight = Math.min(window.innerHeight - 120, 0.86 * window.innerHeight) + 'px';
+      panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
     }catch(e){}
   }
 
   function openPanel(){ if(!panel) return; fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput) userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 60); }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // bubble click toggle
-  if(bubble){
-    bubble.addEventListener('click', function(e){
-      try{
-        const isShown = panel && panel.classList && panel.classList.contains('show');
-        if(isShown) minimizePanel();
-        else openPanel();
-      }catch(err){ console.error(err); }
-    });
-    bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
-  }
-
-  // settings modal
   if(gearBtn){
     gearBtn.addEventListener('click', function(ev){
       ev && ev.stopPropagation();
@@ -539,7 +577,6 @@ if (!originalBubble) {
   }
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
-  // click outside to close
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -548,7 +585,7 @@ if (!originalBubble) {
     minimizePanel();
   });
 
-  // drag/tap logic (robust)
+  // Drag + tap discrimination (unchanged)
   (function enableDrag(){
     if(!bubble) return;
     let active=false, sx=0, sy=0, tx=0, ty=0, moved=false, lastUp=0;
@@ -557,32 +594,13 @@ if (!originalBubble) {
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
-    function readTransform(){
-      const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){
-        const vals = m.match(/matrix.*\((.+)\)/);
-        if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); return {x: arr[4]||0, y: arr[5]||0}; }
-      }
-      return {x:0,y:0};
-    }
-    function clampFinal(nx, ny){
-      const rect = bubble.getBoundingClientRect();
-      const bw = rect.width, bh = rect.height;
-      const left = (rect.left + nx - readTransform().x);
-      const top = (rect.top + ny - readTransform().y);
-      const minLeft = 6, minTop = 6;
-      const maxLeft = Math.max(6, window.innerWidth - bw - 6);
-      const maxTop = Math.max(6, window.innerHeight - bh - 6);
-      const clampedLeft = Math.min(Math.max(left, minLeft), maxLeft);
-      const clampedTop = Math.min(Math.max(top, minTop), maxTop);
-      const cur = readTransform();
-      return { x: clampedLeft - (rect.left - cur.x), y: clampedTop - (rect.top - cur.y) };
-    }
+
     function onDown(e){
       active=true; moved=false;
       const p = e.touches ? e.touches[0] : e;
       sx = p.clientX; sy = p.clientY;
-      const cur = readTransform(); tx = cur.x; ty = cur.y;
+      const m = window.getComputedStyle(bubble).transform;
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
       try{ e.pointerId && bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
       (e.preventDefault && e.preventDefault());
     }
@@ -600,23 +618,22 @@ if (!originalBubble) {
       active=false;
       lastUp = Date.now();
       if(!moved){
-        setTimeout(()=>{ if(Date.now() - lastUp < 150){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } }, 30);
+        setTimeout(()=>{ if(Date.now() - lastUp < 120){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } }, 30);
         return;
       }
-      const cur = readTransform();
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
-      let final = clampFinal(cur.x, cur.y);
-      if(centerX < screenMid){
-        final.x = 12;
-      } else {
-        final.x = window.innerWidth - rect.width - 12 - (rect.left - cur.x);
-      }
-      final.y = Math.min(Math.max(final.y, -rect.top + 12), window.innerHeight - rect.bottom - 12);
-      bubble.style.transform = `translate(${final.x}px, ${final.y}px)`;
-      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: final.x, y: final.y})); }catch(e){}
+      const m = window.getComputedStyle(bubble).transform;
+      let finalX=0, finalY=0;
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      if(centerX < screenMid) finalX = finalX - rect.left + 12;
+      else finalX = finalX + (window.innerWidth - rect.right) - 12;
+      finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
+      bubble.style.transform = `translate(${finalX}px, ${finalY}px)`;
+      try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: finalX, y: finalY})); }catch(e){}
     }
+
     bubble.addEventListener('pointerdown', onDown, {passive:false});
     window.addEventListener('pointermove', onMove, {passive:false});
     window.addEventListener('pointerup', onUp, {passive:false});
@@ -626,21 +643,24 @@ if (!originalBubble) {
     bubble.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
+
+    bubble.addEventListener('click', function(e){ /* intentionally empty to avoid duplicate action */ });
+    bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
   })();
 
-  // input focus/resize handling
+  // keyboard safety handlers (unchanged)
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
       try{ const vh = window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; userInput.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
     }, 250));
-    userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 0.86 * window.innerHeight) + 'px'; }catch(e){} },150));
+    userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
     let lastInner = window.innerHeight;
     window.addEventListener('resize', function(){
       try{
         const now = window.innerHeight;
         if(now < lastInner - 80){ panel.style.maxHeight = Math.max(260, now - 120) + 'px'; setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60); }
-        else panel.style.maxHeight = Math.min(now - 120, 0.86 * now) + 'px';
+        else panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
         lastInner = now;
       }catch(e){}
     });
@@ -648,9 +668,6 @@ if (!originalBubble) {
 
   window.addEventListener('orientationchange', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 300));
   window.addEventListener('resize', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 160));
-
-  // expose debug API
-  window.GentleHeart = { openPanel, minimizePanel, fetchQA, qaDataNormalized };
 
 })(); // end IIFE
 </script>
