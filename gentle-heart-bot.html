@@ -104,49 +104,43 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </script>
 
 <!-- EMBED-MODE QUICK FIX
-     If this file is loaded inside an iframe OR called with ?embed=1
-     the internal panel and bubble will be hidden so the host page's
-     floating bubble/modal is the only visible UI.
+     NOTE: this version only hides the internal panel when explicit ?embed=1
+     (was previously auto-detecting any iframe which caused accidental hiding).
 -->
 <script>
-/* Embed-mode quick fix — hide internal panel when loaded inside an iframe or when ?embed=1
-   Keeps the host page bubble/modal as the only visible UI.
-*/
 (function(){
   function applyEmbedHide(){
     try{
-      // detect iframe OR explicit ?embed=1
-      const inIframe = (window.self !== window.top) || (new URLSearchParams(window.location.search).get('embed') === '1');
-      if(!inIframe) return;
+      // ---- IMPORTANT: now explicit only ----
+      const params = new URLSearchParams(window.location.search);
+      const embedParam = params.get('embed') === '1';
 
-      // make page background transparent (so modal shows your page behind it)
+      if(!embedParam) return; // only hide when ?embed=1 is present
+
+      // make page background transparent (so host page shows behind)
       try{
         document.documentElement.style.background = 'transparent';
         document.body.style.background = 'transparent';
       }catch(e){}
 
-      // hide the main panel (the white/green chat panel)
+      // hide pieces that would conflict with host's UI
       const panel = document.getElementById('panel');
       if(panel) panel.style.display = 'none';
 
-      // optionally hide the header too (defensive)
       const header = document.querySelector('#panel .header');
       if(header) header.style.display = 'none';
 
-      // keep bubble hidden inside iframe (we rely on host page bubble)
       const bubble = document.getElementById('bubble');
       if(bubble) bubble.style.display = 'none';
 
-      // hide settings modal/backdrop (defensive)
       const modal = document.getElementById('modalBackdrop');
       if(modal) modal.style.display = 'none';
 
-      // hide the error overlay (defensive)
       const err = document.getElementById('errorBox');
       if(err) err.style.display = 'none';
     }catch(e){
       // fail silently
-      console && console.warn && console.warn('embed-hide error', e);
+      try{ console && console.warn && console.warn('embed-hide error', e); }catch(_) {}
     }
   }
 
@@ -176,7 +170,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
 
-      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
+      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings" type="button">
         <!-- gear icon -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
@@ -184,7 +178,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         </svg>
       </button>
 
-      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize">
+      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize" type="button">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.6"><path d="M5 12h14"/></svg>
       </button>
     </div>
@@ -211,8 +205,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <select id="countryInModal" class="select" style="width:100%;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--white)"><option>Philippines</option><option>United States</option></select>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)">Clear history</button>
-        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)">Close</button>
+        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)" type="button">Clear history</button>
+        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)" type="button">Close</button>
       </div>
     </div>
   </div>
@@ -232,8 +226,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
+      if(box && txt){
+        box.style.display = 'block';
+        txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
+      }
       console.error('Captured error', ev);
     }catch(e){}
   });
@@ -241,8 +237,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      box.style.display = 'block';
-      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
+      if(box && txt){
+        box.style.display = 'block';
+        txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
+      }
       console.error('Unhandled rejection', ev);
     }catch(e){}
   });
@@ -317,7 +315,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
 
   // Build normalized map from inline qaData (fallback) or preloaded structure
-  (function buildMapFromInline(){
+  function buildMapFromInline(){
     try{
       if(!qaData) return;
       if(Array.isArray(qaData)){
@@ -356,7 +354,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         }
       }
     }catch(e){ console.warn('buildMapFromInline failed', e); }
-  })();
+  }
+
+  // build from the inline QA right away (ensures qaDataNormalized populated)
+  try{ buildMapFromInline(); }catch(e){ console.warn('initial buildMapFromInline failed', e); }
 
   async function fetchQA(){
     const paths = [
@@ -410,7 +411,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
           }
         }catch(e){ console.warn('error normalizing parsed qa.json', e); }
 
-        if(parsed) qaData = parsed;
+        if(parsed) {
+          qaData = parsed;
+          try{ buildMapFromInline(); }catch(e){}
+        }
         console.info('qa.json loaded/normalized from', p);
         return true;
       }catch(fetchErr){
@@ -431,15 +435,16 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
   function renderHistory(){ if(!chatArea) return; chatArea.innerHTML=''; for(const h of history){ if(h.role==='user') addUserBubble(h.text); else addBotBubble(h.text); } requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
 
-  // bubble clone to clear previous listeners
+  // bubble clone to clear previous listeners (defensive)
   let bubble = originalBubble;
   (function replaceBubble(){
     try{
+      if(!originalBubble || !originalBubble.parentNode) return;
       const clone = originalBubble.cloneNode(true);
       originalBubble.parentNode.replaceChild(clone, originalBubble);
       bubble = clone;
       bubble.style.pointerEvents = 'auto';
-    }catch(e){}
+    }catch(e){ console.warn('replaceBubble failed', e); }
   })();
 
   // small helpers
@@ -594,7 +599,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     });
   }
 
-  // panel & bubble helpers (unchanged)
+  // panel & bubble helpers
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
@@ -623,7 +628,9 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){}
     });
   }
-  modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
+  if(modalBackdrop){
+    modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
+  }
   if(clearHistoryBtn){
     clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history=[]; saveHistory(); renderHistory(); });
   }
@@ -637,7 +644,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // Drag + tap discrimination (unchanged)
+  // Drag + tap discrimination
   (function enableDrag(){
     if(!bubble) return;
     let active=false, sx=0, sy=0, tx=0, ty=0, moved=false, lastUp=0;
@@ -700,7 +707,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
   })();
 
-  // keyboard safety handlers (unchanged)
+  // keyboard safety handlers
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
