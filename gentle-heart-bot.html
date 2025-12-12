@@ -21,7 +21,9 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 /* Bubble */
 #bubble{
-  position:fixed; right:18px; bottom:18px; z-index:99999;
+  position:fixed; right:18px; bottom:18px;
+  /* bump z-index so bubble always above most overlays */
+  z-index:100003;
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
@@ -33,7 +35,9 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 /* Panel */
 #panel{
-  position:fixed; right:18px; bottom:110px; z-index:99998;
+  position:fixed; right:18px; bottom:110px;
+  /* make panel above backdrop by default */
+  z-index:100002;
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
@@ -67,14 +71,29 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
-/* Modal: solid backdrop */
-.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
-.modal-backdrop.show{pointer-events:auto; opacity:1}
+/* Modal: solid backdrop
+   Safety: keep backdrop z-index BELOW the panel when hidden,
+   but when .show is applied raise it so modal appears above panel.
+*/
+.modal-backdrop{
+  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;
+  /* below panel by default so accidental backdrop won't hide the panel */
+  z-index:99990;
+  background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0;
+}
+.modal-backdrop.show{
+  /* when explicitly shown, place it above the panel so modal is visible */
+  pointer-events:auto; opacity:1;
+  z-index:100010;
+}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
 
 /* Error overlay */
-#errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
+#errorBox{position:fixed;left:12px;right:12px;top:12px;
+  /* ensure error box above everything else so devs can see it */
+  z-index:400020;
+  background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
 
 /* followup pill */
@@ -102,50 +121,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   "happy":"That's great — tell me what's making you happy?"
 }
 </script>
-
-<!-- EMBED-MODE QUICK FIX
-     ONLY hide internal panel when explicit ?embed=1 parameter is present.
-     This prevents accidental hiding when opened normally on the main site.
--->
-<script>
-(function(){
-  function applyEmbedHide(){
-    try{
-      // only hide when explicit embed=1 in query string
-      const embedFlag = new URLSearchParams(window.location.search).get('embed') === '1';
-      if(!embedFlag) return;
-
-      // make page background transparent (so modal shows your page behind it)
-      try{
-        document.documentElement.style.background = 'transparent';
-        document.body.style.background = 'transparent';
-      }catch(e){}
-
-      // hide the main internal UI (we rely on host page UI)
-      const panel = document.getElementById('panel');
-      if(panel) panel.style.display = 'none';
-
-      const header = document.querySelector('#panel .header');
-      if(header) header.style.display = 'none';
-
-      const bubble = document.getElementById('bubble');
-      if(bubble) bubble.style.display = 'none';
-
-      const modal = document.getElementById('modalBackdrop');
-      if(modal) modal.style.display = 'none';
-
-      const err = document.getElementById('errorBox');
-      if(err) err.style.display = 'none';
-    }catch(e){
-      console && console.warn && console.warn('embed-hide error', e);
-    }
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyEmbedHide);
-  else applyEmbedHide();
-})();
-</script>
-
 <!-- Error overlay -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
 
