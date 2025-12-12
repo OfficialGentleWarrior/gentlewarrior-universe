@@ -17,19 +17,18 @@
   --muted:#cfe9d9;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
-html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%}
-
+html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;}
 /* Bubble */
 #bubble{
   position:fixed; right:18px; bottom:18px; z-index:99999;
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
-  cursor:grab; touch-action:none; -webkit-user-drag:none; user-select:none;
-  transition:box-shadow .12s ease, transform .12s ease;
+  cursor:grab; touch-action:none; user-select:none;
+  transition:box-shadow .12s ease;
 }
-#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
-#bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block}
+#bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); }
+#bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block;}
 
 /* Panel */
 #panel{
@@ -38,7 +37,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
   transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
-  pointer-events:none; box-shadow:0 20px 60px rgba(3,30,20,.5);
+  pointer-events:none;
+  box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
 #panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
@@ -47,32 +47,32 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
 .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .icon-btn{background:transparent;border:0;color:var(--white);padding:6px;border-radius:8px;cursor:pointer}
-
-/* Chat area reserves space for input so messages never hidden */
-.chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto;background:linear-gradient(180deg,#05291822,transparent);scroll-behavior:smooth;padding-bottom:120px;}
-.msg{max-width:78%;padding:12px 14px;border-radius:12px;line-height:1.3;display:inline-block;word-break:break-word}
+.chat-area{flex:1;display:flex;flex-direction:column;padding:14px;gap:12px;overflow:auto;background:linear-gradient(180deg,#05291822,transparent);scroll-behavior:smooth}
+.msg{max-width:78%;padding:12px 14px;border-radius:12px;line-height:1.3;display:inline-block}
 .bot-msg{background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));align-self:flex-start;display:flex;gap:10px;align-items:flex-start;color:var(--white)}
 .bot-msg img{width:36px;height:36px;border-radius:8px;flex:0 0 36px;object-fit:cover}
 .user-msg{background:var(--white);color:var(--emerald-900);align-self:flex-end;border-radius:12px;padding:10px 14px;}
 
-/* Input fixed at bottom of panel */
-.controls{position:absolute;left:0;right:0;bottom:0;padding:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;align-items:center;background:linear-gradient(180deg, rgba(2,20,12,0.06), rgba(2,20,12,0.02));}
+/* Input area */
+.controls{padding:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;align-items:center;background:linear-gradient(180deg, rgba(2,20,12,0.02), transparent);}
 .input-wrap{flex:1;background:rgba(255,255,255,0.04);padding:10px 12px;border-radius:999px;display:flex;align-items:center}
 #userInput{flex:1;background:transparent;border:0;outline:0;color:var(--white);font-size:15px}
 .send-btn{background:var(--emerald-400);border:0;color:var(--emerald-900);padding:8px 12px;border-radius:999px;cursor:pointer}
-
-/* Typing dots */
 .typing{display:flex;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
-/* Modal: solid backdrop */
-.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
-.modal-backdrop.show{pointer-events:auto; opacity:1}
+/* Solid modal (non-transparent) */
+.modal-backdrop{
+  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;
+  background: rgba(4,51,31,0.95); /* solid emerald-ish backdrop */
+  transition:opacity .12s ease; pointer-events:none; opacity:0;
+}
+.modal-backdrop.show{pointer-events:auto; opacity:1;}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
 
-/* Small helpers */
+/* Error overlay */
 #errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
 
@@ -84,18 +84,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </head>
 <body>
 
-<!-- Inline fallback QA (so widget works even without qa.json) -->
-<script id="qa-inline" type="application/json">
-{
-  "hi":"Hello! I'm Gentle Heart — how can I help you today?",
-  "hello":"Hi there — tell me what's on your mind.",
-  "help":"You can ask about breathing exercises, CP info, or just share how you feel.",
-  "sad":"I'm sorry you're feeling sad. Would you like a breathing exercise?",
-  "happy":"That's great — tell me what's making you happy?"
-}
-</script>
-
-<!-- Error overlay -->
+<!-- Error overlay (shows if runtime error occurs) -->
 <div id="errorBox" role="alert"><strong>Script error — details:</strong><pre id="errorText"></pre></div>
 
 <!-- Bubble -->
@@ -115,15 +104,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       <select id="countrySelect" aria-label="Country" style="background:transparent;color:var(--white);border:0;padding:6px 8px;border-radius:8px;">
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
-
       <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
-        <!-- gear icon -->
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 .95l-.21.72a.5.5 0 0 1-.48.34h-2.82a.5.5 0 0 1-.48-.34l-.21-.72a1.65 1.65 0 0 0-1-.95 1.65 1.65 0 0 0-1.82.33l-.06.06a.5.5 0 0 1-.71 0L4.6 18.6a.5.5 0 0 1 0-.71l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-.95-1l-.72-.21a.5.5 0 0 1-.34-.48V9.59a.5.5 0 0 1 .34-.48l.72-.21a1.65 1.65 0 0 0 .95-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a.5.5 0 0 1 0-.71L6.5 2.6a.5.5 0 0 1 .71 0l.06.06a1.65 1.65 0 0 0 1.82.33l.72-.21a.5.5 0 0 1 .48.34v2.82a.5.5 0 0 1-.34.48l-.72.21a1.65 1.65 0 0 0-.95 1 1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
-        </svg>
+        <!-- simple gear -->
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a1 1 0 0 1 0 1.4l-1 1a1 1 0 0 1-1.4 0l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 .9l-1 .3a1 1 0 0 1-1.1-.4l-1-1a1 1 0 0 1 0-1.4l.3-1a1.7 1.7 0 0 0-.9-1 1.7 1.7 0 0 0-1.9.3l-.1.1a1 1 0 0 1-1.4 0l-1-1a1 1 0 0 1 0-1.4l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-.9-1l-.3-1a1 1 0 0 1 .4-1.1l1-1a1 1 0 0 1 1.4 0l.3.3a1.7 1.7 0 0 0 1-.3 1.7 1.7 0 0 0 .3-1.9l-.1-.1a1 1 0 0 1 0-1.4l1-1a1 1 0 0 1 1.4 0l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-.9l1-.3a1 1 0 0 1 1.1.4l1 1a1 1 0 0 1 0 1.4l-.3 1a1.7 1.7 0 0 0 .9 1 1.7 1.7 0 0 0 1.9-.3l.1-.1a1 1 0 0 1 1.4 0l1 1a1 1 0 0 1 0 1.4l-.1.1a1.7 1.7 0 0 0-.3 1.9z"/></svg>
       </button>
-
       <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.6"><path d="M5 12h14"/></svg>
       </button>
@@ -140,7 +124,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   </div>
 </div>
 
-<!-- Settings modal (solid) -->
+<!-- Modal -->
 <div id="modalBackdrop" class="modal-backdrop hidden" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
     <h3 style="margin:0 0 8px 0">Settings</h3>
@@ -159,18 +143,14 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </div>
 
 <script>
-/* Gentle Heart widget
-   - Moveable bubble (drag vs tap discrimination)
-   - Opens panel only on tap
-   - Solid settings modal
-   - Fetch qa.json in background, fallback to inline
-   - 2s typing animation, left bot / right user
-   - No intro messages (wait for user to send first)
-   - Input pinned so keyboard doesn't hide it
+/* Defensive, non-blocking initialization - UI visible immediately.
+   - background fetch for qa.json (won't block UI)
+   - onerror overlay shows runtime errors so user doesn't see blank
+   - fallback qaData included
 */
 
 (function(){
-  // runtime errors shown in top overlay
+  // error overlay
   window.addEventListener('error', function(ev){
     try{
       const box = document.getElementById('errorBox');
@@ -180,6 +160,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       console.error('Captured error', ev);
     }catch(e){}
   });
+
   window.addEventListener('unhandledrejection', function(ev){
     try{
       const box = document.getElementById('errorBox');
@@ -192,6 +173,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 })();
 
 (function(){
+  // Elements (guarded)
   const bubble = document.getElementById('bubble');
   const panel = document.getElementById('panel');
   const chatArea = document.getElementById('chatArea');
@@ -202,46 +184,34 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const closeModal = document.getElementById('closeModal');
   const clearHistoryBtn = document.getElementById('clearHistory');
   const minBtn = document.getElementById('minBtn');
+  const countrySelect = document.getElementById('countrySelect');
+  const countryInModal = document.getElementById('countryInModal');
+  const kidsModeCheckbox = document.getElementById('kidsMode');
+  const privateModeCheckbox = document.getElementById('privateMode');
 
-  // load inline fallback QA first
-  let qaData = {};
-  try{ const inline = document.getElementById('qa-inline'); if(inline && inline.textContent) qaData = JSON.parse(inline.textContent); }catch(e){ qaData = {}; }
+  // built-in fallback QA (used if qa.json missing)
+  let qaData = {
+    "hi":"Hello! I'm Gentle Heart — how can I help you today?",
+    "hello":"Hi there — tell me what's on your mind.",
+    "help":"You can ask about breathing exercises, CP info, or just share how you feel."
+  };
 
-  // background fetch for qa.json (best-effort)
-  async function fetchQA(){
-    try{
-      const res = await fetch('./qa.json', {cache:'no-store'});
-      if(!res.ok) throw new Error('no qa.json');
-      const j = await res.json();
-      if(j) { qaData = j; console.info('qa.json loaded'); return true; }
-    }catch(e){
-      console.warn('qa.json not available (or blocked)', e);
-    }
-    return false;
-  }
-  // attempt at load on start (won't block UI)
-  fetchQA().catch(()=>{});
+  // history
+  let history = JSON.parse(localStorage.getItem('gh_history') || '[]');
 
-  // helpers
-  function normalizeText(s){ return String(s||'').toLowerCase().replace(/[.,!?;:“”"'()\\[\\]{}<>\\/\\|@#\$%\\^&\\*_+=~`:-]/g,' ').replace(/\\s+/g,' ').trim(); }
-
-  // history (no auto-welcome)
-  let history = [];
-  try{ history = JSON.parse(localStorage.getItem('gh_history') || '[]'); }catch(e){ history = []; }
-
-  function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
-
-  // rendering
+  // render history function
   function renderHistory(){
     if(!chatArea) return;
     chatArea.innerHTML = '';
-    for(const h of history){
+    history.forEach(h=>{
       if(h.role === 'user') addUserBubble(h.text);
       else addBotBubble(h.text);
-    }
-    requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight);
+    });
+    // ensure scrolled to bottom
+    requestAnimationFrame(()=> { chatArea.scrollTop = chatArea.scrollHeight; });
   }
 
+  // safe element creation
   function addBotBubble(text, opts){
     if(!chatArea) return;
     const w = document.createElement('div'); w.className = 'msg bot-msg';
@@ -249,9 +219,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     const t = document.createElement('div'); t.className = 'text';
     if(opts && opts.isTyping){
       const typ = document.createElement('div'); typ.className='typing';
-      typ.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      typ.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
       t.appendChild(typ);
     } else {
+      // sanitize (simple)
       t.textContent = text || '';
     }
     w.appendChild(img); w.appendChild(t); chatArea.appendChild(w); chatArea.scrollTop = chatArea.scrollHeight;
@@ -259,139 +230,100 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
   function addUserBubble(text){
     if(!chatArea) return;
-    const d = document.createElement('div'); d.className = 'msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
+    const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight;
   }
 
-  // reply lookup (supports object map or array of {q,a})
+  // safe text lookup
   function lookupReply(q){
     if(!q) return "Tell me more — I'm listening.";
-    const inp = normalizeText(q);
-
-    // object exact match
-    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      for(const k of Object.keys(qaData)){
-        if(normalizeText(k) === inp) return qaData[k];
-      }
-      if(qaData[q]) return qaData[q];
-    }
-    // array exact match mapping
+    const key = q.trim().toLowerCase();
     if(Array.isArray(qaData)){
-      const found = qaData.find(x => normalizeText(x.q || '') === inp);
+      const found = qaData.find(x => (x.q||'').trim().toLowerCase() === key);
       if(found) return found.a;
-    }
-
-    // includes match
-    if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-      for(const k of Object.keys(qaData)){
-        const nk = normalizeText(k);
-        if(nk && inp.includes(nk)) return qaData[k];
-      }
-    } else if(Array.isArray(qaData)){
-      for(const it of qaData){
-        const nk = normalizeText(it.q || '');
-        if(nk && inp.includes(nk)) return it.a;
-      }
-    }
-
-    // token match fallback
-    const words = inp.split(' ').filter(Boolean);
-    if(words.length){
-      const mins = words.filter(w => w.length > 2);
-      if(mins.length){
-        if(qaData && typeof qaData === 'object' && !Array.isArray(qaData)){
-          for(const k of Object.keys(qaData)){
-            const nk = normalizeText(k);
-            for(const w of mins) if(nk.includes(w)) return qaData[k];
-          }
-        } else if(Array.isArray(qaData)){
-          for(const it of qaData){
-            const nk = normalizeText(it.q || '');
-            for(const w of mins) if(nk.includes(w)) return it.a;
-          }
-        }
-      }
-    }
-
-    // simple emotion shortcuts
-    if(/\b(sad|depressed|unhappy|down)\b/.test(inp)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
-    if(/\b(happy|glad|good|great|joy)\b/.test(inp)) return qaData['happy'] || "That's great — tell me what's making you happy!";
-
-    return qaData['default'] || qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
+    } else if(qaData && qaData[key]) return qaData[key];
+    return "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
-  // send flow with 2s typing
-  let sendLock = false;
+  // send handler
   async function handleSend(text){
-    if(sendLock) return;
     if(!text || !text.trim()) return;
-    sendLock = true;
-    history.push({role:'user', text}); saveHistory();
+    history.push({role:'user', text}); localStorage.setItem('gh_history', JSON.stringify(history));
     addUserBubble(text);
     if(userInput) userInput.value = '';
-
     const typingNode = addBotBubble('', {isTyping:true});
-    // re-try loading qa.json if user added it while open
-    fetchQA().catch(()=>{});
-    await new Promise(r => setTimeout(r, 2000));
-    const reply = lookupReply(text);
+    // 2s typing animation
+    await new Promise(r=>setTimeout(r,2000));
+    const reply = lookupReply(text) || "Okay — tell me more.";
+    // replace typing with reply
     const container = typingNode.querySelector('.text');
     if(container) container.textContent = reply;
-    history.push({role:'bot', text:reply}); saveHistory();
+    history.push({role:'bot', text:reply}); localStorage.setItem('gh_history', JSON.stringify(history));
     chatArea.scrollTop = chatArea.scrollHeight;
-    sendLock = false;
   }
 
-  // initial render (NO welcome)
-  renderHistory();
+  // init UI immediately
+  (function initUI(){
+    renderHistory();
+    // ensure panel hidden
+    if(panel) panel.classList.remove('show');
+    // if no history, add welcome bot message but keep UI as bubble-only
+    if(history.length === 0){
+      history.push({role:'bot', text:"Welcome — tap the bubble to open chat. I'm Gentle Heart."});
+      localStorage.setItem('gh_history', JSON.stringify(history));
+    }
+    renderHistory();
+    // ensure panel positioned relative to bubble
+    positionPanelAboveBubble();
+  })();
 
-  // form submit
+  // Setup submission
   if(inputForm){
-    inputForm.addEventListener('submit', function(e){
-      e.preventDefault();
-      try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }
-    });
+    inputForm.addEventListener('submit', function(e){ e.preventDefault(); try{ handleSend(userInput && userInput.value); }catch(err){ console.error(err); }});
   }
 
-  // panel positioning relative to bubble
+  // panel open/minimize helpers
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
       const br = bubble.getBoundingClientRect();
       const right = Math.max(12, window.innerWidth - (br.left + br.width));
       panel.style.right = right + 'px';
-      panel.style.bottom = Math.min(Math.max(12, window.innerHeight - br.top + 18), window.innerHeight - 80) + 'px';
+      // default bottom space
+      panel.style.bottom = (window.innerHeight - br.top + 18) + 'px';
+      // keep max-height sensible relative to viewport
       panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px';
     }catch(e){}
   }
-  async function openPanel(){ if(!panel) return; await fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput) userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 60); }
+  function openPanel(){ if(!panel) return; panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ if(userInput) userInput.focus(); }, 60); }
   function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  // gear modal handlers
+  // gear modal
   if(gearBtn){
     gearBtn.addEventListener('click', function(ev){
       ev && ev.stopPropagation();
       if(!modalBackdrop) return;
       modalBackdrop.classList.add('show'); modalBackdrop.classList.remove('hidden');
+      // load saved toggles
       try{ document.getElementById('kidsMode').checked = JSON.parse(localStorage.getItem('gh_kids')||'false'); document.getElementById('privateMode').checked = JSON.parse(localStorage.getItem('gh_private')||'false'); }catch(e){}
     });
   }
   if(closeModal){
     closeModal.addEventListener('click', function(){
       modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden');
-      try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){}
+      try{ localStorage.setItem('gh_kids', JSON.stringify(kidsModeCheckbox.checked)); localStorage.setItem('gh_private', JSON.stringify(privateModeCheckbox.checked)); }catch(e){}
     });
   }
-  modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
-
+  if(modalBackdrop){
+    modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
+  }
   if(clearHistoryBtn){
-    clearHistoryBtn.addEventListener('click', function(ev){
-      ev && ev.preventDefault();
-      history = []; saveHistory(); renderHistory();
-    });
+    clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history=[]; localStorage.setItem('gh_history', JSON.stringify(history)); renderHistory(); });
   }
+
+  // minimize button
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
-  // close panel on outside click (when panel open and modal not showing)
+  // small click outside to close panel
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -400,95 +332,132 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // Drag engine: pointer events + tap/drag discrimination
+  // Drag: pointer events with fallback to touch/mouse (defensive)
   (function enableDrag(){
     if(!bubble) return;
-    let active=false, sx=0, sy=0, tx=0, ty=0, moved=false, lastUp=0;
-    const threshold = 4;
+    let active = false, sx=0, sy=0, tx=0, ty=0, moved=false;
+    const threshold = 6;
+    // restore position
     try{
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
-
     function onDown(e){
-      active=true; moved=false;
-      const p = e.touches ? e.touches[0] : e;
-      sx = p.clientX; sy = p.clientY;
+      active = true; moved=false;
+      sx = (e.touches ? e.touches[0].clientX : e.clientX); sy = (e.touches ? e.touches[0].clientY : e.clientY);
       const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
-      try{ if(e.pointerId) bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
+      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); tx = p[4]||0; ty = p[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
       (e.preventDefault && e.preventDefault());
     }
     function onMove(e){
       if(!active) return;
-      const p = e.touches ? e.touches[0] : e;
-      const dx = p.clientX - sx, dy = p.clientY - sy;
-      if(!moved && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) moved = true;
+      const cx = (e.touches ? e.touches[0].clientX : e.clientX); const cy = (e.touches ? e.touches[0].clientY : e.clientY);
+      const dx = cx - sx, dy = cy - sy;
+      if(!moved && (Math.abs(dx)>threshold || Math.abs(dy)>threshold)) moved = true;
       const nx = tx + dx, ny = ty + dy;
       bubble.style.transform = `translate(${nx}px, ${ny}px)`;
       (e.preventDefault && e.preventDefault());
     }
     function onUp(e){
       if(!active) return;
-      active=false;
-      lastUp = Date.now();
+      active = false;
+      // if not moved enough -> click open
       if(!moved){
-        // quick tap -> toggle panel (debounce tiny)
-        setTimeout(()=>{ if(Date.now() - lastUp < 120){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } }, 20);
+        setTimeout(()=>{ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }, 0);
         return;
       }
-      // persist snapped position
+      // else persist position and snap roughly
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
+      // read transform
       const m = window.getComputedStyle(bubble).transform;
-      let finalX=0, finalY=0;
+      let finalX = 0, finalY = 0;
       if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      // snap
       if(centerX < screenMid) finalX = finalX - rect.left + 12;
       else finalX = finalX + (window.innerWidth - rect.right) - 12;
       finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
       bubble.style.transform = `translate(${finalX}px, ${finalY}px)`;
       try{ localStorage.setItem('gh_bubble_pos', JSON.stringify({x: finalX, y: finalY})); }catch(e){}
     }
-
-    bubble.addEventListener('pointerdown', onDown, {passive:false});
-    window.addEventListener('pointermove', onMove, {passive:false});
-    window.addEventListener('pointerup', onUp, {passive:false});
+    // pointer support best-effort
+    bubble.addEventListener('pointerdown', function(ev){ onDown(ev); bubble.setPointerCapture && bubble.setPointerCapture(ev.pointerId); }, {passive:false});
+    window.addEventListener('pointermove', function(ev){ onMove(ev); }, {passive:false});
+    window.addEventListener('pointerup', function(ev){ onUp(ev); }, {passive:false});
+    // touch fallback
     bubble.addEventListener('touchstart', onDown, {passive:false});
     window.addEventListener('touchmove', onMove, {passive:false});
     window.addEventListener('touchend', onUp, {passive:false});
+    // mouse fallback
     bubble.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-
-    // avoid double click handling; onUp handles taps
-    bubble.addEventListener('click', function(e){ /* intentionally empty to avoid double events */ });
-    bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); }});
+    // click fallback for quick taps (if not moved)
+    bubble.addEventListener('click', function(e){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); });
+    bubble.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { if(panel && panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
   })();
 
-  // keyboard safety: adjust panel maxHeight when keyboard appears
-  if(userInput){
-    userInput.addEventListener('focus', ()=> setTimeout(()=> {
-      if(panel && !panel.classList.contains('show')) openPanel();
-      try{ const vh = window.innerHeight || document.documentElement.clientHeight; panel.style.maxHeight = Math.max(300, vh - 120) + 'px'; chatArea.scrollTop = chatArea.scrollHeight; userInput.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
-    }, 250));
-    userInput.addEventListener('blur', ()=> setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150));
+  // quick safe external fetch (background) - won't block UI
+  (function loadQA(){
+    fetch('./qa.json', {cache:'no-store'}).then(r=>{
+      if(!r.ok) throw new Error('no qa.json');
+      return r.json();
+    }).then(j=>{
+      // if array or object, use it
+      if(j) qaData = j;
+      console.info('qa.json loaded (background)');
+    }).catch(err=>{
+      console.warn('qa.json not available — used fallback', err);
+    });
+  })();
+
+  // keyboard visibility & focus handling - keep input visible
+  (function keyboardSafety(){
+    // when input focuses, ensure panel visible and input scrolled into view
+    if(userInput){
+      userInput.addEventListener('focus', ()=> {
+        // open if not open
+        if(panel && !panel.classList.contains('show')) openPanel();
+        // small delay to allow virtual keyboard to appear then adjust sizes
+        setTimeout(()=> {
+          try{
+            // make sure chat area and panel adjust to viewport height
+            const vh = window.innerHeight || document.documentElement.clientHeight;
+            panel.style.maxHeight = Math.max(300, vh - 120) + 'px';
+            chatArea.scrollTop = chatArea.scrollHeight;
+            // scroll input into view
+            userInput.scrollIntoView({behavior:'smooth', block:'center'});
+          }catch(e){}
+        }, 250);
+      });
+      userInput.addEventListener('blur', ()=> {
+        // restore maxHeight
+        setTimeout(()=> { try{ panel.style.maxHeight = Math.min(window.innerHeight - 120, 86 * window.innerHeight / 100) + 'px'; }catch(e){} },150);
+      });
+    }
+    // listen for resize changes (mobile keyboard open/close)
     let lastInner = window.innerHeight;
     window.addEventListener('resize', function(){
       try{
         const now = window.innerHeight;
-        if(now < lastInner - 80){ panel.style.maxHeight = Math.max(260, now - 120) + 'px'; setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60); }
-        else panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
+        // if shrunk significantly, likely keyboard open — increase panel max-height to fit visible area
+        if(now < lastInner - 80){
+          panel.style.maxHeight = Math.max(260, now - 120) + 'px';
+          // keep chat scrolled
+          setTimeout(()=> chatArea.scrollTop = chatArea.scrollHeight, 60);
+        } else {
+          panel.style.maxHeight = Math.min(now - 120, 86 * now / 100) + 'px';
+        }
         lastInner = now;
       }catch(e){}
     });
-  }
+  })();
 
-  // reposition on orientation/resize
-  window.addEventListener('orientationchange', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 300));
-  window.addEventListener('resize', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 160));
+  // allow opening panel via keyboard when bubble focused
+  bubble.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
 
-})(); // end widget IIFE
+})(); // end main IIFE
 </script>
 </body>
 </html>
