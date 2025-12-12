@@ -104,26 +104,24 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 </script>
 
 <!-- EMBED-MODE QUICK FIX
-     NOTE: this version only hides the internal panel when explicit ?embed=1
-     (was previously auto-detecting any iframe which caused accidental hiding).
+     ONLY hide internal panel when explicit ?embed=1 parameter is present.
+     This prevents accidental hiding when opened normally on the main site.
 -->
 <script>
 (function(){
   function applyEmbedHide(){
     try{
-      // ---- IMPORTANT: now explicit only ----
-      const params = new URLSearchParams(window.location.search);
-      const embedParam = params.get('embed') === '1';
+      // only hide when explicit embed=1 in query string
+      const embedFlag = new URLSearchParams(window.location.search).get('embed') === '1';
+      if(!embedFlag) return;
 
-      if(!embedParam) return; // only hide when ?embed=1 is present
-
-      // make page background transparent (so host page shows behind)
+      // make page background transparent (so modal shows your page behind it)
       try{
         document.documentElement.style.background = 'transparent';
         document.body.style.background = 'transparent';
       }catch(e){}
 
-      // hide pieces that would conflict with host's UI
+      // hide the main internal UI (we rely on host page UI)
       const panel = document.getElementById('panel');
       if(panel) panel.style.display = 'none';
 
@@ -139,8 +137,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       const err = document.getElementById('errorBox');
       if(err) err.style.display = 'none';
     }catch(e){
-      // fail silently
-      try{ console && console.warn && console.warn('embed-hide error', e); }catch(_) {}
+      console && console.warn && console.warn('embed-hide error', e);
     }
   }
 
@@ -170,7 +167,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
 
-      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings" type="button">
+      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
         <!-- gear icon -->
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
@@ -178,7 +175,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         </svg>
       </button>
 
-      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize" type="button">
+      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.6"><path d="M5 12h14"/></svg>
       </button>
     </div>
@@ -205,8 +202,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <select id="countryInModal" class="select" style="width:100%;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--white)"><option>Philippines</option><option>United States</option></select>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)" type="button">Clear history</button>
-        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)" type="button">Close</button>
+        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)">Clear history</button>
+        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)">Close</button>
       </div>
     </div>
   </div>
@@ -226,10 +223,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      if(box && txt){
-        box.style.display = 'block';
-        txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
-      }
+      box.style.display = 'block';
+      txt.textContent = (ev && ev.message ? ev.message : String(ev)) + '\n' + (ev && ev.filename ? ev.filename+':'+ev.lineno+':'+ev.colno : '');
       console.error('Captured error', ev);
     }catch(e){}
   });
@@ -237,10 +232,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     try{
       const box = document.getElementById('errorBox');
       const txt = document.getElementById('errorText');
-      if(box && txt){
-        box.style.display = 'block';
-        txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
-      }
+      box.style.display = 'block';
+      txt.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
       console.error('Unhandled rejection', ev);
     }catch(e){}
   });
@@ -315,7 +308,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
 
   // Build normalized map from inline qaData (fallback) or preloaded structure
-  function buildMapFromInline(){
+  (function buildMapFromInline(){
     try{
       if(!qaData) return;
       if(Array.isArray(qaData)){
@@ -354,10 +347,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         }
       }
     }catch(e){ console.warn('buildMapFromInline failed', e); }
-  }
-
-  // build from the inline QA right away (ensures qaDataNormalized populated)
-  try{ buildMapFromInline(); }catch(e){ console.warn('initial buildMapFromInline failed', e); }
+  })();
 
   async function fetchQA(){
     const paths = [
@@ -411,10 +401,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
           }
         }catch(e){ console.warn('error normalizing parsed qa.json', e); }
 
-        if(parsed) {
-          qaData = parsed;
-          try{ buildMapFromInline(); }catch(e){}
-        }
+        if(parsed) qaData = parsed;
         console.info('qa.json loaded/normalized from', p);
         return true;
       }catch(fetchErr){
@@ -435,16 +422,15 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
   function renderHistory(){ if(!chatArea) return; chatArea.innerHTML=''; for(const h of history){ if(h.role==='user') addUserBubble(h.text); else addBotBubble(h.text); } requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
 
-  // bubble clone to clear previous listeners (defensive)
+  // bubble clone to clear previous listeners
   let bubble = originalBubble;
   (function replaceBubble(){
     try{
-      if(!originalBubble || !originalBubble.parentNode) return;
       const clone = originalBubble.cloneNode(true);
       originalBubble.parentNode.replaceChild(clone, originalBubble);
       bubble = clone;
       bubble.style.pointerEvents = 'auto';
-    }catch(e){ console.warn('replaceBubble failed', e); }
+    }catch(e){}
   })();
 
   // small helpers
@@ -628,9 +614,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){}
     });
   }
-  if(modalBackdrop){
-    modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
-  }
+  modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
   if(clearHistoryBtn){
     clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history=[]; saveHistory(); renderHistory(); });
   }
@@ -654,12 +638,21 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
 
+    function readCurrentTransform(){
+      const m = window.getComputedStyle(bubble).transform;
+      if(m && m !== 'none'){
+        const vals = m.match(/matrix.*\((.+)\)/);
+        if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); return {x: arr[4]||0, y: arr[5]||0}; }
+      }
+      return {x:0,y:0};
+    }
+
     function onDown(e){
       active=true; moved=false;
       const p = e.touches ? e.touches[0] : e;
       sx = p.clientX; sy = p.clientY;
-      const m = window.getComputedStyle(bubble).transform;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const arr = vals[1].split(',').map(x=>parseFloat(x)); tx = arr[4]||0; ty = arr[5]||0; } else { tx=0; ty=0; } } else { tx=0; ty=0; }
+      const cur = readCurrentTransform();
+      tx = cur.x; ty = cur.y;
       try{ e.pointerId && bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
       (e.preventDefault && e.preventDefault());
     }
@@ -683,9 +676,8 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
-      const m = window.getComputedStyle(bubble).transform;
-      let finalX=0, finalY=0;
-      if(m && m !== 'none'){ const vals = m.match(/matrix.*\((.+)\)/); if(vals){ const p = vals[1].split(',').map(x=>parseFloat(x)); finalX = p[4]||0; finalY = p[5]||0; } }
+      const cur = readCurrentTransform();
+      let finalX = cur.x, finalY = cur.y;
       if(centerX < screenMid) finalX = finalX - rect.left + 12;
       else finalX = finalX + (window.innerWidth - rect.right) - 12;
       finalY = Math.max(finalY, -rect.top + 12); finalY = Math.min(finalY, window.innerHeight - rect.bottom - 12);
@@ -729,110 +721,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   window.addEventListener('resize', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 160));
 
 })(); // end IIFE
-// --- DEBUG / SAFETY PATCH: paste this BEFORE the final </script> tag ---
-(function(){
-  try{
-    // ensure bubble click always toggles panel (extra safety)
-    if(window.bubble === undefined){
-      // try to find current bubble element if local var not accessible
-      window.__gh_bubble_el = window.__gh_bubble_el || document.getElementById('bubble');
-    } else {
-      window.__gh_bubble_el = window.bubble;
-    }
-    const B = window.__gh_bubble_el || document.getElementById('bubble');
-    const PANEL = document.getElementById('panel');
-    const CHAT = document.getElementById('chatArea');
-
-    function safeOpen(){
-      try{
-        // ensure panel displayed and sized
-        if(PANEL) {
-          PANEL.style.display = 'block';
-          PANEL.classList.add('show');
-          PANEL.setAttribute('aria-hidden','false');
-          // make responsive height stricter to avoid host overlay
-          PANEL.style.maxHeight = Math.min(window.innerHeight - 120, Math.round(window.innerHeight * 0.86)) + 'px';
-          PANEL.style.minHeight = '320px';
-        }
-        if(CHAT){
-          CHAT.style.minHeight = Math.max(220, window.innerHeight * 0.25) + 'px';
-          CHAT.scrollTop = CHAT.scrollHeight;
-        }
-      }catch(e){ console && console.warn && console.warn('safeOpen error', e); }
-    }
-    function safeClose(){
-      try{
-        if(PANEL){
-          PANEL.classList.remove('show');
-          PANEL.setAttribute('aria-hidden','true');
-        }
-      }catch(e){}
-    }
-
-    if(B){
-      B.addEventListener('click', function(ev){
-        try{
-          ev && ev.stopPropagation && ev.stopPropagation();
-          if(!PANEL) return;
-          if(PANEL.classList && PANEL.classList.contains('show')) safeClose();
-          else safeOpen();
-        }catch(e){ console.warn('bubble click safety handler', e); }
-      }, {passive:true});
-    }
-
-    // Initial welcome: only once per browser to avoid spamming
-    try{
-      const already = localStorage.getItem('gh_seen_welcome_v2');
-      if(!already){
-        // try to use existing qaData/lookupReply if available
-        var welcomeText = "Hello! I'm Gentle Heart — how can I help you today?";
-        try{
-          if(window.qaData && window.qaData.hi) welcomeText = window.qaData.hi;
-          else if(window.qaData && window.qaData['hi']) welcomeText = window.qaData['hi'];
-          else if(typeof lookupReply === 'function'){
-            const r = lookupReply('hi');
-            if(r && r.text) welcomeText = r.text;
-          }
-        }catch(e){}
-        try{
-          // push into history and render using existing helpers if available
-          if(typeof history !== 'undefined' && Array.isArray(history) && typeof saveHistory === 'function' && typeof renderHistory === 'function'){
-            history.push({role:'bot', text: welcomeText});
-            try{ saveHistory(); }catch(e){}
-            try{ renderHistory(); }catch(e){}
-          } else {
-            // fallback: directly insert a bot bubble element
-            if(CHAT){
-              const w = document.createElement('div'); w.className='msg bot-msg';
-              const img = document.createElement('img'); img.src='avatar.png'; img.alt='Gentle Heart'; img.onerror = ()=>img.style.display='none';
-              const t = document.createElement('div'); t.className='text'; t.textContent = welcomeText;
-              w.appendChild(img); w.appendChild(t); CHAT.appendChild(w);
-              CHAT.scrollTop = CHAT.scrollHeight;
-            }
-          }
-        }catch(e){ console.warn('welcome push failed', e); }
-        try{ localStorage.setItem('gh_seen_welcome_v2','1'); }catch(e){}
-      }
-    }catch(e){}
-
-    // small safety: if panel appears blank because of host overlay, temporarily add outline for debug
-    try{
-      if(PANEL && !localStorage.getItem('gh_hide_debug_outline')){
-        PANEL.style.boxShadow = PANEL.style.boxShadow || '0 30px 80px rgba(0,0,0,0.6)';
-        // optional outline for debugging — remove later
-        // PANEL.style.outline = '2px solid rgba(255,0,0,0.06)';
-      }
-    }catch(e){}
-
-    // ensure panel positions update on resize/orientation change
-    window.addEventListener('resize', function(){ try{ if(PANEL && PANEL.classList.contains('show')) safeOpen(); }catch(e){} });
-    window.addEventListener('orientationchange', function(){ try{ if(PANEL && PANEL.classList.contains('show')) safeOpen(); }catch(e){} });
-
-    console.debug && console.debug('GentleHeart safety patch initialized');
-  }catch(err){
-    console.warn('GentleHeart safety patch error', err);
-  }
-})();
 </script>
 </body>
 </html>
