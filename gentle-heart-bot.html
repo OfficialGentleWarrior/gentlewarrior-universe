@@ -21,31 +21,27 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 /* Bubble */
 #bubble{
-  position:fixed; right:18px; bottom:18px;
-  z-index:100003;
+  position:fixed; right:18px; bottom:18px; z-index:99999;
   width:68px; height:68px; border-radius:999px;
   background:linear-gradient(180deg,var(--emerald-500),var(--emerald-600));
   display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(3,30,20,.45);
   cursor:grab; touch-action:none; -webkit-user-drag:none; user-select:none;
-  transition:box-shadow .12s ease, transform .12s ease, opacity .12s ease;
+  transition:box-shadow .12s ease, transform .12s ease;
 }
 #bubble:active{ cursor:grabbing; box-shadow:0 12px 36px rgba(3,30,20,.55); transform:scale(.98); }
 #bubble img{width:72%;height:72%;border-radius:12px;object-fit:cover;display:block}
-#bubble .avatar-fallback{ width:60%; height:60%; display:none; }
 
 /* Panel */
 #panel{
-  position:fixed; right:18px; bottom:110px;
-  z-index:100002;
+  position:fixed; right:18px; bottom:110px; z-index:99998;
   width:360px; max-width:92vw; height:640px; max-height:86vh;
   border-radius:14px; overflow:hidden; display:flex;flex-direction:column;
   background:var(--emerald-900); color:var(--white); transform:translateY(6px) scale(.99); opacity:0;
-  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease, visibility .12s ease;
-  visibility:hidden;
+  transition:transform .14s ease,opacity .14s ease,right .12s ease,bottom .12s ease,max-height .12s ease;
   pointer-events:none;
   box-shadow:0 20px 60px rgba(3,30,20,.5);
 }
-#panel.show{transform:none;opacity:1; visibility:visible; pointer-events:auto;}
+#panel.show{transform:none;opacity:1; pointer-events:auto;}
 .header{display:flex;align-items:center;padding:14px;gap:12px;background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));}
 .header img{width:46px;height:46px;border-radius:10px;object-fit:cover;}
 .title{font-weight:700;font-size:18px}
@@ -72,30 +68,14 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 @keyframes blink{0%,80%{opacity:0.2}40%{opacity:0.95}}
 
 /* Modal: solid backdrop */
-.modal-backdrop{
-  position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;
-  z-index:99990;
-  background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0;
-}
-.modal-backdrop.show{
-  pointer-events:auto; opacity:1;
-  z-index:100010;
-}
+.modal-backdrop{position:fixed;inset:0;display:flex;align-items:end;justify-content:center;padding:18px;z-index:100000;background: rgba(4,51,31,0.95);transition:opacity .12s ease; pointer-events:none; opacity:0}
+.modal-backdrop.show{pointer-events:auto; opacity:1}
 .modal{pointer-events:auto;background:linear-gradient(180deg,var(--emerald-900),var(--emerald-800));color:var(--white);width:360px;max-width:96vw;border-radius:12px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,0.45)}
 .hidden{display:none}
 
 /* Error overlay */
-#errorBox{position:fixed;left:12px;right:12px;top:12px;
-  z-index:400020;
-  background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
+#errorBox{position:fixed;left:12px;right:12px;top:12px;z-index:400000;background:#ffefef;color:#400;border-radius:10px;padding:10px;border:1px solid #f2c2c2;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
 #errorBox pre{white-space:pre-wrap;margin:0;font-size:13px}
-
-/* followup pill */
-.followup-pill{
-  padding:8px 12px;border-radius:999px;border:0;cursor:pointer;background:rgba(255,255,255,0.04);
-  color:var(--white);font-size:13px;
-}
-.followup-pill:hover{ filter:brightness(1.06); transform:translateY(-1px); transition:transform .12s ease; }
 
 @media(max-width:420px){
   #panel{width:92vw;height:86vh;right:6px;left:6px}
@@ -121,13 +101,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 
 <!-- Bubble -->
 <div id="bubble" role="button" aria-label="Open Gentle Heart" tabindex="0" title="Gentle Heart — tap to open">
-  <img src="avatar.png" alt="Gentle Heart avatar" onerror="this.style.display='none'; var s=this.nextElementSibling; if(s) s.style.display='block';" />
-  <!-- SVG fallback if avatar.png missing -->
-  <svg class="avatar-fallback" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <circle cx="12" cy="12" r="10" fill="#0e6e47"></circle>
-    <path d="M12 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#f7fff9"></path>
-    <path d="M6.5 17.5c1.2-2 3.2-3 5.5-3s4.3 1 5.5 3" stroke="#f7fff9" stroke-width="1.2" stroke-linecap="round"></path>
-  </svg>
+  <img src="avatar.png" alt="Gentle Heart avatar" onerror="this.style.display='none'"/>
 </div>
 
 <!-- Panel -->
@@ -143,14 +117,14 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <option>Philippines</option><option>United States</option><option>United Kingdom</option><option>India</option>
       </select>
 
-      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings" type="button">
+      <button id="gearBtn" class="icon-btn" title="Settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a.5.5 0 0 1 0 .71l-1.41 1.41a.5.5 0 0 1-.71 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/>
         </svg>
       </button>
 
-      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize" type="button">
+      <button id="minBtn" class="icon-btn" title="Minimize" aria-label="Minimize">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="1.6"><path d="M5 12h14"/></svg>
       </button>
     </div>
@@ -177,24 +151,22 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         <select id="countryInModal" class="select" style="width:100%;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--white)"><option>Philippines</option><option>United States</option></select>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)" type="button">Clear history</button>
-        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)" type="button">Close</button>
+        <button id="clearHistory" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:#fff;color:var(--emerald-900)">Clear history</button>
+        <button id="closeModal" style="flex:1;padding:10px;border-radius:8px;border:0;cursor:pointer;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)">Close</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/* Cleaned & fixed Gentle Heart widget
-   - No display:none startup (use CSS visibility + opacity)
-   - Panel position on load
-   - Avatar SVG fallback
-   - Bubble toggle + drag clamp + persistent pos
-   - Removed problematic bubble.cloneNode replacement (use original bubble)
+/* Complete, fixed Gentle Heart widget
+   - robust fetchQA + normalization (supports common shapes)
+   - handleSend waits briefly for fetchQA (race) so qa.json is used if available
+   - bubble drag/tap + panel + history intact
 */
 
 (function(){
-  // Error overlay handlers
+  // global error overlay
   window.addEventListener('error', function(ev){
     try{
       const box = document.getElementById('errorBox');
@@ -220,6 +192,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
 })();
 
 (function(){
+  // DOM elements
   const originalBubble = document.getElementById('bubble');
   const panel = document.getElementById('panel');
   const chatArea = document.getElementById('chatArea');
@@ -231,17 +204,6 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   const clearHistoryBtn = document.getElementById('clearHistory');
   const minBtn = document.getElementById('minBtn');
 
-  // Ensure panel starts hidden via CSS state (leave transitions intact)
-  try{
-    if(panel){
-      panel.classList.remove('show');
-      panel.setAttribute('aria-hidden','true');
-    }
-  }catch(e){}
-
-  // Ensure panel positioned correctly after load (bubble pos restore may run earlier)
-  window.addEventListener('load', function(){ try{ positionPanelAboveBubble(); }catch(e){} });
-
   // inline fallback QA
   let qaData = {};
   try{
@@ -249,48 +211,69 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     if(inline && inline.textContent) qaData = JSON.parse(inline.textContent);
   }catch(e){ qaData = {}; }
 
-  // normalized map
+  // normalized map (string -> string)
   let qaDataNormalized = {};
+
   function normalizeKeyForMap(s){ return String(s||'').toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim(); }
-  function ensureEntry(nk){ if(!qaDataNormalized[nk]) qaDataNormalized[nk] = { responses: [], followups: [] }; return qaDataNormalized[nk]; }
+
+  // robust addNormalizedEntry
   function addNormalizedEntry(k, v){
     try{
       const nk = normalizeKeyForMap(k);
       if(!nk) return;
-      const entry = ensureEntry(nk);
-      if(Array.isArray(v)){
-        v.forEach(item => {
-          if(!item) return;
-          if(typeof item === 'string') entry.responses.push(item);
-          else if(typeof item === 'object'){
-            if(item.response) entry.responses.push(...(Array.isArray(item.response)? item.response.map(String): [String(item.response)]));
-            if(Array.isArray(item.followups)) entry.followups.push(...item.followups.map(String));
-          }
-        });
-      } else if(typeof v === 'object' && v !== null){
-        if(v.response) entry.responses.push(...(Array.isArray(v.response)? v.response.map(String): [String(v.response)]));
-        if(Array.isArray(v.followups)) entry.followups.push(...v.followups.map(String));
-      } else {
-        entry.responses.push(String(v||''));
+      // if value is string
+      if(typeof v === 'string'){
+        qaDataNormalized[nk] = v;
+        return;
       }
-      entry.responses = Array.from(new Set(entry.responses));
-      entry.followups = Array.from(new Set(entry.followups));
-    }catch(e){ console.warn('addNormalizedEntry error', e); }
+      // if v is an object with common fields
+      if(typeof v === 'object' && v !== null){
+        if(typeof v.response === 'string'){ qaDataNormalized[nk] = v.response; return; }
+        if(typeof v.a === 'string'){ qaDataNormalized[nk] = v.a; return; }
+        if(typeof v.reply === 'string'){ qaDataNormalized[nk] = v.reply; return; }
+        // array of strings
+        if(Array.isArray(v) && v.length && typeof v[0] === 'string'){ qaDataNormalized[nk] = v[0]; return; }
+        // find first string field
+        for(const prop of Object.keys(v)){
+          if(typeof v[prop] === 'string'){ qaDataNormalized[nk] = v[prop]; return; }
+        }
+        // fallback stringify
+        try{ qaDataNormalized[nk] = JSON.stringify(v); return; }catch(e){}
+      }
+      // final fallback
+      qaDataNormalized[nk] = String(v || '');
+    }catch(e){
+      console.warn('addNormalizedEntry error', e);
+    }
   }
 
+  // build from inline
   (function buildMapFromInline(){
     try{
       if(!qaData) return;
       if(Array.isArray(qaData)){
-        qaData.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
+        qaData.forEach(item => {
+          if(!item) return;
+          if(item.q && (item.a || item.response || item.reply)) addNormalizedEntry(item.q, item.a || item.response || item.reply);
+          else if(item.input && (item.a || item.response || item.reply)) addNormalizedEntry(item.input, item.a || item.response || item.reply);
+          else if(item.prompt && (item.reply || item.response)) addNormalizedEntry(item.prompt, item.reply || item.response);
+        });
         return;
       }
       if(typeof qaData === 'object'){
-        Object.keys(qaData).forEach(k => { if(k!=='meta' && k!=='version') addNormalizedEntry(k, qaData[k]); });
+        Object.keys(qaData).forEach(k => {
+          if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'items' || k === 'pairs') return;
+          const v = qaData[k];
+          if(typeof v === 'string') addNormalizedEntry(k, v);
+          else if(typeof v === 'object' && v !== null && (v.a || v.response || v.reply)) addNormalizedEntry(k, v.a || v.response || v.reply);
+        });
+        if(Array.isArray(qaData.items)) qaData.items.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
+        if(Array.isArray(qaData.pairs)) qaData.pairs.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
       }
     }catch(e){ console.warn('buildMapFromInline failed', e); }
   })();
 
+  // robust fetchQA (tries multiple paths, tolerant parsing)
   async function fetchQA(){
     const paths = ['./qa.json','qa.json'];
     for(const p of paths){
@@ -300,18 +283,45 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         const txt = await r.text();
         if(!txt || !txt.trim()) continue;
         let parsed;
-        try{ parsed = JSON.parse(txt);}catch(e){
+        try{ parsed = JSON.parse(txt); }catch(e){
           try{ parsed = JSON.parse(txt.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')); }catch(err){ throw err; }
         }
-        if(Array.isArray(parsed)) parsed.forEach(it => { if(it) addNormalizedEntry(it.q||it.input||it.prompt, it.a||it.response||it.reply); });
-        else if(typeof parsed === 'object') Object.keys(parsed).forEach(k => { if(k!=='meta' && k!=='version') addNormalizedEntry(k, parsed[k]); });
-        qaData = parsed || qaData;
-        console.info('qa.json loaded from', p);
+        // normalize
+        try{
+          if(Array.isArray(parsed)){
+            parsed.forEach(item => {
+              if(!item) return;
+              if(item.q && (item.a || item.response || item.reply)) addNormalizedEntry(item.q, item.a || item.response || item.reply);
+              else if(item.input && (item.a || item.response || item.reply)) addNormalizedEntry(item.input, item.a || item.response || item.reply);
+              else if(item.prompt && (item.reply || item.response)) addNormalizedEntry(item.prompt, item.reply || item.response);
+            });
+          } else if(parsed && typeof parsed === 'object'){
+            Object.keys(parsed).forEach(k => {
+              if(k === 'meta' || k === 'version' || k === 'hotlines' || k === 'items' || k === 'pairs') return;
+              const val = parsed[k];
+              if(typeof val === 'string') addNormalizedEntry(k, val);
+              else if(typeof val === 'object' && val !== null){
+                if(val.a || val.response || val.reply) addNormalizedEntry(k, val.a || val.response || val.reply);
+              }
+            });
+            if(Array.isArray(parsed.items)) parsed.items.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+            if(Array.isArray(parsed.pairs)) parsed.pairs.forEach(it => { if(it) addNormalizedEntry(it.q || it.input || it.prompt, it.a || it.response || it.reply); });
+          }
+        }catch(normErr){
+          console.warn('error normalizing parsed qa.json', normErr);
+        }
+
+        if(parsed) qaData = parsed;
+        console.info('qa.json loaded and normalized from', p);
         return true;
-      }catch(err){ /* ignore */ }
+      }catch(err){
+        console.warn('fetchQA try failed for', p, err);
+      }
     }
+    console.warn('qa.json not found or unreadable; using inline fallback.');
     return false;
   }
+  // initial background fetch
   fetchQA().catch(()=>{});
 
   // history
@@ -320,18 +330,27 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   function saveHistory(){ try{ localStorage.setItem('gh_history', JSON.stringify(history)); }catch(e){} }
   function renderHistory(){ if(!chatArea) return; chatArea.innerHTML=''; for(const h of history){ if(h.role==='user') addUserBubble(h.text); else addBotBubble(h.text); } requestAnimationFrame(()=> chatArea.scrollTop = chatArea.scrollHeight); }
 
-  // use the original bubble element directly (no clone)
+  // bubble replacement to clear old listeners
   let bubble = originalBubble;
-  if (bubble) bubble.style.pointerEvents = 'auto';
+  (function replaceBubble(){
+    try{
+      const clone = originalBubble.cloneNode(true);
+      originalBubble.parentNode.replaceChild(clone, originalBubble);
+      bubble = clone;
+      bubble.style.pointerEvents = 'auto';
+    }catch(e){}
+  })();
 
   // helpers
   function tokensOf(s){ return String(s||'').split(/\s+/).filter(Boolean); }
   function chooseRandom(a){ if(!Array.isArray(a)||!a.length) return null; return a[Math.floor(Math.random()*a.length)]; }
 
   function lookupReply(q){
-    if(!q) return { text: "Tell me more — I'm listening.", followups: [] };
+    if(!q) return "Tell me more — I'm listening.";
     const input = normalizeKeyForMap(q);
-    if(qaDataNormalized[input] && qaDataNormalized[input].responses.length) return { text: chooseRandom(qaDataNormalized[input].responses), followups: qaDataNormalized[input].followups||[] };
+    if(qaDataNormalized[input]) return qaDataNormalized[input];
+
+    // fuzzy match by token overlap
     const candidates = Object.keys(qaDataNormalized || {});
     if(candidates.length){
       const inputTokens = tokensOf(input), inputSet = new Set(inputTokens);
@@ -344,11 +363,13 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         const score = shared / Math.sqrt(kTokens.length * Math.max(1, inputTokens.length));
         if(score > best.score) best = { key:k, score };
       }
-      if(best.key && best.score >= 0.25) return { text: chooseRandom(qaDataNormalized[best.key].responses), followups: qaDataNormalized[best.key].followups || [] };
+      if(best.key && best.score >= 0.25) return qaDataNormalized[best.key];
     }
-    if(/\b(sad|unhappy|depressed|down)\b/.test(input)) return { text: qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?", followups: [] };
-    if(/\b(happy|glad|good|great|joy)\b/.test(input)) return { text: qaData['happy'] || "That's great — tell me what's making you happy?", followups: [] };
-    return { text: qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.", followups: [] };
+
+    if(/\b(sad|unhappy|depressed|down)\b/.test(input)) return qaData['sad'] || "I'm sorry you're feeling sad. Would you like a breathing exercise?";
+    if(/\b(happy|glad|good|great|joy)\b/.test(input)) return qaData['happy'] || "That's great — tell me what's making you happy?";
+
+    return qaData['help'] || "Thanks for sharing — tell me more, or ask about breathing exercises or CP info.";
   }
 
   // renderers
@@ -364,46 +385,45 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   }
   function addUserBubble(text){ if(!chatArea) return; const d = document.createElement('div'); d.className='msg user-msg'; d.textContent = text || ''; chatArea.appendChild(d); chatArea.scrollTop = chatArea.scrollHeight; }
 
-  function renderFollowups(list){
-    try{
-      if(!Array.isArray(list) || !list.length) return;
-      const wrap = document.createElement('div');
-      wrap.style.display='flex'; wrap.style.flexWrap='wrap'; wrap.style.gap='8px'; wrap.style.padding='10px 14px'; wrap.style.marginTop='6px';
-      list.slice(0,6).forEach(f => {
-        const b = document.createElement('button'); b.className='followup-pill'; b.type='button'; b.textContent = f;
-        b.addEventListener('click', ()=> handleSend(f));
-        wrap.appendChild(b);
-      });
-      chatArea.appendChild(wrap); chatArea.scrollTop = chatArea.scrollHeight;
-    }catch(e){ console.warn('renderFollowups error', e); }
-  }
-
-  // send flow
+  // send flow — waits briefly for fetchQA (race)
   let sendLock = false;
   async function handleSend(text){
     if(sendLock) return;
     if(!text || !text.trim()) return;
     sendLock = true;
-    history.push({role:'user', text}); saveHistory();
-    addUserBubble(text);
-    if(userInput) userInput.value = '';
-    const typingNode = addBotBubble('', {isTyping:true});
-    fetchQA().catch(()=>{});
-    await new Promise(r=>setTimeout(r,1200));
-    const replyObj = lookupReply(text);
-    const replyText = replyObj && replyObj.text ? String(replyObj.text) : "Thanks for sharing.";
-    const container = typingNode.querySelector('.text');
-    if(container) container.textContent = replyText;
-    history.push({role:'bot', text:replyText}); saveHistory();
-    if(Array.isArray(replyObj.followups) && replyObj.followups.length) renderFollowups(replyObj.followups);
-    chatArea.scrollTop = chatArea.scrollHeight;
-    sendLock = false;
+    try{
+      history.push({role:'user', text}); saveHistory();
+      addUserBubble(text);
+      if(userInput) userInput.value = '';
+
+      const typingNode = addBotBubble('', {isTyping:true});
+
+      // Try to fetch latest qa.json but bound the wait (race)
+      try{
+        const fetchPromise = fetchQA();
+        await Promise.race([fetchPromise, new Promise(r => setTimeout(r, 1600))]);
+      }catch(e){ console.warn('fetchQA race error', e); }
+
+      // small pacing for typing feel
+      await new Promise(r=>setTimeout(r, 400));
+
+      const reply = lookupReply(text);
+      const container = typingNode.querySelector('.text');
+      if(container) container.textContent = reply;
+      history.push({role:'bot', text:reply}); saveHistory();
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }catch(err){
+      console.error('handleSend error', err);
+      addBotBubble("Oops — something went wrong. Try again?");
+    }finally{
+      sendLock = false;
+    }
   }
 
-  // render history on load
+  // render history initially
   renderHistory();
 
-  // form
+  // form submit
   if(inputForm){
     inputForm.addEventListener('submit', function(e){
       e.preventDefault();
@@ -411,7 +431,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     });
   }
 
-  // Panel helpers
+  // panel helpers
   function positionPanelAboveBubble(){
     if(!panel || !bubble) return;
     try{
@@ -423,36 +443,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     }catch(e){}
   }
 
-  // Strong open/minimize with z-index coordination
-  function openPanel(){
-    try{
-      if(!panel) return;
-      fetchQA().catch(()=>{});
-      panel.style.zIndex = '100004';          // raise above bubble
-      if(bubble) bubble.style.zIndex = '100003';
-      panel.classList.add('show');
-      panel.setAttribute('aria-hidden','false');
-      if(modalBackdrop && !modalBackdrop.classList.contains('show')) modalBackdrop.style.zIndex = '99990';
-      positionPanelAboveBubble();
-      setTimeout(()=> {
-        try{ if(userInput){ userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; userInput.scrollIntoView({behavior:'smooth', block:'center'}); } }catch(e){}
-      }, 80);
-      console.info('[GentleHeart] openPanel — shown, zIndex=', panel.style.zIndex);
-    }catch(err){ console.error('[GentleHeart] openPanel error', err); }
-  }
+  function openPanel(){ if(!panel) return; fetchQA().catch(()=>{}); panel.classList.add('show'); panel.setAttribute('aria-hidden','false'); positionPanelAboveBubble(); setTimeout(()=>{ try{ if(userInput) userInput.focus(); chatArea.scrollTop = chatArea.scrollHeight; }catch(e){} }, 60); }
+  function minimizePanel(){ if(!panel) return; panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); }
 
-  function minimizePanel(){
-    try{
-      if(!panel) return;
-      panel.classList.remove('show');
-      panel.setAttribute('aria-hidden','true');
-      panel.style.zIndex = '100002';
-      if(bubble) bubble.style.zIndex = '100003';
-      console.info('[GentleHeart] minimizePanel');
-    }catch(err){ console.error('[GentleHeart] minimizePanel error', err); }
-  }
-
-  // bubble click toggle (works with drag/tap discrimination)
+  // bubble click toggle
   if(bubble){
     bubble.addEventListener('click', function(e){
       try{
@@ -464,6 +458,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     bubble.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { if(panel.classList.contains('show')) minimizePanel(); else openPanel(); } });
   }
 
+  // settings modal
   if(gearBtn){
     gearBtn.addEventListener('click', function(ev){
       ev && ev.stopPropagation();
@@ -478,11 +473,13 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       try{ localStorage.setItem('gh_kids', JSON.stringify(document.getElementById('kidsMode').checked)); localStorage.setItem('gh_private', JSON.stringify(document.getElementById('privateMode').checked)); }catch(e){}
     });
   }
+  modalBackdrop.addEventListener('click', function(ev){ if(ev.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.classList.add('hidden'); }});
   if(clearHistoryBtn){
     clearHistoryBtn.addEventListener('click', function(ev){ ev && ev.preventDefault(); history=[]; saveHistory(); renderHistory(); });
   }
   if(minBtn) minBtn.addEventListener('click', function(ev){ ev && ev.stopPropagation(); minimizePanel(); });
 
+  // click outside to close
   document.addEventListener('click', function(ev){
     if(!panel || !bubble) return;
     if(!panel.classList.contains('show')) return;
@@ -491,7 +488,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     minimizePanel();
   });
 
-  // Drag implementation with clamping + tap-vs-drag
+  // drag/tap logic (robust)
   (function enableDrag(){
     if(!bubble) return;
     let active=false, sx=0, sy=0, tx=0, ty=0, moved=false, lastUp=0;
@@ -500,7 +497,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
       const saved = JSON.parse(localStorage.getItem('gh_bubble_pos') || 'null');
       if(saved && typeof saved.x === 'number' && typeof saved.y === 'number') bubble.style.transform = `translate(${saved.x}px, ${saved.y}px)`;
     }catch(e){}
-    function readCurrentTransform(){
+    function readTransform(){
       const m = window.getComputedStyle(bubble).transform;
       if(m && m !== 'none'){
         const vals = m.match(/matrix.*\((.+)\)/);
@@ -511,21 +508,21 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     function clampFinal(nx, ny){
       const rect = bubble.getBoundingClientRect();
       const bw = rect.width, bh = rect.height;
-      const left = (rect.left + nx - readCurrentTransform().x);
-      const top = (rect.top + ny - readCurrentTransform().y);
+      const left = (rect.left + nx - readTransform().x);
+      const top = (rect.top + ny - readTransform().y);
       const minLeft = 6, minTop = 6;
       const maxLeft = Math.max(6, window.innerWidth - bw - 6);
       const maxTop = Math.max(6, window.innerHeight - bh - 6);
       const clampedLeft = Math.min(Math.max(left, minLeft), maxLeft);
       const clampedTop = Math.min(Math.max(top, minTop), maxTop);
-      const cur = readCurrentTransform();
+      const cur = readTransform();
       return { x: clampedLeft - (rect.left - cur.x), y: clampedTop - (rect.top - cur.y) };
     }
     function onDown(e){
       active=true; moved=false;
       const p = e.touches ? e.touches[0] : e;
       sx = p.clientX; sy = p.clientY;
-      const cur = readCurrentTransform(); tx = cur.x; ty = cur.y;
+      const cur = readTransform(); tx = cur.x; ty = cur.y;
       try{ e.pointerId && bubble.setPointerCapture && bubble.setPointerCapture(e.pointerId); }catch(err){}
       (e.preventDefault && e.preventDefault());
     }
@@ -546,7 +543,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
         setTimeout(()=>{ if(Date.now() - lastUp < 150){ if(panel && panel.classList && panel.classList.contains('show')) minimizePanel(); else openPanel(); } }, 30);
         return;
       }
-      const cur = readCurrentTransform();
+      const cur = readTransform();
       const rect = bubble.getBoundingClientRect();
       const centerX = rect.left + rect.width/2;
       const screenMid = window.innerWidth/2;
@@ -571,6 +568,7 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
     window.addEventListener('mouseup', onUp);
   })();
 
+  // input focus/resize handling
   if(userInput){
     userInput.addEventListener('focus', ()=> setTimeout(()=> {
       if(panel && !panel.classList.contains('show')) openPanel();
@@ -591,14 +589,10 @@ html,body{height:100%;margin:0;background:var(--bg);-webkit-font-smoothing:antia
   window.addEventListener('orientationchange', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 300));
   window.addEventListener('resize', ()=> setTimeout(()=>{ try{ const br=bubble.getBoundingClientRect(); panel.style.right = Math.max(12, window.innerWidth - (br.left + br.width)) + 'px'; }catch(e){} }, 160));
 
-  // expose minimal API for debugging
-  window.GentleHeart = { openPanel, minimizePanel, fetchQA };
-})();
+  // expose debug API
+  window.GentleHeart = { openPanel, minimizePanel, fetchQA, qaDataNormalized };
+
+})(); // end IIFE
 </script>
 </body>
 </html>
-
-
-Na-upload ko na ang final cleaned file gentle-heart-bot-cleaned.html sa canvas. Buksan mo na lang doon para i-copy / i-download at i-test sa main site — ready na dapat, at inayos ko ang clone/transform logic para hindi magka-duplicate handlers.
-
-Sabi mo kung gusto mo i-update pa (mas maliit na avatar, ibang default position, o auto-open on load) — gagawin ko agad.
