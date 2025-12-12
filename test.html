@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- GENTLE HEART: Floating chatbot styles (paste inside <head>) -->
+<style>
+/* Floating bubble */
+#gh-floating {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: #163e2f;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+  z-index: 99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:grab;
+  user-select:none;
+  transition:transform .12s ease, left .12s ease, top .12s ease;
+  touch-action: none; /* critical for touch dragging */
+}
+#gh-floating:active{ cursor:grabbing; transform:scale(.98); }
+#gh-floating img{ width:48px;height:48px;border-radius:999px;pointer-events:none; }
+
+/* Modal/iframe container */
+#gh-modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100000;
+}
+#gh-modal{
+  width:94%;
+  max-width:780px;
+  height:80vh;
+  background: #0f3f2f;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,0.6);
+  display:flex;
+  flex-direction:column;
+}
+#gh-modal header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 12px;
+  background:linear-gradient(180,#123e2f,#0b362a);
+  color:#eaf6ea;
+  gap:12px;
+}
+#gh-modal header .gh-title{display:flex;align-items:center;gap:10px;font-weight:700}
+#gh-modal iframe{border:0;width:100%;height:100%;flex:1;background:transparent}
+#gh-close-btn{
+  background:transparent;border:0;color:#eaf6ea;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;
+}
+
+/* Small responsive tweaks */
+@media (max-width:520px){
+  #gh-modal{ height:90vh; max-width: 94%; }
+  #gh-floating{ width:58px; height:58px; }
+  #gh-floating img{ width:40px; height:40px; }
+}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#03110a">
+
+
+  <meta charset="UTF-8" />
+  <title>Gentle Warrior Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gentle Warrior Universe — soft heart, strong spirit. Play the weekly memory challenge and climb the leaderboard." />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZLK6PBCQ7P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-ZLK6PBCQ7P');
+
+    function trackEvent(name, params){
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', name, params || {});
+        }
+      } catch (e) {
+        console && console.warn && console.warn('trackEvent error', e);
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      --bg:#03110a;
+      --bg-soft:#062016;
+      --card:#0b2a1b;
+      --accent:#9ae07a;
+      --accent-soft:#193d28;
+      --text:#f4fff7;
+      --muted:#a2b7a6;
+      --danger:#ff7070;
+      --border:#21412e;
+      --gold:#f6d47a;
+      --shadow:0 12px 30px rgba(0,0,0,0.6);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#123822 0,#020806 55%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{
+      max-width:960px;
+      margin:0 auto;
+      padding:16px 14px 32px;
+    }
+    img{max-width:100%;display:block;}
+
+    header.hero{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:14px 16px;
+      background:linear-gradient(120deg,#0b2417,#134226);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+    }
+    .hero-avatar{
+      width:72px;
+      height:72px;
+      border-radius:999px;
+      overflow:hidden;
+      border:3px solid var(--accent);
+      box-shadow:0 0 18px rgba(154,224,122,.5);
+      flex-shrink:0;
+    }
+    .hero-avatar img{width:100%;height:100%;object-fit:cover;}
+    .hero-title h1{
+      font-size:22px;
+      letter-spacing:.03em;
+      margin-bottom:4px;
+    }
+    .hero-title p{
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .banner-warning{
+      margin:14px 0;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#071d13;
+      border:1px solid #31593b;
+      font-size:13px;
+      color:#ffdf9c;
+    }
+
+    .tabs{
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      margin:8px 0 18px;
+      flex-wrap:wrap;
+    }
+    .tab-btn{
+      padding:8px 18px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      background:#062216;
+      color:#dbeadf;
+      font-weight:700;
+      font-size:14px;
+      white-space:nowrap;
+    }
+    .tab-btn.active{
+      background:var(--accent);
+      color:#04210f;
+    }
+
+    .panel{
+      background:var(--bg-soft);
+      border-radius:18px;
+      padding:18px 16px 20px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+    h2{
+      font-size:18px;
+      margin-bottom:10px;
+    }
+    h3{
+      font-size:15px;
+      margin:10px 0 6px;
+    }
+    p{
+      font-size:14px;
+      line-height:1.6;
+      margin-bottom:10px;
+    }
+    ul{
+      padding-left:18px;
+      margin:6px 0 10px;
+      font-size:14px;
+    }
+    ul li{margin-bottom:4px;}
+    ol{
+      padding-left:18px;
+      margin:8px 0 4px;
+      font-size:14px;
+    }
+    ol li{margin-bottom:4px;}
+    blockquote{
+      margin:8px 0 10px;
+      padding:8px 10px;
+      border-left:3px solid var(--accent);
+      background:#04170f;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .symbol-card{
+      background:var(--card);
+      border-radius:14px;
+      padding:10px;
+      border:1px solid var(--border);
+      cursor:pointer;
+      transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+      text-align:center;
+    }
+    .symbol-card img{
+      width:70px;
+      height:70px;
+      margin:0 auto 6px;
+      object-fit:contain;
+    }
+    .symbol-name{
+      text-align:center;
+      font-weight:700;
+      margin-bottom:2px;
+      font-size:14px;
+    }
+    .symbol-desc{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .symbol-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 20px rgba(0,0,0,0.5);
+      border-color:var(--accent);
+    }
+
+    #controls{
+      display:flex;
+      gap:8px;
+      margin:10px 0;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    #controls input{
+      flex:1;
+      min-width:180px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#04160d;
+      color:var(--text);
+      font-size:14px;
+    }
+    #controls input::placeholder{color:var(--muted);}
+    .btn{
+      padding:8px 14px;
+      border-radius:999px;
+      border:none;
+      background:var(--accent);
+      color:#04210f;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .btn-secondary{
+      background:#123225;
+      color:var(--text);
+    }
+    #stats{
+      margin-top:4px;
+      margin-bottom:4px;
+      font-size:14px;
+      text-align:center;
+    }
+    #stageInfo{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    #gameBoard{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .card,
+    .disabled-slot{
+      position:relative;
+      padding-top:120%;
+      border-radius:12px;
+      background:#020a05;
+    }
+    .card{
+      cursor:pointer;
+      transform-style:preserve-3d;
+      transition:transform .24s ease;
+    }
+    .card.flip{
+      transform:rotateY(180deg);
+    }
+    .disabled-slot{
+      opacity:0.18;
+      border:1px dashed var(--border);
+      pointer-events:none;
+    }
+
+    .card-face{
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 8px 16px rgba(0,0,0,0.6);
+    }
+
+    .card-front{
+      background: url("card-back.png") center center / contain no-repeat;
+      background-color: #02140b;
+      border:1px solid var(--border);
+    }
+
+    .card-back{
+      background:#020a05;
+      border:1px solid var(--border);
+      transform:rotateY(180deg);
+    }
+    .card-back img{
+      width:70%;
+      height:70%;
+      object-fit:contain;
+    }
+
+    .leaderboard-box{
+      margin-top:10px;
+      padding:10px 10px 8px;
+      border-radius:14px;
+      background:#04150c;
+      border:1px solid var(--border);
+      font-size:13px;
+    }
+    .leader-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:6px;
+      margin-bottom:3px;
+    }
+    .leader-row:last-child{margin-bottom:0;}
+    .leader-row div:first-child{
+      font-weight:600;
+    }
+    .leader-row div:last-child{
+      color:var(--muted);
+      font-size:12px;
+      text-align:right;
+    }
+
+    /* UPDATED FOOTER + DISCLAIMER */
+    footer{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:16px;
+      padding-top:12px;
+      border-top:1px solid var(--border);
+    }
+    .footer-disclaimer{
+      font-size:11px;
+      line-height:1.5;
+      max-width:840px;
+      margin:4px auto 0;
+      color:var(--muted);
+    }
+
+    #socials-container{
+      margin-top:10px;
+      display:flex;
+      justify-content:center;
+    }
+
+    #socials-container .socials{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:18px;
+    }
+
+    #socials-container .socials a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #socials-container .socials img{
+      width:26px;
+      height:26px;
+      display:block;
+    }
+
+    .symbol-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.75);
+      z-index:30;
+    }
+    .symbol-modal.active{display:flex;}
+    .symbol-modal-inner{
+      background:#04140d;
+      border-radius:18px;
+      padding:16px 16px 12px;
+      max-width:340px;
+      width:90%;
+      box-shadow:var(--shadow);
+      text-align:center;
+    }
+    .symbol-modal-inner img{
+      width:90px;
+      height:90px;
+      margin:0 auto 8px;
+      object-fit:contain;
+    }
+    .symbol-modal-inner h3{margin-bottom:4px;}
+    .symbol-modal-inner p{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:10px;
+      line-height:1.6;
+    }
+    .symbol-modal-close{
+      border:none;
+      padding:6px 12px;
+      border-radius:999px;
+      background:var(--accent);
+      color:#04210f;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    #winOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:40;
+    }
+    #winOverlay.active{display:flex;}
+    #winCard{
+      background:#04140d;
+      padding:16px 18px;
+      border-radius:18px;
+      text-align:center;
+      border:1px solid rgba(154,224,122,0.7);
+      max-width:320px;
+      width:90%;
+      font-size:14px;
+    }
+    #winCard h3{margin-bottom:6px;}
+    #winCard p{margin-bottom:4px;}
+    #winActions{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    #winActions button{
+      width:100%;
+    }
+    #winShareBtn{
+      font-size:14px;
+    }
+
+    /* helper text for device + Stage 7 hints */
+    .game-hint{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    /* Floating Play CTA (mobile-first) */
+    .floating-play-cta{
+      position:fixed;
+      right:12px;
+      bottom:14px;
+      z-index:50;
+      display:none;
+    }
+    .floating-play-cta button{
+      box-shadow:0 8px 18px rgba(0,0,0,0.6);
+    }
+    @media (max-width:768px){
+      .floating-play-cta{display:block;}
+    }
+
+    /* Game hub cards (Memory Game, Heart Defender, CP Myths Quiz) */
+    .game-hub{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:10px;
+      margin:10px 0 16px;
+    }
+    .game-card{
+      background:var(--card);
+      border-radius:14px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      box-shadow:0 8px 18px rgba(0,0,0,0.45);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:6px;
+      font-size:13px;
+    }
+    .game-card-title{
+      font-weight:700;
+      font-size:14px;
+      margin-bottom:2px;
+    }
+    .game-card p{
+      font-size:13px;
+      color:var(--muted);
+      flex:1;
+      margin-bottom:4px;
+    }
+    .game-card-btn{
+      width:100%;
+      text-align:center;
+      justify-content:center;
+      display:inline-flex;
+      align-items:center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header class="hero">
+      <div class="hero-avatar">
+        <img src="hero-portrait.jpg" alt="Gentle Warrior" loading="lazy">
+      </div>
+      <div class="hero-title">
+        <h1>Gentle Warrior Universe</h1>
+        <p>Soft heart. Strong spirit.</p>
+      </div>
+    </header>
+
+    <div class="banner-warning" id="caBox">
+      Loading contract info…
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn" data-tab="home">Home</button>
+      <button class="tab-btn" data-tab="symbols">Symbols</button>
+      <button class="tab-btn" data-tab="symbolism">Symbolism</button>
+      <button class="tab-btn" data-tab="awareness">Awareness</button>
+      <button class="tab-btn" data-tab="families">Families</button>
+      <button class="tab-btn" data-tab="caregivers">Care Team</button>
+      <button class="tab-btn" data-tab="faq">FAQ</button>
+      <button class="tab-btn active" data-tab="game">Game</button>
+      <button class="tab-btn" data-tab="announcements">Announcements</button>
+    </div>
+<!-- HOME -->
+    <section id="home" class="panel" style="display:none">
+      <h2>Gentle Warrior</h2>
+      <p><strong>Soft Heart. Strong Spirit.</strong></p>
+      <p>Raising awareness for children with cerebral palsy.</p>
+
+      <blockquote>
+        Gentle Warrior represents children with cerebral palsy —
+        gentle in body, strong in spirit, and surrounded by care.
+      </blockquote>
+
+      <p>
+        This world exists to honor resilience, patience, and quiet courage
+        through storytelling, symbols, and play.
+      </p>
+
+      <hr>
+
+      <h2>Why This World Was Created</h2>
+      <p>
+        Gentle Warrior was created to give children with cerebral palsy a hero
+        who looks like effort — not perfection.
+      </p>
+      <p>
+        Cerebral palsy affects movement, coordination, and muscle control.
+        For many children, everyday actions take energy and focus that others never see.
+      </p>
+
+      <blockquote>
+        You are not broken.<br>
+        You are not behind.<br>
+        You are not invisible.
+      </blockquote>
+
+      <p>
+        You are moving through your own path — and that path matters.
+      </p>
+
+      <hr>
+
+      <h2>What We Believe</h2>
+      <ul>
+        <li>Softness is not weakness.</li>
+        <li>Effort is a form of courage.</li>
+        <li>Every child deserves to be seen.</li>
+        <li>Growth happens in small steps.</li>
+        <li>Identity is not defined by ability.</li>
+        <li>Play is not time wasted — it is time invested.</li>
+        <li>Kindness builds stronger worlds than strength alone.</li>
+      </ul>
+
+      <hr>
+
+      <h2>The Memory Game</h2>
+      <p>This game is not about speed. It is about patience.</p>
+      <p>
+        It is about focus when the body tires, and small wins that build confidence.
+        For some children, every movement is effort.
+      </p>
+      <p>This game honors that effort.</p>
+
+      <hr>
+
+      <h2>Join the Gentle Warrior World</h2>
+      <p>
+        Gentle Warrior is not something you rush through.
+        It’s a world you grow into.
+      </p>
+
+      <ul>
+        <li>Explore the symbols.</li>
+        <li>Learn about cerebral palsy.</li>
+        <li>Play with purpose.</li>
+        <li>Stay gentle.</li>
+      </ul>
+
+      <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px;">
+        <button class="btn" onclick="document.querySelector('.tab-btn[data-tab=&quot;awareness&quot;]').click();">
+          Learn About Cerebral Palsy
+        </button>
+        <button class="btn btn-secondary" onclick="document.querySelector('.tab-btn[data-tab=&quot;symbolism&quot;]').click();">
+          Explore Our Symbols
+        </button>
+        <button class="btn btn-secondary" onclick="document.querySelector('.tab-btn[data-tab=&quot;game&quot;]').click();">
+          Play the Memory Game
+        </button>
+      </div>
+
+      <div id="roadmap" style="margin-top:24px; text-align:center;">
+        <h2 style="margin-bottom:12px;">Roadmap</h2>
+        <a href="roadmap.png" target="_blank">
+          <img src="roadmap.png"
+               alt="Gentle Warrior Roadmap"
+               loading="lazy"
+               style="max-width:100%; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.45);">
+        </a>
+        <p style="margin-top:8px;font-size:14px;color:var(--muted);">
+          Our journey from community to games, token, NFTs, and impact.
+        </p>
+      </div>
+
+      <div id="home-cta"></div>
+
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        Gentle Warrior advocates awareness and understanding for children with cerebral palsy.
+        We aim to create a world built on dignity, patience, and care.
+      </p>
+    </section>
+
+    <!-- PILLAR SYMBOLS -->
+    <section id="symbols" class="panel" style="display:none">
+      <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
+      <div class="grid">
+        <div class="symbol-card"
+             data-name="Aurelion"
+             data-lore="Light and leadership — a gentle sun that guides without burning.">
+          <img src="symbol-aurelion.png" alt="Aurelion" loading="lazy">
+          <div class="symbol-name">Aurelion</div>
+          <div class="symbol-desc">Light, leadership</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Gaialune"
+             data-lore="Nature and healing — roots that hold, leaves that shelter.">
+          <img src="symbol-gaialune.png" alt="Gaialune" loading="lazy">
+          <div class="symbol-name">Gaialune</div>
+          <div class="symbol-desc">Nature, healing</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Ignara"
+             data-lore="Passion and will — a heart-fire that chooses courage over rage.">
+          <img src="symbol-ignara.png" alt="Ignara" loading="lazy">
+          <div class="symbol-name">Ignara</div>
+          <div class="symbol-desc">Passion, will</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Solyndra"
+             data-lore="Guidance and hope — quiet starlight that shows the way home.">
+          <img src="symbol-solyndra.png" alt="Solyndra" loading="lazy">
+          <div class="symbol-name">Solyndra</div>
+          <div class="symbol-desc">Guidance, hope</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Umbrath"
+             data-lore="Mystery and protection — a crescent shadow that watches over the weak.">
+          <img src="symbol-umbrath.png" alt="Umbrath" loading="lazy">
+          <div class="symbol-name">Umbrath</div>
+          <div class="symbol-desc">Mystery, protection</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Zeratheon"
+             data-lore="Strength and swift justice — thunder that answers when lines are crossed.">
+          <img src="symbol-zeratheon.png" alt="Zeratheon" loading="lazy">
+          <div class="symbol-name">Zeratheon</div>
+          <div class="symbol-desc">Strength, justice</div>
+        </div>
+      </div>
+
+      <div id="symbols-cta" style="margin-top:18px;"></div>
+    </section>
+
+    <!-- SYMBOLISM -->
+    <section id="symbolism" class="panel" style="display:none">
+      <h2 style="text-align:center;margin-top:0;">Symbolism</h2>
+      <p style="text-align:center;margin-bottom:14px;">
+        Every symbol in Gentle Warrior connects to children with cerebral palsy —
+        gentle in body, strong in spirit.
+      </p>
+
+      <div class="grid">
+        <div class="symbol-card"
+             data-name="Gentle"
+             data-lore="Gentle represents sensitivity, patience, and emotional strength. Being gentle does not mean being weak — it reflects awareness, care, and courage without force.">
+          <img src="symbol-gentle.png" alt="Gentle" loading="lazy">
+          <div class="symbol-name">Gentle</div>
+          <div class="symbol-desc">Softness, patience, empathy</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Warrior"
+             data-lore="Warrior represents resilience. Not battle or aggression, but endurance — the kind of strength that shows up every day, especially when life is difficult.">
+          <img src="symbol-warrior.png" alt="Warrior" loading="lazy">
+          <div class="symbol-name">Warrior</div>
+          <div class="symbol-desc">Resilience, endurance</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Gentle Warrior"
+             data-lore="Gentle Warrior brings both together: gentle in body, strong in spirit. It is the heart of the project — quiet strength wrapped in care.">
+          <img src="symbol-gentlewarrior.png" alt="Gentle Warrior" loading="lazy">
+          <div class="symbol-name">Gentle Warrior</div>
+          <div class="symbol-desc">Soft heart, strong spirit</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Emerald"
+             data-lore="Emerald represents healing, life, growth, and hope. It is also connected to cerebral palsy awareness — a reminder that even within limits, there is life and possibility.">
+          <img src="symbol-emerald.png" alt="Emerald" loading="lazy">
+          <div class="symbol-name">Emerald</div>
+          <div class="symbol-desc">Healing, growth, hope</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Shield"
+             data-lore="The Shield represents protection through love — parents, caregivers, therapists, teachers, doctors, family, and community who stand between a child and a hard world.">
+          <img src="symbol-shield-heart.png" alt="Shield" loading="lazy">
+          <div class="symbol-name">Shield</div>
+          <div class="symbol-desc">Protection, support system</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Heart Emblem"
+             data-lore="The Heart Emblem represents emotional strength. Before labels, diagnosis, or comparison — there is love. That love matters as much as any treatment plan.">
+          <img src="symbol-heart.png" alt="Heart Emblem" loading="lazy">
+          <div class="symbol-name">Heart Emblem</div>
+          <div class="symbol-desc">Love, emotional strength</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Cape"
+             data-lore="The Cape represents dignity and visibility. It is not worn for power; it is worn to be seen. It reminds children with CP that they are not meant to be hidden — they deserve to stand in the light.">
+          <img src="symbol-cape.png" alt="Cape" loading="lazy">
+          <div class="symbol-name">Cape</div>
+          <div class="symbol-desc">Dignity, visibility</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Sword"
+             data-lore="The Sword represents effort. Not violence, not harm — but inner strength. It symbolizes the daily fight to move, balance, speak, and grow, even when those actions take extra energy.">
+          <img src="sword.png" alt="Sword" loading="lazy">
+          <div class="symbol-name">Sword</div>
+          <div class="symbol-desc">Effort, inner fight</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Memory Game"
+             data-lore="The Memory Game represents patience, focus, growth through repetition, and quiet victories. Development does not need to be loud to be powerful — every matched card is effort, every completed level is courage.">
+          <img src="symbol-memory.png" alt="Memory Game" loading="lazy">
+          <div class="symbol-name">Memory Game</div>
+          <div class="symbol-desc">Patience, focus, small wins</div>
+        </div>
+
+        <div class="symbol-card"
+             data-name="Chibi Character"
+             data-lore="The chibi Gentle Warrior reflects innocence, vulnerability, and hope. It keeps the attention on the child — not just the condition — and reminds us that childhood itself is worth protecting.">
+          <img src="chibi-warrior.png" alt="Chibi Gentle Warrior" loading="lazy">
+          <div class="symbol-name">Chibi Gentle Warrior</div>
+          <div class="symbol-desc">Innocence, hope, childhood</div>
+        </div>
+      </div>
+
+      <p style="margin-top:14px;font-size:12px;color:var(--muted);text-align:center;">
+        Gentle Warrior advocates awareness and understanding for children with cerebral palsy.
+        We aim to create a world built on dignity, patience, and care.
+      </p>
+    </section>
+
+    <!-- AWARENESS -->
+    <section id="awareness" class="panel" style="display:none">
+      <h2 style="margin-top:0;">Cerebral Palsy Awareness</h2>
+      <p><strong>Understanding First. Compassion Always.</strong></p>
+
+      <p>
+        Cerebral palsy (CP) is a condition that affects movement, coordination,
+        posture, and muscle control.
+      </p>
+      <p>
+        But cerebral palsy is not a definition of who someone is.
+        It is part of how their body moves through the world —
+        not who they are inside it.
+      </p>
+
+      <hr>
+
+      <h3>What Is Cerebral Palsy?</h3>
+      <p>
+        Cerebral palsy is a group of conditions that affect how the the brain
+        controls movement and balance. It usually develops before birth,
+        during birth, or in early childhood.
+      </p>
+      <p>CP can affect:</p>
+      <ul>
+        <li>walking</li>
+        <li>speaking</li>
+        <li>muscle control</li>
+        <li>posture</li>
+        <li>coordination</li>
+        <li>movement speed and strength</li>
+      </ul>
+      <p>
+        It can be mild, moderate, or severe — and it looks different in every child.
+      </p>
+
+      <h3>What CP Is Not</h3>
+      <p>Cerebral palsy is not:</p>
+      <ul>
+        <li>a disease</li>
+        <li>contagious</li>
+        <li>something you “catch”</li>
+        <li>a measure of intelligence</li>
+        <li>a lack of potential</li>
+        <li>something a child simply grows out of</li>
+      </ul>
+      <p>CP does not define ability, intelligence, or value.</p>
+
+      <hr>
+
+      <h3>What Life With CP Can Feel Like</h3>
+      <p>
+        Many children with CP work harder than the world ever sees.
+        Simple things can take tremendous effort:
+      </p>
+      <ul>
+        <li>standing</li>
+        <li>walking</li>
+        <li>eating</li>
+        <li>speaking</li>
+        <li>playing</li>
+        <li>writing</li>
+        <li>controlling movement</li>
+      </ul>
+      <p>
+        Some children walk independently. Some use mobility aids.
+        Some use wheelchairs. Every way of moving is valid.
+      </p>
+
+      <h3>Why Awareness Matters</h3>
+      <p>
+        Awareness changes how the world responds — not with pity,
+        but with understanding.
+      </p>
+      <p>When people understand CP, they:</p>
+      <ul>
+        <li>offer patience instead of judgment</li>
+        <li>give time instead of pressure</li>
+        <li>show respect instead of staring</li>
+        <li>include instead of exclude</li>
+        <li>listen instead of assuming</li>
+      </ul>
+      <p>Awareness builds safer environments — emotionally and physically.</p>
+
+      <hr>
+
+      <h3>What Children With CP Need Most</h3>
+      <p>More than anything, children with CP need:</p>
+      <ul>
+        <li>patience</li>
+        <li>encouragement</li>
+        <li>accessibility</li>
+        <li>kindness</li>
+        <li>support</li>
+        <li>recognition</li>
+        <li>dignity</li>
+      </ul>
+      <p>They need to be seen beyond limitation.</p>
+
+      <h3>Gentle Warrior’s Role</h3>
+      <p>Gentle Warrior was created to:</p>
+      <ul>
+        <li>give children with CP a hero who reflects resilience</li>
+        <li>normalize difference through symbolism and play</li>
+        <li>educate gently, not loudly</li>
+        <li>create a space that feels safe, not judged</li>
+        <li>remind families they are not alone</li>
+      </ul>
+      <p>
+        This is not just a character. This is a message:
+      </p>
+      <blockquote>
+        Your journey matters.<br>
+        Your effort is seen.<br>
+        You are strong in your own way.
+      </blockquote>
+
+      <hr>
+
+      <h3>How You Can Help</h3>
+      <p>You do not need a platform to make a difference. Small actions create real impact:</p>
+      <ul>
+        <li>share awareness</li>
+        <li>speak respectfully</li>
+        <li>listen without correcting</li>
+        <li>ask before helping</li>
+        <li>teach inclusion</li>
+        <li>support families</li>
+        <li>protect dignity</li>
+      </ul>
+      <p>Kindness is advocacy.</p>
+
+      <h3>A Quiet Truth</h3>
+      <p>
+        Every child deserves to feel valued, included, capable, safe, and loved.
+        Cerebral palsy does not cancel that right.
+      </p>
+
+      <hr>
+
+      <p>
+        Gentle Warrior exists to remind the world:
+      </p>
+      <blockquote>
+        Gentle does not mean weak.<br>
+        Different does not mean less.<br>
+        Struggle does not mean broken.
+      </blockquote>
+
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        Gentle Warrior exists to raise awareness, build empathy, and honor children living with cerebral palsy with dignity and compassion.
+      </p>
+    </section>
+
+    <!-- FAMILIES -->
+    <section id="families" class="panel" style="display:none">
+      <h2 style="margin-top:0;">For Parents & Families</h2>
+      <p><strong>You Are Not Alone.</strong></p>
+
+      <p>
+        Raising a child with cerebral palsy is not easy.
+        Some days are full of small wins. Some days feel overwhelming.
+      </p>
+      <p>
+        Gentle Warrior exists to remind you:
+      </p>
+      <blockquote>
+        You are doing more than you think.<br>
+        Your love matters more than perfection ever could.
+      </blockquote>
+
+      <hr>
+
+      <h3>To Every Parent Reading This</h3>
+      <p>
+        You are stronger than you realize — not because you never feel tired,
+        but because you keep going even when you are.
+      </p>
+      <p>
+        Every doctor visit. Every therapy session. Every hard night.
+        Every worry you carry quietly. It all matters.
+      </p>
+
+      <h3>Your Child Is Not a Problem to Fix</h3>
+      <p>
+        Your child is not broken. They do not need to be “corrected”
+        to be worthy, or “normal” to be loved.
+      </p>
+      <p>
+        They are learning in their own rhythm, growing in their own way,
+        moving through life on their own path. And that path is valid.
+      </p>
+
+      <hr>
+
+      <h3>What Your Child Needs Most</h3>
+      <p>More than therapy plans or schedules, children with CP need:</p>
+      <ul>
+        <li>safety</li>
+        <li>patience</li>
+        <li>encouragement</li>
+        <li>belief</li>
+        <li>acceptance</li>
+        <li>consistency</li>
+        <li>joy</li>
+      </ul>
+      <p>They grow strongest where they feel seen.</p>
+
+      <h3>When the Weight Feels Heavy</h3>
+      <p>
+        It’s okay to admit when you feel tired, scared, isolated, unsure, or overwhelmed.
+      </p>
+      <p>
+        You are not failing. You are human.
+        Strength is not pretending everything is fine.
+        Strength is continuing anyway.
+      </p>
+
+      <h3>You Deserve Care Too</h3>
+      <p>
+        You give everything. But you also deserve rest, understanding, support,
+        moments without guilt, space to feel, and kindness toward yourself.
+        You matter too.
+      </p>
+
+      <hr>
+
+      <h3>Gentle Warrior Is Here for You</h3>
+      <p>
+        This project was created for more than awareness. It was created for connection.
+      </p>
+      <p>To say:</p>
+      <blockquote>
+        We see you.<br>
+        We believe you.<br>
+        You are not invisible.
+      </blockquote>
+
+      <p>
+        We may not walk your journey — but we walk beside it.
+      </p>
+
+      <h3>A Message from Gentle Warrior</h3>
+      <blockquote>
+        “You do not have to be perfect to be enough.<br>
+        You already are.”
+      </blockquote>
+
+      <hr>
+
+      <p>
+        Your child’s life is not defined by limitation. It is defined by love.
+        And love creates strength no therapy chart can measure.
+      </p>
+
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        Gentle Warrior exists to support families, honor resilience,
+        and remind parents they are seen, valued, and never alone.
+      </p>
+    </section>
+
+    <!-- CAREGIVERS -->
+    <section id="caregivers" class="panel" style="display:none">
+      <h2 style="margin-top:0;">For Caregivers & Therapists</h2>
+      <p>
+        Behind every child with cerebral palsy is someone who shows up when it’s hard — lifting,
+        guiding, encouraging, and holding the line, often quietly.
+      </p>
+      <p>
+        Your work is more than a role. It is patience in action, empathy with discipline,
+        and care with consistency. You don’t just help children move — you help them believe.
+      </p>
+      <p>
+        Progress doesn’t always look dramatic. Sometimes it is a longer stand, a clearer word,
+        a braver attempt, or trust built slowly over time.
+      </p>
+      <p>
+        It’s okay if the work feels heavy or exhausting. Caring deeply does not require
+        burning out completely. You deserve rest and support too.
+      </p>
+      <p>
+        Gentle Warrior honors your quiet strength and the way you change the world
+        one small movement at a time.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="panel" style="display:none">
+      <h2 style="margin-top:0;">Family FAQ — Cerebral Palsy</h2>
+      <p>For Parents & Families</p>
+
+      <hr>
+
+      <h3>What is cerebral palsy (CP)?</h3>
+      <p>
+        Cerebral palsy is a group of conditions that affect movement,
+        muscle control, posture, and coordination. It usually develops before birth,
+        during birth, or in early childhood.
+      </p>
+      <p>CP affects the body — not the value or intelligence of a child.</p>
+
+      <h3>Is cerebral palsy contagious?</h3>
+      <p>No. Cerebral palsy cannot be caught or passed to another person.</p>
+
+      <h3>Will my child outgrow CP?</h3>
+      <p>
+        Cerebral palsy is a lifelong condition. However, children can improve,
+        learn, and gain independence over time through therapy, support, and
+        adaptive tools. Progress looks different for every child.
+      </p>
+
+      <h3>Did I do something wrong?</h3>
+      <p>
+        No. Cerebral palsy is not caused by parenting mistakes. It is not your fault.
+      </p>
+
+      <h3>Can children with CP live full lives?</h3>
+      <p>Yes. Children with cerebral palsy can:</p>
+      <ul>
+        <li>attend school</li>
+        <li>form friendships</li>
+        <li>develop talents</li>
+        <li>grow emotionally</li>
+        <li>create families</li>
+        <li>build meaningful identities</li>
+      </ul>
+      <p>Support changes outcomes.</p>
+
+      <h3>Does CP affect intelligence?</h3>
+      <p>
+        Not always. Some children with CP have learning difficulties; many do not.
+        CP primarily affects movement — not thinking. Every child deserves
+        individualized understanding.
+      </p>
+
+      <h3>What therapies can help?</h3>
+      <p>Common supports include:</p>
+      <ul>
+        <li>Physical therapy</li>
+        <li>Occupational therapy</li>
+        <li>Speech therapy</li>
+        <li>Assistive devices & mobility aids</li>
+        <li>Educational support</li>
+      </ul>
+
+      <h3>Will people treat my child differently?</h3>
+      <p>
+        Sometimes. That is why awareness matters.
+        Gentle Warrior exists to remind the world: difference deserves dignity.
+      </p>
+
+      <h3>How can I support my child emotionally?</h3>
+      <p>By:</p>
+      <ul>
+        <li>believing in them</li>
+        <li>speaking with kindness</li>
+        <li>allowing frustration without shame</li>
+        <li>celebrating small wins</li>
+        <li>letting joy exist alongside difficulty</li>
+      </ul>
+      <p>Love is as critical as therapy.</p>
+
+      <h3>Where can I find help or information?</h3>
+      <p>
+        We encourage families to seek healthcare professionals, local support groups,
+        therapy services, advocacy organizations, and educational specialists.
+      </p>
+      <p>
+        Gentle Warrior also works to share supportive information through this site.
+      </p>
+
+      <h3>What is Gentle Warrior's role?</h3>
+      <p>Gentle Warrior exists to:</p>
+      <ul>
+        <li>raise awareness</li>
+        <li>normalize difference</li>
+        <li>celebrate resilience</li>
+        <li>provide comfort through storytelling and symbols</li>
+        <li>support families emotionally</li>
+      </ul>
+      <p>
+        This is not a medical platform. It is a human one.
+      </p>
+
+      <h3>My child feels different — how can I help?</h3>
+      <p>
+        Remind them:
+      </p>
+      <blockquote>
+        Being different does not mean being less.
+      </blockquote>
+      <p>
+        Let them know they are valued not for how they move — but for who they are.
+      </p>
+
+      <hr>
+
+      <h3>Final Message to Families</h3>
+      <blockquote>
+        You are not failing.<br>
+        Your child is not broken.<br>
+        You are doing enough.
+      </blockquote>
+
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        Gentle Warrior exists to offer comfort, awareness, and emotional support
+        to families living with cerebral palsy.
+      </p>
+    </section>
+
+    <!-- GAME -->
+    <section id="game" class="panel">
+
+      <!-- Game list / hub -->
+      <h2 style="text-align:center;margin-top:0;">Gentle Warrior Games</h2>
+      <p class="game-hint">Choose a game to play.</p>
+
+      <div class="game-hub">
+        <!-- Memory Game card -->
+        <div class="game-card">
+          <div class="game-card-title">🧠 Memory Game</div>
+          <p>
+            Flip and match Gentle Warrior symbols in a calm weekly challenge with a global leaderboard.
+          </p>
+          <button
+            class="btn game-card-btn"
+            onclick="window.location.hash='#play'; if (typeof openTabFromHash === 'function') openTabFromHash();">
+            Play Memory Game
+          </button>
+        </div>
+
+        <!-- Heart Defender card -->
+        <div class="game-card">
+          <div class="game-card-title">🛡 Heart Defender</div>
+          <p>
+            Protect the emerald heart from falling shards. Every block is a small act of care.
+          </p>
+          <a href="heart-defender.html" class="btn game-card-btn">
+            Open Heart Defender
+          </a>
+        </div>
+
+        <!-- CP Myths Quiz card -->
+        <div class="game-card">
+          <div class="game-card-title">✨ CP Myths Quiz</div>
+          <p>
+            Test what you know about cerebral palsy myths and facts in a gentle, educational quiz.
+          </p>
+          <a href="cp-myths-quiz.html" class="btn game-card-btn">
+            Open CP Myths Quiz
+          </a>
+        </div>
+
+        <!-- Kindness Counter card -->
+        <div class="game-card">
+          <div class="game-card-title">💚 Kindness Counter</div>
+          <p>
+            Record the gentle things you do each day in a private kindness tracker saved only on your device.
+          </p>
+          <a href="kindness-counter.html" class="btn game-card-btn">
+            Open Kindness Counter
+          </a>
+        </div>
+      </div>
+
+      <hr style="margin:1.4rem 0; opacity:0.35;">
+
+      <h2 id="play" style="text-align:center;margin-top:0">
+        🧠 Memory Game — Weekly Challenge
+      </h2>
+      <div id="countdown" style="text-align:center;margin-bottom:6px;font-size:14px;color:var(--muted);">
+        Loading season timer…
+      </div>
+
+      <!-- helper hints -->
+      <p id="deviceNote" class="game-hint">
+        Best experienced on mobile — just tap Start to play.
+      </p>
+      <p class="game-hint">
+        Clear <strong>Stage 7</strong> to fully complete this week's Gentle Warrior Memory Trial.
+      </p>
+
+      <div id="controls">
+        <input id="gw-player-name" placeholder="Your public name">
+        <button id="gw-save-name" class="btn">Save</button>
+      </div>
+
+      <div style="text-align:center;margin-bottom:8px;font-size:12px;color:var(--muted);">
+        Use the SAME name every run so your best score stays under one identity.
+      </div>
+
+      <div style="text-align:center;margin-bottom:8px;">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+      </div>
+
+      <div id="stats">Time: 00:00 • Moves: 0</div>
+      <div id="stageInfo">Stage 1 of 7</div>
+
+      <div id="gameBoard"></div>
+
+      <div id="myBestRun" style="text-align:center;margin-top:10px;margin-bottom:6px;font-size:13px;color:var(--muted);">
+        Loading your best run…
+      </div>
+      <div id="sessionHook" style="text-align:center;margin-bottom:10px;font-size:12px;color:var(--muted);">
+        Keep playing to beat your best run this week.
+      </div>
+
+      <div class="leaderboard-box">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+          <strong>Weekly Leaderboard (Top 10)</strong>
+          <span style="color:var(--muted);font-size:12px;">Season resets automatically every Monday (UTC).</span>
+        </div>
+        <div id="leaderboard" style="margin-top:6px;">Loading leaderboard…</div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENTS -->
+    <section id="announcements" class="panel" style="display:none">
+      <h2>Announcements</h2>
+      <div id="announcementsContent">
+        <p>Loading announcements…</p>
+      </div>
+    </section>
+
+    <footer>
+      <div>Gentle Warrior • © 2025</div>
+      <div id="socials-container"></div>
+
+      <p class="footer-disclaimer">
+        Gentle Warrior is a community-driven awareness project inspired by real experiences with cerebral palsy.
+        This site does NOT provide medical advice, financial advice, or profit guarantees.
+      </p>
+      <p class="footer-disclaimer">
+        All games, NFTs, and any future tokens are for education, awareness, and community participation only —
+        they are NOT investment products and no profit is promised or implied.
+      </p>
+      <p class="footer-disclaimer">
+        This project does not offer investments, securities, or financial services in any country.
+      </p>
+      <p class="footer-disclaimer">
+        Participation is voluntary and at your own risk. Never spend money you cannot afford to lose.
+      </p>
+    </footer>
+  </div>
+
+  <!-- SYMBOL MODAL -->
+  <div id="symbolModal" class="symbol-modal">
+    <div class="symbol-modal-inner">
+      <img id="symbolModalImg" src="" alt="">
+      <h3 id="symbolModalName"></h3>
+      <p id="symbolModalLore"></p>
+      <button class="symbol-modal-close" id="symbolModalClose">Close</button>
+    </div>
+  </div>
+
+  <!-- WIN OVERLAY -->
+  <div id="winOverlay">
+    <div id="winCard">
+      <h3 id="winTitle">Run complete</h3>
+      <p id="winStats"></p>
+      <p id="winRank"></p>
+      <div id="winActions">
+        <button id="winShareBtn" class="btn">Share on X</button>
+        <button id="winCloseBtn" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Play CTA -->
+  <div class="floating-play-cta">
+    <button id="floatingPlayBtn" class="btn">Play Memory Game</button>
+  </div>
+<script>
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        tabButtons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        ['home','symbols','symbolism','awareness','families','caregivers','faq','game','announcements'].forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.style.display = (id===tab?'block':'none');
+        });
+      });
+    });
+
+    function openTabFromHash(){
+      const hash = (window.location.hash || '').toLowerCase();
+      if(hash === '#play' || hash === '#game'){
+        const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
+        if(gameTabBtn) gameTabBtn.click();
+        const gameSection = document.getElementById('game');
+        if(gameSection){
+          setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
+        }
+      }
+    }
+    window.addEventListener('load', openTabFromHash);
+    window.addEventListener('hashchange', openTabFromHash);
+
+    function wireCtaButtons(){
+      document.querySelectorAll('.cta-play-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
+          if(gameTabBtn) gameTabBtn.click();
+          const gameSection = document.getElementById('game');
+          if(gameSection){
+            setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
+          }
+          if (typeof trackEvent === 'function') {
+            trackEvent('play_cta_click', {location: 'cta_section'});
+          }
+        });
+      });
+    }
+    function loadCTA(){
+      fetch('cta.html')
+        .then(r=>r.text())
+        .then(html=>{
+          const homeCta = document.getElementById('home-cta');
+          const symbolsCta = document.getElementById('symbols-cta');
+          if(homeCta) homeCta.innerHTML = html;
+          if(symbolsCta) symbolsCta.innerHTML = html;
+          wireCtaButtons();
+        })
+        .catch(err=>console.warn('CTA load failed', err));
+    }
+    loadCTA();
+
+    // Floating play CTA
+    const floatingPlayBtn = document.getElementById('floatingPlayBtn');
+    if(floatingPlayBtn){
+      floatingPlayBtn.addEventListener('click', ()=>{
+        const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
+        if(gameTabBtn) gameTabBtn.click();
+        const gameSection = document.getElementById('game');
+        if(gameSection){
+          setTimeout(()=>gameSection.scrollIntoView({behavior:'smooth'}),80);
+        }
+        if (typeof trackEvent === 'function') {
+          trackEvent('play_cta_click', {location: 'floating_cta'});
+        }
+      });
+    }
+
+    fetch('announcements.html')
+      .then(r => r.text())
+      .then(html => {
+        const box = document.getElementById('announcementsContent');
+        if (box) box.innerHTML = html || '<p>No announcements yet.</p>';
+      })
+      .catch(()=>{
+        const box = document.getElementById('announcementsContent');
+        if (box) box.innerHTML = '<p>Unable to load announcements right now.</p>';
+      });
+
+    function loadSocials(){
+      fetch('socials.html')
+        .then(r=>r.text())
+        .then(html=>{
+          const box = document.getElementById('socials-container');
+          if(box) box.innerHTML = html;
+        })
+        .catch(err=>console.warn('Socials load failed', err));
+    }
+    loadSocials();
+
+    const modal = document.getElementById('symbolModal');
+    const modalImg = document.getElementById('symbolModalImg');
+    const modalName = document.getElementById('symbolModalName');
+    const modalLore = document.getElementById('symbolModalLore');
+    const modalClose = document.getElementById('symbolModalClose');
+
+    document.querySelectorAll('.symbol-card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        const img = card.querySelector('img');
+        if(img){
+          modalImg.src = img.src;
+          modalImg.alt = img.alt;
+        } else {
+          modalImg.src = '';
+          modalImg.alt = '';
+        }
+        modalName.textContent = card.dataset.name || img?.alt || '';
+        modalLore.textContent = card.dataset.lore || card.querySelector('.symbol-desc')?.textContent || '';
+        modal.classList.add('active');
+      });
+    });
+    modalClose.addEventListener('click',()=>modal.classList.remove('active'));
+    modal.addEventListener('click',e=>{
+      if(e.target === modal) modal.classList.remove('active');
+    });
+
+    // Sa halip na i-load ang lumang token card, kunin lang natin ang address sa ca.html
+    fetch('ca.html')
+      .then(r => r.text())
+      .then(text => {
+        const box = document.getElementById('caBox');
+        if (!box) return;
+
+        // Hanapin ang unang mukhang base58 address (Solana-style)
+        const match = text.match(/[1-9A-HJ-NP-Za-km-z]{32,64}/);
+        const ca = match ? match[0] : 'Contract address unavailable';
+        const dexUrl = match ? `https://dexscreener.com/solana/${ca}` : '#';
+
+        box.innerHTML = `
+          <div style="font-weight:700;margin-bottom:6px;">
+            $GWAR — Awareness Token
+          </div>
+          <p style="margin-bottom:6px;font-size:13px;">
+            $GWAR is a community &amp; awareness token used inside the Gentle Warrior universe.
+            It is <strong>not</strong> an investment product and does not promise any profit, yield, or financial return.
+          </p>
+          <p style="margin-bottom:8px;font-size:13px;">
+            Buying or selling $GWAR is completely optional and <strong>not required</strong> to join our games, content, or community.
+          </p>
+          <div style="margin-bottom:6px;font-size:13px;">
+            Contract address and links are provided for reference only. They are not a buy or sell recommendation:
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;">
+            <div style="flex:1;min-width:180px;padding:6px 8px;border-radius:10px;background:#020f08;font-family:monospace;font-size:12px;word-break:break-all;">
+              ${ca}
+            </div>
+            <button id="copyCaBtn" class="btn" style="padding:6px 10px;font-size:13px;">
+              Copy
+            </button>
+            <a id="openDexBtn" href="${dexUrl}" target="_blank" rel="noopener noreferrer"
+               class="btn btn-secondary" style="padding:6px 10px;font-size:13px;">
+              Token Details
+            </a>
+          </div>
+          <p style="margin-top:4px;font-size:12px;">
+            We do not operate any exchange or provide trading services. If you choose to trade $GWAR on third-party platforms,
+            you do so independently and at your own risk.
+          </p>
+        `;
+
+        const copyBtn = document.getElementById('copyCaBtn');
+        if (copyBtn && match) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(match[0]).then(() => {
+              alert('Contract address copied.');
+            }).catch(() => {
+              alert('Unable to copy. Please copy manually.');
+            });
+          });
+        } else if (copyBtn) {
+          copyBtn.disabled = true;
+        }
+      })
+      .catch(() => {
+        const box = document.getElementById('caBox');
+        if (box) {
+          box.textContent = 'Unable to load contract info right now.';
+        }
+      });
+
+    const nameInput = document.getElementById('gw-player-name');
+    nameInput.value = localStorage.getItem('gw_player_name') || 'Warrior';
+    document.getElementById('gw-save-name').addEventListener('click',()=>{
+      const val = (nameInput.value || '').trim() || 'Warrior';
+      localStorage.setItem('gw_player_name', val);
+      alert('Name saved: ' + val);
+    });
+
+    function getNextMondayUTC(){
+      const now = new Date();
+      const day = now.getUTCDay();
+      let diff = (1 - day + 7) % 7;
+      if(diff === 0) diff = 7;
+      return new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + diff,
+        0,0,0
+      ));
+    }
+    const nextMonday = getNextMondayUTC();
+    function updateCountdown(){
+      const el = document.getElementById('countdown');
+      const diffMs = nextMonday - new Date();
+      if(diffMs <= 0){
+        el.textContent = 'New weekly season begins soon.';
+        return;
+      }
+      const totalSec = Math.floor(diffMs/1000);
+      const d = Math.floor(totalSec/86400);
+      const h = Math.floor((totalSec%86400)/3600);
+      const m = Math.floor((totalSec%3600)/60);
+      const s = totalSec%60;
+      el.textContent = `Next official weekly season starts in: ${d}d ${h}h ${m}m ${s}s (UTC)`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+
+    const winOverlay = document.getElementById('winOverlay');
+    const winTitleEl = document.getElementById('winTitle');
+    const winStatsEl = document.getElementById('winStats');
+    const winRankEl  = document.getElementById('winRank');
+    const winShareBtn = document.getElementById('winShareBtn');
+    const winCloseBtn = document.getElementById('winCloseBtn');
+    winCloseBtn.addEventListener('click',()=>winOverlay.classList.remove('active'));
+
+    function showWinOverlay(text){
+      winStatsEl.textContent = text;
+      winOverlay.classList.add('active');
+    }
+
+    const gameBoard = document.getElementById('gameBoard');
+    const statsEl = document.getElementById('stats');
+    const stageInfoEl = document.getElementById('stageInfo');
+
+    const ALL_CARD_IMAGES = [
+      'coin.png',
+      'shield.png',
+      'sword.png',
+      'symbol-aurelion.png',
+      'symbol-gaialune.png',
+      'symbol-ignara.png',
+      'symbol-solyndra.png',
+      'symbol-umbrath.png',
+      'symbol-zeratheon.png'
+    ];
+
+    /* 🔧 SEASON 2 DIFFICULTY (TUNED) */
+    const STAGES = [
+      { stage:1, pairs:3, cols:3, rows:2,                 moveLimit:16, mistakeLimit:6 },
+      { stage:2, pairs:4, cols:4, rows:2,                 moveLimit:18, mistakeLimit:5 },
+      { stage:3, pairs:5, cols:5, rows:2,                 moveLimit:22, mistakeLimit:5 },
+      { stage:4, pairs:6, cols:4, rows:3,                 moveLimit:26, mistakeLimit:4 },
+      { stage:5, pairs:7, cols:4, rows:4, gapSlots:[5,10], moveLimit:30, mistakeLimit:4 },
+      { stage:6, pairs:8, cols:4, rows:4,                 moveLimit:34, mistakeLimit:3 },
+      { stage:7, pairs:9, cols:5, rows:4, gapSlots:[7,12], moveLimit:38, mistakeLimit:3 }
+    ];
+
+    let currentStageIndex = 0;
+    let deck = [];
+    let firstCard = null;
+    let lock = false;
+    let moves = 0;
+    let seconds = 0;
+    let timer = null;
+    let started = false;
+    let stageMatches = 0;
+    let highestStageCleared = 0;
+    let runLocked = false;
+    let stageMoves = 0;
+    let stageMistakes = 0;
+
+    let lastRunStage = 0;
+    let lastRunMoves = 0;
+    let lastRunSeconds = 0;
+
+    function getCurrentStageConfig(){ return STAGES[currentStageIndex]; }
+
+    function formatTime(s){
+      const m = String(Math.floor(s/60)).padStart(2,'0');
+      const ss = String(s%60).padStart(2,'0');
+      return `${m}:${ss}`;
+    }
+    function updateStats(){
+      statsEl.textContent = `Time: ${formatTime(seconds)} • Moves: ${moves}`;
+    }
+    function updateStageInfo(){
+      const cfg = getCurrentStageConfig();
+      stageInfoEl.textContent = `Stage ${cfg.stage} of ${STAGES.length}`;
+    }
+    function tickTimer(){ seconds++; updateStats(); }
+    function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(tickTimer,1000); }
+    function stopTimer(){ if(timer) clearInterval(timer); timer=null; }
+
+    function buildStageDeck(){
+      const cfg = getCurrentStageConfig();
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
+
+      gameBoard.style.gridTemplateColumns = `repeat(${cfg.cols},1fr)`;
+      const imagesForStage = ALL_CARD_IMAGES.slice(0, cfg.pairs);
+      let cards = imagesForStage.concat(imagesForStage);
+
+      for(let i=cards.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [cards[i],cards[j]] = [cards[j],cards[i]];
+      }
+
+      const totalSlots = cfg.cols * cfg.rows;
+      const gapSlots = cfg.gapSlots || [];
+      const expectedCards = totalSlots - gapSlots.length;
+
+      if(cards.length !== expectedCards){
+        console.warn("Stage config mismatch", cfg, cards.length, expectedCards);
+      }
+
+      if(gapSlots.length){
+        const slots = new Array(totalSlots).fill(null);
+        let index = 0;
+        for(let i=0;i<totalSlots;i++){
+          if(gapSlots.includes(i)) continue;
+          slots[i] = cards[index++];
+        }
+        deck = slots;
+      }else{
+        deck = cards;
+      }
+    }
+
+    function renderBoard(){
+      gameBoard.innerHTML = '';
+      deck.forEach((src,idx)=>{
+        if(src===null){
+          const gap = document.createElement('div');
+          gap.className = 'disabled-slot';
+          gameBoard.appendChild(gap);
+          return;
+        }
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.index = idx;
+        card.innerHTML = `
+          <div class="card-face card-front"></div>
+          <div class="card-face card-back"><img src="${src}" alt=""></div>`;
+        card.addEventListener('click',()=>onCardClick(card));
+        gameBoard.appendChild(card);
+      });
+    }
+
+    function failRun(reason){
+      stopTimer();
+      started = false;
+      runLocked = true;
+
+      const cfg = getCurrentStageConfig();
+      const currentStage = cfg ? cfg.stage : 0;
+      const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
+
+      if (stageReached > 0 && moves >= 6 && typeof trackEvent === 'function') {
+        trackEvent('game_fail', {
+          stage: stageReached,
+          moves: moves,
+          time_seconds: seconds,
+          reason: reason
+        });
+      }
+
+      if(stageReached <= 0 || moves < 6){
+        winTitleEl.textContent = 'Run ended';
+        const stageLabel = currentStage ? `Stage ${currentStage}` : '';
+        const msg = stageLabel ? `${reason} • ${stageLabel}` : reason;
+        showWinOverlay(msg);
+        winRankEl.textContent = '';
+        return;
+      }
+
+      lastRunStage = stageReached;
+      lastRunMoves = moves;
+      lastRunSeconds = seconds;
+
+      winTitleEl.textContent = 'Run ended';
+      const statsText = `Stage ${stageReached} • Time: ${formatTime(seconds)} • Moves: ${moves}`;
+      showWinOverlay(`${reason} • ${statsText}`);
+
+      const currentRank = window.myCurrentRank;
+      winRankEl.textContent = currentRank ? `Current weekly rank: #${currentRank}` : '';
+
+      if(window.gwRecordRun){
+        window.gwRecordRun(moves, seconds*1000, stageReached, false).catch(()=>{});
+      }
+    }
+
+    function onCardClick(card){
+      if(lock || runLocked) return;
+      if(card.classList.contains('flip')) return;
+      if(!started){
+        started = true;
+        startTimer();
+      }
+
+      const cfg = getCurrentStageConfig();
+
+      card.classList.add('flip');
+      if(!firstCard){
+        firstCard = card;
+        return;
+      }
+
+      moves++;
+      stageMoves++;
+      updateStats();
+
+      if(cfg && typeof cfg.moveLimit === 'number' && stageMoves > cfg.moveLimit){
+        lock = true;
+        setTimeout(()=>{
+          failRun('Move limit reached');
+        }, 400);
+        return;
+      }
+
+      lock = true;
+      const img1 = firstCard.querySelector('.card-back img').src;
+      const img2 = card.querySelector('.card-back img').src;
+
+      if(img1 === img2){
+        stageMatches++;
+        firstCard.style.pointerEvents='none';
+        card.style.pointerEvents='none';
+        firstCard = null;
+        lock = false;
+        const cfg2 = getCurrentStageConfig();
+        if(stageMatches === cfg2.pairs){
+          highestStageCleared = Math.max(highestStageCleared, cfg2.stage);
+          if(currentStageIndex === STAGES.length-1){
+            setTimeout(()=>onRunComplete(true), 350);
+          }else{
+            setTimeout(()=>{
+              currentStageIndex++;
+              buildStageDeck();
+              renderBoard();
+              updateStageInfo();
+            }, 550);
+          }
+        }
+      }else{
+        stageMistakes++;
+        const overMistakeLimit = (cfg && typeof cfg.mistakeLimit === 'number' && stageMistakes > cfg.mistakeLimit);
+
+        setTimeout(()=>{
+          firstCard.classList.remove('flip');
+          card.classList.remove('flip');
+          firstCard = null;
+          lock = false;
+
+          if(overMistakeLimit){
+            failRun('Mistake limit reached');
+          }
+        },600);
+      }
+    }
+
+    function startGame(){
+      started = false;
+      moves = 0;
+      seconds = 0;
+      firstCard = null;
+      lock = false;
+      runLocked = false;
+      stopTimer();
+      currentStageIndex = 0;
+      highestStageCleared = 0;
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
+      buildStageDeck();
+      renderBoard();
+      updateStats();
+      updateStageInfo();
+
+      if (typeof trackEvent === 'function') {
+        trackEvent('game_start', {stage: 1});
+      }
+    }
+    function resetGame(){
+      started = false;
+      stopTimer();
+      moves = 0;
+      seconds = 0;
+      firstCard = null;
+      lock = false;
+      runLocked = false;
+      currentStageIndex = 0;
+      highestStageCleared = 0;
+      stageMatches = 0;
+      stageMoves = 0;
+      stageMistakes = 0;
+      gameBoard.innerHTML = '';
+      updateStats();
+      updateStageInfo();
+    }
+
+    document.getElementById('startBtn').addEventListener('click', ()=>{
+      if (typeof trackEvent === 'function') {
+        trackEvent('game_start_button', {label: 'start_button'});
+      }
+      startGame();
+    });
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    updateStats();
+    updateStageInfo();
+
+    // device-based helper text (mobile vs desktop)
+    const deviceNoteEl = document.getElementById('deviceNote');
+    if(deviceNoteEl){
+      if(window.innerWidth < 768){
+        deviceNoteEl.textContent = 'Best experienced on your phone — tap Start to play.';
+      } else {
+        deviceNoteEl.textContent = 'Works on desktop and mobile — most warriors play on their phones.';
+      }
+    }
+
+    function onRunComplete(){
+      stopTimer();
+      started = false;
+      runLocked = true;
+
+      const cfg = getCurrentStageConfig();
+      const currentStage = cfg ? cfg.stage : 0;
+      const stageReached = Math.max(highestStageCleared || 0, currentStage || 0);
+
+      if(stageReached <= 0 || moves < 6){
+        winTitleEl.textContent = 'Run ended';
+        showWinOverlay('Short runs are not counted. Try a full attempt.');
+        winRankEl.textContent = '';
+        return;
+      }
+
+      lastRunStage = stageReached;
+      lastRunMoves = moves;
+      lastRunSeconds = seconds;
+
+      winTitleEl.textContent = 'Run complete';
+      const statsText = `Stage ${stageReached} • Time: ${formatTime(lastRunSeconds)} • Moves: ${lastRunMoves}`;
+      showWinOverlay(statsText);
+
+      const currentRank = window.myCurrentRank;
+      winRankEl.textContent = currentRank ? `Current weekly rank: #${currentRank}` : '';
+
+      if (stageReached === 7 && typeof trackEvent === 'function') {
+        trackEvent('game_win', {
+          stage: stageReached,
+          moves: lastRunMoves,
+          time_seconds: lastRunSeconds
+        });
+      }
+
+      if(window.gwRecordRun){
+        window.gwRecordRun(lastRunMoves, lastRunSeconds*1000, stageReached, true).catch(()=>{});
+      }
+    }
+
+    function shareOnX(){
+      if(!lastRunStage){
+        alert('Play a full run first.');
+        return;
+      }
+      const rank = window.myCurrentRank;
+      const titleLine = '⚔️ I cleared the Gentle Warrior Memory Trial!';
+      const statsLine = `Stage ${lastRunStage} • Time: ${formatTime(lastRunSeconds)} • Moves: ${lastRunMoves}`;
+
+      let rankLine = '';
+      if(rank){
+        if(rank === 1){
+          rankLine = '👑 TOP 1 Weekly Challenger';
+        }else{
+          rankLine = `🏅 Weekly rank: #${rank}`;
+        }
+      }
+
+      const gameLink = 'https://officialgentlewarrior.github.io/gentlewarrior-universe/#play';
+      const ctaLine = 'Play it here 👇';
+
+      const msg = [
+        titleLine,
+        '',
+        statsLine,
+        rankLine,
+        '',
+        ctaLine,
+        gameLink
+      ].filter(Boolean).join('\n');
+
+      const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg);
+      window.location.href = tweetUrl;
+    }
+
+    winShareBtn.addEventListener('click', shareOnX);
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      setDoc,
+      addDoc,
+      updateDoc,
+      serverTimestamp,
+      query,
+      getDocs,
+      where
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+      authDomain: "gentle-warrior.firebaseapp.com",
+      projectId: "gentle-warrior",
+      storageBucket: "gentle-warrior.firebasestorage.app",
+      messagingSenderId: "206508766648",
+      appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    const playersCol = collection(db, "players");
+    const runsCol    = collection(db, "runs");
+
+    function isoWeekId(date = new Date()){
+      const d = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
+      ));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-${String(weekNo).padStart(2,"0")}`;
+    }
+    function currentSeasonId(){
+      return isoWeekId();
+    }
+
+    function getDeviceTag(){
+      let t = localStorage.getItem("gw_device_tag");
+      if(!t){
+        t = "gw_" + Math.random().toString(36).slice(2,9);
+        localStorage.setItem("gw_device_tag", t);
+      }
+      return t;
+    }
+
+    async function ensurePlayer(deviceTag, name){
+      const pRef = doc(db, "players", deviceTag);
+      const snap = await getDoc(pRef);
+      if(!snap.exists()){
+        await setDoc(pRef, {
+          name,
+          deviceTag,
+          createdAt: serverTimestamp(),
+          totalPoints: 0,
+          currentWeekMoves: null,
+          currentWeekTimeMs: null,
+          currentWeekStage: null,
+          currentWeekCompleted: false,
+          currentSeasonId: currentSeasonId(),
+          lastPlayedAt: serverTimestamp()
+        });
+        return { pRef, data: null };
+      } else {
+        const data = snap.data();
+        try{
+          await updateDoc(pRef, { name, lastPlayedAt: serverTimestamp() });
+        } catch(e){}
+        return { pRef, data };
+      }
+    }
+
+    async function loadMyBestRun() {
+      const el = document.getElementById("myBestRun");
+      const hookEl = document.getElementById("sessionHook");
+      if (!el) return;
+
+      const deviceTag = localStorage.getItem("gw_device_tag");
+      if (!deviceTag) {
+        el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Start a full run and see how far you can go this week.";
+        }
+        return;
+      }
+
+      const pRef = doc(db, "players", deviceTag);
+      const snap = await getDoc(pRef);
+
+      if (!snap.exists()) {
+        el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Start a full run and see how far you can go this week.";
+        }
+        return;
+      }
+
+      const d = snap.data();
+      if (d.currentWeekStage == null) {
+        el.textContent = "Play a run to record your first score.";
+        if(hookEl){
+          hookEl.textContent = "Your first full attempt this week could place you on the leaderboard.";
+        }
+        return;
+      }
+
+      const seconds = Math.round((d.currentWeekTimeMs || 0) / 1000);
+      const stage   = d.currentWeekStage != null ? d.currentWeekStage : '?';
+      const cleared = !!d.currentWeekCompleted && stage === 7;
+
+      const clearedText = cleared ? " • CLEARED" : "";
+      el.textContent = `Your best run this week: Stage ${stage}${clearedText} • ${d.currentWeekMoves} moves • ${seconds}s`;
+
+      if(hookEl){
+        if(cleared){
+          hookEl.textContent = "You’ve cleared Stage 7 this week. Can you defend your rank or improve your time?";
+        } else {
+          hookEl.textContent = "Can you reach a higher stage or beat this time in your next run?";
+        }
+      }
+    }
+
+    async function recordRun(moves, timeMs, stageReached, completed){
+      const deviceTag = getDeviceTag();
+      const name = localStorage.getItem("gw_player_name") || "Warrior";
+      const seasonId = currentSeasonId();
+
+      const { pRef, data } = await ensurePlayer(deviceTag, name);
+
+      try{
+        await addDoc(runsCol, {
+          deviceTag,
+          playerName: name,
+          moves,
+          timeMs,
+          stageReached,
+          seasonId,
+          completedFinal: !!completed,
+          createdAt: serverTimestamp()
+        });
+      }catch(e){}
+
+      const prevSeasonId = data && data.currentSeasonId;
+
+      let prevMoves = data?.currentWeekMoves ?? null;
+      let prevTime  = data?.currentWeekTimeMs ?? null;
+      let prevStage = data?.currentWeekStage ?? null;
+      let prevCompleted = data?.currentWeekCompleted ?? false;
+
+      if(prevSeasonId !== seasonId){
+        prevMoves = prevTime = prevStage = null;
+        prevCompleted = false;
+      }
+
+      const isBetter =
+        prevStage === null ||
+        stageReached > prevStage ||
+        (
+          stageReached === prevStage &&
+          (
+            moves < prevMoves ||
+            (moves === prevMoves && timeMs < prevTime)
+          )
+        );
+
+      if(isBetter){
+        try{
+          await updateDoc(pRef, {
+            currentSeasonId: seasonId,
+            currentWeekMoves: moves,
+            currentWeekTimeMs: timeMs,
+            currentWeekStage: stageReached,
+            currentWeekCompleted: !!completed,
+            name,
+            lastPlayedAt: serverTimestamp()
+          });
+        }catch(e){}
+      }
+
+      await renderLeaderboard();
+      await loadMyBestRun();
+    }
+
+    async function renderLeaderboard(){
+      const lb = document.getElementById("leaderboard");
+      if(!lb) return;
+      lb.textContent = "Loading leaderboard…";
+
+      const seasonId = currentSeasonId();
+      const oldSeasonId = seasonId + "-ms1";  // para masalo yung luma
+
+      try{
+        const arr = [];
+
+        // NEW: kunin parehong bagong seasonId at lumang may -ms1
+        const snapsNew = await getDocs(
+          query(playersCol, where("currentSeasonId", "==", seasonId))
+        );
+        snapsNew.forEach(s => {
+          const d = s.data();
+          if(d.currentWeekStage != null){
+            arr.push({
+              name: d.name || "Warrior",
+              moves: d.currentWeekMoves,
+              time: d.currentWeekTimeMs || 0,
+              stage: d.currentWeekStage,
+              completed: !!d.currentWeekCompleted
+            });
+          }
+        });
+
+        const snapsOld = await getDocs(
+          query(playersCol, where("currentSeasonId", "==", oldSeasonId))
+        );
+        snapsOld.forEach(s => {
+          const d = s.data();
+          if(d.currentWeekStage != null){
+            arr.push({
+              name: d.name || "Warrior",
+              moves: d.currentWeekMoves,
+              time: d.currentWeekTimeMs || 0,
+              stage: d.currentWeekStage,
+              completed: !!d.currentWeekCompleted
+            });
+          }
+        });
+
+        const cleared = arr.filter(p => p.completed && p.stage === 7);
+        const others  = arr.filter(p => !(p.completed && p.stage === 7));
+
+        cleared.sort((a,b)=>
+          a.moves - b.moves ||
+          a.time  - b.time
+        );
+
+        others.sort((a,b)=>
+          b.stage - a.stage ||
+          a.moves - b.moves ||
+          a.time  - b.time
+        );
+
+        const finalLeaderboard = [...cleared, ...others];
+
+        if(!finalLeaderboard.length){
+          lb.textContent = "No runs recorded for this week yet. Be the first!";
+          window.myCurrentRank = null;
+          return;
+        }
+
+        const myName = localStorage.getItem("gw_player_name") || "Warrior";
+        window.myCurrentRank = null;
+
+        lb.innerHTML = finalLeaderboard.slice(0,10).map((p,idx)=>{
+          const rank = idx+1;
+          const seconds = Math.round((p.time || 0)/1000);
+          const label = p.completed && p.stage === 7
+            ? `Stage 7 • ${p.moves} moves • ${seconds}s`
+            : `Stage ${p.stage} • ${p.moves} moves • ${seconds}s`;
+
+          if(p.name === myName && window.myCurrentRank == null){
+            window.myCurrentRank = rank;
+          }
+
+          return `
+            <div class="leader-row">
+              <div>#${rank} — ${p.name}</div>
+              <div>${label}</div>
+            </div>
+          `;
+        }).join('');
+
+      } catch(e){
+        console.error(e);
+        lb.textContent = "Unable to load leaderboard right now.";
+        window.myCurrentRank = null;
+      }
+    }
+
+    window.gwRecordRun = recordRun;
+    renderLeaderboard().then(loadMyBestRun).catch(()=>{});
+  </script>
+
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/gentlewarrior-universe/service-worker.js")
+        .catch(err => console.log("SW registration failed", err));
+    });
+  }
+  </script>
+
+  <script>
+    // Helper: check if app is running as an installed PWA
+    function isRunningStandalone() {
+      return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true; // for older iOS Safari
+    }
+
+    // Log when the installed app is opened for the first time on this device
+    (function logInstalledOpenOnce() {
+      try {
+        if (!isRunningStandalone()) return; // only when opened as an installed app
+
+        const key = 'gw_pwa_open_logged';
+        if (localStorage.getItem(key)) return; // only log once per device
+
+        localStorage.setItem(key, '1');
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'pwa_open_installed', {
+            event_category: 'pwa',
+            event_label: 'gentlewarrior_universe'
+          });
+        }
+      } catch(e) {
+        console && console.warn && console.warn('PWA open log error', e);
+      }
+    })();
+
+    // Log when the PWA gets installed
+    window.addEventListener('appinstalled', () => {
+      try {
+        localStorage.setItem('gw_pwa_installed', '1');
+        if (typeof gtag === 'function') {
+          gtag('event', 'pwa_installed', {
+            event_category: 'pwa',
+            event_label: 'gentlewarrior_universe'
+          });
+        }
+      } catch(e) {
+        console && console.warn && console.warn('PWA installed log error', e);
+      }
+    });
+ 
+<!-- ✅ Gentle Warrior Auto Game Tracker (NO BUTTON CHANGES NEEDED) -->
+<script type="module">
+  import {
+    initializeApp,
+    getApps,
+    getApp
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    serverTimestamp,
+    increment
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  // === SAME FIREBASE PROJECT ===
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+    authDomain: "gentle-warrior.firebaseapp.com",
+    projectId: "gentle-warrior",
+    storageBucket: "gentle-warrior.firebasestorage.app",
+    messagingSenderId: "206508766648",
+    appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+  };
+
+  // ✅ reuse existing app kung meron na (Memory Game, etc)
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // === SHARED DEVICE ID ===
+  function getGwDeviceTag() {
+    let tag = localStorage.getItem("gw_device_tag");
+    if (!tag) {
+      tag = "gw_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("gw_device_tag", tag);
+    }
+    return tag;
+  }
+
+  // === MAIN TRACKER ===
+  async function trackGameClick(gameId) {
+    const deviceTag = getGwDeviceTag();
+    const docId = `${gameId}_${deviceTag}`;
+    const ref = doc(db, "gamePlayers", docId);
+
+    // per-device per-game stats
+    await setDoc(
+      ref,
+      {
+        gameId,
+        deviceTag,
+        lastPlayedAt: serverTimestamp(),
+        clickCount: increment(1),
+        createdAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    // simple run log (optional, pang-history)
+    const runId = `${Date.now()}_${deviceTag}_${gameId}`;
+    const runRef = doc(db, "gameRuns", runId);
+    await setDoc(runRef, {
+      gameId,
+      deviceTag,
+      clickedAt: serverTimestamp()
+    });
+  }
+
+  // === AUTO-DETECT CLICKS ON LINKS & BUTTONS ===
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("a, button");
+    if (!el) return;
+
+    const text = (el.innerText || "").toLowerCase();
+    const href = (el.getAttribute("href") || "").toLowerCase();
+
+    let gameId = null;
+
+    // 🧠 Memory Game
+    if (text.includes("memory") || href.includes("memory")) {
+      gameId = "memory";
+    }
+    // 🛡 Heart Defender
+    else if (text.includes("heart defender") || href.includes("heart-defender")) {
+      gameId = "heart-defender";
+    }
+    // ✨ CP Myths Quiz
+    else if (text.includes("cp myths") || text.includes("cp quiz") || href.includes("cp-myths")) {
+      gameId = "cp-myths";
+    }
+    // 💚 Kindness Counter
+    else if (text.includes("kindness counter") || href.includes("kindness-counter")) {
+      gameId = "kindness-counter";
+    }
+
+    if (!gameId) return;
+
+    // fire-and-forget; huwag harangin ang navigation
+    try {
+      trackGameClick(gameId);
+    } catch (err) {
+      console && console.warn && console.warn("GW tracker error", err);
+    }
+  });
+
+  // ✅ log na nag-open yung games page mismo
+  (async () => {
+    try {
+      await trackGameClick("index-open");
+      console && console.log && console.log("GW tracker init ok");
+    } catch (err) {
+      console && console.warn && console.warn("GW tracker init error", err);
+    }
+  })();
+</script>
+<!-- GENTLE HEART: Floating button + modal (paste inside <body>) -->
+<!-- Floating button (draggable) -->
+<div id="gh-floating" role="button" aria-label="Open Gentle Heart" tabindex="0">
+  <img src="avatar.png" alt="Gentle Heart">
+</div>
+
+<!-- Modal with iframe that loads the chatbot file -->
+<div id="gh-modal-backdrop" aria-hidden="true">
+  <div id="gh-modal" role="dialog" aria-modal="true" aria-label="Gentle Heart chat">
+    <header>
+      <div class="gh-title">
+        <img src="avatar.png" alt="GH" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+        <div>Gentle Heart</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="gh-close-btn" aria-label="Close chat">✕</button>
+      </div>
+    </header>
+
+    <!-- Make sure gentle-heart-bot.html sits next to your index.html -->
+    <iframe src="gentle-heart-bot.html" title="Gentle Heart Bot"></iframe>
+  </div>
+</div>
+<!-- GENTLE HEART: Fixed Drag / Open-Close / Persist script (replace existing one) -->
+<script>
+(function(){
+  const floatEl = document.getElementById('gh-floating');
+  const modalBackdrop = document.getElementById('gh-modal-backdrop');
+  const closeBtn = document.getElementById('gh-close-btn');
+  const STORAGE_KEY = 'gh_floating_pos_v1';
+
+  // restore position if saved
+  function restorePosition(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const pos = JSON.parse(raw);
+      if(typeof pos.left === 'number' && typeof pos.top === 'number'){
+        floatEl.style.left = pos.left + 'px';
+        floatEl.style.top  = pos.top  + 'px';
+        floatEl.style.right = 'auto'; floatEl.style.bottom = 'auto';
+        floatEl.style.position = 'fixed';
+      }
+    } catch(e){}
+  }
+
+  // save position
+  function savePosition(left, top){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: Math.round(left), top: Math.round(top) }));
+    } catch(e){}
+  }
+
+  // center fallback init
+  function ensureInitPosition(){
+    const rect = floatEl.getBoundingClientRect();
+    if(!floatEl.style.left && !floatEl.style.top){
+      floatEl.style.left = rect.left + 'px';
+      floatEl.style.top = rect.top + 'px';
+      floatEl.style.right = 'auto';
+      floatEl.style.bottom = 'auto';
+      floatEl.style.position = 'fixed';
+    }
+  }
+
+  // open modal helper
+  function openModal(){
+    modalBackdrop.style.display = 'flex';
+    modalBackdrop.setAttribute('aria-hidden','false');
+  }
+
+  // close modal
+  function closeModal(){
+    modalBackdrop.style.display = 'none';
+    modalBackdrop.setAttribute('aria-hidden','true');
+  }
+
+  // attach basic open/close events
+  closeBtn.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) closeModal(); });
+
+  /* Pointer drag with click detection */
+  let isPointerDown = false;
+  let pointerId = null;
+  let startX = 0, startY = 0;
+  let elX = 0, elY = 0;
+  let moved = false;
+
+  floatEl.addEventListener('pointerdown', function(e){
+    if(e.button && e.button !== 0) return; // only primary
+    ensureInitPosition();
+    isPointerDown = true;
+    pointerId = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = floatEl.getBoundingClientRect();
+    elX = rect.left;
+    elY = rect.top;
+    moved = false;
+    try { floatEl.setPointerCapture(pointerId); } catch(err){}
+  });
+
+  window.addEventListener('pointermove', function(e){
+    if(!isPointerDown || e.pointerId !== pointerId) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    // treat as move only if past small threshold
+    if(!moved && Math.hypot(dx,dy) > 6){
+      moved = true;
+    }
+    if(moved){
+      e.preventDefault();
+      const newLeft = Math.max(8, Math.min(window.innerWidth - floatEl.offsetWidth - 8, elX + dx));
+      const newTop  = Math.max(8, Math.min(window.innerHeight - floatEl.offsetHeight - 8, elY + dy));
+      floatEl.style.left = newLeft + 'px';
+      floatEl.style.top  = newTop  + 'px';
+      floatEl.style.right = 'auto';
+      floatEl.style.bottom = 'auto';
+    }
+  }, {passive:false});
+
+  window.addEventListener('pointerup', function(e){
+    if(!isPointerDown || e.pointerId !== pointerId) return;
+    try { floatEl.releasePointerCapture(pointerId); } catch(err){}
+    isPointerDown = false;
+    pointerId = null;
+
+    // if pointer did NOT move -> treat as click/open
+    if(!moved){
+      // small safety: ensure the modal toggles open
+      openModal();
+      return;
+    }
+
+    // if moved -> snap to edge and save
+    const rect = floatEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width/2;
+    const snapToRight = centerX >= (window.innerWidth/2);
+    const finalLeft = snapToRight ? (window.innerWidth - rect.width - 12) : 12;
+    const finalTop = Math.max(8, Math.min(window.innerHeight - rect.height - 8, rect.top));
+    floatEl.style.left = finalLeft + 'px';
+    floatEl.style.top  = finalTop + 'px';
+    savePosition(finalLeft, finalTop);
+  });
+
+  // keyboard accessibility (open on Enter/Space)
+  floatEl.setAttribute('tabindex','0');
+  floatEl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModal(); }
+    // arrow keys move bubble for accessibility
+    if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+      ensureInitPosition();
+      const step = (e.shiftKey ? 40 : 8);
+      const rect = floatEl.getBoundingClientRect();
+      let L = rect.left, T = rect.top;
+      if(e.key === 'ArrowLeft')  L = Math.max(8, L - step);
+      if(e.key === 'ArrowRight') L = Math.min(window.innerWidth - rect.width - 8, L + step);
+      if(e.key === 'ArrowUp')    T = Math.max(8, T - step);
+      if(e.key === 'ArrowDown')  T = Math.min(window.innerHeight - rect.height - 8, T + step);
+      floatEl.style.left = L + 'px';
+      floatEl.style.top  = T + 'px';
+      savePosition(L, T);
+      e.preventDefault();
+    }
+  });
+
+  // restore saved pos on load
+  restorePosition();
+
+  // on resize keep bubble inside viewport
+  window.addEventListener('resize', function(){
+    const rect = floatEl.getBoundingClientRect();
+    let L = rect.left, T = rect.top, changed = false;
+    if(rect.left + rect.width > window.innerWidth - 8){ L = Math.max(8, window.innerWidth - rect.width - 12); changed = true; }
+    if(rect.top + rect.height > window.innerHeight - 8){ T = Math.max(8, window.innerHeight - rect.height - 12); changed = true; }
+    if(changed){ floatEl.style.left = L + 'px'; floatEl.style.top = T + 'px'; savePosition(L,T); }
+  });
+
+})();
+</script>
+</body>
+</html>
