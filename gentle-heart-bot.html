@@ -184,12 +184,29 @@ function say(text,who){
 
 /* ROUTING */
 function routeBinary(text){
-  const t=norm(text);
-  const s=QA.states[currentState];
-  const A=[norm(s.options[0].label_en), norm(s.options[0].label_tl)];
-  const B=[norm(s.options[1].label_en), norm(s.options[1].label_tl)];
-  if(A.some(k=>t.includes(k))) return s.options[0].next;
-  if(B.some(k=>t.includes(k))) return s.options[1].next;
+  const t = norm(text);
+  const s = QA.states[currentState];
+
+  // OPTION A = positive / okay
+  const optionAKeywords = [
+    'ok','okay','fine','good',
+    'ayos','maayos','okay lang'
+  ];
+
+  // OPTION B = not okay / heavy
+  const optionBKeywords = [
+    'not okay','hindi','hindi masyado','di okay',
+    'mabigat','heavy','pagod','down','sad'
+  ];
+
+  if(optionAKeywords.some(k => t.includes(k))){
+    return s.options[0].next;
+  }
+
+  if(optionBKeywords.some(k => t.includes(k))){
+    return s.options[1].next;
+  }
+
   return null;
 }
 
