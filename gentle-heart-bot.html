@@ -9,13 +9,13 @@
 :root{
   --green:#06442a;
   --green2:#0e6e47;
-  --bg:#f6fbf8;
 }
 
+/* APP BACKGROUND */
 body{
   margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg);
+  background:#04331f; /* emerald green */
   height:100vh;
   display:flex;
   flex-direction:column;
@@ -51,11 +51,13 @@ header img{
 
 .header-title strong{display:block}
 
-/* CHAT */
+/* CHAT AREA */
 #chat{
   flex:1;
   padding:12px;
   overflow-y:auto;
+  background:#f6fbf8;
+  border-radius:16px 16px 0 0;
 }
 
 .msg{
@@ -77,31 +79,13 @@ header img{
   margin-left:auto;
 }
 
-/* OPTIONS */
-#options{
-  padding:10px;
-  display:flex;
-  gap:8px;
-}
-
-button{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  background:var(--green2);
-  color:#fff;
-  font-size:14px;
-}
-
-button:disabled{opacity:.5}
-
 /* INPUT */
 #inputWrap{
   display:flex;
   padding:10px;
   gap:8px;
   border-top:1px solid #ddd;
+  background:#f6fbf8;
 }
 
 input{
@@ -111,6 +95,17 @@ input{
   border:1px solid #ccc;
   font-size:14px;
 }
+
+button{
+  padding:10px 16px;
+  border-radius:10px;
+  border:none;
+  background:var(--green2);
+  color:#fff;
+  font-size:14px;
+}
+
+button:disabled{opacity:.5}
 
 /* MODAL */
 .modal{
@@ -159,7 +154,6 @@ input{
 </header>
 
 <div id="chat"></div>
-<div id="options"></div>
 
 <div id="inputWrap">
   <input id="userInput" placeholder="Type here…">
@@ -192,7 +186,6 @@ input{
 /* STATE */
 let QA=null,currentStateId=null;
 const chat=document.getElementById('chat');
-const optionsWrap=document.getElementById('options');
 const input=document.getElementById('userInput');
 const sendBtn=document.getElementById('sendBtn');
 
@@ -235,16 +228,9 @@ function resolve(userText){
   return QA.states[currentStateId];
 }
 
-/* RENDER */
+/* RENDER (TEXT ONLY, NO BUTTONS) */
 function renderState(state){
   addMsg(state.text.en,'bot');
-  optionsWrap.innerHTML='';
-  state.options.forEach((o,i)=>{
-    const b=document.createElement('button');
-    b.textContent=o.label_en;
-    b.onclick=()=>selectOption(i);
-    optionsWrap.appendChild(b);
-  });
 }
 
 /* EVENTS */
@@ -255,11 +241,6 @@ function sendUser(){
   addMsg(t,'user');
   input.value='';
   renderState(resolve(t));
-}
-
-function selectOption(i){
-  currentStateId=QA.states[currentStateId].options[i].next;
-  renderState(QA.states[currentStateId]);
 }
 
 /* SETTINGS */
