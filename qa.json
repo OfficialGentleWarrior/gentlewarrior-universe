@@ -1,12 +1,12 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "generated_at": "2025-12-15",
   "start": "mood_01",
   "states": {
     "mood_01": {
       "text": {
-        "en": "How are you feeling right now — are you feeling **good**, or **not okay**?",
-        "tl": "Kumusta ang pakiramdam mo ngayon — **masaya** ka ba, o **hindi okay**?"
+        "en": "How are you feeling right now? Are you feeling good, or not okay?",
+        "tl": "Kumusta ang pakiramdam mo ngayon? Masaya ka ba, o hindi okay?"
       },
       "options": {
         "good": {
@@ -22,8 +22,8 @@
 
     "mood_good": {
       "text": {
-        "en": "I’m glad to hear that. What made you feel better — do you want to **talk about it**, or **chat about food**?",
-        "tl": "Masaya akong marinig yan. Ano ang nakapagpagaan ng pakiramdam mo — gusto mo bang **magkwento**, o **pagkain** ang pag-usapan natin?"
+        "en": "I’m glad to hear that. What helped you feel better? Do you want to talk about it, or would you like to talk about food?",
+        "tl": "Masaya akong marinig yan. Ano ang nakapagpagaan ng pakiramdam mo? Gusto mo bang magkwento, o pagkain ang pag-usapan natin?"
       },
       "options": {
         "talk": {
@@ -39,8 +39,8 @@
 
     "mood_bad": {
       "text": {
-        "en": "That sounds heavy. What would help right now — do you want to **talk about it**, or **think about food**?",
-        "tl": "Mukhang mabigat yan. Ano ang makakatulong ngayon — gusto mo bang **magkwento**, o **pagkain** muna ang isipin?"
+        "en": "That sounds heavy. What would help you right now? Do you want to talk about it, or think about food for a bit?",
+        "tl": "Mukhang mabigat yan. Ano ang makakatulong sa’yo ngayon? Gusto mo bang magkwento, o pagkain muna ang isipin natin?"
       },
       "options": {
         "talk": {
@@ -56,8 +56,8 @@
 
     "mood_talk": {
       "text": {
-        "en": "I’m listening. Do you feel **better now**, or are you still **feeling heavy**?",
-        "tl": "Nakikinig ako. **Magaan na ba** ang pakiramdam mo, o **mabigat pa rin**?"
+        "en": "I’m listening. How do you feel now? Do you feel better, or does it still feel heavy?",
+        "tl": "Nakikinig ako. Kumusta na ang pakiramdam mo ngayon? Medyo magaan na ba, o mabigat pa rin?"
       },
       "options": {
         "better": {
@@ -73,8 +73,8 @@
 
     "food_01": {
       "text": {
-        "en": "Are you actually **hungry**, or just **craving** something?",
-        "tl": "Talagang **gutom** ka ba, o **craving** ka lang?"
+        "en": "Are you actually hungry, or just craving something?",
+        "tl": "Talagang gutom ka ba, o may cravings ka lang?"
       },
       "options": {
         "hungry": {
@@ -90,8 +90,8 @@
 
     "food_hungry": {
       "text": {
-        "en": "Which meal are you thinking about — **breakfast**, or **lunch or dinner**?",
-        "tl": "Anong meal ang naiisip mo — **almusal**, o **tanghalian o hapunan**?"
+        "en": "What are you thinking of eating? Breakfast, or lunch or dinner?",
+        "tl": "Anong meal ang naiisip mo? Almusal, o tanghalian o hapunan?"
       },
       "options": {
         "breakfast": {
@@ -107,8 +107,8 @@
 
     "food_craving": {
       "text": {
-        "en": "What are you craving — **sweet**, or **salty**?",
-        "tl": "Ano ang hinahanap ng panlasa mo — **matamis**, o **maalat**?"
+        "en": "What are you craving right now? Something sweet, or something salty?",
+        "tl": "Ano ang hinahanap ng panlasa mo ngayon? Matamis, o maalat?"
       },
       "options": {
         "sweet": {
@@ -124,8 +124,8 @@
 
     "food_suggest": {
       "text": {
-        "en": "Sounds good. Do you want to **eat now**, or **go back to chatting**?",
-        "tl": "Mukhang masarap yan. Gusto mo bang **kumain na**, o **magkwento pa**?"
+        "en": "That sounds nice. Do you want to eat now, or would you like to keep chatting?",
+        "tl": "Mukhang masarap yan. Kakain ka na ba, o kwento muna tayo?"
       },
       "options": {
         "eat": {
@@ -141,16 +141,16 @@
 
     "food_end": {
       "text": {
-        "en": "Enjoy your food. When you’re ready, do you want to **check in again**, or **say goodbye for now**?",
-        "tl": "Sige, kain ka muna. Kapag ready ka na, gusto mo bang **kumusta ulit**, o **magpaalam muna**?"
+        "en": "Enjoy your food. When you’re ready, do you want to check in again, or rest for now?",
+        "tl": "Sige, kain ka muna. Kapag ready ka na, gusto mo bang kumusta ulit, o magpahinga muna?"
       },
       "options": {
         "back": {
           "keywords": ["back", "again", "hi", "hello", "kumusta"],
           "next": "mood_01"
         },
-        "bye": {
-          "keywords": ["bye", "goodbye", "paalam", "later"],
+        "rest": {
+          "keywords": ["rest", "later", "pahinga", "mamaya"],
           "next": "mood_01"
         }
       }
