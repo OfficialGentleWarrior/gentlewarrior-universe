@@ -1,229 +1,158 @@
 {
-  "pairs": [
-    { "input": "hi", "intent": "greeting", "response": "Hi — I'm Gentle Heart. How can I help you today?" },
-    { "input": "hello", "intent": "greeting", "response": "Hello — I'm Gentle Heart. Ask me about cerebral palsy, caregiving tips, or say 'breathing' for a short exercise." },
-    { "input": "hey", "intent": "greeting", "response": "Hey there — I'm Gentle Heart. What would you like to talk about?" },
-    { "input": "kamusta", "intent": "greeting", "response": "Kamusta — I'm Gentle Heart. Paano kita matutulungan ngayon?" },
-    { "input": "hiya", "intent": "greeting", "response": "Hi — I'm Gentle Heart. Tell me what's on your mind." },
-    { "input": "good morning", "intent": "greeting", "response": "Good morning — I hope today treats you kindly. How can I help?" },
-    { "input": "good evening", "intent": "greeting", "response": "Good evening — I'm here if you need to talk or unwind with a short breathing exercise." },
+  "version": "1.0",
+  "generated_at": "2025-12-15",
+  "start": "mood_01",
+  "states": {
+    "mood_01": {
+      "text": {
+        "en": "How are you feeling right now?",
+        "tl": "Kumusta ang pakiramdam mo ngayon?"
+      },
+      "options": {
+        "good": {
+          "keywords": ["good mood", "okay", "light", "magaan", "magandang pakiramdam"],
+          "next": "mood_good"
+        },
+        "bad": {
+          "keywords": ["not okay", "bad mood", "heavy", "mabigat", "malungkot", "empty", "parang walang laman"],
+          "next": "mood_bad"
+        }
+      }
+    },
 
-    { "input": "thanks", "intent": "thanks", "response": "You're welcome. I'm here whenever you need to talk." },
-    { "input": "thank you", "intent": "thanks", "response": "Glad to help. If you need more info, just ask." },
-    { "input": "salamat", "intent": "thanks", "response": "Walang anuman — nandito lang ako para tumulong." },
-    { "input": "ty", "intent": "thanks", "response": "Anytime. I'm here if you want to keep chatting." },
-    { "input": "thank you so much", "intent": "thanks", "response": "You're very welcome. Take care — and message me if you need anything else." },
+    "mood_good": {
+      "text": {
+        "en": "I’m glad to hear that. What’s making your mood lighter today?",
+        "tl": "Masaya akong marinig yan. Ano ang nakapagpagaan ng pakiramdam mo?"
+      },
+      "options": {
+        "food": {
+          "keywords": ["food", "eat", "hungry", "kain", "gutom"],
+          "next": "food_01"
+        },
+        "continue": {
+          "keywords": ["feeling", "emotion", "pakiramdam", "emosyon"],
+          "next": "mood_01"
+        }
+      }
+    },
 
-    { "input": "i'm happy", "intent": "happy", "response": "That's wonderful! I'm happy for you. Want to share what's making you feel good?" },
-    { "input": "i feel good", "intent": "happy", "response": "Great to hear. If you want, you can tell me more about it." },
-    { "input": "masaya ako", "intent": "happy", "response": "Ang saya naman! Gusto mo bang ishare kung bakit ka masaya?" },
+    "mood_bad": {
+      "text": {
+        "en": "That sounds heavy. Do you want to talk about it, or would you rather distract yourself a bit?",
+        "tl": "Mukhang mabigat yan. Gusto mo bang magkwento, o maghanap muna ng pampalibang?"
+      },
+      "options": {
+        "talk": {
+          "keywords": ["talk", "feelings", "nararamdaman", "emotion", "emosyon"],
+          "next": "mood_talk"
+        },
+        "food": {
+          "keywords": ["food", "eat", "hungry", "kain", "gutom"],
+          "next": "food_01"
+        }
+      }
+    },
 
-    { "input": "i'm okay", "intent": "neutral", "response": "Okay is good. If you ever want help or a breathing exercise, say 'breathing'." },
-    { "input": "im fine", "intent": "neutral", "response": "Good to hear. I'm here if you want to talk." },
+    "mood_talk": {
+      "text": {
+        "en": "I’m listening. What’s been weighing on you?",
+        "tl": "Nakikinig ako. Ano ang bumabagabag sa’yo?"
+      },
+      "options": {
+        "continue": {
+          "keywords": ["still", "pa rin", "heavy", "mabigat", "down", "malungkot"],
+          "next": "mood_bad"
+        },
+        "okay": {
+          "keywords": ["okay", "better", "magaan", "okay lang"],
+          "next": "mood_good"
+        }
+      }
+    },
 
-    { "input": "i'm sad", "intent": "sad", "response": "I'm really sorry you're feeling sad. If you'd like, I can guide a short breathing exercise, offer a grounding prompt, or show local help numbers. Which would you prefer?" },
-    { "input": "im sad", "intent": "sad", "response": "I hear you — I'm sorry you're feeling sad. Do you want a breathing exercise, grounding steps, or hotlines?" },
-    { "input": "malungkot ako", "intent": "sad", "response": "Nalulungkot ka — pasensya. Maaari kitang samahan: breathing exercise, grounding prompt, o hotline. Ano pipiliin mo?" },
+    "food_01": {
+      "text": {
+        "en": "Are you hungry or just thinking about food?",
+        "tl": "Gutom ka ba o naiisip mo lang ang pagkain?"
+      },
+      "options": {
+        "hungry": {
+          "keywords": ["hungry", "gutom"],
+          "next": "food_hungry"
+        },
+        "craving": {
+          "keywords": ["dessert", "snack", "panghimagas", "meryenda", "matamis"],
+          "next": "food_craving"
+        }
+      }
+    },
 
-    { "input": "what causes cp", "intent": "cp_overview", "response": "CP can be caused by early brain development differences, lack of oxygen at birth, infections, or premature birth. Many times the exact cause isn’t known." },
-    { "input": "types of cp", "intent": "cp_overview", "response": "The main types are spastic, dyskinetic, ataxic, and mixed CP. They describe how muscle tone and movement are affected." },
-    { "input": "is cp common", "intent": "cp_overview", "response": "CP is one of the most common childhood movement conditions. Many families worldwide live with and manage it successfully." },
-    { "input": "is cp a disability", "intent": "cp_overview", "response": "Yes, CP is considered a disability, but it doesn’t define someone’s potential. Many children grow strong skills through therapy and support." },
-    { "input": "can cp be cured", "intent": "cp_overview", "response": "CP cannot usually be cured, but many interventions—therapy, equipment, and medical management—can improve function and quality of life." },
-    { "input": "is cp genetic", "intent": "cp_overview", "response": "CP is usually due to brain development differences or early injury; in most cases it's not directly inherited in a simple way." },
-    { "input": "can adults have cp", "intent": "cp_overview", "response": "CP is a lifelong condition that starts in early childhood. Adults with CP may continue to benefit from therapy and support services." },
-    { "input": "can cp get worse", "intent": "cp_overview", "response": "CP itself is generally non-progressive, but symptoms and secondary issues (pain, contractures) can change — ongoing care helps." },
-    { "input": "is cp contagious", "intent": "cp_overview", "response": "No — CP is not contagious. It's related to brain development differences or early injury." },
-    { "input": "what age is cp diagnosed", "intent": "cp_overview", "response": "CP is often noticed in infancy or early toddler years when developmental milestones are delayed — a doctor can evaluate." },
-    { "input": "can cp improve", "intent": "cp_overview", "response": "People with CP can improve function with therapy, equipment and supportive care — many make meaningful gains." },
+    "food_hungry": {
+      "text": {
+        "en": "What meal are you thinking of — breakfast, lunch, or dinner?",
+        "tl": "Anong meal ang naiisip mo — almusal, tanghalian, o hapunan?"
+      },
+      "options": {
+        "breakfast": {
+          "keywords": ["breakfast", "almusal"],
+          "next": "food_suggest"
+        },
+        "lunch": {
+          "keywords": ["lunch", "tanghalian"],
+          "next": "food_suggest"
+        },
+        "dinner": {
+          "keywords": ["dinner", "hapunan"],
+          "next": "food_suggest"
+        }
+      }
+    },
 
-    { "input": "can babies with cp smile", "intent": "cp_signs", "response": "Yes, babies with CP can smile and interact just like other babies. Movement challenges don’t affect their ability to show joy." },
-    { "input": "early signs in infants", "intent": "cp_signs", "response": "Early signs may include stiff or floppy muscles, trouble lifting the head, or delays in rolling. A pediatrician can help evaluate concerns." },
-    { "input": "why does my child walk on toes", "intent": "cp_signs", "response": "Toe-walking can be related to tight muscles or balance differences. A physical therapist can guide safe stretches and strategies." },
-    { "input": "signs of cp", "intent": "cp_signs", "response": "Common signs: delayed milestones, floppy or stiff muscles, difficulty sitting or walking, poor coordination. If concerned, ask a pediatrician for evaluation." },
-    { "input": "palatandaan ng cp", "intent": "cp_signs", "response": "Palatandaan: delayed milestones, hindi kontroladong galaw, mahirap umupo/walk, o kakaibang muscle tone. Kumunsulta sa doktor kung may alinman dito." },
-    { "input": "my child not walking", "intent": "cp_signs", "response": "Delayed walking can have many causes. Consider discussing with a pediatrician or therapist for assessment and early intervention." },
+    "food_craving": {
+      "text": {
+        "en": "Sweet or salty?",
+        "tl": "Matamis o maalat?"
+      },
+      "options": {
+        "sweet": {
+          "keywords": ["sweet", "sweets", "matamis"],
+          "next": "food_suggest"
+        },
+        "salty": {
+          "keywords": ["salty", "maalat", "viand", "ulam"],
+          "next": "food_suggest"
+        }
+      }
+    },
 
-    { "input": "therapy for cp", "intent": "therapy", "response": "Therapies include physical, occupational, and speech therapy. A therapist will set small practice goals and adaptive strategies." },
-    { "input": "rehab for cp", "intent": "therapy", "response": "Rehab often includes PT/OT, gait training, stretching for spasticity, and assistive technology when needed." },
-    { "input": "treatment cp", "intent": "therapy", "response": "Treatment focuses on improving function and quality of life — therapy, equipment, medications for spasticity, and surgical options in some cases." },
-    { "input": "therapy schedule", "intent": "therapy", "response": "Therapists typically recommend short daily practice and scheduled PT/OT sessions. Ask your therapist for a personalised plan." },
-    { "input": "what to expect at therapy", "intent": "therapy", "response": "Expect assessment, goal-setting, short practice tasks, progress tracking, and instructions for home exercises." },
-    { "input": "what is physio", "intent": "therapy", "response": "Physio (physical therapy) helps improve movement, strength and function. A physiotherapist sets exercises and strategies to help daily activities." },
-    { "input": "what is occupational therapy", "intent": "therapy", "response": "OT helps with daily activities, fine motor skills, feeding strategies, and adaptive tools for independence." },
-    { "input": "how to make exercises fun", "intent": "therapy", "response": "Use toys, games, music, and short timed challenges. Therapists often gamify exercises to keep children engaged." },
-    { "input": "how to help gross motor", "intent": "therapy", "response": "Play-based activities, physiotherapy, and guided practice can support gross motor skills — ask a PT for specific exercises." },
+    "food_suggest": {
+      "text": {
+        "en": "That sounds good. Want to eat now, or just talk more while thinking about it?",
+        "tl": "Mukhang masarap yan. Kakain ka na ba, o kwento muna tayo?"
+      },
+      "options": {
+        "eat": {
+          "keywords": ["eat", "kain", "now", "ngayon"],
+          "next": "food_end"
+        },
+        "talk": {
+          "keywords": ["talk", "kwento", "usap"],
+          "next": "mood_01"
+        }
+      }
+    },
 
-    { "input": "how to motivate a child with cp", "intent": "care_tips_child", "response": "Use praise, fun goals, and short activities. Celebrate small wins — they build confidence and momentum." },
-    { "input": "how to help a child with cp", "intent": "care_tips_child", "response": "Support includes early therapy, consistent routines, patience with small goals, positioning, and working with therapists for individualized plans." },
-
-    { "input": "how to build confidence for child with cp", "intent": "emotional_support", "response": "Give choices, celebrate progress, allow independence in small tasks, and show consistent encouragement." },
-    { "input": "how to prevent burnout as a parent", "intent": "emotional_support", "response": "Take small breaks, ask for help, join support groups, and be kind to yourself. Even parents need rest." },
-    { "input": "emotional support for parents", "intent": "emotional_support", "response": "Parents benefit from peer groups, counselling, respite care, and celebrating small wins. You’re not alone." },
-
-    { "input": "how to talk to relatives about cp", "intent": "family_support", "response": "Explain things simply: the child moves differently but learns and grows like other kids. Ask relatives to support routines and be patient." },
-    { "input": "how to talk to siblings about cp", "intent": "family_support", "response": "Give simple explanations, invite questions, and spend individual time so siblings feel heard and included." },
-
-    { "input": "daily routine for cp", "intent": "daily_life_cp", "response": "Simple daily routine: short therapy practice sessions, positioning/comfort checks, hydration, play-based exercises, and consistent sleep times." },
-    { "input": "daily life with cp", "intent": "daily_life_cp", "response": "Daily life varies — many families build routines around therapy, safe positioning, mobility aids, and play-based practice to help skills grow." },
-    { "input": "typical daily routine for a child with cp", "intent": "daily_life_cp", "response": "Short morning exercises, therapy practices through play, scheduled meals, rest breaks, and a calming bedtime routine often work well." },
-    { "input": "how to include a child with cp in play", "intent": "daily_life_cp", "response": "Adapt games, offer one-on-one turns, use toys at their level, and focus on abilities to make play meaningful and fun." },
-
-    { "input": "feeding difficulties", "intent": "feeding", "response": "Feeding issues are common; occupational therapists and speech therapists help with safe feeding techniques and nutrition plans." },
-    { "input": "how to help with feeding", "intent": "feeding", "response": "Occupational and speech therapists can advise on positioning, pacing, and safe swallowing techniques." },
-    { "input": "how to reduce choking risk", "intent": "feeding", "response": "Work with a speech therapist for safe feeding techniques and modified textures to reduce choking risk." },
-
-    { "input": "pain management cp", "intent": "medical", "response": "Pain/spasticity should be managed with professional input. Medication, stretching, and therapy may help — consult specialists." },
-    { "input": "how to reduce spasm", "intent": "medical", "response": "Stretching, positioning, therapy and medical treatments may reduce spasms — consult a clinician for individual advice." },
-    { "input": "how to handle seizures", "intent": "medical", "response": "If seizures occur, follow medical advice, ensure safety during a seizure, and consult a neurologist for management." },
-    { "input": "how to handle reflux", "intent": "medical", "response": "Reflux management includes feeding strategies and medical treatments — consult your child's doctor for tailored advice." },
-    { "input": "what tests for cp", "intent": "medical", "response": "Doctors may use clinical exams, developmental assessments, and sometimes brain imaging like MRI to understand causes." },
-
-    { "input": "i feel anxious", "intent": "anxiety", "response": "I hear that — anxiety can be overwhelming. Would you like a short breathing exercise, a grounding prompt, or tips to manage symptoms?" },
-    { "input": "anxious", "intent": "anxiety", "response": "If you're anxious, try grounding: name 5 things you see, 4 things you can touch, 3 things you hear, 2 you can smell, 1 you can taste. Want to try?" },
-    { "input": "panic attack", "intent": "anxiety", "response": "If you're having a panic attack, try slow breathing (4-2-6). If symptoms are severe or you feel unsafe, call emergency services." },
-    { "input": "panic", "intent": "anxiety", "response": "If you're feeling panic, sit down, focus on breathing slowly (in 4, hold 2, out 6). If you think you need urgent help, call emergency services." },
-
-    { "input": "i'm stressed", "intent": "stress", "response": "Stress can ease with short calming techniques: deep breathing, brief breaks, and writing one small next step. Want a breathing exercise?" },
-    { "input": "how to reduce stress", "intent": "stress", "response": "Try short breaks, breathing, small task lists, asking for help, and self-care. Simple routines reduce daily stress." },
-
-    { "input": "i can't sleep", "intent": "sleep", "response": "Try a consistent bedtime routine, no screens before bed, and a calming breathing exercise. See a doctor if insomnia persists." },
-    { "input": "sleep problems", "intent": "sleep", "response": "Sleep hygiene helps: consistent routine, comfortable positioning, and discussing medical causes with a doctor if problems persist." },
-    { "input": "how to improve sleep", "intent": "sleep", "response": "Routine, calming rituals, comfortable positioning, and discussing medical causes with a doctor help improve sleep." },
-
-    { "input": "hotline", "intent": "ph_hotline_request", "response": "If you're in the Philippines, you can call Hopeline 0917-558-4673 or NCMH 1553 / 0966-351-4518. If in immediate danger, call local emergency services." },
-
-    { "input": "breathing", "intent": "breathing", "response": "Let's do a short breathing exercise: breathe in slowly for 4 seconds, hold gently for 2 seconds, then exhale slowly for 6 seconds. Repeat 3 times." },
-    { "input": "breathe", "intent": "breathing", "response": "Try this: inhale 4 seconds — hold 2 — exhale 6 seconds. Repeat three times. Want a timer?" },
-    { "input": "hinga", "intent": "breathing", "response": "Huminga nang dahan-dahan: inhale 4 seg, hold 2 seg, exhale 6 seg. Ulitin ng 3 beses. Gusto mo ng timer?" },
-    { "input": "breathing exercise", "intent": "breathing", "response": "Here is a short breathing exercise: 4-2-6 (in-hold-out). Do this three times and see if it helps a little." },
-    { "input": "help me breathe", "intent": "breathing", "response": "Okay — breathe with me: 1) Inhale for 4, 2) hold 2, 3) exhale 6. Repeat 3 cycles." },
-
-    { "input": "what is cp", "intent": "cp_overview", "response": "Cerebral palsy (CP) is a group of conditions that affect movement and posture caused by differences in brain development or early brain injury." },
-    { "input": "what is cerebral palsy", "intent": "cp_overview", "response": "Cerebral palsy affects muscle control, balance and coordination. Early therapy can help. Want a quick checklist of signs?" },
-    { "input": "ano ang cp", "intent": "cp_overview", "response": "Ang CP ay kondisyon na nakakaapekto sa galaw at postura dahil sa pinsala o pagkakaiba sa utak. Gusto mo ng palatandaan o care tips?" },
-    { "input": "ano ang cerebral palsy", "intent": "cp_overview", "response": "Ang cerebral palsy ay grupo ng kondisyon na nakakaapekto sa kontrol ng mga kalamnan at koordinasyon. May iba't ibang paraan ng suporta depende sa tao." },
-    { "input": "cp meaning", "intent": "cp_overview", "response": "CP stands for cerebral palsy — a set of conditions that affect movement and posture. Would you like tips on care or resources?" },
-
-    { "input": "can cp affect only one side", "intent": "cp_overview", "response": "Yes — that's called hemiplegic CP. It affects one side more than the other." },
-    { "input": "is swimming good for cp", "intent": "therapy", "response": "Yes, swimming is great because the water supports the body and makes movement easier and more fun." },
-    { "input": "what is early intervention", "intent": "therapy", "response": "Early intervention means starting therapy and support as soon as possible to help children build skills during their early developmental years." },
-
-    { "input": "how to prepare child for doctor visits", "intent": "parenting_cp", "response": "Explain what will happen, bring comfort items, and show short videos or pictures to help them feel ready." },
-    { "input": "how to handle tantrums", "intent": "parenting_cp", "response": "Stay calm, offer a quiet space, and use simple words. Fatigue or overstimulation can trigger tantrums, so gentle breaks help." },
-
-    { "input": "financial help", "intent": "social_support", "response": "Some NGOs and government programs offer support. I can suggest searching for local disability assistance programs or charities." },
-    { "input": "respite care", "intent": "social_support", "response": "Respite care provides short-term relief for caregivers — check local health services or community organisations." },
-    { "input": "how to cope financially", "intent": "social_support", "response": "Look for government subsidies, NGO grants, community fundraising, and local disability benefits." },
-    { "input": "community programs", "intent": "social_support", "response": "Local community centers and NGOs often run therapy or support programs — tell me your region and I can suggest where to look." },
-    { "input": "where to find therapists", "intent": "therapy_search", "response": "Try asking your doctor for referrals, search local hospitals or rehabilitation centers, or look for professional directories in your area." },
-
-    { "input": "i'm bored", "intent": "casual_chat", "response": "Same vibes minsan. Want a random fun question, a joke, or something to talk about?" },
-    { "input": "i'm bored help", "intent": "casual_fun", "response": "Say less. Want a random question, a mini game, or chismis-level convo?" },
-    { "input": "i'm lonely", "intent": "casual_emotion", "response": "I’m here with you. Gusto mo usap mode or distraction mode?" },
-    { "input": "i'm tired", "intent": "casual_emotion", "response": "Understandable. Long day? Gusto mo mag-rant or chill talk lang?" },
-    { "input": "i had a bad day", "intent": "casual_emotion", "response": "Sorry to hear that. Want to talk about what happened, or gusto mo muna distraction?" },
-    { "input": "i can't focus", "intent": "casual_emotion", "response": "Try a tiny break. Stretch, breathe for 20 seconds, then go back. Want a quick focus trick?" },
-    { "input": "i feel empty", "intent": "casual_emotion", "response": "That’s a heavy feeling. Sometimes a small talk or tiny break helps. Want company for a bit?" },
-    { "input": "i feel lazy", "intent": "casual_emotion", "response": "Honestly, mood. Pero kahit small step lang today, panalo na." },
-    { "input": "i'm overthinking", "intent": "casual_emotion", "response": "Take one slow breath. Your brain is just doing extra — sabihin mo, 'calm ka lang.'" },
-    { "input": "i'm tired of everything", "intent": "casual_emotion", "response": "Hey. Deep breath. It's okay to pause. You don’t have to carry the world today." },
-
-    { "input": "tell me a joke", "intent": "casual_fun", "response": "Why did the laptop go to therapy? Because it had too many tabs open — same as us sometimes!" },
-    { "input": "give me a fun fact", "intent": "casual_fun", "response": "Fun fact: Bananas are berries, but strawberries aren’t. Wild, di ba?" },
-    { "input": "cheer me up", "intent": "casual_fun", "response": "Okay, here’s one: You survived 100% of your bad days so far. Solid track record, friend." },
-    { "input": "tell me something funny", "intent": "casual_fun", "response": "Here’s a real one: Why don’t skeletons fight? Wala silang guts." },
-    { "input": "i want chaos", "intent": "casual_fun", "response": "Chaos? Say no more. Step 1: make a weird food combo. Step 2: try it. Step 3: regret it." },
-    { "input": "give me a dare", "intent": "casual_fun", "response": "Dare: Drink water. Yes, hydration dare. Responsible chaos." },
-
-    { "input": "i want dessert", "intent": "food_chat", "response": "Same. Ice cream? Cake? Or the chaotic combo: ice cream + bread?" },
-    { "input": "coffee or tea", "intent": "food_chat", "response": "Coffee for chaos energy, tea for calm main character moment." },
-    { "input": "i'm craving something salty", "intent": "food_chat", "response": "Chips? Fries? Or classy salty — like buttered popcorn?" },
-    { "input": "what's a good midnight snack", "intent": "food_chat", "response": "Something low-key but happy: toasted bread, yogurt, or leftover anything." },
-    { "input": "what should i eat", "intent": "food_chat", "response": "Depends — craving something light, something heavy, or something comforting?" },
-    { "input": "what should i eat today", "intent": "food_chat", "response": "What’s the vibe — comfy food, lutong bahay, or chaotic cravings?" },
-    { "input": "favorite food mo", "intent": "food_chat", "response": "Anything na hindi ako nilalaglag — so basically, chocolate." },
-
-    { "input": "i like someone", "intent": "crush_chat", "response": "Ooooh spill. Friend ka ba niya? Chat kayo? Ano status niyo?" },
-    { "input": "should i confess", "intent": "crush_chat", "response": "Depends — green flag ba siya? Or magulo? Pero if safe and chill, go small hint muna." },
-    { "input": "my crush ignored me", "intent": "crush_chat", "response": "Big oof. Breathe. Sometimes people get busy — not always personal." },
-    { "input": "crush advice", "intent": "crush_chat", "response": "Be chill, be kind, be yourself. Umiwas sa clingy arc. And hydrate. Cute yun." },
-    { "input": "does my crush like me", "intent": "crush_chat", "response": "Hard to tell. Signs: replies fast, remembers small things, or nagsesend ng memes sayo." },
-    { "input": "why do i fall easily", "intent": "crush_chat", "response": "Because you have a soft heart. Not a flaw — just protect it a bit." },
-    { "input": "im so kilig", "intent": "crush_chat", "response": "Ayyyy love arc unlocked! Ano ginawa niya? Spill the cute details." },
-
-    { "input": "i need a new hobby", "intent": "hobby_chat", "response": "Try something low-pressure: drawing, plants, short walks, or random YouTube skills." },
-    { "input": "what hobby should i try", "intent": "hobby_chat", "response": "What do you vibe with — artsy, sporty, comfy, or introvert-friendly hobbies?" },
-    { "input": "i want to learn cooking", "intent": "hobby_chat", "response": "Start with eggs or garlic rice. Once you master that, you’re unstoppable." },
-    { "input": "i want to start reading", "intent": "hobby_chat", "response": "Pick a short book or comics para chill. No pressure, just vibes." },
-    { "input": "i want to try gaming", "intent": "hobby_chat", "response": "Start with cozy games — Stardew, Minecraft, or mobile chill games." },
-    { "input": "i'm not good at anything", "intent": "hobby_chat", "response": "You probably just haven’t found your thing yet. Try small experiments — one might surprise you." },
-
-    { "input": "i feel cute today", "intent": "genz_chat", "response": "As you should! Confidence is glowing — keep it, queen/king." },
-    { "input": "hype me up", "intent": "genz_chat", "response": "Okay bet — you’re smart, funny, and lowkey unstoppable. Let’s go." },
-    { "input": "i need a pep talk", "intent": "genz_chat", "response": "Here’s the tea: you’ve survived worse. Today? Kaya mo ‘to." },
-    { "input": "give me a compliment", "intent": "genz_chat", "response": "Your vibe? Immaculate. Your energy? Delicious. Your presence? 10/10." },
-    { "input": "i feel ugly", "intent": "genz_chat", "response": "You’re not. Sometimes the brain lies — but your glow stays real." },
-    { "input": "i feel good today", "intent": "genz_chat", "response": "Yesss we love a good mood arc! Keep that energy rolling." },
-
-    { "input": "can we be friends", "intent": "casual_chat", "response": "Of course! I’m here to chat, hype, listen, or chill anytime." },
-    { "input": "talk to me", "intent": "casual_chat", "response": "Sure! What’s the vibe — deep talk, nonsense talk, or meme talk?" },
-    { "input": "im shy", "intent": "casual_chat", "response": "That's okay. We can go slow. I’ll match your energy." },
-    { "input": "i want to rant", "intent": "casual_chat", "response": "Rant mode activated. Go — I’m listening, zero judgement." },
-
-    { "input": "i'm scared", "intent": "kids_safe", "response": "I'm here. It's okay to feel scared. Do you want to breathe with me for a moment?" },
-
-    { "input": "who are you", "intent": "bot_intro", "response": "I'm Gentle Heart — your gentle companion for info and emotional support about cerebral palsy, caregiving, and calm breathing." },
-    { "input": "what is your name", "intent": "bot_intro", "response": "My name is Gentle Heart. I'm here to listen and share helpful info. How can I help?" },
-    { "input": "are you real", "intent": "bot_intro", "response": "I'm a virtual companion — designed to support, guide and share information gently." },
-    { "input": "are you a doctor", "intent": "bot_limit", "response": "I'm not a doctor. I offer information, emotional support, and resources. For medical advice, please consult a healthcare professional." },
-    { "input": "can you diagnose", "intent": "bot_limit", "response": "I can't diagnose. I can share signs to watch and suggest talking to a doctor or therapist for a proper assessment." },
-    { "input": "are you safe", "intent": "bot_limit", "response": "Yes — I'm a supportive virtual companion. For crises, trusted people and emergency services are best real-world help." },
-
-    { "input": "can you talk in tagalog", "intent": "language", "response": "Oo, pwede. Sabihin mo lang kung gusto mo Tagalog at gagamitin ko ito sa mga tugon." },
-    { "input": "speak tagalog", "intent": "language", "response": "Sige — magta-Tagalog ako. Ano ang gusto mong malaman?" },
-
-    { "input": "settings", "intent": "settings", "response": "Open the gear icon to change Country, Kids mode, Private mode, or Clear history." },
-    { "input": "kids mode", "intent": "kids_mode", "response": "Kids mode makes replies simpler, calmer, and safer for children." },
-    { "input": "private mode", "intent": "private_mode", "response": "Private mode prevents saving chat history locally. You can still use the bot normally." },
-    { "input": "clear history", "intent": "clear_history", "response": "Open Settings → Clear history to delete your saved chat locally." },
-
-{ "input": "hotline", "intent": "ph_hotline_request", "response": "If you're in the Philippines, you can call Hopeline 0917-558-4673 or NCMH 1553 / 0966-351-4518. If in immediate danger, call local emergency services." },
-    { "input": "crisis hotline", "intent": "ph_hotline_request", "response": "If you are in the Philippines, Hopeline: 0917-558-4673. NCMH: 1553 (Luzon) / 0966-351-4518. If in danger, call local emergency services now." },
-    { "input": "help hotline", "intent": "ph_hotline_request", "response": "For Philippines: Hopeline 0917-558-4673 or (02) 8804-4673. For other countries, contact local emergency services." },
-    { "input": "show hotlines", "intent": "ph_hotline_request", "response": "If you're in the Philippines: Hopeline 0917-558-4673, NCMH 1553 / 0966-351-4518. If elsewhere, contact local emergency services." },
-    { "input": "may emergency ba", "intent": "ph_hotline_request", "response": "Kung nasa Pilipinas ka at nanganganib, tawagan ang lokal na emergency number (911). Para sa support: Hopeline 0917-558-4673 or NCMH 1553." },
-
-    { "input": "i am in the philippines", "intent": "region_detect", "response": "Noted — I'll use Philippines-specific resources when responding." },
-    { "input": "nasa pilipinas ako", "intent": "region_detect", "response": "Naintindihan — gagamitin ko ang mga lokal na hotline at mungkahi para sa Pilipinas." },
-    { "input": "im in philippines", "intent": "region_detect", "response": "Thanks — using Philippines hotlines and resources when relevant." },
-    { "input": "pinoy", "intent": "region_detect", "response": "Okay — switching to Philippines-specific suggestions and hotlines." },
-    { "input": "pilipinas", "intent": "region_detect", "response": "Nai-set na sa Pilipinas — ipapakita ko ang lokal na mga numero kung kailangan." },
-
-    { "input": "i want to die", "intent": "self_harm_direct", "response": "I'm really sorry you're feeling this way. If you're in immediate danger, please call local emergency services now. If you're in the Philippines, Hopeline 0917-558-4673 or NCMH 1553 / 0966-351-4518 are available. Would you like breathing steps or hotline numbers?" },
-    { "input": "gusto kong mamatay", "intent": "self_harm_direct", "response": "Pasensya — nalulungkot ako na ganito ang nararamdaman mo. Kung nanganganib ka, tawagan ang lokal na emergency services. Sa Pilipinas, Hopeline 0917-558-4673 o NCMH 1553 / 0966-351-4518. Gusto mo ba ipakita ko ang hotline?" },
-
-    { "input": "i will kill myself", "intent": "self_harm_direct", "response": "I'm really sorry this is how you feel. If you're in immediate danger please call emergency services or a trusted person now. I can show crisis hotlines for your country if you want." },
-    { "input": "i'm going to kill myself", "intent": "self_harm_direct", "response": "If you may act on these thoughts, call local emergency services immediately. I can display hotline numbers for your country if you'd like." },
-    { "input": "i want to hurt myself", "intent": "self_harm_direct", "response": "If you might harm yourself please call local emergency services now. If you're in the Philippines, Hopeline (0917-558-4673) and NCMH (1553) are available." },
-
-    { "input": "im having suicidal thoughts", "intent": "self_harm_direct", "response": "I'm really sorry you're feeling this. If you're in immediate danger please call local emergency services now. Philippines hotlines include Hopeline 0917-558-4673 and NCMH 1553." },
-    { "input": "i'm thinking about suicide", "intent": "self_harm_direct", "response": "If you may act on these thoughts, call local emergency services immediately. I can display hotline numbers for your country if you'd like." },
-
-    { "input": "goodbye", "intent": "goodbye", "response": "Take care — I'm here anytime. If you're in crisis call local emergency services." },
-    { "input": "bye", "intent": "goodbye", "response": "Goodbye. You can return anytime if you need support." },
-    { "input": "see you", "intent": "goodbye", "response": "See you later — stay safe." },
-    { "input": "thanks bye", "intent": "goodbye", "response": "You're welcome. Bye for now — take care." },
-    { "input": "ok bye", "intent": "goodbye", "response": "Bye. I'm here when you return." }
-  ],
-  "routing_rules": {
-    "region_default": "GLOBAL_GENERAL",
-    "region_key_map": { "PH": "PH" },
-    "safety_behavior": {
-      "on_high_risk_detected": {
-        "log_local_only": true,
-        "suppress_autoreply_promotional": true,
-        "prompt_hotline_display": true
+    "food_end": {
+      "text": {
+        "en": "Go enjoy your food. I’ll be here when you’re ready to chat again.",
+        "tl": "Sige, kain ka muna. Nandito lang ako kapag gusto mo ulit makipag-usap."
+      },
+      "options": {
+        "return": {
+          "keywords": ["back", "balik", "hi", "hello"],
+          "next": "mood_01"
+        }
       }
     }
   }
