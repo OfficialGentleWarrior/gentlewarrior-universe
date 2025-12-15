@@ -182,28 +182,30 @@ function say(text,who){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ROUTING */
+/* ROUTING — FIXED BINARY LOGIC */
 function routeBinary(text){
   const t = norm(text);
   const s = QA.states[currentState];
 
-  // OPTION A = positive / okay
-  const optionAKeywords = [
-    'ok','okay','fine','good',
-    'ayos','maayos','okay lang'
+  // OPTION A
+  const optionA = [
+    'okay','ok','oo','yes',
+    'ayos','maayos','labas','talk'
   ];
 
-  // OPTION B = not okay / heavy
-  const optionBKeywords = [
-    'not okay','hindi','hindi masyado','di okay',
-    'mabigat','heavy','pagod','down','sad'
+  // OPTION B
+  const optionB = [
+    'hindi','no',
+    'mabigat','heavy',
+    'kalma','kumalma','calm',
+    'pagod','down','sad'
   ];
 
-  if(optionAKeywords.some(k => t.includes(k))){
+  if(optionA.some(k => t.includes(k))){
     return s.options[0].next;
   }
 
-  if(optionBKeywords.some(k => t.includes(k))){
+  if(optionB.some(k => t.includes(k))){
     return s.options[1].next;
   }
 
@@ -227,7 +229,6 @@ document.getElementById('sendBtn').onclick=()=>{
     return;
   }
 
-  // NORMAL FLOW
   if(!currentState) return;
 
   const next=routeBinary(text);
@@ -237,8 +238,8 @@ document.getElementById('sendBtn').onclick=()=>{
   }else{
     say(
       lang==='tl'
-        ? 'Pumili ka lang sa dalawang nabanggit ko.'
-        : 'Please choose between the two options I mentioned.',
+        ? 'Okay lang mag-isip sandali. Alin ang mas malapit sa nararamdaman mo?'
+        : 'It’s okay to take a moment. Which one feels closer to you?',
       'bot'
     );
   }
