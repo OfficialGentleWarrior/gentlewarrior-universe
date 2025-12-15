@@ -29,6 +29,21 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
   background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));
   z-index:1000;
 }
+let kidsMode = localStorage.getItem("gh_kidsMode")==="true";
+let country = localStorage.getItem("gh_country") || "PH";
+
+kidsMode && (document.getElementById("kidsMode").checked = true);
+document.getElementById("countrySelect").value = country;
+
+document.getElementById("kidsMode").onchange = e=>{
+  kidsMode = e.target.checked;
+  localStorage.setItem("gh_kidsMode", kidsMode);
+};
+
+document.getElementById("countrySelect").onchange = e=>{
+  country = e.target.value;
+  localStorage.setItem("gh_country", country);
+};
 .header img{width:40px;height:40px;border-radius:10px}
 .title{font-weight:700}
 .subtitle{font-size:12px;opacity:.8}
@@ -52,6 +67,49 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 .settings-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
 .hidden{display:none}
 .settings-panel{background:#04331f;padding:18px;border-radius:14px;width:90%;max-width:320px}
+.settings-panel h3{
+  margin-top:0;
+  margin-bottom:12px;
+}
+
+.setting-item{
+  margin-bottom:14px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.setting-item label{
+  font-size:14px;
+}
+
+.setting-item small{
+  font-size:12px;
+  opacity:.75;
+}
+
+.settings-panel select{
+  padding:8px;
+  border-radius:8px;
+  border:0;
+  background:#0b5b39;
+  color:#fff;
+}
+
+.settings-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.settings-actions button{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:0;
+  background:#1aa667;
+  font-weight:600;
+}
 </style>
 </head>
 
@@ -86,9 +144,37 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 
 <div id="settingsModal" class="settings-modal hidden">
   <div class="settings-panel">
-    <h3>Settings</h3>
-    <label><input type="checkbox" id="privateMode"> Private mode</label><br><br>
-    <button id="clearHistoryBtn">Clear chat</button><br><br>
+  <h3>Settings</h3>
+
+  <!-- Kids Mode -->
+  <div class="setting-item">
+    <label>
+      <input type="checkbox" id="kidsMode">
+      Kids mode
+    </label>
+    <small>Simple and kid-friendly replies</small>
+  </div>
+
+  <!-- Country -->
+  <div class="setting-item">
+    <label for="countrySelect">Country</label>
+    <select id="countrySelect">
+      <option value="PH">Philippines</option>
+      <option value="INT">International</option>
+    </select>
+  </div>
+
+  <!-- Private Mode -->
+  <div class="setting-item">
+    <label>
+      <input type="checkbox" id="privateMode">
+      Private mode
+    </label>
+    <small>Do not save chat history</small>
+  </div>
+
+  <div class="settings-actions">
+    <button id="clearHistoryBtn">Clear chat</button>
     <button id="closeSettingsBtn">Close</button>
   </div>
 </div>
