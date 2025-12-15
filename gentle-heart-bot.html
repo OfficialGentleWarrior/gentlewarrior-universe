@@ -1,203 +1,281 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Gentle Heart</title>
 
 <style>
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background:#f6fbf8;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-  }
+:root{
+  --green:#06442a;
+  --green2:#0e6e47;
+  --bg:#f6fbf8;
+}
 
-  header{
-    background:#06442a;
-    color:#fff;
-    padding:14px;
-    text-align:center;
-  }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:var(--bg);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
 
-  #chat{
-    flex:1;
-    padding:12px;
-    overflow-y:auto;
-  }
+/* HEADER */
+header{
+  background:var(--green);
+  color:#fff;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 
-  .bot, .user{
-    max-width:80%;
-    padding:10px 12px;
-    margin:8px 0;
-    border-radius:12px;
-    line-height:1.4;
-    font-size:15px;
-  }
+.header-left,.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-  .bot{
-    background:#e3f2eb;
-    align-self:flex-start;
-  }
+header img{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#fff;
+}
 
-  .user{
-    background:#06442a;
-    color:#fff;
-    align-self:flex-end;
-  }
+.header-title{
+  text-align:center;
+  flex:1;
+}
 
-  #options{
-    padding:10px;
-    display:flex;
-    gap:8px;
-  }
+.header-title strong{display:block}
 
-  button{
-    flex:1;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    background:#0e6e47;
-    color:#fff;
-    font-size:14px;
-  }
+/* CHAT */
+#chat{
+  flex:1;
+  padding:12px;
+  overflow-y:auto;
+}
 
-  button:active{
-    opacity:.85;
-  }
+.msg{
+  max-width:80%;
+  padding:10px 12px;
+  margin:8px 0;
+  border-radius:14px;
+  line-height:1.4;
+  font-size:15px;
+}
 
-  #inputWrap{
-    display:flex;
-    padding:10px;
-    gap:8px;
-    border-top:1px solid #ddd;
-  }
+.bot{
+  background:#e3f2eb;
+}
 
-  input{
-    flex:1;
-    padding:10px;
-    border-radius:10px;
-    border:1px solid #ccc;
-    font-size:14px;
-  }
+.user{
+  background:var(--green);
+  color:#fff;
+  margin-left:auto;
+}
+
+/* OPTIONS */
+#options{
+  padding:10px;
+  display:flex;
+  gap:8px;
+}
+
+button{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:var(--green2);
+  color:#fff;
+  font-size:14px;
+}
+
+button:disabled{opacity:.5}
+
+/* INPUT */
+#inputWrap{
+  display:flex;
+  padding:10px;
+  gap:8px;
+  border-top:1px solid #ddd;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  width:85%;
+}
+
+.modal-box h3{margin-top:0}
+
+.modal-box label{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <strong>Gentle Heart</strong><br/>
-  <small>Your gentle companion</small>
+  <div class="header-left">
+    <img src="avatar.png">
+  </div>
+
+  <div class="header-title">
+    <strong>Gentle Heart</strong>
+    <small>Your gentle companion</small>
+  </div>
+
+  <div class="header-right">
+    <input type="file" id="userAvatarInput" hidden>
+    <img id="userAvatar" onclick="userAvatarInput.click()">
+    <span onclick="openSettings()">⚙️</span>
+  </div>
 </header>
 
 <div id="chat"></div>
 <div id="options"></div>
 
 <div id="inputWrap">
-  <input id="userInput" placeholder="Type here…" />
-  <button onclick="sendUser()">Send</button>
+  <input id="userInput" placeholder="Type here…">
+  <button id="sendBtn" disabled onclick="sendUser()">Send</button>
+</div>
+
+<!-- SETTINGS -->
+<div class="modal" id="settings">
+  <div class="modal-box">
+    <h3>Settings</h3>
+
+    <label>Kids Mode <input type="checkbox"></label>
+    <label>Private Mode <input type="checkbox"></label>
+
+    <label>
+      Country
+      <select>
+        <option>Philippines</option>
+        <option>International</option>
+      </select>
+    </label>
+
+    <button onclick="clearHistory()">Clear History</button>
+    <br><br>
+    <button onclick="closeSettings()">Close</button>
+  </div>
 </div>
 
 <script>
-/* =========================
-   CORE STATE
-========================= */
-let QA = null;
-let currentStateId = null;
-const chat = document.getElementById('chat');
-const optionsWrap = document.getElementById('options');
-const input = document.getElementById('userInput');
+/* STATE */
+let QA=null,currentStateId=null;
+const chat=document.getElementById('chat');
+const optionsWrap=document.getElementById('options');
+const input=document.getElementById('userInput');
+const sendBtn=document.getElementById('sendBtn');
 
-/* =========================
-   LOAD QA.JSON
-========================= */
+/* LOAD QA */
 async function loadQA(){
-  const res = await fetch('./qa.json');
-  QA = await res.json();
-  currentStateId = QA.start;
-  renderState(QA.states[currentStateId]);
+  try{
+    const res=await fetch('./qa.json');
+    QA=await res.json();
+    currentStateId=QA.start;
+    sendBtn.disabled=false;
+    renderState(QA.states[currentStateId]);
+  }catch(e){
+    console.error('QA load failed',e);
+  }
 }
 
-/* =========================
-   UTIL
-========================= */
-function normalize(text){
-  return text.toLowerCase().trim();
+/* UTIL */
+const normalize=t=>t.toLowerCase().trim();
+function addMsg(text,cls){
+  const d=document.createElement('div');
+  d.className='msg '+cls;
+  d.textContent=text;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
 }
 
-function addMessage(text, cls){
-  const div = document.createElement('div');
-  div.className = cls;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-/* =========================
-   ROUTER
-========================= */
-function findStateByKeyword(inputText){
-  const t = normalize(inputText);
-
-  for(const [id, state] of Object.entries(QA.states)){
-    if(!state.keywords) continue;
-    for(const kw of state.keywords){
-      if(t.includes(kw)) return id;
-    }
+/* ROUTER */
+function findState(input){
+  const t=normalize(input);
+  for(const [id,s] of Object.entries(QA.states)){
+    if(!s.keywords)continue;
+    if(s.keywords.some(k=>t.includes(k)))return id;
   }
   return null;
 }
 
-function resolveNextState(userText){
-  const matched = findStateByKeyword(userText);
-  if(matched){
-    currentStateId = matched;
-    return QA.states[currentStateId];
-  }
+function resolve(userText){
+  const m=findState(userText);
+  if(m)currentStateId=m;
   return QA.states[currentStateId];
 }
 
-/* =========================
-   RENDER
-========================= */
+/* RENDER */
 function renderState(state){
-  addMessage(state.text.en, 'bot');
-  renderOptions(state.options);
-}
-
-function renderOptions(opts){
-  optionsWrap.innerHTML = '';
-  opts.forEach((o, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = o.label_en;
-    btn.onclick = () => selectOption(i);
-    optionsWrap.appendChild(btn);
+  addMsg(state.text.en,'bot');
+  optionsWrap.innerHTML='';
+  state.options.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.textContent=o.label_en;
+    b.onclick=()=>selectOption(i);
+    optionsWrap.appendChild(b);
   });
 }
 
-/* =========================
-   EVENTS
-========================= */
+/* EVENTS */
 function sendUser(){
-  const text = input.value.trim();
-  if(!text) return;
-  addMessage(text, 'user');
-  input.value = '';
-  const state = resolveNextState(text);
-  renderState(state);
+  if(!QA)return;
+  const t=input.value.trim();
+  if(!t)return;
+  addMsg(t,'user');
+  input.value='';
+  renderState(resolve(t));
 }
 
-function selectOption(index){
-  const nextId = QA.states[currentStateId].options[index].next;
-  currentStateId = nextId;
+function selectOption(i){
+  currentStateId=QA.states[currentStateId].options[i].next;
   renderState(QA.states[currentStateId]);
 }
 
-/* =========================
-   START
-========================= */
+/* SETTINGS */
+function openSettings(){settings.style.display='flex'}
+function closeSettings(){settings.style.display='none'}
+function clearHistory(){chat.innerHTML='';closeSettings()}
+
+/* USER AVATAR */
+const userAvatar=document.getElementById('userAvatar');
+const userAvatarInput=document.getElementById('userAvatarInput');
+userAvatarInput.onchange=e=>{
+  const f=e.target.files[0];
+  if(f)userAvatar.src=URL.createObjectURL(f);
+};
+
+/* START */
 loadQA();
 </script>
 
