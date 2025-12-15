@@ -8,11 +8,12 @@
 <style>
 :root{
   --emerald:#04331f;
-  --emerald2:#06442a;
-  --light:#f6fbf8;
+  --emerald-dark:#032718;
+  --emerald-soft:#0e6e47;
+  --bot:#1a8f63;
+  --user:#0b3d28;
 }
 
-/* full height */
 html,body{
   margin:0;
   height:100%;
@@ -27,7 +28,7 @@ body{
 
 /* HEADER */
 header{
-  background:var(--emerald2);
+  background:var(--emerald-dark);
   color:#fff;
   padding:10px;
   display:flex;
@@ -53,27 +54,26 @@ header img{
   flex:1;
 }
 
-/* CHAT AREA */
+/* CHAT */
 #chat{
   flex:1;
-  background:var(--light);
   padding:12px;
   overflow-y:auto;
-  border-radius:16px 16px 0 0;
 }
 
+/* MESSAGES */
 .msg{
   max-width:80%;
-  padding:10px 12px;
-  margin:8px 0;
-  border-radius:14px;
+  padding:12px 14px;
+  margin:10px 0;
+  border-radius:16px;
   line-height:1.4;
+  color:#fff;
 }
 
-.bot{ background:#e3f2eb; }
+.bot{ background:var(--bot); }
 .user{
-  background:var(--emerald2);
-  color:#fff;
+  background:var(--user);
   margin-left:auto;
 }
 
@@ -81,53 +81,25 @@ header img{
 #inputWrap{
   position:sticky;
   bottom:0;
-  background:var(--light);
+  background:var(--emerald);
   padding:10px env(safe-area-inset-right) calc(10px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
   display:flex;
   gap:8px;
-  border-top:1px solid #ddd;
 }
 
 input{
   flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ccc;
+  padding:12px;
+  border-radius:12px;
+  border:none;
 }
 
 button{
-  padding:10px 16px;
-  border-radius:10px;
+  padding:12px 18px;
+  border-radius:12px;
   border:none;
-  background:var(--emerald2);
+  background:var(--emerald-soft);
   color:#fff;
-}
-
-button:disabled{opacity:.5}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.modal-box{
-  background:#fff;
-  padding:20px;
-  border-radius:14px;
-  width:85%;
-}
-
-.modal-box h3{margin-top:0}
-
-.modal-box label{
-  display:flex;
-  justify-content:space-between;
-  margin:10px 0;
 }
 </style>
 </head>
@@ -136,142 +108,98 @@ button:disabled{opacity:.5}
 
 <header>
   <div class="header-left">
-    <img src="avatar.png" alt="bot avatar">
+    <img src="avatar.png">
   </div>
-
   <div class="header-title">
     <strong>Gentle Heart</strong><br>
     <small>Your gentle companion</small>
   </div>
-
-  <div class="header-right">
-    <!-- user avatar -->
-    <input type="file" id="userAvatarInput" hidden accept="image/*">
-    <img id="userAvatar" style="cursor:pointer;" alt="user avatar">
-    <!-- settings gear -->
-    <span style="cursor:pointer;font-size:20px;" id="gearBtn">⚙️</span>
-  </div>
+  <div class="header-right">⚙️</div>
 </header>
 
 <div id="chat"></div>
 
 <div id="inputWrap">
   <input id="userInput" placeholder="Type here…">
-  <button id="sendBtn" disabled>Send</button>
-</div>
-
-<!-- SETTINGS -->
-<div class="modal" id="settings">
-  <div class="modal-box">
-    <h3>Settings</h3>
-
-    <label>Kids Mode <input type="checkbox" id="kidsMode"></label>
-    <label>Private Mode <input type="checkbox" id="privateMode"></label>
-
-    <label>
-      Country
-      <select id="countrySelect">
-        <option>Philippines</option>
-        <option>International</option>
-      </select>
-    </label>
-
-    <button onclick="clearHistory()">Clear History</button>
-    <br><br>
-    <button onclick="closeSettings()">Close</button>
-  </div>
+  <button id="sendBtn">Send</button>
 </div>
 
 <script>
-/* STATE */
-let QA=null,currentStateId=null,currentLang='en';
+/* ======================
+   STATE + LANGUAGE
+====================== */
+let QA=null;
+let currentState=null;
+let lang='en';
+
 const chat=document.getElementById('chat');
 const input=document.getElementById('userInput');
-const sendBtn=document.getElementById('sendBtn');
-const userAvatar=document.getElementById('userAvatar');
-const userAvatarInput=document.getElementById('userAvatarInput');
-const gearBtn=document.getElementById('gearBtn');
-const settingsModal=document.getElementById('settings');
 
-/* LOAD QA */
+/* ======================
+   LOAD QA
+====================== */
 (async()=>{
-  try{
-    const res=await fetch('./qa.json');
-    QA=await res.json();
-    currentStateId=QA.start;
-    sendBtn.disabled=false;
-    // show initial prompt on load
-    addMsg(QA.states[currentStateId].text.en,'bot');
-  }catch(e){
-    console.error('QA load failed',e);
-  }
+  const res=await fetch('./qa.json');
+  QA=await res.json();
+  currentState=QA.start;
 })();
 
-/* UTIL */
-const normalize=t=>t.toLowerCase().trim();
-function isTagalog(t){
-  return /(kumusta|hindi|mabigat|gutom|ok|okay|pakiramdam|salamat|magaan|nakakatulong)/i.test(t);
-}
-function addMsg(text,cls){
+/* ======================
+   UTIL
+====================== */
+const norm=t=>t.toLowerCase().trim();
+const isTL=t=>/(kumusta|hindi|mabigat|medyo|salamat|nga|ako|ka)/i.test(t);
+
+function say(text,who){
   const d=document.createElement('div');
-  d.className='msg '+cls;
+  d.className='msg '+who;
   d.textContent=text;
   chat.appendChild(d);
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ROUTER: find matching state by keyword */
-function resolve(text){
-  const t=normalize(text);
-  // try keyword match
-  for(const [id,s] of Object.entries(QA.states)){
-    if(!s.keywords) continue;
-    if(s.keywords.some(k=>t.includes(k))){
-      currentStateId=id;
-      return QA.states[id];
-    }
-  }
-  // no change if no match
+/* ======================
+   BINARY ROUTER
+====================== */
+function routeBinary(inputText){
+  const t=norm(inputText);
+  const state=QA.states[currentState];
+
+  // OPTION A
+  const a=[norm(state.options[0].label_en), norm(state.options[0].label_tl)];
+  // OPTION B
+  const b=[norm(state.options[1].label_en), norm(state.options[1].label_tl)];
+
+  if(a.some(k=>t.includes(k))) return state.options[0].next;
+  if(b.some(k=>t.includes(k))) return state.options[1].next;
+
   return null;
 }
 
-/* SEND */
-sendBtn.onclick=()=>{
-  if(!QA)return;
-  const t=input.value.trim();
-  if(!t)return;
+/* ======================
+   SEND
+====================== */
+document.getElementById('sendBtn').onclick=()=>{
+  const text=input.value.trim();
+  if(!text || !QA) return;
 
-  // detect language
-  currentLang=isTagalog(t)?'tl':'en';
-
-  // user message
-  addMsg(t,'user');
+  lang=isTL(text)?'tl':'en';
+  say(text,'user');
   input.value='';
 
-  // resolve next state
-  const next=resolve(t);
+  const next=routeBinary(text);
+
   if(next){
-    const txt=next.text[currentLang] || next.text.en;
-    addMsg(txt,'bot');
+    currentState=next;
+    say(QA.states[currentState].text[lang],'bot');
+  }else{
+    say(
+      lang==='tl'
+        ? 'Pumili ka lang sa dalawang nabanggit ko.'
+        : 'Please choose between the two options I mentioned.',
+      'bot'
+    );
   }
-};
-
-/* SETTINGS */
-gearBtn.onclick=()=>openSettings();
-function openSettings(){settingsModal.style.display='flex'}
-function closeSettings(){settingsModal.style.display='none'}
-function clearHistory(){chat.innerHTML=''; closeSettings()}
-
-/* USER AVATAR UPLOAD */
-userAvatarInput.onchange=e=>{
-  const f=e.target.files[0];
-  if(f) userAvatar.src=URL.createObjectURL(f);
-};
-userAvatar.onclick=()=>userAvatarInput.click();
-
-/* simple click outside modal to close */
-settingsModal.onclick=e=>{
-  if(e.target===settingsModal) closeSettings();
 };
 </script>
 
