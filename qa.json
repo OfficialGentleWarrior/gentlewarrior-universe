@@ -10,7 +10,7 @@
       },
       "options": {
         "good": {
-          "keywords": ["good mood", "okay", "light", "magaan", "magandang pakiramdam"],
+          "keywords": ["happy", "masaya", "good mood", "okay", "light", "magaan", "magandang pakiramdam"],
           "next": "mood_good"
         },
         "bad": {
