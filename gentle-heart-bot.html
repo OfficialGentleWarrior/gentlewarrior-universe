@@ -211,11 +211,24 @@ const GLOBAL_ROUTES = [
 
 function resolveNextState(t){
   t=t.toLowerCase();
+
+  // ✅ 1. CHECK STATE OPTIONS FIRST
+  const s = QA.states[currentState];
+  if(s && s.options){
+    for(const o of Object.values(s.options)){
+      for(const k of o.keywords||[]){
+        if(t.includes(k.toLowerCase())) return o.next;
+      }
+    }
+  }
+
+  // ✅ 2. GLOBAL ROUTER AS FALLBACK
   for(const r of GLOBAL_ROUTES){
     for(const k of r.keywords){
       if(t.includes(k.toLowerCase())) return r.state;
     }
   }
+
   return currentState;
 }
 
