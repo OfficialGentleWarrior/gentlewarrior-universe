@@ -29,21 +29,6 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
   background:linear-gradient(180deg,var(--emerald-800),var(--emerald-700));
   z-index:1000;
 }
-let kidsMode = localStorage.getItem("gh_kidsMode")==="true";
-let country = localStorage.getItem("gh_country") || "PH";
-
-kidsMode && (document.getElementById("kidsMode").checked = true);
-document.getElementById("countrySelect").value = country;
-
-document.getElementById("kidsMode").onchange = e=>{
-  kidsMode = e.target.checked;
-  localStorage.setItem("gh_kidsMode", kidsMode);
-};
-
-document.getElementById("countrySelect").onchange = e=>{
-  country = e.target.value;
-  localStorage.setItem("gh_country", country);
-};
 .header img{width:40px;height:40px;border-radius:10px}
 .title{font-weight:700}
 .subtitle{font-size:12px;opacity:.8}
