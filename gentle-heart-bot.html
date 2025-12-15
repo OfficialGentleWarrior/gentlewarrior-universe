@@ -139,6 +139,7 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
     </label>
     <small>Simple and kid-friendly replies</small>
   </div>
+  </div>
 
   <!-- Country -->
   <div class="setting-item">
@@ -165,9 +166,19 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 </div>
 
 <script>
-const messagesEl=document.getElementById("messages");
-const form=document.getElementById("chatForm");
-const input=document.getElementById("userInput");
+const messagesEl = document.getElementById("messages");
+const form = document.getElementById("chatForm");
+const input = document.getElementById("userInput");
+
+const settingsModal = document.getElementById("settingsModal");
+const settingsBtn = document.getElementById("settingsBtn");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+const privateModeCheckbox = document.getElementById("privateMode");
+
+const userAvatarInput = document.getElementById("userAvatarInput");
+const userAvatarPreview = document.getElementById("userAvatarPreview");
 
 let history=JSON.parse(localStorage.getItem("gh_history")||"[]");
 let QA=null;
@@ -281,10 +292,11 @@ const GLOBAL_ROUTES = [
 ];
 
 function resolveNextState(t){
-  t=t.toLowerCase();
+  if(!QA || !QA.states || !currentState) return currentState;
 
-  // ✅ 1. CHECK STATE OPTIONS FIRST
+  t = t.toLowerCase();
   const s = QA.states[currentState];
+
   if(s && s.options){
     for(const o of Object.values(s.options)){
       for(const k of o.keywords||[]){
@@ -293,7 +305,6 @@ function resolveNextState(t){
     }
   }
 
-  // ✅ 2. GLOBAL ROUTER AS FALLBACK
   for(const r of GLOBAL_ROUTES){
     for(const k of r.keywords){
       if(t.includes(k.toLowerCase())) return r.state;
@@ -317,7 +328,9 @@ form.onsubmit=e=>{
 settingsBtn.onclick=()=>settingsModal.classList.remove("hidden");
 closeSettingsBtn.onclick=()=>settingsModal.classList.add("hidden");
 clearHistoryBtn.onclick=()=>{history=[];localStorage.removeItem("gh_history");render();}
-privateMode.onchange=e=>privateMode=e.target.checked;
+privateModeCheckbox.onchange = e => {
+  privateMode = e.target.checked;
+};
 
 userAvatarInput.onchange=()=>{
   const f=userAvatarInput.files[0];
