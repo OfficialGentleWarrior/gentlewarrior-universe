@@ -12,6 +12,7 @@
   --light:#f6fbf8;
 }
 
+/* full height */
 html,body{
   margin:0;
   height:100%;
@@ -52,7 +53,7 @@ header img{
   flex:1;
 }
 
-/* CHAT */
+/* CHAT AREA */
 #chat{
   flex:1;
   background:var(--light);
@@ -101,6 +102,33 @@ button{
   background:var(--emerald2);
   color:#fff;
 }
+
+button:disabled{opacity:.5}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  width:85%;
+}
+
+.modal-box h3{margin-top:0}
+
+.modal-box label{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
 </style>
 </head>
 
@@ -108,15 +136,20 @@ button{
 
 <header>
   <div class="header-left">
-    <img src="avatar.png">
+    <img src="avatar.png" alt="bot avatar">
   </div>
+
   <div class="header-title">
     <strong>Gentle Heart</strong><br>
     <small>Your gentle companion</small>
   </div>
+
   <div class="header-right">
-    <img id="userAvatar">
-    ⚙️
+    <!-- user avatar -->
+    <input type="file" id="userAvatarInput" hidden accept="image/*">
+    <img id="userAvatar" style="cursor:pointer;" alt="user avatar">
+    <!-- settings gear -->
+    <span style="cursor:pointer;font-size:20px;" id="gearBtn">⚙️</span>
   </div>
 </header>
 
@@ -127,24 +160,57 @@ button{
   <button id="sendBtn" disabled>Send</button>
 </div>
 
+<!-- SETTINGS -->
+<div class="modal" id="settings">
+  <div class="modal-box">
+    <h3>Settings</h3>
+
+    <label>Kids Mode <input type="checkbox" id="kidsMode"></label>
+    <label>Private Mode <input type="checkbox" id="privateMode"></label>
+
+    <label>
+      Country
+      <select id="countrySelect">
+        <option>Philippines</option>
+        <option>International</option>
+      </select>
+    </label>
+
+    <button onclick="clearHistory()">Clear History</button>
+    <br><br>
+    <button onclick="closeSettings()">Close</button>
+  </div>
+</div>
+
 <script>
+/* STATE */
 let QA=null,currentStateId=null,currentLang='en';
 const chat=document.getElementById('chat');
 const input=document.getElementById('userInput');
 const sendBtn=document.getElementById('sendBtn');
+const userAvatar=document.getElementById('userAvatar');
+const userAvatarInput=document.getElementById('userAvatarInput');
+const gearBtn=document.getElementById('gearBtn');
+const settingsModal=document.getElementById('settings');
 
 /* LOAD QA */
 (async()=>{
-  const res=await fetch('./qa.json');
-  QA=await res.json();
-  currentStateId=QA.start;
-  sendBtn.disabled=false;
+  try{
+    const res=await fetch('./qa.json');
+    QA=await res.json();
+    currentStateId=QA.start;
+    sendBtn.disabled=false;
+    // show initial prompt on load
+    addMsg(QA.states[currentStateId].text.en,'bot');
+  }catch(e){
+    console.error('QA load failed',e);
+  }
 })();
 
 /* UTIL */
 const normalize=t=>t.toLowerCase().trim();
 function isTagalog(t){
-  return /(kumusta|hindi|mabigat|gutom|ok|okay|pakiramdam|salamat)/i.test(t);
+  return /(kumusta|hindi|mabigat|gutom|ok|okay|pakiramdam|salamat|magaan|nakakatulong)/i.test(t);
 }
 function addMsg(text,cls){
   const d=document.createElement('div');
@@ -154,18 +220,18 @@ function addMsg(text,cls){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ROUTER */
+/* ROUTER: find matching state by keyword */
 function resolve(text){
   const t=normalize(text);
+  // try keyword match
   for(const [id,s] of Object.entries(QA.states)){
-    if(!s.keywords)continue;
+    if(!s.keywords) continue;
     if(s.keywords.some(k=>t.includes(k))){
-      if(id!==currentStateId){
-        currentStateId=id;
-        return QA.states[id];
-      }
+      currentStateId=id;
+      return QA.states[id];
     }
   }
+  // no change if no match
   return null;
 }
 
@@ -175,14 +241,37 @@ sendBtn.onclick=()=>{
   const t=input.value.trim();
   if(!t)return;
 
+  // detect language
   currentLang=isTagalog(t)?'tl':'en';
+
+  // user message
   addMsg(t,'user');
   input.value='';
 
+  // resolve next state
   const next=resolve(t);
   if(next){
-    addMsg(next.text[currentLang],'bot');
+    const txt=next.text[currentLang] || next.text.en;
+    addMsg(txt,'bot');
   }
+};
+
+/* SETTINGS */
+gearBtn.onclick=()=>openSettings();
+function openSettings(){settingsModal.style.display='flex'}
+function closeSettings(){settingsModal.style.display='none'}
+function clearHistory(){chat.innerHTML=''; closeSettings()}
+
+/* USER AVATAR UPLOAD */
+userAvatarInput.onchange=e=>{
+  const f=e.target.files[0];
+  if(f) userAvatar.src=URL.createObjectURL(f);
+};
+userAvatar.onclick=()=>userAvatarInput.click();
+
+/* simple click outside modal to close */
+settingsModal.onclick=e=>{
+  if(e.target===settingsModal) closeSettings();
 };
 </script>
 
