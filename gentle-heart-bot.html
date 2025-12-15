@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Gentle Heart</title>
 
-<link rel="manifest" href="./manifest.webmanifest">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#06442a">
 
 <style>
@@ -19,8 +19,11 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--emerald-900);}
+
 .app{min-height:100vh;display:flex;justify-content:center;}
 .chat-shell{width:100%;max-width:560px;display:flex;flex-direction:column;color:#fff}
+
+/* HEADER */
 .header{
   position:fixed;top:0;left:0;right:0;
   max-width:560px;margin:auto;
@@ -32,9 +35,12 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 .header img{width:40px;height:40px;border-radius:10px}
 .title{font-weight:700}
 .subtitle{font-size:12px;opacity:.8}
+
 .user-area{margin-left:auto;display:flex;align-items:center;gap:10px}
 .user-avatar{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.6);object-fit:cover}
 .settings-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+
+/* CHAT */
 .messages{
   flex:1;padding:84px 16px 16px;
   display:flex;flex-direction:column;gap:12px;overflow:auto
@@ -42,59 +48,20 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 .msg{display:flex;gap:8px}
 .msg.bot{justify-content:flex-start}
 .msg.user{justify-content:flex-end}
+
 .avatar{width:26px;height:26px;border-radius:50%}
 .bubble{padding:8px 12px;border-radius:14px;max-width:75%;white-space:pre-wrap}
 .msg.bot .bubble{background:linear-gradient(180deg,var(--emerald-700),var(--emerald-600))}
 .msg.user .bubble{background:#fff;color:#04331f}
+
 .input-bar{display:flex;gap:8px;padding:12px;position:sticky;bottom:0;background:#04331f}
 .input-bar input{flex:1;padding:12px;border-radius:999px;border:0}
 .input-bar button{padding:12px 16px;border-radius:999px;border:0;background:#1aa667;font-weight:600}
+
+/* SETTINGS */
 .settings-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
 .hidden{display:none}
 .settings-panel{background:#04331f;padding:18px;border-radius:14px;width:90%;max-width:320px}
-.settings-panel h3{
-  margin-top:0;
-  margin-bottom:12px;
-}
-
-.setting-item{
-  margin-bottom:14px;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
-.setting-item label{
-  font-size:14px;
-}
-
-.setting-item small{
-  font-size:12px;
-  opacity:.75;
-}
-
-.settings-panel select{
-  padding:8px;
-  border-radius:8px;
-  border:0;
-  background:#0b5b39;
-  color:#fff;
-}
-
-.settings-actions{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
-.settings-actions button{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:0;
-  background:#1aa667;
-  font-weight:600;
-}
 </style>
 </head>
 
@@ -130,55 +97,16 @@ html,body{margin:0;height:100%;background:var(--emerald-900);}
 <div id="settingsModal" class="settings-modal hidden">
   <div class="settings-panel">
     <h3>Settings</h3>
-
-    <!-- Kids Mode -->
-    <div class="setting-item">
-      <label>
-        <input type="checkbox" id="kidsMode">
-        Kids mode
-      </label>
-      <small>Simple and kid-friendly replies</small>
-    </div>
-
-    <!-- Country -->
-    <div class="setting-item">
-      <label for="countrySelect">Country</label>
-      <select id="countrySelect">
-        <option value="PH">Philippines</option>
-        <option value="INT">International</option>
-      </select>
-    </div>
-
-    <!-- Private Mode -->
-    <div class="setting-item">
-      <label>
-        <input type="checkbox" id="privateMode">
-        Private mode
-      </label>
-      <small>Do not save chat history</small>
-    </div>
-
-    <div class="settings-actions">
-  <button type="button" id="clearHistoryBtn">Clear chat</button>
-  <button type="button" id="closeSettingsBtn">Close</button>
-</div>
+    <label><input type="checkbox" id="privateMode"> Private mode</label><br><br>
+    <button id="clearHistoryBtn">Clear chat</button><br><br>
+    <button id="closeSettingsBtn">Close</button>
   </div>
 </div>
 
 <script>
-const messagesEl = document.getElementById("messages");
-const form = document.getElementById("chatForm");
-const input = document.getElementById("userInput");
-
-const settingsModal = document.getElementById("settingsModal");
-const settingsBtn = document.getElementById("settingsBtn");
-const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-const clearHistoryBtn = document.getElementById("clearHistoryBtn");
-
-const privateModeCheckbox = document.getElementById("privateMode");
-
-const userAvatarInput = document.getElementById("userAvatarInput");
-const userAvatarPreview = document.getElementById("userAvatarPreview");
+const messagesEl=document.getElementById("messages");
+const form=document.getElementById("chatForm");
+const input=document.getElementById("userInput");
 
 let history=JSON.parse(localStorage.getItem("gh_history")||"[]");
 let QA=null;
@@ -186,22 +114,21 @@ let currentState=null;
 let language="en";
 let privateMode=false;
 
+/* LANGUAGE */
 function detectLanguage(t){
-  return /(ako|mo|ka|pakiramdam|nararamdaman|emosyon|kumusta|gutom|pagod|mabigat|magaan|tulog|hinga|ko|kamusta|matamis)/i.test(t)
+  return /(ako|mo|ka|pakiramdam|nararamdaman|emosyon|kumusta|gutom|pagod|mabigat|magaan|tulog|hinga)/i.test(t)
     ? "tl" : "en";
 }
 
+/* LOAD QA */
 fetch("./qa.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
-  QA = d;
-
-  if (history.length) {
-    render();
-    currentState = history[history.length - 1].state || null;
-  } else {
-    currentState = null; // 🔥 VERY IMPORTANT
-  }
+  QA=d;
+  currentState=QA.start;
+  if(history.length) render();
+  else botSpeak();
 });
 
+/* RENDER */
 function render(){
   messagesEl.innerHTML="";
   history.forEach(m=>{
@@ -215,12 +142,13 @@ function render(){
   messagesEl.scrollTop=messagesEl.scrollHeight;
 }
 
-function add(role, text){
-  history.push({ role, text, state: currentState });
+function add(role,text){
+  history.push({role,text});
   if(!privateMode) localStorage.setItem("gh_history",JSON.stringify(history));
   render();
 }
 
+/* BOT */
 function botSpeak(){
   if(!QA || !QA.states || !QA.states[currentState]) {
     add("bot", language==="tl" ? "Narito lang ako." : "I’m here with you.");
@@ -234,114 +162,79 @@ function botSpeak(){
    GLOBAL ROUTER — 30 CATEGORIES
    =============================== */
 const GLOBAL_ROUTES = [
-{state:"mood_01",keywords:["mood","pakiramdam","feeling","feelings","nararamdaman","emotion","emotions","emosyon","how are you","kumusta","okay","okay ba","okay lang","not okay","hindi okay","heavy","mabigat","light","magaan","empty","parang walang laman","down","low","malungkot","good mood","magandang pakiramdam","bad mood","masamang pakiramdam"]},
-
-{state:"food_01",keywords:["food","pagkain","eat","eating","kain","hungry","gutom","dessert","panghimagas","snack","meryenda","lunch","tanghalian","dinner","hapunan","breakfast","almusal","sweets","matamis","salty","maalat","viand","ulam","drinks","inumin"]},
-
-{state:"genz_01",keywords:["genz","gen z","slang","salitang kalye","vibes","vibe","vibe check","check ng vibe","slay","astig","bet","trip","lowkey","patago","highkey","halata","rizz","dating","flex","yabang","cringe","nakakaasiwa","sus","kaduda-duda","iykyk","alam mo na","lit","solid","bussin","masarap","panalo"]},
-
-{state:"hobby_01",keywords:["hobby","hobbies","libangan","free time","bakanteng oras","interests","interes","pastime","pinagkakaabalahan","talent","talento","skills","kakayahan","what you do","ginagawa mo","things you enjoy","trip mo"]},
-
-{state:"crush_01",keywords:["crush","like someone","gusto ko","have feelings","may gusto","love","mahal","relationship","relasyon","dating","ligawan","courtship","ligaw","confess","umamin","heartbreak","wasak ang puso","feelings for someone","feelings sa tao"]},
-
-{state:"cp_overview_01",keywords:["cerebral palsy","cp overview","overview ng cp","about cp","tungkol sa cp","what is cp","ano ang cp","cp basics","basics ng cp","cp info","impormasyon sa cp","cp condition","kondisyon ng cp"]},
-
-{state:"cp_signs_01",keywords:["cp signs","palatandaan ng cp","symptoms","sintomas","delayed movement","delayed na galaw","delayed development","difficulty moving","hirap gumalaw","stiff muscles","matigas ang kalamnan","spastic"]},
-
-{state:"cp_therapy_01",keywords:["therapy","physical therapy","occupational therapy","speech therapy","rehab","rehabilitasyon","exercises","ehersisyo","therapy session"]},
-
-{state:"care_01",keywords:["care tips","tips sa pag-aalaga","caregiving","pag-aalaga","daily care","araw-araw na alaga","routine care","routine na pag-aalaga","support care","suportang pag-aalaga","how to care","paano alagaan"]},
-
-{state:"emotional_support_01",keywords:["emotional support","emosyonal na suporta","comfort","aliw","need someone to talk to","kailangan kausap","someone listening","may makikinig ba","need help","kailangan ng tulong","lonely","nag-iisa"]},
-
-{state:"family_01",keywords:["family","pamilya","parents","magulang","mother","nanay","father","tatay","siblings","kapatid","relatives","kamag-anak","family help","tulong ng pamilya"]},
-
-{state:"daily_life_01",keywords:["daily life","araw-araw na buhay","routine","everyday life","pang-araw-araw","normal day","normal na araw","schedule","iskedyul"]},
-
-{state:"medical_01",keywords:["medical","medikal","doctor","doktor","medicine","gamot","diagnosis","diagnosis","checkup","checkup","hospital","ospital","prescription","reseta","treatment","gamutan"]},
-
-{state:"anxiety_01",keywords:["anxiety","anxiety","anxious","balisa","stress","stress","panic","panic","panic attack","panic attack","nervous","nerbyos","overwhelmed","napupuno","burnout","burnout"]},
-
-{state:"sleep_01",keywords:["sleep","tulog","sleepy","antok","insomnia","insomnia","can’t sleep","hindi makatulog","trouble sleeping","hirap matulog","rest","pahinga","lack of sleep","puyat"]},
-
-{state:"hotline_01",keywords:["hotline","hotline","emergency","emergency","crisis","krisis","help line","linya ng tulong","suicide hotline","suicide hotline","urgent help","agarang tulong"]},
-
-{state:"cp_meaning_01",keywords:["meaning of cp","ibig sabihin ng cp","cp definition","kahulugan ng cp","what is cerebral palsy","ano ang cerebral palsy"]},
-
-{state:"cp_specifics_01",keywords:["types of cp","uri ng cp","spastic cp","spastic cp","athetoid cp","athetoid cp","severity","tindi","mild cp","mild na cp","severe cp","malubhang cp","classification","klasipikasyon"]},
-
-{state:"parenting_cp_01",keywords:["parenting cp","parenting ng may cp","raising a child with cp","pagpapalaki ng may cp","cp parent","magulang ng cp child","how to care for child","paano mag-alaga ng anak"]},
-
-{state:"social_01",keywords:["social support","suportang panlipunan","friends","kaibigan","community","komunidad","support group","support group","social life","buhay panlipunan","someone to talk to","may kausap"]},
-
-{state:"casual_01",keywords:["casual chat","chat lang","fun","saya","random chat","random na usap","small talk","kwentuhan","chill","chill"]},
-
-{state:"rant_01",keywords:["rant","rant","complain","reklamo","angry","galit","annoyed","inis","frustrated","bwisit","vent","maglabas ng sama ng loob"]},
-
-{state:"friendly_01",keywords:["hello","hi","hey","kumusta","how are you","friendly","palakaibigan","greetings","bati","good morning","magandang umaga","good evening","magandang gabi"]},
-
-{state:"kids_01",keywords:["kids","bata","child","bata","kid safe","ligtas sa bata","simple explanation","simpleng paliwanag","easy to understand","madaling intindihin"]},
-
-{state:"bot_intro_01",keywords:["who are you","sino ka","what are you","ano ka","are you a bot","bot ka ba","what can you do","anong kaya mo","limits","limitasyon","rules","patakaran"]},
-
-{state:"language_01",keywords:["language","wika","tagalog","tagalog","english","english","filipino","filipino","change language","palitan ang wika"]},
-
-{state:"settings_01",keywords:["settings","settings","options","mga option","privacy","privacy","private mode","private mode","kids mode","kids mode","clear history","burahin ang chat","reset chat","i-reset ang chat"]},
-
-{state:"grounding_01",keywords:["grounding","grounding","breathing","paghinga","inhale","hinga papasok","exhale","hinga palabas","calm down","kumalma","relax","mag-relax","focus","mag-focus"]},
-
-{state:"encourage_01",keywords:["encouragement","pampalakas-loob","affirmations","affirmations","you got this","kaya mo yan","stay strong","magpakatatag","hope","pag-asa","motivation","motibasyon"]},
-
-{state:"fallback_01",keywords:["i don’t understand","di ko gets","not clear","di malinaw","confused","nalilito","clarify","linawin","repeat","ulit","what do you mean","ano ibig sabihin"]}
+  {state:"mood_01",keywords:["mood","feeling","feelings","pakiramdam","nararamdaman","emosyon","emotion","kumusta","how are you","okay lang","okay ba","hindi okay","mabigat","magaan","empty","down","low","good mood","bad mood"]},
+  {state:"food_01",keywords:["food","eat","eating","kain","gutom","hungry","dessert","snack","meryenda","pagkain","lunch","dinner","breakfast","sweets","matamis","salty","ulam","inumin"]},
+  {state:"genz_01",keywords:["genz","slang","vibes","vibe check","slay","bet","lowkey","highkey","rizz","flex","cringe","sus","iykyk","sheesh","lit","bussin"]},
+  {state:"hobby_01",keywords:["hobby","hobbies","libangan","ginagawa","ginagawa mo","free time","interests","trip mo","pastime","pinagkakaabalahan","talent","skills"]},
+  {state:"crush_01",keywords:["crush","gusto ko","like ko","may gusto","love","mahal","relasyon","relationship","dating","ligaw","feelings sa tao","umamin","heartbreak"]},
+  {state:"cp_overview_01",keywords:["cerebral palsy","cp overview","about cp","ano ang cp","cp basics","cp info","tungkol sa cp","condition cp"]},
+  {state:"cp_signs_01",keywords:["cp signs","signs of cp","sintomas","palatandaan","delayed movement","delayed development","hirap gumalaw","stiff muscles","spastic"]},
+  {state:"cp_therapy_01",keywords:["therapy","therapy for cp","pt","physical therapy","ot","occupational therapy","speech therapy","rehab","exercises","therapy session"]},
+  {state:"care_01",keywords:["care tips","caregiving","pag-aalaga","alaga","daily care","tips","paano alagaan","routine care","support care"]},
+  {state:"emotional_support_01",keywords:["emotional support","comfort","kailangan kausap","may makikinig ba","support","hindi okay","need help","need comfort","lonely"]},
+  {state:"family_01",keywords:["family","pamilya","magulang","parents","nanay","tatay","kapatid","relatives","support ng pamilya","family help"]},
+  {state:"daily_life_01",keywords:["daily life","araw-araw","routine","everyday life","normal day","daily routine","buhay araw-araw","schedule"]},
+  {state:"medical_01",keywords:["medical","doctor","doktor","gamot","medicine","diagnosis","checkup","ospital","hospital","reseta","treatment"]},
+  {state:"anxiety_01",keywords:["anxiety","anxious","stress","stressed","panic","panic attack","kaba","nerbyos","overwhelmed","pressure","burnout"]},
+  {state:"sleep_01",keywords:["sleep","tulog","antok","insomnia","hindi makatulog","hirap matulog","rest","pahinga","puyat"]},
+  {state:"hotline_01",keywords:["hotline","emergency","crisis","help line","suicide hotline","tawagan","urgent help","emergency number","kailangan ng tulong"]},
+  {state:"cp_meaning_01",keywords:["meaning of cp","ano ibig sabihin ng cp","definition cp","cp meaning","ano ang cerebral palsy"]},
+  {state:"cp_specifics_01",keywords:["types of cp","spastic cp","athetoid cp","severity","mild cp","severe cp","cp details","classification"]},
+  {state:"parenting_cp_01",keywords:["parenting cp","pagpapalaki","pagpapalaki ng may cp","parent ng cp child","paano mag-alaga","pagpapalaki ng anak"]},
+  {state:"social_01",keywords:["social support","kaibigan","friends","community","support group","pakikisalamuha","social life","may kausap"]},
+  {state:"casual_01",keywords:["casual chat","chat lang","kwentuhan","fun","random","usap lang","chill","light talk","small talk"]},
+  {state:"rant_01",keywords:["rant","reklamo","galit","inis","bwisit","bad trip","gusto maglabas","vent","rant lang"]},
+  {state:"friendly_01",keywords:["hello","hi","hey","kumusta","kausap","friendly","bati","good morning","good evening","musta"]},
+  {state:"kids_01",keywords:["kids","bata","child","pang bata","kid safe","kids safe","simple explain","madaling paliwanag"]},
+  {state:"bot_intro_01",keywords:["sino ka","what are you","bot ka ba","anong kaya mo","what can you do","limits","rules","ano ka"]},
+  {state:"language_01",keywords:["language","tagalog","english","filipino","salita","magsalita","palitan ng wika","language setting"]},
+  {state:"settings_01",keywords:["settings","option","options","privacy","private mode","kids mode","clear history","reset chat","preferences"]},
+  {state:"grounding_01",keywords:["grounding","breathing","breathe","hinga","inhale","exhale","calm down","relax","slow down","focus"]},
+  {state:"encourage_01",keywords:["encouragement","affirmations","kaya mo yan","you got this","lakas ng loob","hope","motivation","inspiring"]},
+  {state:"fallback_01",keywords:["di ko gets","hindi ko maintindihan","di malinaw","ulit","clarify","misunderstanding","confused","ano ibig sabihin","fallback"]}
 ];
 
+/* NEXT STATE */
 function resolveNextState(t){
-  if (!QA || !QA.states) return currentState;
+  t=t.toLowerCase();
 
-  t = t.toLowerCase();
-
-  // ✅ 1. GLOBAL ENTRY ROUTES FIRST
-  for (const r of GLOBAL_ROUTES) {
-    for (const k of r.keywords) {
-      if (t.includes(k.toLowerCase())) {
-        return r.state;
-      }
+  for(const r of GLOBAL_ROUTES){
+    for(const k of r.keywords){
+      if(t.includes(k.toLowerCase())) return r.state;
     }
   }
 
-  // ✅ 2. OPTIONS ROUTES (ONLY IF ALREADY IN STATE)
-  if (currentState && QA.states[currentState]?.options) {
-    const opts = QA.states[currentState].options;
-    for (const o of Object.values(opts)) {
-      for (const k of o.keywords || []) {
-        if (t.includes(k.toLowerCase())) {
-          return o.next;
-        }
-      }
+  const s=QA.states[currentState];
+  if(!s || !s.options) return currentState;
+
+  for(const o of Object.values(s.options)){
+    for(const k of o.keywords||[]){
+      if(t.includes(k)) return o.next;
     }
   }
-
   return currentState;
 }
 
+/* INPUT */
 form.onsubmit=e=>{
   e.preventDefault();
   const t=input.value.trim();
   if(!t)return;
   input.value="";
   add("user",t);
+
   language=detectLanguage(t);
   currentState=resolveNextState(t);
   setTimeout(botSpeak,400);
 };
 
+/* SETTINGS */
 settingsBtn.onclick=()=>settingsModal.classList.remove("hidden");
 closeSettingsBtn.onclick=()=>settingsModal.classList.add("hidden");
 clearHistoryBtn.onclick=()=>{history=[];localStorage.removeItem("gh_history");render();}
-privateModeCheckbox.onchange = e => {
-  privateMode = e.target.checked;
-};
+privateMode.onchange=e=>privateMode=e.target.checked;
 
+/* AVATAR */
 userAvatarInput.onchange=()=>{
   const f=userAvatarInput.files[0];
   const r=new FileReader();
