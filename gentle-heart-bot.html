@@ -14,10 +14,7 @@
   --user:#0b3d28;
 }
 
-html,body{
-  margin:0;
-  height:100%;
-}
+html,body{margin:0;height:100%}
 
 body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -35,24 +32,18 @@ header{
   align-items:center;
   justify-content:space-between;
 }
-
 .header-left,.header-right{
   display:flex;
   align-items:center;
   gap:10px;
 }
-
 header img{
   width:36px;
   height:36px;
   border-radius:50%;
   background:#fff;
 }
-
-.header-title{
-  text-align:center;
-  flex:1;
-}
+.header-title{text-align:center;flex:1}
 
 /* CHAT */
 #chat{
@@ -60,8 +51,6 @@ header img{
   padding:12px;
   overflow-y:auto;
 }
-
-/* MESSAGES */
 .msg{
   max-width:80%;
   padding:12px 14px;
@@ -70,12 +59,8 @@ header img{
   line-height:1.4;
   color:#fff;
 }
-
-.bot{ background:var(--bot); }
-.user{
-  background:var(--user);
-  margin-left:auto;
-}
+.bot{background:var(--bot)}
+.user{background:var(--user);margin-left:auto}
 
 /* INPUT */
 #inputWrap{
@@ -86,20 +71,40 @@ header img{
   display:flex;
   gap:8px;
 }
-
 input{
   flex:1;
   padding:12px;
   border-radius:12px;
   border:none;
 }
-
 button{
   padding:12px 18px;
   border-radius:12px;
   border:none;
   background:var(--emerald-soft);
   color:#fff;
+}
+
+/* SETTINGS MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal-box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  width:85%;
+}
+.modal-box h3{margin-top:0}
+.modal-box label{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
 }
 </style>
 </head>
@@ -110,11 +115,17 @@ button{
   <div class="header-left">
     <img src="avatar.png">
   </div>
+
   <div class="header-title">
     <strong>Gentle Heart</strong><br>
     <small>Your gentle companion</small>
   </div>
-  <div class="header-right">⚙️</div>
+
+  <div class="header-right">
+    <input type="file" id="userAvatarInput" hidden accept="image/*">
+    <img id="userAvatar" style="cursor:pointer">
+    <span id="gear" style="cursor:pointer;font-size:20px">⚙️</span>
+  </div>
 </header>
 
 <div id="chat"></div>
@@ -124,31 +135,44 @@ button{
   <button id="sendBtn">Send</button>
 </div>
 
+<!-- SETTINGS -->
+<div class="modal" id="settings">
+  <div class="modal-box">
+    <h3>Settings</h3>
+    <label>Kids Mode <input type="checkbox"></label>
+    <label>Private Mode <input type="checkbox"></label>
+    <label>
+      Country
+      <select>
+        <option>Philippines</option>
+        <option>International</option>
+      </select>
+    </label>
+    <button onclick="clearChat()">Clear history</button><br><br>
+    <button onclick="closeSettings()">Close</button>
+  </div>
+</div>
+
 <script>
-/* ======================
-   STATE + LANGUAGE
-====================== */
+/* CORE */
 let QA=null;
 let currentState=null;
 let lang='en';
+let started=false;
 
 const chat=document.getElementById('chat');
 const input=document.getElementById('userInput');
 
-/* ======================
-   LOAD QA
-====================== */
+/* LOAD QA */
 (async()=>{
   const res=await fetch('./qa.json');
   QA=await res.json();
-  currentState=QA.start;
 })();
 
-/* ======================
-   UTIL
-====================== */
+/* UTIL */
 const norm=t=>t.toLowerCase().trim();
-const isTL=t=>/(kumusta|hindi|mabigat|medyo|salamat|nga|ako|ka)/i.test(t);
+const isTL=t=>/(kumusta|hindi|mabigat|salamat|medyo|nga|ako|ka)/i.test(t);
+const isGreeting=t=>/(hi|hello|hey|kumusta)/i.test(t);
 
 function say(text,who){
   const d=document.createElement('div');
@@ -158,37 +182,38 @@ function say(text,who){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ======================
-   BINARY ROUTER
-====================== */
-function routeBinary(inputText){
-  const t=norm(inputText);
-  const state=QA.states[currentState];
-
-  // OPTION A
-  const a=[norm(state.options[0].label_en), norm(state.options[0].label_tl)];
-  // OPTION B
-  const b=[norm(state.options[1].label_en), norm(state.options[1].label_tl)];
-
-  if(a.some(k=>t.includes(k))) return state.options[0].next;
-  if(b.some(k=>t.includes(k))) return state.options[1].next;
-
+/* ROUTING */
+function routeBinary(text){
+  const t=norm(text);
+  const s=QA.states[currentState];
+  const A=[norm(s.options[0].label_en), norm(s.options[0].label_tl)];
+  const B=[norm(s.options[1].label_en), norm(s.options[1].label_tl)];
+  if(A.some(k=>t.includes(k))) return s.options[0].next;
+  if(B.some(k=>t.includes(k))) return s.options[1].next;
   return null;
 }
 
-/* ======================
-   SEND
-====================== */
+/* SEND */
 document.getElementById('sendBtn').onclick=()=>{
   const text=input.value.trim();
-  if(!text || !QA) return;
+  if(!text||!QA) return;
 
   lang=isTL(text)?'tl':'en';
   say(text,'user');
   input.value='';
 
-  const next=routeBinary(text);
+  // FIRST MESSAGE = GREETING
+  if(!started && isGreeting(text)){
+    currentState='friendliness_01';
+    started=true;
+    say(QA.states[currentState].text[lang],'bot');
+    return;
+  }
 
+  // NORMAL FLOW
+  if(!currentState) return;
+
+  const next=routeBinary(text);
   if(next){
     currentState=next;
     say(QA.states[currentState].text[lang],'bot');
@@ -200,6 +225,21 @@ document.getElementById('sendBtn').onclick=()=>{
       'bot'
     );
   }
+};
+
+/* SETTINGS + AVATAR */
+const settings=document.getElementById('settings');
+document.getElementById('gear').onclick=()=>settings.style.display='flex';
+function closeSettings(){settings.style.display='none'}
+settings.onclick=e=>{if(e.target===settings)closeSettings()}
+function clearChat(){chat.innerHTML='';closeSettings()}
+
+const userAvatar=document.getElementById('userAvatar');
+const userAvatarInput=document.getElementById('userAvatarInput');
+userAvatar.onclick=()=>userAvatarInput.click();
+userAvatarInput.onchange=e=>{
+  const f=e.target.files[0];
+  if(f) userAvatar.src=URL.createObjectURL(f);
 };
 </script>
 
