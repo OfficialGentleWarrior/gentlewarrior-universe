@@ -10,11 +10,11 @@
       },
       "options": {
         "good": {
-          "keywords": ["happy", "masaya", "good", "good mood", "okay", "magaan", "magandang pakiramdam"],
+          "keywords": ["happy", "masaya", "good", "good mood", "magaan", "magandang pakiramdam"],
           "next": "mood_good"
         },
         "bad": {
-          "keywords": ["not okay", "hindi okay", "bad", "bad mood", "mabigat", "malungkot", "empty", "parang walang laman"],
+          "keywords": ["not okay", "pagod ako", "pagod", "im tired", "i'm tired", "hindi okay", "hindi ok", "bad", "bad mood", "mabigat", "malungkot", " not ok, "empty", "parang walang laman"],
           "next": "mood_bad"
         }
       }
