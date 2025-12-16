@@ -1,0 +1,118 @@
+:root{
+  --emerald:#04331f;
+  --emerald-dark:#032718;
+  --emerald-soft:#0e6e47;
+  --bot:#e7f4ee;
+  --user:#1a8f63;
+  --text:#0f2e22;
+  --white:#ffffff;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  height:100%;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:#f4faf7;
+}
+
+/* HEADER */
+.gh-header{
+  background:var(--emerald);
+  color:var(--white);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 14px;
+}
+
+.gh-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.gh-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+}
+
+.gh-title{
+  font-weight:600;
+  font-size:15px;
+}
+
+.gh-subtitle{
+  font-size:12px;
+  opacity:.8;
+}
+
+.gh-gear{
+  background:none;
+  border:none;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* CHAT AREA */
+.gh-chat{
+  flex:1;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow-y:auto;
+}
+
+/* BUBBLES */
+.bubble{
+  max-width:78%;
+  padding:10px 12px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.4;
+}
+
+.bubble.bot{
+  background:var(--bot);
+  color:var(--text);
+  align-self:flex-start;
+  border-bottom-left-radius:4px;
+}
+
+.bubble.user{
+  background:var(--user);
+  color:white;
+  align-self:flex-end;
+  border-bottom-right-radius:4px;
+}
+
+/* INPUT */
+.gh-input{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  background:white;
+  border-top:1px solid #ddd;
+}
+
+.gh-input input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:20px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+.gh-input button{
+  padding:0 16px;
+  border-radius:20px;
+  border:none;
+  background:var(--emerald-soft);
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
