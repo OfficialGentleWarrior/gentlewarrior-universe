@@ -1,20 +1,40 @@
-// USER AVATAR UPLOAD
-const avatarInput = document.getElementById("avatarInput");
-const userAvatar = document.getElementById("userAvatar");
+document.addEventListener("DOMContentLoaded", () => {
 
-avatarInput.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
+  /* USER AVATAR UPLOAD */
+  const avatarInput = document.getElementById("avatarInput");
+  const userAvatar = document.getElementById("userAvatar");
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    userAvatar.src = reader.result;
-  };
-  reader.readAsDataURL(file);
-});
+  if (avatarInput && userAvatar) {
+    avatarInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-// GEAR CLICK (TEMP CONFIRM)
-const gearBtn = document.getElementById("gearBtn");
-gearBtn.addEventListener("click", () => {
-  alert("Settings panel (design next)");
+      const reader = new FileReader();
+      reader.onload = () => {
+        userAvatar.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* GEAR CLICK */
+  const gearBtn = document.getElementById("gearBtn");
+  if (gearBtn) {
+    gearBtn.addEventListener("click", () => {
+      alert("Settings panel (design next)");
+    });
+  }
+
+  /* ANDROID KEYBOARD / VIEWPORT FIX */
+  const app = document.querySelector(".app");
+
+  if (window.visualViewport && app) {
+    const resize = () => {
+      app.style.height = window.visualViewport.height + "px";
+    };
+
+    window.visualViewport.addEventListener("resize", resize);
+    resize();
+  }
+
 });
