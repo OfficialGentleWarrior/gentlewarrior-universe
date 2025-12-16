@@ -14,13 +14,13 @@ html,body{
   margin:0;
   height:100%;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:#f4faf7;
+  background:var(--emerald);
 }
 
 /* HEADER */
 .gh-header{
-  background:var(--emerald);
-  color:var(--white);
+  background:var(--emerald-dark);
+  color:white;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -33,10 +33,22 @@ html,body{
   gap:10px;
 }
 
-.gh-avatar{
+.gh-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.gh-avatar,
+.user-avatar{
   width:40px;
   height:40px;
   border-radius:50%;
+  object-fit:cover;
+}
+
+.user-avatar-wrap{
+  cursor:pointer;
 }
 
 .gh-title{
@@ -53,8 +65,12 @@ html,body{
   background:none;
   border:none;
   color:white;
-  font-size:20px;
+  font-size:22px;
   cursor:pointer;
+}
+
+.gh-gear:active{
+  transform:scale(0.9);
 }
 
 /* CHAT AREA */
@@ -63,31 +79,15 @@ html,body{
   padding:14px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  overflow-y:auto;
+  justify-content:center;
+  align-items:center;
 }
 
-/* BUBBLES */
-.bubble{
-  max-width:78%;
-  padding:10px 12px;
-  border-radius:14px;
+/* EMPTY STATE */
+.empty-text{
+  color:#cfe9d9;
   font-size:14px;
-  line-height:1.4;
-}
-
-.bubble.bot{
-  background:var(--bot);
-  color:var(--text);
-  align-self:flex-start;
-  border-bottom-left-radius:4px;
-}
-
-.bubble.user{
-  background:var(--user);
-  color:white;
-  align-self:flex-end;
-  border-bottom-right-radius:4px;
+  opacity:0.8;
 }
 
 /* INPUT */
@@ -95,15 +95,14 @@ html,body{
   display:flex;
   gap:8px;
   padding:10px;
-  background:white;
-  border-top:1px solid #ddd;
+  background:var(--emerald-dark);
 }
 
 .gh-input input{
   flex:1;
   padding:10px 12px;
   border-radius:20px;
-  border:1px solid #ccc;
+  border:none;
   font-size:14px;
 }
 
@@ -114,5 +113,4 @@ html,body{
   background:var(--emerald-soft);
   color:white;
   font-size:14px;
-  cursor:pointer;
 }
