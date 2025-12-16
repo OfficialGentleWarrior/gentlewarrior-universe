@@ -1,9 +1,8 @@
 {
   "name": "Gentle Heart",
   "short_name": "GentleHeart",
-  "description": "Gentle Heart is a calm, supportive companion for emotional check-ins and gentle conversations.",
+  "description": "A gentle companion for cerebral palsy awareness and emotional support.",
   "start_url": "./gentle-heart-bot.html",
-  "scope": "./",
   "display": "standalone",
   "background_color": "#04331f",
   "theme_color": "#06442a",
