@@ -104,16 +104,16 @@ function say(text, who){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ================= GLOBAL ROUTER INDEX ================= */
-/* BUILT ONCE, USED EVERYWHERE */
-let GLOBAL_KEYWORD_INDEX = {};
+/* ================= GLOBAL ROUTER (INDEXED) ================= */
+let GLOBAL_INDEX = {};
 
-function buildGlobalRouter(){
+function buildGlobalIndex(){
+  GLOBAL_INDEX = {};
   for(const [stateId, state] of Object.entries(QA.states)){
     if(!state.keywords) continue;
     state.keywords.forEach(k=>{
       const key = norm(k);
-      GLOBAL_KEYWORD_INDEX[key] = stateId;
+      if(!GLOBAL_INDEX[key]) GLOBAL_INDEX[key] = stateId;
     });
   }
 }
@@ -135,27 +135,25 @@ function routeByOptions(text){
 }
 
 /* ================= GLOBAL ROUTER ================= */
-function routeByGlobalKeywords(text){
+function routeByGlobal(text){
   const t = norm(text);
-  for(const key in GLOBAL_KEYWORD_INDEX){
-    if(t.includes(key)){
-      return GLOBAL_KEYWORD_INDEX[key];
-    }
+  for(const key in GLOBAL_INDEX){
+    if(t.includes(key)) return GLOBAL_INDEX[key];
   }
   return null;
 }
 
 /* ================= MASTER ROUTER ================= */
 function resolveNextState(text){
-  // 1. CURRENT STATE OPTIONS (STRICT)
-  const byOption = routeByOptions(text);
-  if(byOption) return byOption;
+  // 1) LOCAL (current state options)
+  const local = routeByOptions(text);
+  if(local) return local;
 
-  // 2. GLOBAL ROUTER (ANY STATE)
-  const byGlobal = routeByGlobalKeywords(text);
-  if(byGlobal) return byGlobal;
+  // 2) GLOBAL (any state keywords)
+  const global = routeByGlobal(text);
+  if(global) return global;
 
-  // 3. NO MATCH
+  // 3) NONE
   return null;
 }
 
@@ -168,9 +166,8 @@ sendBtn.onclick = () => {
   say(text,'user');
   input.value='';
 
-  // build router once
-  if(Object.keys(GLOBAL_KEYWORD_INDEX).length === 0){
-    buildGlobalRouter();
+  if(Object.keys(GLOBAL_INDEX).length === 0){
+    buildGlobalIndex();
   }
 
   const next = resolveNextState(text);
