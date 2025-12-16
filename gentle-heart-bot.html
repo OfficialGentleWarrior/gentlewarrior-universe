@@ -2,188 +2,215 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>Gentle Heart</title>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#06442a">
 
 <style>
 :root{
-  --emerald:#04331f;
-  --emerald-dark:#032718;
-  --emerald-soft:#0e6e47;
-  --bot:#1a8f63;
-  --user:#0b3d28;
+  --emerald-900:#04331f;
+  --emerald-800:#06442a;
+  --emerald-700:#0b5b39;
+  --emerald-600:#0e6e47;
+  --emerald-500:#1aa667;
+  --bot:#d7f3e6;
+  --user:#ffffff;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
 }
-html,body{margin:0;height:100%}
-body{
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--emerald);
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--emerald-900);}
+
+.app{
+  height:100%;
   display:flex;
   flex-direction:column;
 }
+
+/* HEADER */
 header{
-  background:var(--emerald-dark);
-  color:#fff;
-  padding:10px;
+  position:fixed;
+  top:0; left:0; right:0;
+  height:60px;
+  background:var(--emerald-800);
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  padding:0 12px;
+  z-index:10;
 }
-header img{width:36px;height:36px;border-radius:50%;background:#fff}
-.header-title{text-align:center;flex:1}
-#chat{flex:1;padding:12px;overflow-y:auto}
+header img{width:36px;height:36px;border-radius:50%;}
+header .spacer{flex:1}
+header button{
+  background:none;border:none;color:white;font-size:20px;
+}
+
+/* CHAT */
+.chat{
+  flex:1;
+  margin-top:60px;
+  margin-bottom:70px;
+  overflow-y:auto;
+  padding:12px;
+}
 .msg{
-  max-width:80%;
-  padding:12px 14px;
-  margin:10px 0;
-  border-radius:16px;
+  display:flex;
+  margin-bottom:12px;
+  align-items:flex-end;
+}
+.msg.bot{flex-direction:row;}
+.msg.user{flex-direction:row-reverse;}
+.msg img{
+  width:32px;height:32px;border-radius:50%;
+  margin:0 6px;
+}
+.bubble{
+  max-width:75%;
+  padding:10px 14px;
+  border-radius:14px;
   line-height:1.4;
-  color:#fff;
+  font-size:14px;
 }
-.bot{background:var(--bot)}
-.user{background:var(--user);margin-left:auto}
-#inputWrap{
-  position:sticky;bottom:0;
-  background:var(--emerald);
-  padding:10px env(safe-area-inset-right)
-          calc(10px + env(safe-area-inset-bottom))
-          env(safe-area-inset-left);
-  display:flex;gap:8px;
+.bot .bubble{background:var(--bot);color:#04331f;}
+.user .bubble{background:var(--user);color:#111;}
+
+/* INPUT */
+footer{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:var(--emerald-800);
+  padding:10px;
 }
-input{flex:1;padding:12px;border-radius:12px;border:none}
-button{
-  padding:12px 18px;border-radius:12px;border:none;
-  background:var(--emerald-soft);color:#fff;
+footer input{
+  width:100%;
+  padding:12px;
+  border-radius:20px;
+  border:none;
+  font-size:14px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal .box{
+  background:#fff;
+  width:90%;
+  max-width:320px;
+  border-radius:14px;
+  padding:16px;
+}
+.modal button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
 <header>
   <img src="avatar.png">
-  <div class="header-title">
-    <strong>Gentle Heart</strong><br>
-    <small>Your gentle companion</small>
-  </div>
-  <div>⚙️</div>
+  <div class="spacer"></div>
+  <input type="file" id="avatarUpload" hidden>
+  <button onclick="avatarUpload.click()">👤</button>
+  <button onclick="openSettings()">⚙️</button>
 </header>
 
-<div id="chat"></div>
+<div class="chat" id="chat"></div>
 
-<div id="inputWrap">
-  <input id="userInput" placeholder="Type here…">
-  <button id="sendBtn">Send</button>
+<footer>
+  <input id="input" placeholder="Type your message…" />
+</footer>
+
+</div>
+
+<!-- SETTINGS -->
+<div class="modal" id="settings">
+  <div class="box">
+    <button onclick="clearChat()">Clear history</button>
+    <button onclick="kidsMode=!kidsMode">Kids mode</button>
+    <button onclick="privateMode=!privateMode">Private mode</button>
+    <button onclick="country='PH'">PH</button>
+    <button onclick="country='INTERNATIONAL'">International</button>
+    <button onclick="closeSettings()">Close</button>
+  </div>
 </div>
 
 <script>
-/* ================= CORE ================= */
-let QA = null;
-let currentStateId = null;
-let lang = 'en';
+let qa=null;
+let currentState=null;
+let kidsMode=false;
+let privateMode=false;
+let country="PH";
+const chat=document.getElementById('chat');
+const input=document.getElementById('input');
+let userAvatar=null;
 
-const chat = document.getElementById('chat');
-const input = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
+fetch('./qa.json').then(r=>r.json()).then(j=>{
+  qa=j;
+  currentState=j.start;
+  botReply(j.states[currentState].text.en);
+});
 
-/* ================= LOAD QA ================= */
-(async()=>{
-  const res = await fetch('./qa.json');
-  QA = await res.json();
-  currentStateId = QA.start;
-})();
+function botReply(text){
+  const typing=document.createElement('div');
+  typing.className='msg bot';
+  typing.innerHTML=`<img src="avatar.png"><div class="bubble">typing…</div>`;
+  chat.appendChild(typing);
+  chat.scrollTop=chat.scrollHeight;
 
-/* ================= UTIL ================= */
-const norm = t => t.toLowerCase().trim();
-const isTL = t => /(kumusta|hindi|mabigat|pagod|gutom|salamat|ako|ka)/i.test(t);
+  setTimeout(()=>{
+    typing.remove();
+    addMsg('bot',text);
+  },2000);
+}
 
-function say(text, who){
-  const d=document.createElement('div');
-  d.className='msg '+who;
-  d.textContent=text;
-  chat.appendChild(d);
+function addMsg(who,text){
+  const div=document.createElement('div');
+  div.className='msg '+who;
+  div.innerHTML=`
+    <img src="${who==='bot'?'avatar.png':(userAvatar||'avatar.png')}">
+    <div class="bubble">${text}</div>`;
+  chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ================= GLOBAL ROUTER (INDEXED) ================= */
-let GLOBAL_INDEX = {};
-
-function buildGlobalIndex(){
-  GLOBAL_INDEX = {};
-  for(const [stateId, state] of Object.entries(QA.states)){
-    if(!state.keywords) continue;
-    state.keywords.forEach(k=>{
-      const key = norm(k);
-      if(!GLOBAL_INDEX[key]) GLOBAL_INDEX[key] = stateId;
-    });
+input.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && input.value.trim()){
+    const msg=input.value.trim().toLowerCase();
+    input.value='';
+    addMsg('user',msg);
+    route(msg);
   }
-}
+});
 
-/* ================= LOCAL ROUTER ================= */
-function routeByOptions(text){
-  const t = norm(text);
-  const state = QA.states[currentStateId];
-  if(!state || !state.options) return null;
-
-  for(const opt of state.options){
-    const en = norm(opt.label_en);
-    const tl = norm(opt.label_tl);
-    if(t === en || t === tl || t.includes(en) || t.includes(tl)){
-      return opt.next;
+function route(msg){
+  for(const id in qa.states){
+    const st=qa.states[id];
+    if(st.keywords.some(k=>msg.includes(k))){
+      currentState=id;
+      botReply(st.text.en);
+      return;
     }
   }
-  return null;
+  botReply("I’m here with you, do you want to talk more about how you feel or try another topic gently?");
 }
 
-/* ================= GLOBAL ROUTER ================= */
-function routeByGlobal(text){
-  const t = norm(text);
-  for(const key in GLOBAL_INDEX){
-    if(t.includes(key)) return GLOBAL_INDEX[key];
-  }
-  return null;
-}
-
-/* ================= MASTER ROUTER ================= */
-function resolveNextState(text){
-  // 1) LOCAL (current state options)
-  const local = routeByOptions(text);
-  if(local) return local;
-
-  // 2) GLOBAL (any state keywords)
-  const global = routeByGlobal(text);
-  if(global) return global;
-
-  // 3) NONE
-  return null;
-}
-
-/* ================= SEND ================= */
-sendBtn.onclick = () => {
-  const text = input.value.trim();
-  if(!text || !QA) return;
-
-  lang = isTL(text) ? 'tl' : 'en';
-  say(text,'user');
-  input.value='';
-
-  if(Object.keys(GLOBAL_INDEX).length === 0){
-    buildGlobalIndex();
-  }
-
-  const next = resolveNextState(text);
-  if(next){
-    currentStateId = next;
-    say(QA.states[currentStateId].text[lang],'bot');
-  }else{
-    say(
-      lang==='tl'
-        ? 'Okay lang. Alin ang mas malapit sa pakiramdam mo?'
-        : 'That’s okay. Which feels closer?',
-      'bot'
-    );
-  }
+function openSettings(){settings.style.display='flex'}
+function closeSettings(){settings.style.display='none'}
+function clearChat(){chat.innerHTML='';}
+avatarUpload.onchange=e=>{
+  const f=e.target.files[0];
+  if(f) userAvatar=URL.createObjectURL(f);
 };
 </script>
-
 </body>
 </html>
