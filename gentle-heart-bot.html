@@ -14,15 +14,19 @@
   --card:#06442a;
   --text:#eafff4;
   --muted:#bfe8d3;
+  --accent:#1aa667;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
+
 *{box-sizing:border-box}
+
 html,body{
   margin:0;
   height:100%;
   background:var(--bg);
   color:var(--text);
 }
+
 .app{
   min-height:100%;
   display:flex;
@@ -30,36 +34,57 @@ html,body{
   justify-content:center;
   padding:24px;
 }
+
 .card{
   max-width:420px;
   width:100%;
   background:var(--card);
-  border-radius:18px;
-  padding:28px;
+  border-radius:20px;
+  padding:28px 26px 30px;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
+
+/* AVATAR */
+.avatar{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  display:block;
+  margin:0 auto 16px;
+  object-fit:cover;
+  background:#0e6e47;
+}
+
 h1{
   margin:0 0 8px;
   font-size:28px;
+  font-weight:700;
 }
+
 p{
-  margin:0 0 18px;
+  margin:0 0 20px;
   line-height:1.5;
   color:var(--muted);
+  font-size:15px;
 }
+
 button{
   width:100%;
   padding:14px;
   border-radius:14px;
   border:none;
-  background:#1aa667;
+  background:var(--accent);
   color:#04331f;
   font-size:16px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
 }
-button:active{transform:scale(.98)}
+
+button:active{
+  transform:scale(.98);
+}
+
 .footer{
   margin-top:14px;
   font-size:12px;
@@ -71,7 +96,12 @@ button:active{transform:scale(.98)}
 <body>
 <div class="app">
   <div class="card">
+
+    <!-- AVATAR -->
+    <img src="avatar.png" alt="Gentle Heart Avatar" class="avatar">
+
     <h1>Gentle Heart</h1>
+
     <p>
       A calm companion for cerebral palsy awareness and emotional support.
     </p>
@@ -81,12 +111,16 @@ button:active{transform:scale(.98)}
     <div class="footer">
       Gentle Heart is a companion, not a medical or crisis service.
     </div>
+
   </div>
 </div>
 
 <script>
 function startChat(){
-  window.location.href = "PASTE_CUSTOM_GPT_LINK_HERE";
+  // PALITAN MO ITO ng Custom GPT link mo
+  // Example:
+  // https://chat.openai.com/g/g-XXXXXXXXXX
+  window.location.href = "https://chat.openai.com";
 }
 </script>
 </body>
