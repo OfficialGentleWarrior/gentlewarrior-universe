@@ -13,17 +13,13 @@
   --bot:#1a8f63;
   --user:#0b3d28;
 }
-
 html,body{margin:0;height:100%}
-
 body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:var(--emerald);
   display:flex;
   flex-direction:column;
 }
-
-/* HEADER */
 header{
   background:var(--emerald-dark);
   color:#fff;
@@ -32,25 +28,9 @@ header{
   align-items:center;
   justify-content:space-between;
 }
-.header-left,.header-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-header img{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:#fff;
-}
+header img{width:36px;height:36px;border-radius:50%;background:#fff}
 .header-title{text-align:center;flex:1}
-
-/* CHAT */
-#chat{
-  flex:1;
-  padding:12px;
-  overflow-y:auto;
-}
+#chat{flex:1;padding:12px;overflow-y:auto}
 .msg{
   max-width:80%;
   padding:12px 14px;
@@ -61,50 +41,18 @@ header img{
 }
 .bot{background:var(--bot)}
 .user{background:var(--user);margin-left:auto}
-
-/* INPUT */
 #inputWrap{
-  position:sticky;
-  bottom:0;
+  position:sticky;bottom:0;
   background:var(--emerald);
-  padding:10px env(safe-area-inset-right) calc(10px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
-  display:flex;
-  gap:8px;
+  padding:10px env(safe-area-inset-right)
+          calc(10px + env(safe-area-inset-bottom))
+          env(safe-area-inset-left);
+  display:flex;gap:8px;
 }
-input{
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-}
+input{flex:1;padding:12px;border-radius:12px;border:none}
 button{
-  padding:12px 18px;
-  border-radius:12px;
-  border:none;
-  background:var(--emerald-soft);
-  color:#fff;
-}
-
-/* SETTINGS MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-.modal-box{
-  background:#fff;
-  padding:20px;
-  border-radius:14px;
-  width:85%;
-}
-.modal-box h3{margin-top:0}
-.modal-box label{
-  display:flex;
-  justify-content:space-between;
-  margin:10px 0;
+  padding:12px 18px;border-radius:12px;border:none;
+  background:var(--emerald-soft);color:#fff;
 }
 </style>
 </head>
@@ -112,20 +60,12 @@ button{
 <body>
 
 <header>
-  <div class="header-left">
-    <img src="avatar.png">
-  </div>
-
+  <img src="avatar.png">
   <div class="header-title">
     <strong>Gentle Heart</strong><br>
     <small>Your gentle companion</small>
   </div>
-
-  <div class="header-right">
-    <input type="file" id="userAvatarInput" hidden accept="image/*">
-    <img id="userAvatar" style="cursor:pointer">
-    <span id="gear" style="cursor:pointer;font-size:20px">⚙️</span>
-  </div>
+  <div>⚙️</div>
 </header>
 
 <div id="chat"></div>
@@ -135,46 +75,28 @@ button{
   <button id="sendBtn">Send</button>
 </div>
 
-<!-- SETTINGS -->
-<div class="modal" id="settings">
-  <div class="modal-box">
-    <h3>Settings</h3>
-    <label>Kids Mode <input type="checkbox"></label>
-    <label>Private Mode <input type="checkbox"></label>
-    <label>
-      Country
-      <select>
-        <option>Philippines</option>
-        <option>International</option>
-      </select>
-    </label>
-    <button onclick="clearChat()">Clear history</button><br><br>
-    <button onclick="closeSettings()">Close</button>
-  </div>
-</div>
-
 <script>
-/* CORE */
-let QA=null;
-let currentState=null;
-let lang='en';
-let started=false;
+/* ================= CORE ================= */
+let QA = null;
+let currentStateId = null;
+let lang = 'en';
 
-const chat=document.getElementById('chat');
-const input=document.getElementById('userInput');
+const chat = document.getElementById('chat');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
 
-/* LOAD QA */
+/* ================= LOAD QA ================= */
 (async()=>{
-  const res=await fetch('./qa.json');
-  QA=await res.json();
+  const res = await fetch('./qa.json');
+  QA = await res.json();
+  currentStateId = QA.start;
 })();
 
-/* UTIL */
-const norm=t=>t.toLowerCase().trim();
-const isTL=t=>/(kumusta|hindi|mabigat|salamat|medyo|nga|ako|ka)/i.test(t);
-const isGreeting=t=>/(hi|hello|hey|kumusta)/i.test(t);
+/* ================= UTIL ================= */
+const norm = t => t.toLowerCase().trim();
+const isTL = t => /(kumusta|hindi|mabigat|pagod|gutom|salamat|ako|ka)/i.test(t);
 
-function say(text,who){
+function say(text, who){
   const d=document.createElement('div');
   d.className='msg '+who;
   d.textContent=text;
@@ -182,82 +104,87 @@ function say(text,who){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* ROUTING — FIXED BINARY LOGIC */
-function routeBinary(text){
+/* ================= GLOBAL ROUTER INDEX ================= */
+/* BUILT ONCE, USED EVERYWHERE */
+let GLOBAL_KEYWORD_INDEX = {};
+
+function buildGlobalRouter(){
+  for(const [stateId, state] of Object.entries(QA.states)){
+    if(!state.keywords) continue;
+    state.keywords.forEach(k=>{
+      const key = norm(k);
+      GLOBAL_KEYWORD_INDEX[key] = stateId;
+    });
+  }
+}
+
+/* ================= LOCAL ROUTER ================= */
+function routeByOptions(text){
   const t = norm(text);
-  const s = QA.states[currentState];
+  const state = QA.states[currentStateId];
+  if(!state || !state.options) return null;
 
-  // OPTION A
-  const optionA = [
-    'okay','ok','oo','yes',
-    'ayos','maayos','labas','talk'
-  ];
-
-  // OPTION B
-  const optionB = [
-    'hindi','no',
-    'mabigat','heavy',
-    'kalma','kumalma','calm',
-    'pagod','down','sad'
-  ];
-
-  if(optionA.some(k => t.includes(k))){
-    return s.options[0].next;
+  for(const opt of state.options){
+    const en = norm(opt.label_en);
+    const tl = norm(opt.label_tl);
+    if(t === en || t === tl || t.includes(en) || t.includes(tl)){
+      return opt.next;
+    }
   }
-
-  if(optionB.some(k => t.includes(k))){
-    return s.options[1].next;
-  }
-
   return null;
 }
 
-/* SEND */
-document.getElementById('sendBtn').onclick=()=>{
-  const text=input.value.trim();
-  if(!text||!QA) return;
+/* ================= GLOBAL ROUTER ================= */
+function routeByGlobalKeywords(text){
+  const t = norm(text);
+  for(const key in GLOBAL_KEYWORD_INDEX){
+    if(t.includes(key)){
+      return GLOBAL_KEYWORD_INDEX[key];
+    }
+  }
+  return null;
+}
 
-  lang=isTL(text)?'tl':'en';
+/* ================= MASTER ROUTER ================= */
+function resolveNextState(text){
+  // 1. CURRENT STATE OPTIONS (STRICT)
+  const byOption = routeByOptions(text);
+  if(byOption) return byOption;
+
+  // 2. GLOBAL ROUTER (ANY STATE)
+  const byGlobal = routeByGlobalKeywords(text);
+  if(byGlobal) return byGlobal;
+
+  // 3. NO MATCH
+  return null;
+}
+
+/* ================= SEND ================= */
+sendBtn.onclick = () => {
+  const text = input.value.trim();
+  if(!text || !QA) return;
+
+  lang = isTL(text) ? 'tl' : 'en';
   say(text,'user');
   input.value='';
 
-  // FIRST MESSAGE = GREETING
-  if(!started && isGreeting(text)){
-    currentState='friendliness_01';
-    started=true;
-    say(QA.states[currentState].text[lang],'bot');
-    return;
+  // build router once
+  if(Object.keys(GLOBAL_KEYWORD_INDEX).length === 0){
+    buildGlobalRouter();
   }
 
-  if(!currentState) return;
-
-  const next=routeBinary(text);
+  const next = resolveNextState(text);
   if(next){
-    currentState=next;
-    say(QA.states[currentState].text[lang],'bot');
+    currentStateId = next;
+    say(QA.states[currentStateId].text[lang],'bot');
   }else{
     say(
       lang==='tl'
-        ? 'Okay lang mag-isip sandali. Alin ang mas malapit sa nararamdaman mo?'
-        : 'It’s okay to take a moment. Which one feels closer to you?',
+        ? 'Okay lang. Alin ang mas malapit sa pakiramdam mo?'
+        : 'That’s okay. Which feels closer?',
       'bot'
     );
   }
-};
-
-/* SETTINGS + AVATAR */
-const settings=document.getElementById('settings');
-document.getElementById('gear').onclick=()=>settings.style.display='flex';
-function closeSettings(){settings.style.display='none'}
-settings.onclick=e=>{if(e.target===settings)closeSettings()}
-function clearChat(){chat.innerHTML='';closeSettings()}
-
-const userAvatar=document.getElementById('userAvatar');
-const userAvatarInput=document.getElementById('userAvatarInput');
-userAvatar.onclick=()=>userAvatarInput.click();
-userAvatarInput.onchange=e=>{
-  const f=e.target.files[0];
-  if(f) userAvatar.src=URL.createObjectURL(f);
 };
 </script>
 
