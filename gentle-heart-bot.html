@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Gentle Heart</title>
 
   <link rel="stylesheet" href="style.css">
@@ -11,38 +11,37 @@
 
 <body>
 
-  <!-- HEADER (FIXED) -->
-  <header class="gh-header">
-    <div class="gh-left">
-      <img src="avatar.png" class="gh-avatar" alt="Gentle Heart">
-      <div>
-        <div class="gh-title">Gentle Heart</div>
-        <div class="gh-subtitle">Your gentle companion</div>
+  <div class="app">
+
+    <header class="gh-header">
+      <div class="gh-left">
+        <img src="avatar.png" class="gh-avatar" alt="Gentle Heart">
+        <div>
+          <div class="gh-title">Gentle Heart</div>
+          <div class="gh-subtitle">Your gentle companion</div>
+        </div>
       </div>
-    </div>
 
-    <div class="gh-right">
-      <!-- USER AVATAR -->
-      <label class="user-avatar-wrap">
-        <input id="avatarInput" type="file" accept="image/*" hidden>
-        <img id="userAvatar" src="avatar.png" class="user-avatar" alt="Your avatar">
-      </label>
+      <div class="gh-right">
+        <label class="user-avatar-wrap">
+          <input id="avatarInput" type="file" accept="image/*" hidden>
+          <img id="userAvatar" src="avatar.png" class="user-avatar" alt="Your avatar">
+        </label>
 
-      <!-- GEAR -->
-      <button id="gearBtn" class="gh-gear">⚙️</button>
-    </div>
-  </header>
+        <button id="gearBtn" class="gh-gear">⚙️</button>
+      </div>
+    </header>
 
-  <!-- CHAT (SCROLL AREA) -->
-  <main class="gh-chat">
-    <div class="empty-text">Start typing when you’re ready.</div>
-  </main>
+    <main class="gh-chat">
+      <div class="empty-text">Start typing when you’re ready.</div>
+    </main>
 
-  <!-- INPUT (FIXED) -->
-  <footer class="gh-input">
-    <input type="text" placeholder="Type your reply…" />
-    <button>Send</button>
-  </footer>
+    <footer class="gh-input">
+      <input type="text" placeholder="Type your reply…" />
+      <button>Send</button>
+    </footer>
+
+  </div>
 
 </body>
 </html>
