@@ -1,125 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Gentle Heart</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gentle Heart</title>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#06442a">
-
-<style>
-:root{
-  --bg:#04331f;
-  --card:#06442a;
-  --text:#eafff4;
-  --muted:#bfe8d3;
-  --accent:#1aa667;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  height:100%;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.app{
-  min-height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-
-.card{
-  max-width:420px;
-  width:100%;
-  background:var(--card);
-  border-radius:18px;
-  padding:28px;
-  text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,.35);
-}
-
-/* === AVATAR === */
-.avatar{
-  width:96px;
-  height:96px;
-  border-radius:50%;
-  display:block;
-  margin:0 auto 16px;
-  object-fit:cover;
-  background:#0e6e47;
-}
-
-h1{
-  margin:0 0 8px;
-  font-size:28px;
-}
-
-p{
-  margin:0 0 18px;
-  line-height:1.5;
-  color:var(--muted);
-}
-
-button{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  background:var(--accent);
-  color:#04331f;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-.footer{
-  margin-top:14px;
-  font-size:12px;
-  color:#9fd9bf;
-}
-</style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-<div class="app">
-  <div class="card">
 
-    <!-- AVATAR: DITO DAPAT LUMABAS -->
-    <img src="./avatar.png" alt="Gentle Heart Avatar" class="avatar">
-
-    <h1>Gentle Heart</h1>
-
-    <p>
-      A calm companion for cerebral palsy awareness and emotional support.
-    </p>
-
-    <button onclick="startChat()">Start Conversation</button>
-
-    <div class="footer">
-      Gentle Heart is a companion, not a medical or crisis service.
+  <!-- HEADER -->
+  <header class="gh-header">
+    <div class="gh-left">
+      <img src="avatar.png" alt="Gentle Heart" class="gh-avatar">
+      <div>
+        <div class="gh-title">Gentle Heart</div>
+        <div class="gh-subtitle">Your gentle companion</div>
+      </div>
     </div>
 
-  </div>
-</div>
+    <button class="gh-gear" aria-label="Settings">⚙️</button>
+  </header>
 
-<script>
-function startChat(){
-  // PALITAN MO ITO NG CUSTOM GPT LINK MO
-  // Example:
-  // https://chat.openai.com/g/g-XXXXXXXXXX
-  window.location.href = "https://chat.openai.com";
-}
-</script>
+  <!-- CHAT AREA -->
+  <main class="gh-chat">
+    <div class="bubble bot">
+      Kumusta ka today? Gusto mo bang mag-share o gusto mo munang manahimik?
+    </div>
+
+    <div class="bubble user">
+      Okay lang naman ako.
+    </div>
+  </main>
+
+  <!-- INPUT -->
+  <footer class="gh-input">
+    <input type="text" placeholder="Type your reply…" />
+    <button>Send</button>
+  </footer>
+
 </body>
 </html>
