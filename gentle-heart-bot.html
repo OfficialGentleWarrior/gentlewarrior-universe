@@ -39,13 +39,13 @@ html,body{
   max-width:420px;
   width:100%;
   background:var(--card);
-  border-radius:20px;
-  padding:28px 26px 30px;
+  border-radius:18px;
+  padding:28px;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
 
-/* AVATAR */
+/* === AVATAR === */
 .avatar{
   width:96px;
   height:96px;
@@ -59,14 +59,12 @@ html,body{
 h1{
   margin:0 0 8px;
   font-size:28px;
-  font-weight:700;
 }
 
 p{
-  margin:0 0 20px;
+  margin:0 0 18px;
   line-height:1.5;
   color:var(--muted);
-  font-size:15px;
 }
 
 button{
@@ -77,7 +75,7 @@ button{
   background:var(--accent);
   color:#04331f;
   font-size:16px;
-  font-weight:700;
+  font-weight:600;
   cursor:pointer;
 }
 
@@ -97,8 +95,8 @@ button:active{
 <div class="app">
   <div class="card">
 
-    <!-- AVATAR -->
-    <img src="avatar.png" alt="Gentle Heart Avatar" class="avatar">
+    <!-- AVATAR: DITO DAPAT LUMABAS -->
+    <img src="./avatar.png" alt="Gentle Heart Avatar" class="avatar">
 
     <h1>Gentle Heart</h1>
 
@@ -117,7 +115,7 @@ button:active{
 
 <script>
 function startChat(){
-  // PALITAN MO ITO ng Custom GPT link mo
+  // PALITAN MO ITO NG CUSTOM GPT LINK MO
   // Example:
   // https://chat.openai.com/g/g-XXXXXXXXXX
   window.location.href = "https://chat.openai.com";
