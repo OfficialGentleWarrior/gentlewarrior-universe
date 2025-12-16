@@ -2,9 +2,6 @@
   --emerald:#04331f;
   --emerald-dark:#032718;
   --emerald-soft:#0e6e47;
-  --bot:#e7f4ee;
-  --user:#1a8f63;
-  --text:#0f2e22;
   --white:#ffffff;
 }
 
@@ -15,6 +12,8 @@ html,body{
   height:100%;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:var(--emerald);
+  display:flex;
+  flex-direction:column;
 }
 
 /* HEADER */
@@ -25,15 +24,10 @@ html,body{
   justify-content:space-between;
   align-items:center;
   padding:12px 14px;
+  z-index:10;
 }
 
-.gh-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.gh-right{
+.gh-left,.gh-right{
   display:flex;
   align-items:center;
   gap:10px;
@@ -47,19 +41,10 @@ html,body{
   object-fit:cover;
 }
 
-.user-avatar-wrap{
-  cursor:pointer;
-}
+.user-avatar-wrap{cursor:pointer}
 
-.gh-title{
-  font-weight:600;
-  font-size:15px;
-}
-
-.gh-subtitle{
-  font-size:12px;
-  opacity:.8;
-}
+.gh-title{font-weight:600;font-size:15px}
+.gh-subtitle{font-size:12px;opacity:.8}
 
 .gh-gear{
   background:none;
@@ -67,50 +52,42 @@ html,body{
   color:white;
   font-size:22px;
   cursor:pointer;
+  padding:4px;
 }
+.gh-gear:active{transform:scale(.9)}
 
-.gh-gear:active{
-  transform:scale(0.9);
-}
-
-/* CHAT AREA */
+/* CHAT */
 .gh-chat{
   flex:1;
-  padding:14px;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-}
-
-/* EMPTY STATE */
-.empty-text{
   color:#cfe9d9;
   font-size:14px;
-  opacity:0.8;
 }
 
-/* INPUT */
+/* INPUT – KEYBOARD SAFE */
 .gh-input{
   display:flex;
   gap:8px;
   padding:10px;
   background:var(--emerald-dark);
+  position:sticky;
+  bottom:0;
 }
 
 .gh-input input{
   flex:1;
-  padding:10px 12px;
+  padding:10px 14px;
   border-radius:20px;
   border:none;
   font-size:14px;
 }
 
 .gh-input button{
-  padding:0 16px;
+  padding:0 18px;
   border-radius:20px;
   border:none;
   background:var(--emerald-soft);
   color:white;
-  font-size:14px;
 }
