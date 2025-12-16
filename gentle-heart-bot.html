@@ -2,235 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
-<title>Gentle Heart — Your Gentle Companion</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gentle Heart</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#06442a">
 
 <style>
 :root{
-  --emerald:#06442a;
-  --emerald-dark:#04331f;
-  --bot:#cfe9d9;
-  --user:#ffffff;
-  --text:#04331f;
+  --bg:#04331f;
+  --card:#06442a;
+  --text:#eafff4;
+  --muted:#bfe8d3;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
+*{box-sizing:border-box}
 html,body{
-  margin:0;height:100%;
-  background:var(--emerald-dark);
-}
-
-/* ===== Layout ===== */
-.app{
-  display:flex;
-  flex-direction:column;
+  margin:0;
   height:100%;
-}
-
-/* ===== Header ===== */
-.header{
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 14px;
-  background:var(--emerald);
-  color:white;
-}
-.header img{
-  width:36px;height:36px;border-radius:50%;
-}
-.header .right{
-  display:flex;gap:10px;align-items:center;
-}
-.gear{
-  font-size:20px;cursor:pointer;
-}
-
-/* ===== Chat ===== */
-.chat{
-  flex:1 1 auto;
-  overflow-y:auto;
-  padding:14px;
-  background:#f6fbf8;
-}
-
-/* ===== Bubbles ===== */
-.msg{
-  display:flex;
-  margin-bottom:12px;
-}
-.msg.bot{justify-content:flex-start}
-.msg.user{justify-content:flex-end}
-
-.bubble{
-  max-width:75%;
-  padding:10px 12px;
-  border-radius:14px;
-  font-size:15px;
-  line-height:1.4;
-}
-.bot .bubble{
-  background:var(--bot);
+  background:var(--bg);
   color:var(--text);
-  border-bottom-left-radius:4px;
 }
-.user .bubble{
-  background:var(--user);
-  color:#000;
-  border-bottom-right-radius:4px;
-}
-.avatar{
-  width:32px;height:32px;border-radius:50%;
-  margin:0 8px;
-}
-
-/* ===== Input ===== */
-.input{
-  flex:0 0 auto;
+.app{
+  min-height:100%;
   display:flex;
-  padding:10px;
-  background:#fff;
-  border-top:1px solid #ddd;
-}
-.input input{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:15px;
-}
-.input button{
-  margin-left:8px;
-  border:none;
-  background:var(--emerald);
-  color:white;
-  padding:10px 14px;
-  border-radius:10px;
-}
-
-/* ===== Modal ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.4);
-  display:none;
   align-items:center;
   justify-content:center;
+  padding:24px;
 }
-.modal .box{
-  background:#fff;
-  width:90%;
-  max-width:320px;
+.card{
+  max-width:420px;
+  width:100%;
+  background:var(--card);
+  border-radius:18px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+h1{
+  margin:0 0 8px;
+  font-size:28px;
+}
+p{
+  margin:0 0 18px;
+  line-height:1.5;
+  color:var(--muted);
+}
+button{
+  width:100%;
+  padding:14px;
   border-radius:14px;
-  padding:16px;
+  border:none;
+  background:#1aa667;
+  color:#04331f;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
 }
-.modal h3{margin-top:0}
-.option{margin:8px 0}
+button:active{transform:scale(.98)}
+.footer{
+  margin-top:14px;
+  font-size:12px;
+  color:#9fd9bf;
+}
 </style>
 </head>
 
 <body>
 <div class="app">
+  <div class="card">
+    <h1>Gentle Heart</h1>
+    <p>
+      A calm companion for cerebral palsy awareness and emotional support.
+    </p>
 
-  <!-- HEADER -->
-  <div class="header">
-    <img src="avatar.png">
-    <div class="right">
-      <input type="file" id="avatarUpload" accept="image/*" hidden>
-      <img id="userAvatar" src="avatar.png" onclick="avatarUpload.click()">
-      <div class="gear" onclick="openSettings()">⚙️</div>
+    <button onclick="startChat()">Start Conversation</button>
+
+    <div class="footer">
+      Gentle Heart is a companion, not a medical or crisis service.
     </div>
-  </div>
-
-  <!-- CHAT -->
-  <div class="chat" id="chat"></div>
-
-  <!-- INPUT -->
-  <div class="input">
-    <input id="text" placeholder="Type here…" autocomplete="off">
-    <button onclick="send()">Send</button>
-  </div>
-
-</div>
-
-<!-- SETTINGS -->
-<div class="modal" id="settings">
-  <div class="box">
-    <h3>Settings</h3>
-    <div class="option"><label><input type="checkbox"> Kids mode</label></div>
-    <div class="option"><label><input type="checkbox"> Private mode</label></div>
-    <div class="option">
-      Country:
-      <select id="country">
-        <option value="PH">Philippines</option>
-        <option value="INT">International</option>
-      </select>
-    </div>
-    <button onclick="clearChat()">Clear history</button>
-    <br><br>
-    <button onclick="closeSettings()">Close</button>
   </div>
 </div>
 
 <script>
-let qa, state;
-let lang = 'en';
-
-fetch('qa.json').then(r=>r.json()).then(j=>{
-  qa=j;
-  state=j.start;
-  botReply(j.states[state].text);
-});
-
-function detectLang(t){
-  return /[ñŋáéíóú]/i.test(t)||/[a-z]/i.test(t)===false?'tl':'en';
+function startChat(){
+  window.location.href = "PASTE_CUSTOM_GPT_LINK_HERE";
 }
-
-function botReply(textObj){
-  setTimeout(()=>{
-    const text=textObj[lang];
-    addMsg('bot',text);
-  },2000);
-}
-
-function addMsg(who,text){
-  const div=document.createElement('div');
-  div.className='msg '+who;
-  div.innerHTML=who==='bot'
-    ? `<img class="avatar" src="avatar.png"><div class="bubble">${text}</div>`
-    : `<div class="bubble">${text}</div><img class="avatar" src="${userAvatar.src}">`;
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-function send(){
-  const t=text.value.trim();
-  if(!t) return;
-  lang=detectLang(t);
-  addMsg('user',t);
-  text.value='';
-  handleInput(t.toLowerCase());
-}
-
-function handleInput(t){
-  const st=qa.states[state];
-  let next=st.options.find(o =>
-    t.includes(o.label_en.toLowerCase()) ||
-    t.includes(o.label_tl.toLowerCase())
-  );
-  if(!next) next=st.options[0];
-  state=next.next;
-  botReply(qa.states[state].text);
-}
-
-/* SETTINGS */
-function openSettings(){settings.style.display='flex'}
-function closeSettings(){settings.style.display='none'}
-function clearChat(){chat.innerHTML='';}
 </script>
-
 </body>
 </html>
