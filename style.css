@@ -5,37 +5,43 @@
   --white:#ffffff;
 }
 
-*{box-sizing:border-box}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  background: var(--emerald);
-  overflow: hidden; /* IMPORTANT */
+*{
+  box-sizing:border-box;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
+/* ROOT */
+html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:var(--emerald);
+  overflow:hidden;
 }
 
-/* HEADER */
-.gh-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: var(--emerald-dark);
-  color: white;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  z-index: 1000;
+/* APP WRAPPER
+   🔑 100svh = STABLE viewport kahit may keyboard */
+.app{
+  height:100svh;
+  display:flex;
+  flex-direction:column;
 }
 
+/* HEADER (NEVER MOVES) */
+.gh-header{
+  height:64px;
+  background:var(--emerald-dark);
+  color:white;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 14px;
+
+  flex-shrink:0;
+}
+
+/* HEADER CONTENT */
 .gh-left,.gh-right{
   display:flex;
   align-items:center;
@@ -50,10 +56,19 @@ body {
   object-fit:cover;
 }
 
-.user-avatar-wrap{cursor:pointer}
+.user-avatar-wrap{
+  cursor:pointer;
+}
 
-.gh-title{font-weight:600;font-size:15px}
-.gh-subtitle{font-size:12px;opacity:.8}
+.gh-title{
+  font-weight:600;
+  font-size:15px;
+}
+
+.gh-subtitle{
+  font-size:12px;
+  opacity:.8;
+}
 
 .gh-gear{
   background:none;
@@ -61,39 +76,32 @@ body {
   color:white;
   font-size:22px;
   cursor:pointer;
-  padding:4px;
-}
-.gh-gear:active{transform:scale(.9)}
-
-/* CHAT */
-.gh-chat {
-  flex: 1;
-  margin-top: 64px;      /* header height */
-  margin-bottom: 64px;   /* input height */
-
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #cfe9d9;
-  font-size: 14px;
 }
 
-/* INPUT – KEYBOARD SAFE */
-.gh-input {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom);
-  left: 0;
-  right: 0;
-  height: 64px;
+/* CHAT — ONLY THIS RESIZES */
+.gh-chat{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  background: var(--emerald-dark);
-  z-index: 1000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  color:#cfe9d9;
+  font-size:14px;
+}
+
+/* INPUT — STAYS VISIBLE */
+.gh-input{
+  height:64px;
+  background:var(--emerald-dark);
+
+  display:flex;
+  gap:8px;
+  padding:10px;
+
+  flex-shrink:0;
 }
 
 .gh-input input{
