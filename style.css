@@ -7,24 +7,33 @@
 
 *{box-sizing:border-box}
 
-html,body{
-  margin:0;
-  height:100%;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--emerald);
-  display:flex;
-  flex-direction:column;
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--emerald);
+  overflow: hidden; /* IMPORTANT */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
 }
 
 /* HEADER */
-.gh-header{
-  background:var(--emerald-dark);
-  color:white;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 14px;
-  z-index:10;
+.gh-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--emerald-dark);
+  color: white;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  z-index: 1000;
 }
 
 .gh-left,.gh-right{
@@ -57,23 +66,34 @@ html,body{
 .gh-gear:active{transform:scale(.9)}
 
 /* CHAT */
-.gh-chat{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:#cfe9d9;
-  font-size:14px;
+.gh-chat {
+  flex: 1;
+  margin-top: 64px;      /* header height */
+  margin-bottom: 64px;   /* input height */
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #cfe9d9;
+  font-size: 14px;
 }
 
 /* INPUT – KEYBOARD SAFE */
-.gh-input{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  background:var(--emerald-dark);
-  position:sticky;
-  bottom:0;
+.gh-input {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom);
+  left: 0;
+  right: 0;
+  height: 64px;
+
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: var(--emerald-dark);
+  z-index: 1000;
 }
 
 .gh-input input{
