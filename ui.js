@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const resize = () => {
       app.style.height = window.visualViewport.height + "px";
     };
-
     window.visualViewport.addEventListener("resize", resize);
     resize();
   }
@@ -56,11 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (chat && empty) {
     const observer = new MutationObserver(() => {
-      if (chat.querySelector(".bubble")) {
-        empty.style.display = "none";
-      } else {
-        empty.style.display = "block";
-      }
+      empty.style.display = chat.querySelector(".bubble")
+        ? "none"
+        : "block";
     });
     observer.observe(chat, { childList: true });
   }
@@ -69,7 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const typingIndicator = document.getElementById("typingIndicator");
 
   window.showTyping = function () {
-    if (!typingIndicator) return;
+    if (!typingIndicator || !chat) return;
+
+    // always keep typing indicator as LAST element
+    chat.appendChild(typingIndicator);
     typingIndicator.classList.remove("hidden");
     typingIndicator.scrollIntoView({ behavior: "smooth", block: "end" });
   };
@@ -92,29 +92,54 @@ document.addEventListener("DOMContentLoaded", () => {
       const emptyState = chat.querySelector(".empty-state");
       if (emptyState) emptyState.remove();
 
-      // user bubble
-      const bubble = document.createElement("div");
-      bubble.className = "bubble user";
-      bubble.textContent = text;
+      // USER bubble
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.textContent = text;
 
-      chat.appendChild(bubble);
+      chat.appendChild(userBubble);
       chatInput.value = "";
-      bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      userBubble.scrollIntoView({ behavior: "smooth", block: "end" });
 
-      // show typing indicator (bot thinking)
+      // show typing indicator AFTER user message
       window.showTyping();
 
-      // TEMP bot reply (UI only)
+      // BOT reply after delay
       setTimeout(() => {
-  // bot reply appears AFTER typing is visible
-  const botBubble = document.createElement("div");
-  botBubble.className = "bubble bot";
-  botBubble.textContent = "I’m here with you. Tell me more.";
+        window.hideTyping();
 
-  window.hideTyping();
-  chat.appendChild(botBubble);
-  botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
-}, 1500);
+        const botBubble = document.createElement("div");
+        botBubble.className = "bubble bot";
+        botBubble.textContent = "I’m here with you. Tell me more.";
+
+        chat.appendChild(botBubble);
+        botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 1500);
+    });
+  }
+
+  /* ================= CLEAR CHAT ================= */
+  const clearBtn = document.querySelector(".clear-btn");
+
+  if (clearBtn && chat) {
+    clearBtn.addEventListener("click", () => {
+
+      // remove all bubbles
+      chat.querySelectorAll(".bubble").forEach(b => b.remove());
+
+      // hide typing indicator
+      if (typingIndicator) {
+        typingIndicator.classList.add("hidden");
+      }
+
+      // restore empty state
+      const emptyState = document.createElement("div");
+      emptyState.className = "empty-state";
+      emptyState.innerHTML = `
+        <div class="empty-title">You’re safe here.</div>
+        <div class="empty-sub">Start typing whenever you’re ready.</div>
+      `;
+      chat.appendChild(emptyState);
     });
   }
 
