@@ -66,4 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(chat, { childList: true });
   }
 
+  /* ================= TYPING INDICATOR ================= */
+  const typingIndicator = document.getElementById("typingIndicator");
+
+  window.showTyping = function () {
+    if (!typingIndicator) return;
+    typingIndicator.classList.remove("hidden");
+    typingIndicator.scrollIntoView({ behavior: "smooth", block: "end" });
+  };
+
+  window.hideTyping = function () {
+    if (!typingIndicator) return;
+    typingIndicator.classList.add("hidden");
+  };
+
 });
