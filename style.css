@@ -19,15 +19,14 @@ html, body{
   overflow:hidden;
 }
 
-/* APP WRAPPER
-   🔑 100svh = STABLE viewport kahit may keyboard */
+/* APP WRAPPER */
 .app{
   height:100svh;
   display:flex;
   flex-direction:column;
 }
 
-/* HEADER (NEVER MOVES) */
+/* ================= HEADER ================= */
 .gh-header{
   height:64px;
   background:var(--emerald-dark);
@@ -41,7 +40,6 @@ html, body{
   flex-shrink:0;
 }
 
-/* HEADER CONTENT */
 .gh-left,.gh-right{
   display:flex;
   align-items:center;
@@ -56,9 +54,7 @@ html, body{
   object-fit:cover;
 }
 
-.user-avatar-wrap{
-  cursor:pointer;
-}
+.user-avatar-wrap{ cursor:pointer; }
 
 .gh-title{
   font-weight:600;
@@ -78,21 +74,23 @@ html, body{
   cursor:pointer;
 }
 
-/* CHAT — ONLY THIS RESIZES */
+/* ================= CHAT AREA ================= */
 .gh-chat{
+  position:relative;              /* needed for empty state */
   flex:1;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 
   display:flex;
-  justify-content:center;
-  align-items:center;
+  flex-direction:column;
+  align-items:flex-start;
 
-  color:#cfe9d9;
+  padding:14px;
   font-size:14px;
+  color:#cfe9d9;
 }
 
-/* INPUT — STAYS VISIBLE */
+/* ================= INPUT ================= */
 .gh-input{
   height:64px;
   background:var(--emerald-dark);
@@ -119,7 +117,8 @@ html, body{
   background:var(--emerald-soft);
   color:white;
 }
-/* MODAL OVERLAY */
+
+/* ================= SETTINGS MODAL ================= */
 .modal-overlay{
   position:fixed;
   inset:0;
@@ -130,11 +129,8 @@ html, body{
   z-index:2000;
 }
 
-.modal-overlay.hidden{
-  display:none;
-}
+.modal-overlay.hidden{ display:none; }
 
-/* MODAL BOX */
 .modal{
   width:90%;
   max-width:360px;
@@ -144,7 +140,6 @@ html, body{
   overflow:hidden;
 }
 
-/* HEADER */
 .modal-header{
   display:flex;
   justify-content:space-between;
@@ -166,7 +161,6 @@ html, body{
   cursor:pointer;
 }
 
-/* BODY */
 .modal-body{
   padding:14px;
   display:flex;
@@ -174,7 +168,6 @@ html, body{
   gap:14px;
 }
 
-/* ROW */
 .setting-row{
   display:flex;
   justify-content:space-between;
@@ -182,7 +175,7 @@ html, body{
   font-size:14px;
 }
 
-/* TOGGLE SWITCH */
+/* TOGGLE */
 .switch{
   position:relative;
   width:40px;
@@ -221,7 +214,6 @@ html, body{
   transform:translateX(18px);
 }
 
-/* CLEAR BUTTON */
 .clear-btn{
   margin-top:8px;
   padding:10px;
@@ -231,11 +223,19 @@ html, body{
   color:white;
   cursor:pointer;
 }
-/* EMPTY STATE */
+
+/* ================= EMPTY STATE ================= */
 .empty-state{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   text-align:center;
-  opacity:0;
-  animation:fadeIn 1.2s ease forwards;
+  pointer-events:none;
+
+  animation:
+    fadeIn 1.2s ease forwards,
+    breathe 6s ease-in-out infinite;
 }
 
 .empty-title{
@@ -251,30 +251,23 @@ html, body{
   opacity:0.9;
 }
 
-/* fade-in animation */
 @keyframes fadeIn{
   from{
     opacity:0;
-    transform:translateY(6px);
+    transform:translate(-50%, calc(-50% + 6px));
   }
   to{
     opacity:1;
-    transform:translateY(0);
+    transform:translate(-50%, -50%);
   }
-}
-
-/* subtle breathing animation — ADD THIS BELOW */
-.empty-state{
-  animation:
-    fadeIn 1.2s ease forwards,
-    breathe 6s ease-in-out infinite;
 }
 
 @keyframes breathe{
   0%,100%{ opacity:1 }
   50%{ opacity:0.85 }
 }
-/* CHAT BUBBLES */
+
+/* ================= CHAT BUBBLES ================= */
 .bubble{
   max-width:75%;
   padding:10px 12px;
@@ -283,9 +276,7 @@ html, body{
   line-height:1.4;
   margin:6px 0;
   word-wrap:break-word;
-}
-/* bubble entrance animation */
-.bubble{
+
   animation:popIn .25s ease-out;
 }
 
@@ -300,7 +291,7 @@ html, body{
   }
 }
 
-/* BOT (LEFT) */
+/* BOT */
 .bubble.bot{
   align-self:flex-start;
   background:#e7f4ee;
@@ -308,7 +299,7 @@ html, body{
   border-bottom-left-radius:6px;
 }
 
-/* USER (RIGHT) */
+/* USER */
 .bubble.user{
   align-self:flex-end;
   background:#1a8f63;
