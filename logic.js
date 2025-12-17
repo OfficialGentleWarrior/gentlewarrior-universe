@@ -1,24 +1,6 @@
-// logic.js — Gentle Heart Logic Router v1 (FINAL)
+// logic.js — FINAL FIXED v1.1
 
 let lastCategory = null;
-
-// ================= KEYWORDS =================
-const CATEGORY_KEYWORDS = {
-  mood: [
-    "mood","pakiramdam","feeling","feelings","nararamdaman",
-    "emotion","emosyon","kamusta","okay","hindi okay",
-    "mabigat","magaan","empty","walang laman",
-    "down","low","malungkot","pagod"
-  ],
-
-  cp_overview: [
-    "cerebral palsy","ano ang cp","about cp","cp overview","cp"
-  ],
-
-  food: ["food","pagkain","kain","gutom","hungry"],
-  greetings: ["hello","hi","hey","kumusta"],
-  fallback: []
-};
 
 // ================= UTILITIES =================
 function normalize(text){
@@ -27,7 +9,7 @@ function normalize(text){
 
 // ================= LANGUAGE =================
 function detectLanguage(text){
-  const tl = ["ako","ikaw","ka","ko","mo","hindi","wala","gusto","kumusta"];
+  const tl = ["ako","ikaw","ka","ko","mo","hindi","wala","gusto","pagod","kumusta"];
   const t = normalize(text);
   return tl.some(w => t.includes(w)) ? "tl" : "en";
 }
@@ -35,20 +17,27 @@ function detectLanguage(text){
 // ================= CATEGORY =================
 function detectCategory(text){
   const t = normalize(text);
+
+  if (CATEGORY_KEYWORDS.hotline.some(w => t.includes(w))) {
+    return "hotline";
+  }
+
   for (const cat in CATEGORY_KEYWORDS) {
     if (CATEGORY_KEYWORDS[cat].some(w => t.includes(w))) {
       return cat;
     }
   }
+
   return "fallback";
 }
 
-// ================= ROUTER =================
+// ================= MAIN ROUTER =================
 function routeMessage(userText){
 
-  if (!window.REPLIES) {
-    console.error("REPLIES not loaded");
+  if (typeof REPLIES === "undefined") {
     return {
+      category: "error",
+      language: "en",
       text: "System error. Please refresh.",
       options: []
     };
@@ -56,22 +45,24 @@ function routeMessage(userText){
 
   const language = detectLanguage(userText);
   let category = detectCategory(userText);
+  const clean = normalize(userText);
 
-  // ✅ CONTEXT CARRY
-  const followUps = ["magkwento","kwento","makinig","makinig lang"];
+  // ✅ OPTION A — CONTEXT CARRY
   if (
     lastCategory &&
-    followUps.includes(normalize(userText))
+    ["kwento","magkwento","makinig","makinig lang","kwentuhan"].includes(clean)
   ) {
     category = lastCategory;
   }
 
-  const replySet = window.REPLIES[category] || window.REPLIES.fallback;
+  const replySet = REPLIES[category] || REPLIES.fallback;
   const reply = replySet[language] || replySet.en;
 
   lastCategory = category;
 
   return {
+    category,
+    language,
     text: reply.text,
     options: reply.options
   };
