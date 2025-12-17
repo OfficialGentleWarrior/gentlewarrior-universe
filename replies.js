@@ -334,5 +334,3 @@ const REPLIES = {
   }
 
 };
-
-export default REPLIES;
