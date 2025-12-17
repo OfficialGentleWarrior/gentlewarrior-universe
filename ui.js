@@ -133,8 +133,10 @@ if (chatInput && sendBtn) {
 
         const botBubble = document.createElement("div");
         botBubble.className = "bubble bot";
-        const reply = window.routeMessage(text);
-botBubble.textContent = reply.text;
+        const result = window.routeMessage(text);
+console.log("ROUTE RESULT:", result);
+
+botBubble.textContent = JSON.stringify(result);
 
         chat.appendChild(botBubble);
         botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
