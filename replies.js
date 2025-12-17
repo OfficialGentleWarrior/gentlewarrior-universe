@@ -1,156 +1,156 @@
 // replies.js
-// Gentle Heart — Reply Sets v1 FINAL (LOCKED)
+// Gentle Heart — Reply Sets v1 FINAL (OPTIONS FIXED)
 
 const REPLIES = {
 
   mood: {
-    en: { text: "I’m here with you — do you want to share what you’re feeling, or should we sit quietly for a moment?", options: ["Share", "Sit quietly"] },
-    tl: { text: "Andito lang ako — gusto mo bang magkwento ng nararamdaman mo, o tahimik lang muna tayo?", options: ["Magkwento", "Tahimik muna"] }
+    en: { text: "I’m here with you — do you want to talk, or just listen for now?", options: ["Talk", "Listen"] },
+    tl: { text: "Andito lang ako — gusto mo bang magkwento, o makinig lang muna?", options: ["Magkwento", "Makinig"] }
   },
 
   food: {
-    en: { text: "Are you hungry right now, or just thinking about food?", options: ["Hungry", "Just thinking"] },
-    tl: { text: "Gutom ka ba ngayon, o naiisip mo lang ang pagkain?", options: ["Gutom", "Naisip lang"] }
+    en: { text: "Are you hungry, or just thinking about food?", options: ["Hungry", "Food"] },
+    tl: { text: "Gutom ka ba, o naiisip mo lang ang pagkain?", options: ["Gutom", "Pagkain"] }
   },
 
   genz: {
-    en: { text: "Got the vibe — chill talk, or something deeper?", options: ["Chill", "Deeper"] },
-    tl: { text: "Gets ko ang vibe — chill lang ba, o seryoso?", options: ["Chill", "Seryoso"] }
+    en: { text: "Chill talk, or something real?", options: ["Chill", "Talk"] },
+    tl: { text: "Chill lang ba, o may gusto kang pag-usapan?", options: ["Chill", "Pag-usapan"] }
   },
 
   hobby: {
-    en: { text: "What do you enjoy doing these days, or are you looking for something new?", options: ["My hobbies", "Something new"] },
-    tl: { text: "Ano ang hilig mong gawin ngayon, o may gusto kang subukan?", options: ["Mga hilig", "May bago"] }
+    en: { text: "Do you want to talk about hobbies, or free time?", options: ["Hobby", "Free time"] },
+    tl: { text: "Gusto mo bang pag-usapan ang libangan, o free time?", options: ["Libangan", "Bakanteng oras"] }
   },
 
   crush: {
-    en: { text: "Do you want to talk about the person, or how it makes you feel?", options: ["The person", "My feelings"] },
-    tl: { text: "Gusto mo bang pag-usapan ang tao, o ang nararamdaman mo?", options: ["Yung tao", "Nararamdaman ko"] }
+    en: { text: "Do you want to talk about your crush, or your feelings?", options: ["Crush", "Feelings"] },
+    tl: { text: "Gusto mo bang pag-usapan ang crush mo, o nararamdaman mo?", options: ["Crush", "Nararamdaman"] }
   },
 
   cp_overview: {
-    en: { text: "Do you want a simple explanation, or how it affects daily life?", options: ["Simple", "Daily life"] },
-    tl: { text: "Gusto mo ba ng simpleng paliwanag, o kung paano ito sa araw-araw?", options: ["Simple", "Araw-araw"] }
+    en: { text: "Do you want to know what CP is, or daily life with CP?", options: ["What is CP", "Daily life"] },
+    tl: { text: "Gusto mo bang malaman kung ano ang CP, o ang araw-araw na buhay?", options: ["Ano ang CP", "Araw-araw"] }
   },
 
   cp_signs: {
-    en: { text: "Are you asking about common signs, or something you noticed?", options: ["Common signs", "Something noticed"] },
-    tl: { text: "Nagtatanong ka ba tungkol sa palatandaan, o may napansin ka na?", options: ["Palatandaan", "May napansin"] }
+    en: { text: "Are you asking about CP signs, or something you noticed?", options: ["CP signs", "Symptoms"] },
+    tl: { text: "Tungkol ba ito sa palatandaan ng CP, o sintomas?", options: ["Palatandaan", "Sintomas"] }
   },
 
   cp_therapy: {
-    en: { text: "Do you want to know therapy options, or what sessions are like?", options: ["Options", "Sessions"] },
-    tl: { text: "Gusto mo bang malaman ang mga therapy, o kung ano ang nangyayari sa session?", options: ["Mga therapy", "Session"] }
+    en: { text: "Do you want to know about therapy, or rehab exercises?", options: ["Therapy", "Exercise"] },
+    tl: { text: "Gusto mo bang malaman ang therapy, o ehersisyo?", options: ["Therapy", "Ehersisyo"] }
   },
 
   care_tips: {
-    en: { text: "Are you looking for daily care tips, or help with a situation?", options: ["Daily tips", "Specific help"] },
-    tl: { text: "Naghahanap ka ba ng pang-araw-araw na tips, o tulong sa isang sitwasyon?", options: ["Araw-araw", "May sitwasyon"] }
+    en: { text: "Are you looking for care tips, or daily care?", options: ["Care tips", "Daily care"] },
+    tl: { text: "Naghahanap ka ba ng care tips, o pang-araw-araw na alaga?", options: ["Care tips", "Pag-aalaga"] }
   },
 
   emotional_support: {
-    en: { text: "I’m listening — do you want advice, or just someone to hear you?", options: ["Advice", "Just listen"] },
-    tl: { text: "Nakikinig ako — gusto mo ba ng payo, o makinig lang ako?", options: ["Payo", "Makinig lang"] }
+    en: { text: "Do you want help, or someone to listen?", options: ["Help", "Listen"] },
+    tl: { text: "Gusto mo ba ng tulong, o makinig lang ako?", options: ["Tulong", "Makinig"] }
   },
 
   family_support: {
-    en: { text: "Do you want to talk about family roles, or something heavy at home?", options: ["Family", "Something heavy"] },
-    tl: { text: "Gusto mo bang pag-usapan ang pamilya, o may mabigat sa bahay?", options: ["Pamilya", "Mabigat"] }
+    en: { text: "Do you want to talk about family, or parents?", options: ["Family", "Parents"] },
+    tl: { text: "Gusto mo bang pag-usapan ang pamilya, o magulang?", options: ["Pamilya", "Magulang"] }
   },
 
   daily_life: {
-    en: { text: "Do you want to talk about your routine, or something that changed?", options: ["Routine", "Something changed"] },
-    tl: { text: "Gusto mo bang pag-usapan ang routine, o may nagbago?", options: ["Routine", "May nagbago"] }
+    en: { text: "Do you want to talk about daily life, or routine?", options: ["Daily life", "Routine"] },
+    tl: { text: "Gusto mo bang pag-usapan ang araw-araw na buhay, o routine?", options: ["Araw-araw", "Routine"] }
   },
 
   medical: {
-    en: { text: "Is this about treatment, or a recent checkup?", options: ["Treatment", "Checkup"] },
-    tl: { text: "Tungkol ba ito sa gamutan, o sa checkup?", options: ["Gamutan", "Checkup"] }
+    en: { text: "Is this about a doctor visit, or medicine?", options: ["Doctor", "Medicine"] },
+    tl: { text: "Tungkol ba ito sa doktor, o gamot?", options: ["Doktor", "Gamot"] }
   },
 
   anxiety_stress: {
-    en: { text: "That sounds heavy — do you want to slow down, or talk it through?", options: ["Slow down", "Talk it out"] },
-    tl: { text: "Mukhang mabigat — gusto mo bang kumalma muna, o pag-usapan?", options: ["Kumalma", "Pag-usapan"] }
+    en: { text: "Are you feeling stress, or anxiety?", options: ["Stress", "Anxiety"] },
+    tl: { text: "Nakakaranas ka ba ng stress, o balisa?", options: ["Stress", "Balisa"] }
   },
 
   sleep: {
-    en: { text: "Are you having trouble sleeping, or just feeling tired?", options: ["Can’t sleep", "Just tired"] },
-    tl: { text: "Hirap ka bang matulog, o pagod ka lang?", options: ["Hirap matulog", "Pagod lang"] }
+    en: { text: "Are you having trouble sleeping, or feeling tired?", options: ["Sleep", "Tired"] },
+    tl: { text: "Hirap ka bang matulog, o pagod ka?", options: ["Tulog", "Pagod"] }
   },
 
   hotline: {
-    en: { text: "This feels urgent — are you safe right now, or do you need help?", options: ["I’m safe", "I need help"] },
-    tl: { text: "Mukhang urgent ito — ligtas ka ba ngayon, o kailangan mo ng tulong?", options: ["Ligtas ako", "Kailangan ko ng tulong"] }
+    en: { text: "Is this an emergency, or do you need urgent help?", options: ["Emergency", "Urgent help"] },
+    tl: { text: "Emergency ba ito, o kailangan mo ng agarang tulong?", options: ["Emergency", "Agarang tulong"] }
   },
 
   cp_meaning: {
-    en: { text: "Do you want a simple meaning, or a clearer explanation?", options: ["Simple", "Clearer"] },
-    tl: { text: "Gusto mo ba ng simpleng kahulugan, o mas malinaw na paliwanag?", options: ["Simple", "Mas malinaw"] }
+    en: { text: "Do you want the meaning of CP, or a definition?", options: ["Meaning of CP", "Definition"] },
+    tl: { text: "Gusto mo bang malaman ang ibig sabihin ng CP, o kahulugan?", options: ["Ibig sabihin", "Kahulugan"] }
   },
 
   cp_specifics: {
-    en: { text: "Are you curious about the types, or how severe it can be?", options: ["Types", "Severity"] },
-    tl: { text: "Interesado ka ba sa mga uri, o sa tindi nito?", options: ["Mga uri", "Tindi"] }
+    en: { text: "Do you want to know the types of CP, or severity?", options: ["Types of CP", "Severity"] },
+    tl: { text: "Gusto mo bang malaman ang uri ng CP, o tindi?", options: ["Uri", "Tindi"] }
   },
 
   parenting_cp: {
-    en: { text: "Do you need guidance, or reassurance right now?", options: ["Guidance", "Reassurance"] },
-    tl: { text: "Kailangan mo ba ng gabay, o pampalakas-loob?", options: ["Gabay", "Pampalakas-loob"] }
+    en: { text: "Is this about parenting, or caring for a child with CP?", options: ["Parenting", "Child with CP"] },
+    tl: { text: "Tungkol ba ito sa pagiging magulang, o pag-aalaga ng batang may CP?", options: ["Pagiging magulang", "Anak na may CP"] }
   },
 
   social_support: {
-    en: { text: "Do you want to talk about friends, or feeling alone?", options: ["Friends", "Feeling alone"] },
-    tl: { text: "Gusto mo bang pag-usapan ang kaibigan, o ang pakiramdam na mag-isa?", options: ["Kaibigan", "Mag-isa"] }
+    en: { text: "Do you want to talk about friends, or community?", options: ["Friends", "Community"] },
+    tl: { text: "Gusto mo bang pag-usapan ang kaibigan, o komunidad?", options: ["Kaibigan", "Komunidad"] }
   },
 
   casual: {
-    en: { text: "Light chat, or something meaningful?", options: ["Light", "Meaningful"] },
-    tl: { text: "Kwentuhan lang, o seryosong usapan?", options: ["Kwentuhan", "Seryoso"] }
+    en: { text: "Do you want casual talk, or small talk?", options: ["Casual", "Small talk"] },
+    tl: { text: "Casual lang ba, o kwentuhan?", options: ["Casual", "Kwentuhan"] }
   },
 
   rant: {
-    en: { text: "It’s okay to vent — do you want to let it out, or pause first?", options: ["Vent", "Pause"] },
-    tl: { text: "Okay lang maglabas — gusto mo bang mag-rant, o huminga muna?", options: ["Mag-rant", "Huminga"] }
+    en: { text: "Do you want to rant, or complain?", options: ["Rant", "Complain"] },
+    tl: { text: "Gusto mo bang magreklamo, o mag-rant?", options: ["Reklamo", "Rant"] }
   },
 
   greetings: {
-    en: { text: "Hi — do you want to chat, or talk about something specific?", options: ["Chat", "Specific"] },
-    tl: { text: "Hi — kwentuhan lang ba, o may topic ka?", options: ["Kwentuhan", "May topic"] }
+    en: { text: "Hi — do you want to chat, or talk about something?", options: ["Chat", "Talk"] },
+    tl: { text: "Hi — gusto mo bang makipagkwentuhan, o may topic?", options: ["Kwentuhan", "Topic"] }
   },
 
   kids_safe: {
-    en: { text: "Do you want a simple answer, or a story-style one?", options: ["Simple", "Story"] },
-    tl: { text: "Gusto mo ba ng simpleng sagot, o parang kwento?", options: ["Simple", "Kwento"] }
+    en: { text: "Is this for kids, or a simple explanation?", options: ["Kids", "Simple explanation"] },
+    tl: { text: "Para ba ito sa bata, o simpleng paliwanag?", options: ["Bata", "Madaling intindihin"] }
   },
 
   bot_intro: {
-    en: { text: "Do you want to know what I can do, or what I can’t?", options: ["What you can do", "Limits"] },
-    tl: { text: "Gusto mo bang malaman ang kaya kong gawin, o ang limitasyon ko?", options: ["Kaya mo", "Limitasyon"] }
+    en: { text: "Do you want to know who I am, or what I can do?", options: ["Who are you", "What can you do"] },
+    tl: { text: "Gusto mo bang malaman kung sino ako, o anong kaya kong gawin?", options: ["Sino ka", "Anong kaya mo"] }
   },
 
   language: {
-    en: { text: "Do you want to continue in English, or switch languages?", options: ["English", "Switch"] },
-    tl: { text: "Gusto mo bang magpatuloy sa Tagalog, o magpalit ng wika?", options: ["Tagalog", "Magpalit"] }
+    en: { text: "Do you want English, or Tagalog?", options: ["English", "Tagalog"] },
+    tl: { text: "Gusto mo bang mag-Tagalog, o English?", options: ["Tagalog", "English"] }
   },
 
   settings: {
-    en: { text: "Do you want to change a setting, or clear the chat?", options: ["Settings", "Clear chat"] },
-    tl: { text: "Gusto mo bang baguhin ang settings, o burahin ang chat?", options: ["Settings", "Burahin"] }
+    en: { text: "Do you want to open settings, or clear history?", options: ["Settings", "Clear history"] },
+    tl: { text: "Gusto mo bang buksan ang settings, o burahin ang chat?", options: ["Settings", "Burahin ang chat"] }
   },
 
   grounding: {
-    en: { text: "Do you want to try breathing, or grounding first?", options: ["Breathing", "Grounding"] },
-    tl: { text: "Gusto mo bang subukan ang paghinga, o grounding muna?", options: ["Paghinga", "Grounding"] }
+    en: { text: "Do you want breathing, or grounding?", options: ["Breathing", "Grounding"] },
+    tl: { text: "Gusto mo bang maghinga, o grounding?", options: ["Hinga", "Grounding"] }
   },
 
   encouragement: {
-    en: { text: "Do you need encouragement, or a reminder to rest?", options: ["Encouragement", "Rest"] },
-    tl: { text: "Kailangan mo ba ng pampalakas-loob, o paalala na magpahinga?", options: ["Pampalakas-loob", "Magpahinga"] }
+    en: { text: "Do you want encouragement, or hope?", options: ["Encouragement", "Hope"] },
+    tl: { text: "Kailangan mo ba ng pampalakas-loob, o pag-asa?", options: ["Pampalakas loob", "Pag-asa"] }
   },
 
   fallback: {
-    en: { text: "I want to understand — do you want to explain more, or change topic?", options: ["Explain", "Change topic"] },
-    tl: { text: "Gusto kitang maintindihan — lilinawin mo ba, o ibang topic?", options: ["Linawin", "Ibang topic"] }
+    en: { text: "Do you want to explain more, or change topic?", options: ["Explain", "Change topic"] },
+    tl: { text: "Gusto mo bang linawin, o mag-iba ng topic?", options: ["Linawin", "Ibang topic"] }
   }
 
 };
