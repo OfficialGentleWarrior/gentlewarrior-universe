@@ -1,18 +1,22 @@
 // logic.js
-// Gentle Heart — Logic Router v1
+// Gentle Heart — Logic Router v1 (STABLE)
 // Depends on: replies.js (REPLIES v1)
+// Mode: OPTION A (text-only, no forced options)
+
+// ================= CONTEXT =================
+let lastCategory = null;
 
 // ================= KEYWORDS =================
 
 const CATEGORY_KEYWORDS = {
 
   mood: [
-  "mood","pakiramdam","feeling","feelings","nararamdaman",
-  "emotion","emosyon","kamusta","okay","hindi okay",
-  "mabigat","magaan","empty","walang laman",
-  "down","low","malungkot","pagod",
-  "kwento","magkwento","makinig","makinig lang"
-],
+    "mood","pakiramdam","feeling","feelings","nararamdaman",
+    "emotion","emosyon","kamusta","kumusta","okay","hindi okay",
+    "mabigat","magaan","empty","walang laman",
+    "down","low","malungkot","pagod",
+    "kwento","magkwento","makinig","makinig lang"
+  ],
 
   food: [
     "food","pagkain","eat","eating","kain","hungry","gutom",
@@ -36,7 +40,7 @@ const CATEGORY_KEYWORDS = {
   ],
 
   cp_overview: [
-    "cerebral palsy","ano ang cp","about cp","cp overview"
+    "cerebral palsy","ano ang cp","about cp","cp overview","cp"
   ],
 
   cp_signs: [
@@ -56,7 +60,7 @@ const CATEGORY_KEYWORDS = {
 
   emotional_support: [
     "help","tulong","need help","someone to talk",
-    "lonely","nag-iisa","makinig","comfort","aliw"
+    "lonely","nag-iisa","comfort","aliw"
   ],
 
   family_support: [
@@ -118,7 +122,7 @@ const CATEGORY_KEYWORDS = {
   ],
 
   greetings: [
-    "hello","hi","hey","kumusta",
+    "hello","hi","hey","kumusta","kamusta",
     "good morning","good evening"
   ],
 
@@ -148,12 +152,10 @@ const CATEGORY_KEYWORDS = {
   ],
 
   encouragement: [
-  "encouragement","affirmation",
-  "you got this","kaya mo yan",
-  "stay strong","hope","motivation"
-],
-
-fallback: []
+    "encouragement","affirmation",
+    "you got this","kaya mo yan",
+    "stay strong","hope","motivation"
+  ]
 
 };
 
@@ -172,7 +174,7 @@ function detectLanguage(text){
   const tagalogMarkers = [
     "ako","ikaw","ka","ko","mo","siya","kami","tayo",
     "hindi","oo","wala","meron","gusto","pagod",
-    "kumusta","bakit","ano","paano","kasi","lang"
+    "kumusta","kamusta","bakit","ano","paano","kasi","lang"
   ];
 
   const t = normalize(text);
@@ -184,7 +186,6 @@ function detectLanguage(text){
 function detectCategory(text){
   const t = normalize(text);
 
-  // SAFETY FIRST
   if (CATEGORY_KEYWORDS.hotline.some(w => t.includes(w))) {
     return "hotline";
   }
@@ -199,11 +200,10 @@ function detectCategory(text){
 }
 
 // ================= MAIN ROUTER =================
-// This is the ONLY function UI should call
+// THIS IS THE ONLY FUNCTION UI CALLS
 
 function routeMessage(userText){
 
-  // SAFETY: make sure replies.js is loaded
   if (typeof REPLIES === "undefined") {
     return {
       category: "error",
@@ -212,11 +212,24 @@ function routeMessage(userText){
       options: []
     };
   }
+
+  const clean = normalize(userText);
   const language = detectLanguage(userText);
-  const category = detectCategory(userText);
+  let category = detectCategory(userText);
+
+  // ===== OPTION A: CONTEXT CARRY =====
+  if (
+    lastCategory &&
+    category === "mood" &&
+    ["kwento","magkwento","makinig","makinig lang"].includes(clean)
+  ) {
+    category = lastCategory;
+  }
 
   const replySet = REPLIES[category] || REPLIES.fallback;
   const reply = replySet[language] || replySet.en;
+
+  lastCategory = category;
 
   return {
     category,
