@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resize();
   }
 
-  /* ================= EMPTY STATE AUTO-HIDE ================= */
+  /* ================= CHAT + EMPTY STATE ================= */
   const chat = document.querySelector(".gh-chat");
   const empty = document.querySelector(".empty-state");
 
@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         empty.style.display = "block";
       }
     });
-
     observer.observe(chat, { childList: true });
   }
 
@@ -79,5 +78,44 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!typingIndicator) return;
     typingIndicator.classList.add("hidden");
   };
+
+  /* ================= SEND MESSAGE ================= */
+  const sendBtn = document.getElementById("sendBtn");
+  const chatInput = document.getElementById("chatInput");
+
+  if (sendBtn && chatInput && chat) {
+    sendBtn.addEventListener("click", () => {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      // remove empty state permanently
+      const emptyState = chat.querySelector(".empty-state");
+      if (emptyState) emptyState.remove();
+
+      // user bubble
+      const bubble = document.createElement("div");
+      bubble.className = "bubble user";
+      bubble.textContent = text;
+
+      chat.appendChild(bubble);
+      chatInput.value = "";
+      bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+
+      // show typing indicator (bot thinking)
+      window.showTyping();
+
+      // TEMP bot reply (UI only)
+      setTimeout(() => {
+        window.hideTyping();
+
+        const botBubble = document.createElement("div");
+        botBubble.className = "bubble bot";
+        botBubble.textContent = "I’m here with you. Tell me more.";
+
+        chat.appendChild(botBubble);
+        botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 1000);
+    });
+  }
 
 });
