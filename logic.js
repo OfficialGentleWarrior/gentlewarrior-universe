@@ -168,15 +168,51 @@ function normalize(text){
     .trim();
 }
 
+// ================= TAGALOG MARKERS =================
+const TAGALOG_MARKERS = [
+  "ako","ikaw","ka","ko","mo","siya","kami","tayo","sila",
+  "hindi","oo","wala","meron","lang","kasi",
+  "ano","bakit","paano","saan","kailan","sino",
+  "ganito","ganyan","ganon","ganun","tuloy","sige","oo nga",
+  "kumusta","kamusta","magandang umaga","magandang gabi",
+  "pakiramdam","nararamdaman","emosyon","mabigat","magaan",
+  "malungkot","pagod","walang laman",
+  "kwento","magkwento","makinig","makinig lang",
+  "pagkain","kain","gutom","panghimagas","meryenda",
+  "ulam","inumin","almusal","tanghalian","hapunan",
+  "matamis","maalat",
+  "trip","chill","kwentuhan","random","saya","bisyo",
+  "libangan","bakanteng oras","hilig",
+  "crush","gusto","may gusto","mahal",
+  "ligaw","nililigawan","relasyon",
+  "ano ang cp","ano ang cerebral palsy",
+  "palatandaan","sintomas","hirap gumalaw","matigas",
+  "ehersisyo","rehab",
+  "alaga","pag-aalaga","pang araw araw na alaga",
+  "tulong","aliw","nag iisa","nag-iisa",
+  "pamilya","magulang","nanay","tatay","kapatid",
+  "araw araw","araw-araw","routine","iskedyul","araw araw na buhay",
+  "doktor","doctor","gamot","reseta",
+  "balisa","nerbyos",
+  "tulog","antok","hirap matulog","puyat","pahinga",
+  "krisis","agarang tulong",
+  "ibig sabihin","kahulugan",
+  "uri","tindi",
+  "pagiging magulang","alaga ng bata","anak na may cp",
+  "kaibigan","komunidad",
+  "reklamo","inis","galit","bwisit",
+  "bata","pang bata","madaling intindihin","simple",
+  "sino ka","ano ka","bot ka ba","anong kaya mo",
+  "tagalog","wika","palitan ang wika",
+  "burahin ang chat",
+  "hinga","paghinga",
+  "kaya mo yan","laban lang","pag asa","pampalakas loob"
+];
+
 // ================= LANGUAGE =================
 function detectLanguage(text){
-  const tlMarkers = [
-    "ako","ikaw","ka","ko","mo","hindi","oo","wala","meron",
-    "gusto","pagod","kumusta","ano","bakit","paano","lang",
-    "kwento","makinig"
-  ];
   const t = normalize(text);
-  return tlMarkers.some(w => t.includes(w)) ? "tl" : "en";
+  return TAGALOG_MARKERS.some(w => t.includes(w)) ? "tl" : "en";
 }
 
 // ================= CATEGORY =================
@@ -189,7 +225,7 @@ function detectCategory(text){
     }
   }
 
-  return lastCategory || "mood"; // ✅ NO DEAD END
+  return lastCategory || "mood";
 }
 
 // ================= MAIN ROUTER =================
@@ -217,7 +253,7 @@ function routeMessage(userText){
     category,
     language,
     text: reply.text,
-    options: [] // ❌ NOT USED
+    options: []
   };
 }
 
