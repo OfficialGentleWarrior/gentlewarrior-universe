@@ -8,7 +8,7 @@ const CATEGORY_KEYWORDS = {
 
   mood: [
     "mood","pakiramdam","feeling","feelings","nararamdaman",
-    "emotion","emosyon","kumusta","okay","hindi okay",
+    "emotion","emosyon","kamusta","kumusta","okay","hindi okay",
     "mabigat","magaan","empty","walang laman",
     "down","low","malungkot","pagod"
   ],
@@ -35,7 +35,7 @@ const CATEGORY_KEYWORDS = {
   ],
 
   cp_overview: [
-    "cerebral palsy","cp","ano ang cp","about cp","cp overview"
+    "cerebral palsy","ano ang cp","about cp","cp overview"
   ],
 
   cp_signs: [
@@ -147,10 +147,12 @@ const CATEGORY_KEYWORDS = {
   ],
 
   encouragement: [
-    "encouragement","affirmation",
-    "you got this","kaya mo yan",
-    "stay strong","hope","motivation"
-  ]
+  "encouragement","affirmation",
+  "you got this","kaya mo yan",
+  "stay strong","hope","motivation"
+],
+
+fallback: []
 
 };
 
@@ -199,6 +201,16 @@ function detectCategory(text){
 // This is the ONLY function UI should call
 
 function routeMessage(userText){
+
+  // SAFETY: make sure replies.js is loaded
+  if (typeof REPLIES === "undefined") {
+    return {
+      category: "error",
+      language: "en",
+      text: "Replies not loaded.",
+      options: []
+    };
+  }
   const language = detectLanguage(userText);
   const category = detectCategory(userText);
 
