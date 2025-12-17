@@ -42,6 +42,47 @@
     </footer>
 
   </div>
+<!-- SETTINGS MODAL -->
+<div id="settingsOverlay" class="modal-overlay hidden">
+  <div class="modal">
 
+    <div class="modal-header">
+      <h3>Settings</h3>
+      <button id="closeSettings" class="close-btn">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="setting-row">
+        <span>Country</span>
+        <select>
+          <option>Philippines</option>
+          <option>United States</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <span>Kids Mode</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <span>Private Mode</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="clear-btn">Clear chat (UI only)</button>
+
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
