@@ -274,3 +274,44 @@ html, body{
   0%,100%{ opacity:1 }
   50%{ opacity:0.85 }
 }
+/* CHAT BUBBLES */
+.bubble{
+  max-width:75%;
+  padding:10px 12px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.4;
+  margin:6px 0;
+  word-wrap:break-word;
+}
+/* bubble entrance animation */
+.bubble{
+  animation:popIn .25s ease-out;
+}
+
+@keyframes popIn{
+  from{
+    opacity:0;
+    transform:translateY(4px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* BOT (LEFT) */
+.bubble.bot{
+  align-self:flex-start;
+  background:#e7f4ee;
+  color:#0f2e22;
+  border-bottom-left-radius:6px;
+}
+
+/* USER (RIGHT) */
+.bubble.user{
+  align-self:flex-end;
+  background:#1a8f63;
+  color:white;
+  border-bottom-right-radius:6px;
+}
