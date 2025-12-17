@@ -1,12 +1,39 @@
 // logic.js
-// Gentle Heart — Logic Router v1.1 (STABLE)
+// Gentle Heart — Logic Router v1.2 (STABLE, COMPLETE)
+// Depends on: replies.js (REPLIES v1)
 
+// ================= STATE =================
 let lastCategory = null;
 let lastLanguage = "en";
 let lastStep = 0;
 
-// ================= UTILITIES =================
+// ================= KEYWORDS =================
+const CATEGORY_KEYWORDS = {
 
+  mood: [
+    "mood","pakiramdam","feeling","feelings","nararamdaman",
+    "emotion","emosyon","kamusta","okay","hindi okay",
+    "mabigat","magaan","empty","walang laman",
+    "down","low","malungkot","pagod",
+    "kwento","magkwento","makinig","makinig lang"
+  ],
+
+  cp_overview: [
+    "cerebral palsy","ano ang cp","ano ang cerebral palsy","about cp","cp overview"
+  ],
+
+  greetings: [
+    "hello","hi","hey","kumusta","good morning","good evening"
+  ],
+
+  hotline: [
+    "hotline","emergency","crisis","suicide","urgent","agarang tulong"
+  ],
+
+  fallback: []
+};
+
+// ================= UTILITIES =================
 function normalize(text){
   return text
     .toLowerCase()
@@ -15,12 +42,10 @@ function normalize(text){
 }
 
 // ================= LANGUAGE DETECT =================
-
 function detectLanguage(text){
   const tagalogMarkers = [
-    "ako","ikaw","ka","ko","mo","siya","kami","tayo",
-    "hindi","oo","wala","meron","gusto","pagod",
-    "kumusta","bakit","ano","paano","kasi","lang",
+    "ako","ikaw","ka","ko","mo","hindi","oo","wala","meron",
+    "gusto","pagod","kumusta","ano","bakit","paano","lang",
     "kwento","magkwento","makinig"
   ];
   const t = normalize(text);
@@ -28,25 +53,18 @@ function detectLanguage(text){
 }
 
 // ================= CATEGORY DETECT =================
-
 function detectCategory(text){
   const t = normalize(text);
-
-  if (CATEGORY_KEYWORDS.hotline.some(w => t.includes(w))) {
-    return "hotline";
-  }
 
   for (const category in CATEGORY_KEYWORDS) {
     if (CATEGORY_KEYWORDS[category].some(w => t.includes(w))) {
       return category;
     }
   }
-
   return "fallback";
 }
 
 // ================= MAIN ROUTER =================
-
 function routeMessage(userText){
 
   if (typeof REPLIES === "undefined") {
@@ -64,7 +82,7 @@ function routeMessage(userText){
 
   const contextWords = ["kwento","magkwento","makinig","makinig lang"];
 
-  // ================= CONTEXT HANDLING =================
+  // ===== CONTEXT CARRY =====
   if (lastCategory && contextWords.includes(clean)) {
     category = lastCategory;
     language = lastLanguage;
@@ -76,20 +94,20 @@ function routeMessage(userText){
   lastCategory = category;
   lastLanguage = language;
 
-  // ================= STEP LOGIC =================
+  // ===== STEP RESPONSE (MOOD FLOW) =====
   if (category === "mood" && lastStep === 1) {
     return {
       category,
       language,
       text:
         language === "tl"
-          ? "Sige — ano ang mabigat sa’yo ngayon, o saan mo gustong magsimula?"
-          : "Alright — what’s been weighing on you, or where would you like to start?",
+          ? "Sige — ano ang gusto mong ikwento, o ano ang mabigat sa’yo ngayon?"
+          : "Alright — what would you like to share, or what’s been heavy lately?",
       options: []
     };
   }
 
-  // ================= DEFAULT REPLY =================
+  // ===== DEFAULT =====
   const replySet = REPLIES[category] || REPLIES.fallback;
   const reply = replySet[language] || replySet.en;
 
