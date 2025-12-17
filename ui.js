@@ -62,27 +62,41 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(chat, { childList: true });
   }
 
+  /* ================= INPUT ELEMENTS ================= */
+  const sendBtn = document.getElementById("sendBtn");
+  const chatInput = document.getElementById("chatInput");
+
   /* ================= TYPING INDICATOR ================= */
   const typingIndicator = document.getElementById("typingIndicator");
 
   window.showTyping = function () {
     if (!typingIndicator || !chat) return;
 
-    // always keep typing indicator as LAST element
+    // always keep typing indicator LAST
     chat.appendChild(typingIndicator);
     typingIndicator.classList.remove("hidden");
+
+    // disable input while bot is typing
+    if (sendBtn) sendBtn.disabled = true;
+    if (chatInput) chatInput.disabled = true;
+
     typingIndicator.scrollIntoView({ behavior: "smooth", block: "end" });
   };
 
   window.hideTyping = function () {
     if (!typingIndicator) return;
+
     typingIndicator.classList.add("hidden");
+
+    // re-enable input after bot reply
+    if (sendBtn) sendBtn.disabled = false;
+    if (chatInput) {
+      chatInput.disabled = false;
+      chatInput.focus();
+    }
   };
 
   /* ================= SEND MESSAGE ================= */
-  const sendBtn = document.getElementById("sendBtn");
-  const chatInput = document.getElementById("chatInput");
-
   if (sendBtn && chatInput && chat) {
     sendBtn.addEventListener("click", () => {
       const text = chatInput.value.trim();
@@ -128,8 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
       chat.querySelectorAll(".bubble").forEach(b => b.remove());
 
       // hide typing indicator
-      if (typingIndicator) {
-        typingIndicator.classList.add("hidden");
+      if (typingIndicator) typingIndicator.classList.add("hidden");
+
+      // reset input state
+      if (sendBtn) sendBtn.disabled = false;
+      if (chatInput) {
+        chatInput.disabled = false;
+        chatInput.value = "";
       }
 
       // restore empty state
