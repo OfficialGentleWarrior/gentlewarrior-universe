@@ -334,3 +334,6 @@ const REPLIES = {
   }
 
 };
+
+// ✅ CRITICAL FIX — MAKE REPLIES GLOBAL
+window.REPLIES = REPLIES;
