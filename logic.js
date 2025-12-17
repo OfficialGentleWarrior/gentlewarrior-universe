@@ -1,10 +1,10 @@
 // logic.js
-// Gentle Heart — Logic Router v1 (STABLE)
+// Gentle Heart — Logic Router v1 (FIXED)
 // Depends on: replies.js (REPLIES v1)
-// Mode: OPTION A (text-only, no forced options)
 
-// ================= CONTEXT =================
+// ================= STATE =================
 let lastCategory = null;
+let lastLanguage = "en";
 
 // ================= KEYWORDS =================
 
@@ -14,8 +14,7 @@ const CATEGORY_KEYWORDS = {
     "mood","pakiramdam","feeling","feelings","nararamdaman",
     "emotion","emosyon","kamusta","kumusta","okay","hindi okay",
     "mabigat","magaan","empty","walang laman",
-    "down","low","malungkot","pagod",
-    "kwento","magkwento","makinig","makinig lang"
+    "down","low","malungkot","pagod"
   ],
 
   food: [
@@ -40,7 +39,7 @@ const CATEGORY_KEYWORDS = {
   ],
 
   cp_overview: [
-    "cerebral palsy","ano ang cp","about cp","cp overview","cp"
+    "cerebral palsy","ano ang cp","about cp","cp overview"
   ],
 
   cp_signs: [
@@ -122,7 +121,7 @@ const CATEGORY_KEYWORDS = {
   ],
 
   greetings: [
-    "hello","hi","hey","kumusta","kamusta",
+    "hello","hi","hey","kumusta",
     "good morning","good evening"
   ],
 
@@ -156,7 +155,6 @@ const CATEGORY_KEYWORDS = {
     "you got this","kaya mo yan",
     "stay strong","hope","motivation"
   ]
-
 };
 
 // ================= UTILITIES =================
@@ -174,7 +172,7 @@ function detectLanguage(text){
   const tagalogMarkers = [
     "ako","ikaw","ka","ko","mo","siya","kami","tayo",
     "hindi","oo","wala","meron","gusto","pagod",
-    "kumusta","kamusta","bakit","ano","paano","kasi","lang"
+    "kumusta","bakit","ano","paano","kasi","lang"
   ];
 
   const t = normalize(text);
@@ -200,7 +198,7 @@ function detectCategory(text){
 }
 
 // ================= MAIN ROUTER =================
-// THIS IS THE ONLY FUNCTION UI CALLS
+// ONLY function UI should call
 
 function routeMessage(userText){
 
@@ -214,22 +212,24 @@ function routeMessage(userText){
   }
 
   const clean = normalize(userText);
-  const language = detectLanguage(userText);
+
+  let language = detectLanguage(userText);
   let category = detectCategory(userText);
 
-  // ===== OPTION A: CONTEXT CARRY =====
-  if (
-    lastCategory &&
-    category === "mood" &&
-    ["kwento","magkwento","makinig","makinig lang"].includes(clean)
-  ) {
+  // ✅ CONTEXT WORDS (OPTION A)
+  const contextWords = ["kwento","magkwento","makinig","makinig lang"];
+
+  if (lastCategory && contextWords.includes(clean)) {
     category = lastCategory;
+    language = lastLanguage;
   }
 
   const replySet = REPLIES[category] || REPLIES.fallback;
   const reply = replySet[language] || replySet.en;
 
+  // save context
   lastCategory = category;
+  lastLanguage = language;
 
   return {
     category,
@@ -239,5 +239,5 @@ function routeMessage(userText){
   };
 }
 
-// expose globally for ui.js
+// expose globally
 window.routeMessage = routeMessage;
