@@ -306,3 +306,7 @@ html, body{
   color:white;
   border-bottom-right-radius:6px;
 }
+/* Hide empty state when there is at least one bubble */
+.gh-chat:has(.bubble) .empty-state{
+  display:none;
+}
