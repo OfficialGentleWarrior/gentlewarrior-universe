@@ -8,7 +8,7 @@ const CATEGORY_KEYWORDS = {
 
   mood: [
   "mood","pakiramdam","feeling","feelings","nararamdaman","emotion","emosyon","kamusta","okay","hindi okay","mabigat","magaan","empty","walang laman","down","low","malungkot","pagod","kwento","magkwento","makinig","makinig lang"
-]
+],
 
   food: [
     "food","pagkain","eat","eating","kain","hungry","gutom",
