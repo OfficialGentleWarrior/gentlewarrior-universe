@@ -65,6 +65,15 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ================= INPUT ELEMENTS ================= */
   const sendBtn = document.getElementById("sendBtn");
   const chatInput = document.getElementById("chatInput");
+/* ENTER KEY SEND */
+if (chatInput && sendBtn) {
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendBtn.click();
+    }
+  });
+}
 
   /* ================= TYPING INDICATOR ================= */
   const typingIndicator = document.getElementById("typingIndicator");
@@ -124,7 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const botBubble = document.createElement("div");
         botBubble.className = "bubble bot";
-        botBubble.textContent = "I’m here with you. Tell me more.";
+        const reply = window.routeMessage(text);
+botBubble.textContent = reply;
 
         chat.appendChild(botBubble);
         botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
