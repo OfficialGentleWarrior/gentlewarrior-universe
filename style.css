@@ -76,7 +76,7 @@ html, body{
 
 /* ================= CHAT AREA ================= */
 .gh-chat{
-  position:relative;              /* needed for empty state */
+  position:relative;
   flex:1;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
@@ -90,7 +90,7 @@ html, body{
   color:#cfe9d9;
 }
 
-/* ================= INPUT ================= */
+/* ================= INPUT (CRITICAL FIX) ================= */
 .gh-input{
   height:64px;
   background:var(--emerald-dark);
@@ -100,6 +100,9 @@ html, body{
   padding:10px;
 
   flex-shrink:0;
+
+  position:relative;     /* 🔑 REQUIRED */
+  z-index:10;            /* 🔑 REQUIRED */
 }
 
 .gh-input input{
@@ -116,6 +119,9 @@ html, body{
   border:none;
   background:var(--emerald-soft);
   color:white;
+
+  cursor:pointer;
+  pointer-events:auto;   /* 🔑 REQUIRED */
 }
 
 /* ================= SETTINGS MODAL ================= */
@@ -306,11 +312,8 @@ html, body{
   color:white;
   border-bottom-right-radius:6px;
 }
-/* Hide empty state when there is at least one bubble */
-.gh-chat:has(.bubble) .empty-state{
-  display:none;
-}
-/* TYPING INDICATOR */
+
+/* ================= TYPING INDICATOR ================= */
 .typing-indicator{
   align-self:flex-start;
   display:flex;
@@ -332,19 +335,15 @@ html, body{
   animation:typingBounce 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(2){
-  animation-delay:.2s;
-}
-.typing-indicator span:nth-child(3){
-  animation-delay:.4s;
-}
+.typing-indicator span:nth-child(2){ animation-delay:.2s; }
+.typing-indicator span:nth-child(3){ animation-delay:.4s; }
 
 @keyframes typingBounce{
   0%,80%,100%{ transform:scale(0); }
   40%{ transform:scale(1); }
 }
 
-/* utility */
+/* ================= UTILITY ================= */
 .hidden{
   display:none;
 }
