@@ -216,9 +216,9 @@ function routeMessage(userText){
   let language = detectLanguage(userText);
   let category = detectCategory(userText);
 
-  // ✅ CONTEXT WORDS (OPTION A)
   const contextWords = ["kwento","magkwento","makinig","makinig lang"];
 
+  // ✅ FIX: context carry BOTH category + language
   if (lastCategory && contextWords.includes(clean)) {
     category = lastCategory;
     language = lastLanguage;
@@ -227,7 +227,6 @@ function routeMessage(userText){
   const replySet = REPLIES[category] || REPLIES.fallback;
   const reply = replySet[language] || replySet.en;
 
-  // save context
   lastCategory = category;
   lastLanguage = language;
 
