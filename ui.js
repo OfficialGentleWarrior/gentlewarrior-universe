@@ -106,15 +106,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // TEMP bot reply (UI only)
       setTimeout(() => {
-        window.hideTyping();
+  // bot reply appears AFTER typing is visible
+  const botBubble = document.createElement("div");
+  botBubble.className = "bubble bot";
+  botBubble.textContent = "I’m here with you. Tell me more.";
 
-        const botBubble = document.createElement("div");
-        botBubble.className = "bubble bot";
-        botBubble.textContent = "I’m here with you. Tell me more.";
-
-        chat.appendChild(botBubble);
-        botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 1000);
+  window.hideTyping();
+  chat.appendChild(botBubble);
+  botBubble.scrollIntoView({ behavior: "smooth", block: "end" });
+}, 1500);
     });
   }
 
