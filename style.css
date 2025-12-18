@@ -194,3 +194,7 @@ html, body {
   color: #053325;
   font-weight: 600;
 }
+/* ===== HIDDEN STATE (CRITICAL) ===== */
+.hidden {
+  display: none !important;
+}
