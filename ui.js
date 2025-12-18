@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settingsModal");
   const clearChat = document.getElementById("clearChat");
 
-  // ✅ AVATAR ELEMENTS
+  // ✅ HEADER AVATAR ONLY
   const headerUserAvatar = document.getElementById("userAvatar");
   const avatarInput = document.getElementById("avatarInput");
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     headerUserAvatar.src = userAvatar;
   }
 
-  // ===== AVATAR UPLOAD =====
+  // ===== AVATAR UPLOAD (HEADER ONLY) =====
   if (headerUserAvatar && avatarInput) {
     headerUserAvatar.addEventListener("click", () => {
       avatarInput.click();
@@ -55,21 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.scrollTop = chat.scrollHeight;
   }
 
+  // ✅ FIXED: NO avatar inside chat
   function addUser(text) {
-    const wrap = document.createElement("div");
-    wrap.className = "user-wrap";
-
     const msg = document.createElement("div");
     msg.className = "msg user";
     msg.textContent = text;
-
-    const img = document.createElement("img");
-    img.src = userAvatar;
-    img.className = "user-avatar";
-
-    wrap.appendChild(msg);
-    wrap.appendChild(img);
-    chat.appendChild(wrap);
+    chat.appendChild(msg);
     chat.scrollTop = chat.scrollHeight;
   }
 
