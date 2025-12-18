@@ -6,22 +6,32 @@
 html, body {
   margin: 0;
   height: 100%;
-  overflow: hidden; /* IMPORTANT: prevent viewport jump */
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: #0b3d2e;
   color: #eaf5ef;
+
+  /* CRITICAL: stop keyboard jump */
+  overflow: hidden;
 }
 
-/* ===== HEADER (FIXED) ===== */
+/* ===== LAYOUT ROOT ===== */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER (LOCKED) ===== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 64px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 12px 16px;
   background: #0a3528;
   z-index: 1000;
@@ -37,6 +47,8 @@ html, body {
   width: 42px;
   height: 42px;
   border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .title {
@@ -58,15 +70,17 @@ html, body {
 
 /* ===== CHAT AREA ===== */
 .chat {
-  position: absolute;
+  position: fixed;
   top: 64px;          /* header height */
   bottom: 72px;       /* input bar height */
   left: 0;
   right: 0;
+
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -86,7 +100,8 @@ html, body {
   padding: 10px 14px;
   border-radius: 18px;
   font-size: 15px;
-  line-height: 1.3;
+  line-height: 1.35;
+  word-wrap: break-word;
 }
 
 .user {
@@ -101,8 +116,7 @@ html, body {
   color: #1b1b1b;
 }
 
-/* ❌ REMOVE avatar per message */
-/* user-wrap kept only for layout safety */
+/* Keep wrapper but NO avatar */
 .user-wrap {
   display: flex;
   justify-content: flex-end;
@@ -134,16 +148,18 @@ html, body {
   40% { transform: scale(1); }
 }
 
-/* ===== INPUT BAR (FIXED) ===== */
+/* ===== INPUT BAR (LOCKED) ===== */
 .input-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 72px;
+
   display: flex;
   gap: 10px;
   padding: 12px;
+
   background: #0a3528;
   z-index: 1000;
 }
@@ -170,9 +186,11 @@ html, body {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.4);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   z-index: 2000;
 }
 
@@ -183,6 +201,7 @@ html, body {
   border-radius: 14px;
   width: 90%;
   max-width: 320px;
+
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -199,4 +218,18 @@ html, body {
 
 .hidden {
   display: none;
+}
+
+/* ===== IMAGE SAFETY (CRITICAL) ===== */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Kill any rogue images */
+body > img,
+.chat > img {
+  display: none !important;
 }
