@@ -1,26 +1,34 @@
 // logic.js
-// Gentle Heart — Core Logic Router (STATEFUL, FINAL, SAFE)
+// Gentle Heart — Stateful Logic Router (FINAL, STABLE)
+// Works with existing 7 response files (NO CHANGES REQUIRED)
 
-// ================= NORMALIZE =================
-function normalize(text) {
-  return (text || "").toLowerCase().trim();
-}
+(function () {
 
-// ================= LANGUAGE DETECT =================
-const ENGLISH_MARKERS = [
-  "what","why","how","when","where","who",
-  "is","are","can","does","do",
-  "cerebral","palsy","cp","therapy","cause","causes","type","types",
-  "feel","feeling","sad","tired","happy","stress","help","support",
-  "want","need","sleep","food","talk"
-];
+  // ================= STATE =================
+  let currentModule = null;
+  let currentNode = "entry";
+  let currentLanguage = "en";
 
-function detectLanguage(text) {
-  const t = normalize(text);
-  return ENGLISH_MARKERS.some(w => t.includes(w)) ? "en" : "tl";
-}
+  // ================= NORMALIZE =================
+  function normalize(text) {
+    return text.toLowerCase().trim();
+  }
 
-// ================= INTENT DETECT =================
+  // ================= LANGUAGE DETECT =================
+  const ENGLISH_MARKERS = [
+    "what","why","how","when","where","who",
+    "is","are","can","does","do",
+    "cerebral","palsy","cp","therapy","cause","causes","type","types",
+    "feel","feeling","sad","tired","happy","stress","help","support",
+    "want","need","sleep","food","talk"
+  ];
+
+  function detectLanguage(text) {
+    const t = normalize(text);
+    return ENGLISH_MARKERS.some(w => t.includes(w)) ? "en" : "tl";
+  }
+
+  // ================= INTENT DETECT =================
 function detectIntent(text) {
   const t = normalize(text);
 
@@ -33,48 +41,42 @@ function detectIntent(text) {
 
   // ================= FEELING (EMOTIONS) =================
   if (
-    /\b(feel|feeling|feelings|emotion|emotions|sad|happy|tired|stress|stressed|anxious|down|
-       pagod|malungkot|masaya|naiiyak|naiinis|kinakabahan|okay\s+lang|hindi\s+okay)\b/x.test(t)
+    /\b(feel|feeling|feelings|emotion|emotions|sad|happy|tired|stress|stressed|anxious|down|pagod|malungkot|masaya|naiiyak|naiinis|kinakabahan|okay\s+lang|hindi\s+okay)\b/.test(t)
   ) {
     return "FEELING";
   }
 
   // ================= DESIRE (WANTS / FOOD / CRAVINGS) =================
   if (
-    /\b(want|wants|need|needs|crave|craving|food|eat|eating|hungry|
-       gusto|kain|kumain|gutom|dessert|matamis|maalat)\b/x.test(t)
+    /\b(want|wants|need|needs|crave|craving|food|eat|eating|hungry|gusto|kain|kumain|gutom|dessert|matamis|maalat)\b/.test(t)
   ) {
     return "DESIRE";
   }
 
   // ================= SUPPORT (STRUGGLE / CARE) =================
   if (
-    /\b(help|support|struggle|hard|difficult|overwhelmed|
-       hirap|nahihirapan|pagod\s+na|di\s+kaya|kailangan\s+ng\s+tulong)\b/x.test(t)
+    /\b(help|support|struggle|hard|difficult|overwhelmed|hirap|nahihirapan|pagod\s+na|di\s+kaya|kailangan\s+ng\s+tulong)\b/.test(t)
   ) {
     return "SUPPORT";
   }
 
   // ================= PLAYFUL (LIGHT / FUN / GENZ) =================
   if (
-    /\b(crush|joke|funny|lol|haha|vibes|mood|trip|
-       biro|kulit|kilig|asaran)\b/x.test(t)
+    /\b(crush|joke|funny|lol|haha|vibes|mood|trip|biro|kulit|kilig|asaran)\b/.test(t)
   ) {
     return "PLAYFUL";
   }
 
   // ================= GROUNDING (CALM / BREATHING) =================
   if (
-    /\b(breath|breathe|breathing|calm|relax|ground|grounding|panic|
-       hinga|huminga|kalma|relax\s+muna)\b/x.test(t)
+    /\b(breath|breathe|breathing|calm|relax|ground|grounding|panic|hinga|huminga|kalma|relax\s+muna)\b/.test(t)
   ) {
     return "GROUNDING";
   }
 
   // ================= HELP (CRISIS / EMERGENCY) =================
   if (
-    /\b(emergency|hotline|suicide|kill\s+myself|self\s+harm|panic\s+attack|
-       gusto\s+kong\s+mawala|ayoko\s+na|saktan\s+ang\s+sarili)\b/x.test(t)
+    /\b(emergency|hotline|suicide|kill\s+myself|self\s+harm|panic\s+attack|gusto\s+kong\s+mawala|ayoko\s+na|saktan\s+ang\s+sarili)\b/.test(t)
   ) {
     return "HELP";
   }
@@ -83,71 +85,71 @@ function detectIntent(text) {
   return "OPEN";
 }
 
-// ================= RESPONSE MODULE MAP =================
-const RESPONSE_MODULES = {
-  INFO: () => window.RESPONSES_INFO_CP,
-  FEELING: () => window.RESPONSES_FEELING,
-  DESIRE: () => window.RESPONSES_DESIRE,
-  SUPPORT: () => window.RESPONSES_SUPPORT,
-  PLAYFUL: () => window.RESPONSES_PLAYFUL,
-  GROUNDING: () => window.RESPONSES_GROUNDING,
-  HELP: () => window.RESPONSES_HELP,
-  OPEN: () => window.RESPONSES_OPEN
-};
-
-// ================= CONVERSATION STATE =================
-let currentIntent = null;
-let currentNode = "entry";
-
-// ================= MAIN ROUTER =================
-function routeMessage(userText, selectedNode = null) {
-  const language = detectLanguage(userText);
-
-  // 🔹 If user selected an option, move node
-  if (selectedNode) {
-    currentNode = selectedNode;
-  }
-
-  // 🔹 First message or reset
-  if (!currentIntent) {
-    currentIntent = detectIntent(userText);
-    currentNode = "entry";
-  }
-
-  const moduleGetter = RESPONSE_MODULES[currentIntent];
-  const module = moduleGetter ? moduleGetter() : null;
-
-  // 🔥 SAFETY RESET
-  if (!module || typeof module[currentNode] !== "function") {
-    currentIntent = null;
-    currentNode = "entry";
-    return {
-      language,
-      intent: "OPEN",
-      text:
-        language === "en"
-          ? "I’m here — do you want to keep talking or change the topic?"
-          : "Andito lang ako — gusto mo bang magpatuloy o mag-iba ng usapan?",
-      options: []
-    };
-  }
-
-  const response = module[currentNode](language);
-
-  return {
-    language,
-    intent: currentIntent,
-    text: response.text,
-    options: response.options || []
+  // ================= RESPONSE MODULE MAP =================
+  const RESPONSE_MODULES = {
+    INFO: () => window.RESPONSES_INFO_CP,
+    FEELING: () => window.RESPONSES_FEELING,
+    DESIRE: () => window.RESPONSES_DESIRE,
+    SUPPORT: () => window.RESPONSES_SUPPORT,
+    PLAYFUL: () => window.RESPONSES_PLAYFUL,
+    GROUNDING: () => window.RESPONSES_GROUNDING,
+    HELP: () => window.RESPONSES_HELP,
+    OPEN: () => window.RESPONSES_OPEN
   };
+
+  // ================= MAIN ROUTER =================
+  function routeMessage(userText) {
+    const text = normalize(userText);
+
+    // detect language once per turn
+    currentLanguage = detectLanguage(text);
+
+    // ========= CONTINUE EXISTING FLOW =========
+    if (
+      currentModule &&
+      currentModule[currentNode] &&
+      typeof currentModule[currentNode] === "function"
+    ) {
+      const nodeResponse = currentModule[currentNode](currentLanguage);
+
+      // user chose an option
+      if (nodeResponse.options && nodeResponse.options.includes(text)) {
+        currentNode = text;
+
+        if (typeof currentModule[currentNode] === "function") {
+          const next = currentModule[currentNode](currentLanguage);
+          return {
+            text: next.text,
+            options: next.options || []
+          };
+        }
+      }
+    }
+
+    // ========= START NEW FLOW =========
+
+// 🔑 RESET STATE (IMPORTANT FIX)
+currentModule = null;
+currentNode = "entry";
+
+const intent = detectIntent(text);
+const moduleGetter = RESPONSE_MODULES[intent];
+currentModule = moduleGetter ? moduleGetter() : window.RESPONSES_OPEN;
+currentNode = "entry";
+
+if (!currentModule || typeof currentModule.entry !== "function") {
+  currentModule = window.RESPONSES_OPEN;
 }
 
-// ================= RESET (OPTIONAL) =================
-function resetConversation() {
-  currentIntent = null;
-  currentNode = "entry";
-}
+const response = currentModule.entry(currentLanguage);
 
-// expose globally
-window.routeMessage = routeMessage;
-window.resetConversation = resetConversation;
+return {
+  text: response.text,
+  options: response.options || []
+};
+  }
+
+  // expose globally
+  window.routeMessage = routeMessage;
+
+})();
