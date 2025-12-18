@@ -98,3 +98,41 @@ html,body{
   color:#fff;
   font-size:15px;
 }
+/* CHAT MESSAGES */
+.gh-msg{
+  max-width:75%;
+  margin:10px;
+  padding:12px 16px;
+  border-radius:18px;
+  font-size:14px;
+}
+
+.gh-msg.user{
+  margin-left:auto;
+  background:#1aa667;
+  color:#fff;
+}
+
+.gh-msg.bot{
+  margin-right:auto;
+  background:#eaf7f1;
+  color:#083022;
+}
+
+/* MODAL */
+.gh-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.gh-modal.hidden{display:none}
+
+.gh-modal-box{
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+}
