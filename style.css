@@ -120,26 +120,59 @@ html, body {
   font-weight: 600;
 }
 
-/* ===== MODAL (KEY FIX) ===== */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
+/* ===== SETTINGS MODAL FIX ===== */
 .modal-box {
   background: #ffffff;
   color: #111;
   padding: 20px;
-  border-radius: 14px;
+  border-radius: 16px;
   width: 90%;
-  max-width: 320px;
+  max-width: 340px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* spacing ng bawat row */
 }
 
-.hidden {
-  display: none;
+/* Title */
+.modal-box h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+/* Labels as rows */
+.modal-box label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* Country row */
+.modal-box select {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+/* Checkboxes */
+.modal-box input[type="checkbox"] {
+  transform: scale(1.1);
+}
+
+/* Buttons row */
+.modal-box .settings-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modal-box button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #1aa667;
+  color: #053325;
+  font-weight: 600;
 }
