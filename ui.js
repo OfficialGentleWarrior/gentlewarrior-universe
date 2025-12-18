@@ -88,28 +88,32 @@ document.addEventListener("DOMContentLoaded", () => {
     input.focus();
   }
 
-  // ===== SEND FLOW =====
-  function send() {
-    if (isTyping) return;
+  /// ===== SEND FLOW =====
+function send() {
+  if (isTyping) return;
 
-    const text = input.value.trim();
-    if (!text) return;
+  const text = input.value.trim();
+  if (!text) return;
 
-    const welcome = document.querySelector(".welcome");
-    if (welcome) welcome.remove();
+  const welcome = document.querySelector(".welcome");
+  if (welcome) welcome.remove();
 
-    addUser(text);
-    input.value = "";
+  addUser(text);
+  input.value = "";
 
-    showTyping();
+  showTyping();
 
-    setTimeout(() => {
-  hideTyping();
+  setTimeout(() => {
+    hideTyping();
 
-  const result = window.routeMessage(text);
-  addBot(result.text);
-
-}, 1200);
+    if (typeof window.routeMessage === "function") {
+      const result = window.routeMessage(text);
+      addBot(result.text);
+    } else {
+      addBot("I’m here with you.");
+    }
+  }, 1200);
+} 
 
   sendBtn.addEventListener("click", send);
 
