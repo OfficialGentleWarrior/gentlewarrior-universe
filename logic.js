@@ -65,10 +65,12 @@
       }
     }
 
-    // ===== START NEW FLOW =====
-    const intent = detectIntent(text);
-    currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
-    currentNode = "entry";
+    /// ===== START NEW FLOW (ONLY IF NO ACTIVE MODULE) =====
+if (!currentModule) {
+  const intent = detectIntent(text);
+  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
+  currentNode = "entry";
+}
 
     const entry = currentModule.entry(currentLanguage);
     return { text: entry.text, options: entry.options || [] };
