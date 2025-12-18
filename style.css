@@ -11,11 +11,11 @@ html, body {
   color: #eaf5ef;
 }
 
-/* ✅ ROOT FLEX CONTAINER */
+/* ===== ROOT LAYOUT (MOBILE SAFE) ===== */
 body {
   display: flex;
   flex-direction: column;
-  height: 100svh; /* 🔑 FIX for mobile keyboard */
+  height: 100svh; /* 🔑 correct unit for mobile */
   overflow: hidden;
 }
 
@@ -41,20 +41,38 @@ body {
   border-radius: 50%;
 }
 
-.title { font-weight: 600; }
-.subtitle { font-size: 12px; opacity: .8; }
+/* ✅ USER AVATAR — THIS FIXES THE BIG IMAGE */
+#userAvatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Text */
+.title {
+  font-weight: 600;
+}
+.subtitle {
+  font-size: 12px;
+  opacity: .8;
+}
 
 .gear {
   background: none;
   border: none;
   font-size: 20px;
   color: #eaf5ef;
+  cursor: pointer;
 }
 
-/* ===== CHAT (THIS IS THE KEY FIX) ===== */
+/* ===== CHAT AREA ===== */
 .chat {
   flex: 1;
-  min-height: 0;        /* 🔑 REQUIRED */
+  min-height: 0;              /* 🔑 CRITICAL */
   overflow-y: auto;
   padding: 20px;
   display: flex;
@@ -62,7 +80,7 @@ body {
   gap: 12px;
 }
 
-/* Welcome center */
+/* Welcome */
 .welcome {
   margin: auto;
   text-align: center;
@@ -74,6 +92,7 @@ body {
   padding: 10px 14px;
   border-radius: 18px;
   font-size: 15px;
+  line-height: 1.3;
 }
 
 .user {
@@ -122,6 +141,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999;
 }
 
 .modal-box {
