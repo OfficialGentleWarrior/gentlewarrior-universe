@@ -1,42 +1,57 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Gentle Heart — Your gentle companion</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Gentle Heart — Your gentle companion</title>
 
-<link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b3d28">
+
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header class="gh-header">
-  <div class="gh-left">
-    <img src="avatar.png" class="gh-avatar" alt="Avatar">
-    <div class="gh-title">
-      <strong>Gentle Heart</strong>
-      <span>Your gentle companion</span>
+<header class="header">
+  <div class="header-left">
+    <img src="avatar.png" class="bot-avatar" alt="Gentle Heart">
+    <div class="title">
+      <div class="name">Gentle Heart</div>
+      <div class="sub">Your gentle companion</div>
     </div>
   </div>
-  <button class="gh-gear" id="openSettings">⚙️</button>
+  <button id="openSettings" class="gear">⚙️</button>
 </header>
 
-<main class="gh-main" id="chatArea">
-  <div class="gh-center" id="emptyState">
+<main id="chatArea" class="chat">
+  <div class="welcome">
     <h1>You’re safe here.</h1>
     <p>Start typing whenever you’re ready.</p>
   </div>
 </main>
 
-<footer class="gh-input">
-  <input type="text" id="userInput" placeholder="Type your reply..." />
+<footer class="input-bar">
+  <input id="userInput" type="text" placeholder="Type your reply..." autocomplete="off">
   <button id="sendBtn">Send</button>
 </footer>
 
 <!-- SETTINGS MODAL -->
-<div class="gh-modal hidden" id="settingsModal">
-  <div class="gh-modal-box">
-    <h3>Settings</h3>
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-box">
+    <h2>Settings</h2>
+
+    <label>
+      Country
+      <select>
+        <option>Philippines</option>
+        <option>Other</option>
+      </select>
+    </label>
+
+    <label><input type="checkbox"> Kids Mode</label>
+    <label><input type="checkbox"> Private Mode</label>
+
+    <button id="clearChat">Clear chat</button>
     <button id="closeSettings">Close</button>
   </div>
 </div>
