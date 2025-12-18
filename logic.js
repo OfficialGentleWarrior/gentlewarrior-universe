@@ -1,10 +1,9 @@
 // logic.js
-// Gentle Heart — Core Logic Router (FINAL, FIXED)
-// Calls ALL 7 response modules correctly
+// Gentle Heart — Core Logic Router (STATEFUL, FINAL, SAFE)
 
 // ================= NORMALIZE =================
 function normalize(text) {
-  return text.toLowerCase().trim();
+  return (text || "").toLowerCase().trim();
 }
 
 // ================= LANGUAGE DETECT =================
@@ -44,19 +43,36 @@ const RESPONSE_MODULES = {
   SUPPORT: () => window.RESPONSES_SUPPORT,
   PLAYFUL: () => window.RESPONSES_PLAYFUL,
   GROUNDING: () => window.RESPONSES_GROUNDING,
-  HELP: () => window.RESPONSES_HELP
+  HELP: () => window.RESPONSES_HELP,
+  OPEN: () => window.RESPONSES_OPEN
 };
 
-// ================= MAIN ROUTER =================
-function routeMessage(userText) {
-  const language = detectLanguage(userText); // "en" | "tl"
-  const intent = detectIntent(userText);
+// ================= CONVERSATION STATE =================
+let currentIntent = null;
+let currentNode = "entry";
 
-  const moduleGetter = RESPONSE_MODULES[intent];
+// ================= MAIN ROUTER =================
+function routeMessage(userText, selectedNode = null) {
+  const language = detectLanguage(userText);
+
+  // 🔹 If user selected an option, move node
+  if (selectedNode) {
+    currentNode = selectedNode;
+  }
+
+  // 🔹 First message or reset
+  if (!currentIntent) {
+    currentIntent = detectIntent(userText);
+    currentNode = "entry";
+  }
+
+  const moduleGetter = RESPONSE_MODULES[currentIntent];
   const module = moduleGetter ? moduleGetter() : null;
 
-  // SAFETY FALLBACK
-  if (!module || typeof module.entry !== "function") {
+  // 🔥 SAFETY RESET
+  if (!module || typeof module[currentNode] !== "function") {
+    currentIntent = null;
+    currentNode = "entry";
     return {
       language,
       intent: "OPEN",
@@ -68,16 +84,22 @@ function routeMessage(userText) {
     };
   }
 
-  // ✅ CORRECT CALL
-  const response = module.entry(language);
+  const response = module[currentNode](language);
 
   return {
     language,
-    intent,
+    intent: currentIntent,
     text: response.text,
     options: response.options || []
   };
 }
 
+// ================= RESET (OPTIONAL) =================
+function resetConversation() {
+  currentIntent = null;
+  currentNode = "entry";
+}
+
 // expose globally
 window.routeMessage = routeMessage;
+window.resetConversation = resetConversation;
