@@ -1,126 +1,107 @@
-:root{
-  --bg:#0b3d2b;
-  --header:#0a3526;
-  --accent:#1aa667;
-  --text:#eaf7f1;
-  --muted:#b7d7c9;
-  --input:#ffffff;
-}
-
 *{box-sizing:border-box}
-
 html,body{
   margin:0;
   height:100%;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:#0b3d28;
+  color:#e6f5ee;
 }
 
 /* HEADER */
-.gh-header{
-  height:64px;
-  padding:0 16px;
+.header{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  background:var(--header);
+  align-items:center;
+  padding:14px 16px;
+  background:#063222;
 }
-
-.gh-left{
+.header-left{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
 }
-
-.gh-avatar{
-  width:40px;
-  height:40px;
+.bot-avatar{
+  width:42px;
+  height:42px;
   border-radius:50%;
 }
-
-.gh-title strong{
-  display:block;
-  font-size:16px;
+.title .name{
+  font-weight:700;
 }
-
-.gh-title span{
+.title .sub{
   font-size:12px;
-  color:var(--muted);
+  opacity:.8;
 }
-
-.gh-gear{
+.gear{
   font-size:20px;
-  opacity:.85;
+  background:none;
+  border:none;
+  color:#e6f5ee;
 }
 
-/* MAIN */
-.gh-main{
-  height:calc(100% - 64px - 72px);
+/* CHAT */
+.chat{
+  flex:1;
+  padding:20px;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   text-align:center;
 }
-
-.gh-center h1{
-  margin:0 0 8px;
-  font-size:22px;
+.welcome h1{
+  margin:0 0 6px;
 }
-
-.gh-center p{
-  margin:0;
-  color:var(--muted);
+.welcome p{
+  opacity:.8;
 }
 
 /* INPUT */
-.gh-input{
-  height:72px;
-  padding:12px;
+.input-bar{
   display:flex;
   gap:10px;
-  background:transparent;
+  padding:12px;
+  background:#063222;
 }
-
-.gh-input input{
+.input-bar input{
   flex:1;
+  padding:14px 16px;
+  border-radius:24px;
   border:none;
-  border-radius:999px;
-  padding:14px 18px;
-  font-size:15px;
+  outline:none;
+}
+.input-bar button{
+  padding:0 20px;
+  border-radius:24px;
+  border:none;
+  background:#1aa667;
+  color:#fff;
+  font-weight:600;
 }
 
-.gh-input button{
-  border:none;
-  border-radius:999px;
-  padding:0 20px;
-  background:var(--accent);
-  color:#fff;
-  font-size:15px;
+/* MESSAGES */
+.msg{
+  display:flex;
+  margin:10px 0;
 }
-/* CHAT MESSAGES */
-.gh-msg{
-  max-width:75%;
-  margin:10px;
+.msg.user{
+  justify-content:flex-end;
+}
+.bubble{
+  max-width:70%;
   padding:12px 16px;
   border-radius:18px;
-  font-size:14px;
 }
-
-.gh-msg.user{
-  margin-left:auto;
+.user .bubble{
   background:#1aa667;
   color:#fff;
 }
-
-.gh-msg.bot{
-  margin-right:auto;
-  background:#eaf7f1;
-  color:#083022;
+.bot .bubble{
+  background:#ffffff;
+  color:#063222;
 }
 
 /* MODAL */
-.gh-modal{
+.modal{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.4);
@@ -128,11 +109,21 @@ html,body{
   align-items:center;
   justify-content:center;
 }
-
-.gh-modal.hidden{display:none}
-
-.gh-modal-box{
+.hidden{display:none}
+.modal-box{
   background:#fff;
+  color:#000;
+  width:90%;
+  max-width:320px;
   padding:20px;
   border-radius:16px;
+}
+.modal-box button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#1aa667;
+  color:#fff;
 }
