@@ -1,49 +1,48 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const chat = document.getElementById("chatArea");
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const chat = document.getElementById("chat");
   const input = document.getElementById("userInput");
   const sendBtn = document.getElementById("sendBtn");
 
-  const modal = document.getElementById("settingsModal");
   const openSettings = document.getElementById("openSettings");
   const closeSettings = document.getElementById("closeSettings");
+  const settingsModal = document.getElementById("settingsModal");
   const clearChat = document.getElementById("clearChat");
 
-  function addMessage(text, who){
-    const wrap = document.createElement("div");
-    wrap.className = `msg ${who}`;
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.textContent = text;
-    wrap.appendChild(bubble);
-    chat.appendChild(wrap);
-    chat.scrollTop = chat.scrollHeight;
+  function addMessage(text,type){
+    const msg=document.createElement("div");
+    msg.className=`msg ${type}`;
+    msg.textContent=text;
+    chat.appendChild(msg);
+    chat.scrollTop=chat.scrollHeight;
   }
 
   function send(){
-    const text = input.value.trim();
+    const text=input.value.trim();
     if(!text) return;
-    input.value = "";
+
+    const welcome=document.querySelector(".welcome");
+    if(welcome) welcome.remove();
+
     addMessage(text,"user");
+    input.value="";
 
     setTimeout(()=>{
       addMessage("I’m here with you.","bot");
-    },500);
+    },400);
   }
 
-  sendBtn.onclick = send;
+  sendBtn.onclick=send;
   input.addEventListener("keydown",e=>{
     if(e.key==="Enter") send();
   });
 
-  openSettings.onclick = ()=> modal.classList.remove("hidden");
-  closeSettings.onclick = ()=> modal.classList.add("hidden");
+  openSettings.onclick=()=>settingsModal.classList.remove("hidden");
+  closeSettings.onclick=()=>settingsModal.classList.add("hidden");
 
-  clearChat.onclick = ()=>{
-    chat.innerHTML = `
-      <div class="welcome">
-        <h1>You’re safe here.</h1>
-        <p>Start typing whenever you’re ready.</p>
-      </div>`;
-    modal.classList.add("hidden");
+  clearChat.onclick=()=>{
+    chat.innerHTML="";
+    settingsModal.classList.add("hidden");
   };
+
 });
