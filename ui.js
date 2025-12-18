@@ -9,30 +9,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settingsModal");
   const clearChat = document.getElementById("clearChat");
 
+  // ===== HEADER AVATAR ONLY =====
   const headerUserAvatar = document.getElementById("userAvatar");
   const avatarInput = document.getElementById("avatarInput");
 
   let isTyping = false;
 
-  /* ===== AVATAR LOAD ===== */
-  let userAvatar = localStorage.getItem("userAvatar") || "avatar.png";
-  localStorage.setItem("userAvatar", userAvatar);
-  headerUserAvatar.src = userAvatar;
+  // ===== USER AVATAR (LOAD) =====
+  let userAvatar = localStorage.getItem("userAvatar");
+  if (!userAvatar) {
+    userAvatar = "avatar.png";
+    localStorage.setItem("userAvatar", userAvatar);
+  }
 
-  headerUserAvatar.addEventListener("click", () => avatarInput.click());
+  if (headerUserAvatar) {
+    headerUserAvatar.src = userAvatar;
+  }
 
-  avatarInput.addEventListener("change", () => {
-    const file = avatarInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      localStorage.setItem("userAvatar", reader.result);
-      headerUserAvatar.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
+  // ===== AVATAR UPLOAD (HEADER ONLY) =====
+  if (headerUserAvatar && avatarInput) {
+    headerUserAvatar.addEventListener("click", () => {
+      avatarInput.click();
+    });
 
-  /* ===== HELPERS ===== */
+    avatarInput.addEventListener("change", () => {
+      const file = avatarInput.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        userAvatar = reader.result;
+        localStorage.setItem("userAvatar", userAvatar);
+        headerUserAvatar.src = userAvatar;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ===== HELPERS =====
   function addBot(text) {
     const msg = document.createElement("div");
     msg.className = "msg bot";
@@ -49,74 +63,95 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.scrollTop = chat.scrollHeight;
   }
 
+  // ===== TYPING INDICATOR =====
   function showTyping() {
     isTyping = true;
     sendBtn.disabled = true;
     input.disabled = true;
 
     const typing = document.createElement("div");
-    typing.id = "typing";
     typing.className = "typing";
+    typing.id = "typingIndicator";
     typing.innerHTML = "<span></span><span></span><span></span>";
     chat.appendChild(typing);
+    chat.scrollTop = chat.scrollHeight;
   }
 
   function hideTyping() {
     isTyping = false;
     sendBtn.disabled = false;
     input.disabled = false;
-    const t = document.getElementById("typing");
-    if (t) t.remove();
+
+    const typing = document.getElementById("typingIndicator");
+    if (typing) typing.remove();
+
     input.focus();
   }
 
-  /* ===== SEND ===== */
-  function send() {
-    if (isTyping) return;
+  /// ===== SEND FLOW =====
+function send() {
+  if (isTyping) return;
 
-    const text = input.value.trim();
-    if (!text) return;
+  const text = input.value.trim();
+  if (!text) return;
 
-    document.querySelector(".welcome")?.remove();
+  const welcome = document.querySelector(".welcome");
+  if (welcome) welcome.remove();
 
-    addUser(text);
-    input.value = "";
+  addUser(text);
+  input.value = "";
 
-    showTyping();
+  showTyping();
 
-    setTimeout(() => {
-      hideTyping();
+  setTimeout(() => {
+    hideTyping();
 
-      if (typeof window.routeMessage === "function") {
-        const result = window.routeMessage(text);
-        addBot(result.text);
-      } else {
-        addBot("System error: logic not loaded.");
-      }
-
-    }, 1000);
-  }
+    if (typeof window.routeMessage === "function") {
+      const result = window.routeMessage(text);
+      addBot(result.text);
+    } else {
+      addBot("I’m here with you.");
+    }
+  }, 1200);
+} 
 
   sendBtn.addEventListener("click", send);
-  input.addEventListener("keydown", e => {
+
+  input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       send();
     }
   });
 
-  /* ===== SETTINGS ===== */
-  openSettings.addEventListener("click", () =>
-    settingsModal.classList.remove("hidden")
-  );
+  // ===== SETTINGS =====
+  if (openSettings && closeSettings && settingsModal) {
+    openSettings.addEventListener("click", () => {
+      settingsModal.classList.remove("hidden");
+    });
 
-  closeSettings.addEventListener("click", () =>
-    settingsModal.classList.add("hidden")
-  );
+    closeSettings.addEventListener("click", () => {
+      settingsModal.classList.add("hidden");
+    });
+  }
 
-  clearChat.addEventListener("click", () => {
-    chat.innerHTML = "";
-    settingsModal.classList.add("hidden");
-  });
+  if (clearChat) {
+    clearChat.addEventListener("click", () => {
+      chat.innerHTML = "";
+      settingsModal.classList.add("hidden");
+    });
+  }
+
+  // ===== ANDROID CHROME KEYBOARD FIX =====
+  if (window.visualViewport) {
+    const viewport = window.visualViewport;
+
+    function resizeApp() {
+      document.body.style.height = viewport.height + "px";
+    }
+
+    resizeApp();
+    viewport.addEventListener("resize", resizeApp);
+  }
 
 });
