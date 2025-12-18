@@ -104,10 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
     showTyping();
 
     setTimeout(() => {
-      hideTyping();
-      addBot("I’m here with you.");
-    }, 1200);
-  }
+  hideTyping();
+
+  const result = window.routeMessage(text);
+  addBot(result.text);
+
+}, 1200);
 
   sendBtn.addEventListener("click", send);
 
