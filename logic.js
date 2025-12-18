@@ -1,153 +1,79 @@
-// logic.js
-// Gentle Heart — Core Logic Router (STATEFUL, FINAL, SAFE)
+// logic.js — Gentle Heart BRANCHING ROUTER (STABLE)
 
-// ================= NORMALIZE =================
-function normalize(text) {
-  return (text || "").toLowerCase().trim();
-}
+(function () {
 
-// ================= LANGUAGE DETECT =================
-const ENGLISH_MARKERS = [
-  "what","why","how","when","where","who",
-  "is","are","can","does","do",
-  "cerebral","palsy","cp","therapy","cause","causes","type","types",
-  "feel","feeling","sad","tired","happy","stress","help","support",
-  "want","need","sleep","food","talk"
-];
+  let currentModule = null;
+  let currentNode = "entry";
+  let currentLanguage = "en";
 
-function detectLanguage(text) {
-  const t = normalize(text);
-  return ENGLISH_MARKERS.some(w => t.includes(w)) ? "en" : "tl";
-}
-
-// ================= INTENT DETECT =================
-function detectIntent(text) {
-  const t = normalize(text);
-
-  // ================= INFO (CP / EDUCATION) =================
-  if (
-    /\b(cp|cerebral\s+palsy|therapy|therapies|cause|causes|risk|risks|type|types|diagnosis|symptom|symptoms)\b/.test(t)
-  ) {
-    return "INFO";
+  function normalize(text) {
+    return text.toLowerCase().trim();
   }
 
-  // ================= FEELING (EMOTIONS) =================
-  if (
-    /\b(feel|feeling|feelings|emotion|emotions|sad|happy|tired|stress|stressed|anxious|down|
-       pagod|malungkot|masaya|naiiyak|naiinis|kinakabahan|okay\s+lang|hindi\s+okay)\b/x.test(t)
-  ) {
-    return "FEELING";
+  function detectLanguage(text) {
+    return /\b(what|why|how|is|are|cp|cerebral|therapy)\b/i.test(text)
+      ? "en"
+      : "tl";
   }
 
-  // ================= DESIRE (WANTS / FOOD / CRAVINGS) =================
-  if (
-    /\b(want|wants|need|needs|crave|craving|food|eat|eating|hungry|
-       gusto|kain|kumain|gutom|dessert|matamis|maalat)\b/x.test(t)
-  ) {
-    return "DESIRE";
+  function detectIntent(text) {
+    const t = normalize(text);
+
+    if (/\b(cp|cerebral)\b/.test(t)) return "INFO";
+    if (/\b(feel|pagod|sad|tired)\b/.test(t)) return "FEELING";
+    if (/\b(eat|food|kain|gutom)\b/.test(t)) return "DESIRE";
+    if (/\b(help|hirap|support)\b/.test(t)) return "SUPPORT";
+    if (/\b(joke|haha|lol)\b/.test(t)) return "PLAYFUL";
+    if (/\b(breath|hinga|calm)\b/.test(t)) return "GROUNDING";
+    if (/\b(suicide|hotline|emergency)\b/.test(t)) return "HELP";
+
+    return "OPEN";
   }
 
-  // ================= SUPPORT (STRUGGLE / CARE) =================
-  if (
-    /\b(help|support|struggle|hard|difficult|overwhelmed|
-       hirap|nahihirapan|pagod\s+na|di\s+kaya|kailangan\s+ng\s+tulong)\b/x.test(t)
-  ) {
-    return "SUPPORT";
-  }
-
-  // ================= PLAYFUL (LIGHT / FUN / GENZ) =================
-  if (
-    /\b(crush|joke|funny|lol|haha|vibes|mood|trip|
-       biro|kulit|kilig|asaran)\b/x.test(t)
-  ) {
-    return "PLAYFUL";
-  }
-
-  // ================= GROUNDING (CALM / BREATHING) =================
-  if (
-    /\b(breath|breathe|breathing|calm|relax|ground|grounding|panic|
-       hinga|huminga|kalma|relax\s+muna)\b/x.test(t)
-  ) {
-    return "GROUNDING";
-  }
-
-  // ================= HELP (CRISIS / EMERGENCY) =================
-  if (
-    /\b(emergency|hotline|suicide|kill\s+myself|self\s+harm|panic\s+attack|
-       gusto\s+kong\s+mawala|ayoko\s+na|saktan\s+ang\s+sarili)\b/x.test(t)
-  ) {
-    return "HELP";
-  }
-
-  // ================= DEFAULT =================
-  return "OPEN";
-}
-
-// ================= RESPONSE MODULE MAP =================
-const RESPONSE_MODULES = {
-  INFO: () => window.RESPONSES_INFO_CP,
-  FEELING: () => window.RESPONSES_FEELING,
-  DESIRE: () => window.RESPONSES_DESIRE,
-  SUPPORT: () => window.RESPONSES_SUPPORT,
-  PLAYFUL: () => window.RESPONSES_PLAYFUL,
-  GROUNDING: () => window.RESPONSES_GROUNDING,
-  HELP: () => window.RESPONSES_HELP,
-  OPEN: () => window.RESPONSES_OPEN
-};
-
-// ================= CONVERSATION STATE =================
-let currentIntent = null;
-let currentNode = "entry";
-
-// ================= MAIN ROUTER =================
-function routeMessage(userText, selectedNode = null) {
-  const language = detectLanguage(userText);
-
-  // 🔹 If user selected an option, move node
-  if (selectedNode) {
-    currentNode = selectedNode;
-  }
-
-  // 🔹 First message or reset
-  if (!currentIntent) {
-    currentIntent = detectIntent(userText);
-    currentNode = "entry";
-  }
-
-  const moduleGetter = RESPONSE_MODULES[currentIntent];
-  const module = moduleGetter ? moduleGetter() : null;
-
-  // 🔥 SAFETY RESET
-  if (!module || typeof module[currentNode] !== "function") {
-    currentIntent = null;
-    currentNode = "entry";
-    return {
-      language,
-      intent: "OPEN",
-      text:
-        language === "en"
-          ? "I’m here — do you want to keep talking or change the topic?"
-          : "Andito lang ako — gusto mo bang magpatuloy o mag-iba ng usapan?",
-      options: []
-    };
-  }
-
-  const response = module[currentNode](language);
-
-  return {
-    language,
-    intent: currentIntent,
-    text: response.text,
-    options: response.options || []
+  const RESPONSE_MODULES = {
+    INFO: () => window.RESPONSES_INFO_CP,
+    FEELING: () => window.RESPONSES_FEELING,
+    DESIRE: () => window.RESPONSES_DESIRE,
+    SUPPORT: () => window.RESPONSES_SUPPORT,
+    PLAYFUL: () => window.RESPONSES_PLAYFUL,
+    GROUNDING: () => window.RESPONSES_GROUNDING,
+    HELP: () => window.RESPONSES_HELP,
+    OPEN: () => window.RESPONSES_OPEN
   };
-}
 
-// ================= RESET (OPTIONAL) =================
-function resetConversation() {
-  currentIntent = null;
-  currentNode = "entry";
-}
+  function matchOption(userText, options) {
+    const t = normalize(userText).replace(/\s+/g, "_");
+    return options.find(opt => t.includes(opt));
+  }
 
-// expose globally
-window.routeMessage = routeMessage;
-window.resetConversation = resetConversation;
+  function routeMessage(userText) {
+    const text = normalize(userText);
+    currentLanguage = detectLanguage(text);
+
+    // ===== CONTINUE BRANCH =====
+    if (
+      currentModule &&
+      currentModule[currentNode]
+    ) {
+      const node = currentModule[currentNode](currentLanguage);
+      const nextKey = matchOption(text, node.options || []);
+
+      if (nextKey && typeof currentModule[nextKey] === "function") {
+        currentNode = nextKey;
+        const next = currentModule[currentNode](currentLanguage);
+        return { text: next.text, options: next.options || [] };
+      }
+    }
+
+    // ===== START NEW FLOW =====
+    const intent = detectIntent(text);
+    currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
+    currentNode = "entry";
+
+    const entry = currentModule.entry(currentLanguage);
+    return { text: entry.text, options: entry.options || [] };
+  }
+
+  window.routeMessage = routeMessage;
+
+})();
