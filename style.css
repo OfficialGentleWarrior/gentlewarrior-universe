@@ -1,73 +1,67 @@
-/* =====================================================
-   Gentle Heart — STYLE v1 (LOCKED)
-   DO NOT MODIFY
-   ===================================================== */
-
 :root{
-  --emerald-900:#04331f;
-  --emerald-800:#06442a;
-  --emerald-700:#0b5b39;
-  --emerald-600:#0e6e47;
-  --emerald-500:#1aa667;
-  --emerald-400:#49c88f;
-
-  --bg:#04331f;
-  --white:#f7fff9;
-  --muted:#cfe9d9;
-  --bot:#e9f6ef;
-  --user:#1aa667;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont,
-               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --emerald:#04331f;
+  --emerald-dark:#032718;
+  --emerald-soft:#0e6e47;
+  --white:#ffffff;
 }
 
 *{
   box-sizing:border-box;
 }
 
-html,body{
+/* ROOT */
+html, body{
   margin:0;
+  padding:0;
+  width:100%;
   height:100%;
-  background:var(--bg);
-  color:var(--white);
+  background:var(--emerald);
+  overflow:hidden;
+}
+
+/* APP WRAPPER */
+.app{
+  height:100svh;
+  display:flex;
+  flex-direction:column;
 }
 
 /* ================= HEADER ================= */
-
 .gh-header{
-  position:sticky;
-  top:0;
-  z-index:10;
+  height:64px;
+  background:var(--emerald-dark);
+  color:white;
+
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:12px 16px;
-  background:var(--emerald-800);
+  align-items:center;
+  padding:12px 14px;
+
+  flex-shrink:0;
 }
 
-.gh-left{
+.gh-left,.gh-right{
   display:flex;
   align-items:center;
   gap:10px;
 }
 
-.gh-avatar{
-  width:42px;
-  height:42px;
+.gh-avatar,
+.user-avatar{
+  width:40px;
+  height:40px;
   border-radius:50%;
   object-fit:cover;
 }
 
+.user-avatar-wrap{ cursor:pointer; }
+
 .gh-title{
-  line-height:1.1;
-}
-
-.gh-name{
   font-weight:600;
-  font-size:16px;
+  font-size:15px;
 }
 
-.gh-sub{
+.gh-subtitle{
   font-size:12px;
   opacity:.8;
 }
@@ -75,156 +69,281 @@ html,body{
 .gh-gear{
   background:none;
   border:none;
-  color:#fff;
-  font-size:20px;
+  color:white;
+  font-size:22px;
   cursor:pointer;
 }
 
 /* ================= CHAT AREA ================= */
-
 .gh-chat{
+  position:relative;
   flex:1;
-  padding:16px;
   overflow-y:auto;
-}
+  -webkit-overflow-scrolling:touch;
 
-/* Empty state text (centered) */
-.gh-chat:empty::before{
-  content:"You’re safe here.\A Start typing whenever you’re ready.";
-  white-space:pre-line;
-  display:block;
-  text-align:center;
-  opacity:.7;
-  margin-top:35vh;
-}
-
-/* ================= MESSAGES ================= */
-
-.gh-msg{
-  max-width:78%;
-  padding:12px 14px;
-  margin-bottom:10px;
-  border-radius:16px;
-  line-height:1.4;
-  font-size:15px;
-}
-
-.gh-msg.bot{
-  background:var(--bot);
-  color:#083b25;
-  border-bottom-left-radius:4px;
-}
-
-.gh-msg.user{
-  margin-left:auto;
-  background:var(--user);
-  color:#fff;
-  border-bottom-right-radius:4px;
-}
-
-/* ================= TYPING ================= */
-
-.gh-typing{
   display:flex;
-  gap:6px;
-  padding:8px 16px;
+  flex-direction:column;
+  align-items:flex-start;
+
+  padding:14px;
+  font-size:14px;
+  color:#cfe9d9;
 }
 
-.gh-typing span{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#bde5d3;
-  animation:blink 1.4s infinite both;
-}
-
-.gh-typing span:nth-child(2){animation-delay:.2s}
-.gh-typing span:nth-child(3){animation-delay:.4s}
-
-@keyframes blink{
-  0%{opacity:.2}
-  20%{opacity:1}
-  100%{opacity:.2}
-}
-
-/* ================= INPUT ================= */
-
+/* ================= INPUT (CRITICAL FIX) ================= */
 .gh-input{
+  height:64px;
+  background:var(--emerald-dark);
+
   display:flex;
-  gap:10px;
-  padding:12px;
-  background:var(--emerald-800);
+  gap:8px;
+  padding:10px;
+
+  flex-shrink:0;
+
+  position:relative;     /* 🔑 REQUIRED */
+  z-index:10;            /* 🔑 REQUIRED */
 }
 
 .gh-input input{
   flex:1;
-  padding:14px 16px;
-  border-radius:999px;
+  padding:10px 14px;
+  border-radius:20px;
   border:none;
-  outline:none;
-  font-size:15px;
+  font-size:14px;
 }
 
 .gh-input button{
   padding:0 18px;
-  border-radius:999px;
+  border-radius:20px;
   border:none;
-  background:var(--emerald-500);
-  color:#fff;
-  font-weight:600;
+  background:var(--emerald-soft);
+  color:white;
+
   cursor:pointer;
+  pointer-events:auto;   /* 🔑 REQUIRED */
 }
 
-.gh-input button:disabled{
-  opacity:.5;
-}
-
-/* ================= MODAL ================= */
-
-.gh-modal{
+/* ================= SETTINGS MODAL ================= */
+.modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,0,0.5);
   display:flex;
-  align-items:center;
   justify-content:center;
-  z-index:50;
-}
-
-.gh-modal-box{
-  width:90%;
-  max-width:320px;
-  background:#fff;
-  color:#000;
-  border-radius:16px;
-  padding:16px;
-}
-
-.gh-modal-box h3{
-  margin-top:0;
-}
-
-.gh-modal-box label{
-  display:flex;
   align-items:center;
-  justify-content:space-between;
-  margin-bottom:10px;
+  z-index:2000;
 }
 
-.gh-modal-box button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
+.modal-overlay.hidden{ display:none; }
+
+.modal{
+  width:90%;
+  max-width:360px;
+  background:#0b3a27;
+  color:white;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  background:#06442a;
+}
+
+.modal-header h3{
+  margin:0;
+  font-size:16px;
+}
+
+.close-btn{
+  background:none;
   border:none;
-  border-radius:10px;
-  background:var(--emerald-600);
-  color:#fff;
-  font-weight:600;
+  color:white;
+  font-size:18px;
   cursor:pointer;
 }
 
-/* ================= UTIL ================= */
+.modal-body{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
 
+.setting-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:14px;
+}
+
+/* TOGGLE */
+.switch{
+  position:relative;
+  width:40px;
+  height:22px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#555;
+  border-radius:22px;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  height:18px;
+  width:18px;
+  left:2px;
+  bottom:2px;
+  background:white;
+  border-radius:50%;
+}
+
+.switch input:checked + .slider{
+  background:#1aa667;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(18px);
+}
+
+.clear-btn{
+  margin-top:8px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#1a8f63;
+  color:white;
+  cursor:pointer;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  text-align:center;
+  pointer-events:none;
+
+  animation:
+    fadeIn 1.2s ease forwards,
+    breathe 6s ease-in-out infinite;
+}
+
+.empty-title{
+  font-size:16px;
+  font-weight:500;
+  color:#e6f3ec;
+  margin-bottom:6px;
+}
+
+.empty-sub{
+  font-size:13px;
+  color:#b7d8c8;
+  opacity:0.9;
+}
+
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translate(-50%, calc(-50% + 6px));
+  }
+  to{
+    opacity:1;
+    transform:translate(-50%, -50%);
+  }
+}
+
+@keyframes breathe{
+  0%,100%{ opacity:1 }
+  50%{ opacity:0.85 }
+}
+
+/* ================= CHAT BUBBLES ================= */
+.bubble{
+  max-width:75%;
+  padding:10px 12px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.4;
+  margin:6px 0;
+  word-wrap:break-word;
+
+  animation:popIn .25s ease-out;
+}
+
+@keyframes popIn{
+  from{
+    opacity:0;
+    transform:translateY(4px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* BOT */
+.bubble.bot{
+  align-self:flex-start;
+  background:#e7f4ee;
+  color:#0f2e22;
+  border-bottom-left-radius:6px;
+}
+
+/* USER */
+.bubble.user{
+  align-self:flex-end;
+  background:#1a8f63;
+  color:white;
+  border-bottom-right-radius:6px;
+}
+
+/* ================= TYPING INDICATOR ================= */
+.typing-indicator{
+  align-self:flex-start;
+  display:flex;
+  gap:6px;
+  padding:10px 12px;
+  margin:6px 0;
+
+  background:#e7f4ee;
+  border-radius:14px;
+  border-bottom-left-radius:6px;
+}
+
+.typing-indicator span{
+  width:6px;
+  height:6px;
+  background:#6aa892;
+  border-radius:50%;
+  opacity:0.4;
+  animation:typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2){ animation-delay:.2s; }
+.typing-indicator span:nth-child(3){ animation-delay:.4s; }
+
+@keyframes typingBounce{
+  0%,80%,100%{ transform:scale(0); }
+  40%{ transform:scale(1); }
+}
+
+/* ================= UTILITY ================= */
 .hidden{
   display:none;
 }
