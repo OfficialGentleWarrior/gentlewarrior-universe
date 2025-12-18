@@ -130,4 +130,16 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsModal.classList.add("hidden");
   });
 
+// ===== ANDROID CHROME KEYBOARD FIX =====
+if (window.visualViewport) {
+  const viewport = window.visualViewport;
+
+  function resizeApp() {
+    document.body.style.height = viewport.height + "px";
+  }
+
+  resizeApp();
+  viewport.addEventListener("resize", resizeApp);
+}
+
 });
