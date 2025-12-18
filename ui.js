@@ -14,9 +14,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSettings = document.getElementById("closeSettings");
   const clearChatBtn = document.getElementById("clearChat");
 
+  // ================= EMPTY STATE =================
+
+  function showEmptyState() {
+    chatArea.innerHTML = `
+      <div class="gh-empty">
+        <div class="gh-empty-title">You’re safe here.</div>
+        <div class="gh-empty-sub">Start typing whenever you’re ready.</div>
+      </div>
+    `;
+  }
+
+  function clearEmptyState() {
+    const empty = chatArea.querySelector(".gh-empty");
+    if (empty) chatArea.innerHTML = "";
+  }
+
   // ================= UI HELPERS =================
 
   function addMessage(text, sender) {
+    clearEmptyState();
+
     const msg = document.createElement("div");
     msg.className = sender === "user" ? "gh-msg user" : "gh-msg bot";
     msg.textContent = text;
@@ -48,11 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
     showTyping();
 
     setTimeout(() => {
-      const res = window.routeMessage(text); // ✅ LOGIC CONNECTED
+      const res = window.routeMessage(text);
 
       hideTyping();
       addMessage(res.text, "bot");
-
     }, 600);
   }
 
@@ -74,7 +91,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   clearChatBtn.addEventListener("click", () => {
     chatArea.innerHTML = "";
+    showEmptyState();
     settingsModal.classList.add("hidden");
   });
+
+  // ================= INIT =================
+  showEmptyState();
 
 });
