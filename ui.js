@@ -102,19 +102,27 @@ document.addEventListener("DOMContentLoaded", () => {
     showTyping();
 
     setTimeout(() => {
-      hideTyping();
+  hideTyping();
 
-      if (typeof window.routeMessage !== "function") {
-        console.error("routeMessage() not loaded");
-        return; // 🔒 NO FAKE REPLY
-      }
+  console.log("routeMessage exists:", typeof window.routeMessage);
+  console.log("RESPONSES:", {
+    OPEN: window.RESPONSES_OPEN,
+    FEELING: window.RESPONSES_FEELING,
+    DESIRE: window.RESPONSES_DESIRE,
+    SUPPORT: window.RESPONSES_SUPPORT,
+    PLAYFUL: window.RESPONSES_PLAYFUL,
+    GROUNDING: window.RESPONSES_GROUNDING,
+    HELP: window.RESPONSES_HELP
+  });
 
-      const result = window.routeMessage(text);
-
-      if (result && result.text) {
-        addBot(result.text);
-      }
-    }, 1200);
+  if (typeof window.routeMessage === "function") {
+    const result = window.routeMessage(text);
+    console.log("ROUTE RESULT:", result);
+    addBot(result?.text || "NO RESPONSE TEXT");
+  } else {
+    addBot("ROUTER NOT FOUND");
+  }
+}, 1200);
   }
 
   sendBtn.addEventListener("click", send);
