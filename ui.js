@@ -1,6 +1,6 @@
 // ui.js
-// Gentle Heart — UI v1 (LOCKED) + LOGIC WIRED
-// Calls routeMessage() ONLY
+// Gentle Heart — UI v1 (LOCKED)
+// DO NOT MODIFY WITHOUT EXPLICIT REQUEST
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -14,30 +14,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSettings = document.getElementById("closeSettings");
   const clearChatBtn = document.getElementById("clearChat");
 
-  // ================= EMPTY STATE =================
-
-  function showEmptyState() {
-    chatArea.innerHTML = `
-      <div class="gh-empty">
-        <div class="gh-empty-title">You’re safe here.</div>
-        <div class="gh-empty-sub">Start typing whenever you’re ready.</div>
-      </div>
-    `;
-  }
-
-  function clearEmptyState() {
-    const empty = chatArea.querySelector(".gh-empty");
-    if (empty) chatArea.innerHTML = "";
-  }
+  // ================= BASE MESSAGE =================
+  const emptyState = document.createElement("div");
+  emptyState.className = "gh-empty";
+  emptyState.innerHTML = `
+    <h2>You’re safe here.</h2>
+    <p>Start typing whenever you’re ready.</p>
+  `;
+  chatArea.appendChild(emptyState);
 
   // ================= UI HELPERS =================
 
+  function removeEmptyState() {
+    if (emptyState.parentNode) {
+      emptyState.remove();
+    }
+  }
+
   function addMessage(text, sender) {
-    clearEmptyState();
+    removeEmptyState();
 
     const msg = document.createElement("div");
     msg.className = sender === "user" ? "gh-msg user" : "gh-msg bot";
     msg.textContent = text;
+
     chatArea.appendChild(msg);
     chatArea.scrollTop = chatArea.scrollHeight;
   }
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     input.focus();
   }
 
-  // ================= CORE SEND =================
+  // ================= SEND FLOW =================
 
   function handleSend() {
     const text = input.value.trim();
@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showTyping();
 
     setTimeout(() => {
+      // LOGIC IS CALLED HERE ONLY
       const res = window.routeMessage(text);
 
       hideTyping();
@@ -91,11 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   clearChatBtn.addEventListener("click", () => {
     chatArea.innerHTML = "";
-    showEmptyState();
+    chatArea.appendChild(emptyState);
     settingsModal.classList.add("hidden");
   });
-
-  // ================= INIT =================
-  showEmptyState();
 
 });
