@@ -18,20 +18,28 @@
       <span>Your gentle companion</span>
     </div>
   </div>
-  <div class="gh-gear">⚙️</div>
+  <button class="gh-gear" id="openSettings">⚙️</button>
 </header>
 
-<main class="gh-main">
-  <div class="gh-center">
+<main class="gh-main" id="chatArea">
+  <div class="gh-center" id="emptyState">
     <h1>You’re safe here.</h1>
     <p>Start typing whenever you’re ready.</p>
   </div>
 </main>
 
 <footer class="gh-input">
-  <input type="text" placeholder="Type your reply..." />
-  <button>Send</button>
+  <input type="text" id="userInput" placeholder="Type your reply..." />
+  <button id="sendBtn">Send</button>
 </footer>
+
+<!-- SETTINGS MODAL -->
+<div class="gh-modal hidden" id="settingsModal">
+  <div class="gh-modal-box">
+    <h3>Settings</h3>
+    <button id="closeSettings">Close</button>
+  </div>
+</div>
 
 <script src="ui.js"></script>
 </body>
