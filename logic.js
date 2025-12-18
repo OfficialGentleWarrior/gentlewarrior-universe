@@ -1,241 +1,123 @@
 // logic.js
-// Gentle Heart — Logic Router v1 FINAL
+// Gentle Heart — Keyword Router (CLEAN RESET)
 // Depends on: replies.js (global REPLIES)
 
 // ================= STATE =================
 let lastCategory = null;
-let lastLanguage = "en";
 
 // ================= KEYWORDS =================
 const CATEGORY_KEYWORDS = {
 
   mood: [
-    "mood","pakiramdam","feeling","feelings","nararamdaman",
-    "emotion","emosyon","kamusta","kumusta","okay","hindi okay",
-    "mabigat","magaan","empty","walang laman",
-    "down","low","malungkot","pagod",
-    "kwento","magkwento","makinig","makinig lang"
-  ],
-
-  food: [
-    "food","pagkain","eat","eating","kain","hungry","gutom",
-    "dessert","panghimagas","snack","meryenda",
-    "lunch","dinner","breakfast","ulam","inumin"
-  ],
-
-  genz: [
-    "genz","slang","vibes","vibe","slay","bet","rizz",
-    "flex","cringe","sus","iykyk","lit","bussin"
-  ],
-
-  hobby: [
-    "hobby","hobbies","libangan","free time","bakanteng oras",
-    "interests","pastime","talent","skills","trip"
-  ],
-
-  crush: [
-    "crush","like","gusto","may gusto","love","mahal",
-    "dating","ligaw","ligawan","relationship","heartbreak"
-  ],
-
-  cp_overview: [
-    "cerebral palsy","ano ang cp","ano ang cerebral palsy",
-    "about cp","cp overview","cp"
-  ],
-
-  cp_signs: [
-    "cp signs","palatandaan","symptoms","sintomas",
-    "delayed","hirap gumalaw","stiff","spastic"
-  ],
-
-  cp_therapy: [
-    "therapy","physical therapy","occupational therapy",
-    "speech therapy","rehab","ehersisyo"
-  ],
-
-  care_tips: [
-    "care","care tips","alaga","pag-aalaga",
-    "daily care","routine care","support care"
+    // EN
+    "mood","feeling","feelings","emotion","emotional","sad","tired","heavy","empty","down",
+    // TL
+    "pakiramdam","nararamdaman","emosyon","malungkot","pagod","mabigat","walang laman","okay","hindi okay","lungkot"
   ],
 
   emotional_support: [
-    "help","tulong","need help","someone to talk",
-    "lonely","nag-iisa","makinig","comfort","aliw"
-  ],
-
-  family_support: [
-    "family","pamilya","parents","magulang",
-    "mother","father","nanay","tatay","siblings"
-  ],
-
-  daily_life: [
-    "daily life","araw-araw","routine","schedule","iskedyul"
-  ],
-
-  medical: [
-    "medical","doctor","doktor","medicine","gamot",
-    "diagnosis","checkup","hospital","treatment","reseta"
-  ],
-
-  anxiety_stress: [
-    "anxiety","stress","panic","panic attack",
-    "balisa","nerbyos","overwhelmed","burnout"
-  ],
-
-  sleep: [
-    "sleep","tulog","antok","insomnia",
-    "hirap matulog","puyat","rest","pahinga"
-  ],
-
-  hotline: [
-    "hotline","emergency","crisis",
-    "suicide","urgent","agarang tulong"
-  ],
-
-  cp_meaning: [
-    "meaning of cp","ibig sabihin","definition","kahulugan"
-  ],
-
-  cp_specifics: [
-    "types of cp","uri ng cp","severity",
-    "mild cp","severe cp","classification"
-  ],
-
-  parenting_cp: [
-    "parenting","raising","magulang ng cp",
-    "alaga ng bata","child with cp"
-  ],
-
-  social_support: [
-    "friends","kaibigan","community","komunidad",
-    "support group","social life"
-  ],
-
-  casual: [
-    "casual","random","chill","fun",
-    "small talk","kwentuhan"
+    // EN
+    "help","support","listen","comfort","lonely","alone","overwhelmed","stress","talk","care",
+    // TL
+    "tulong","suporta","makinig","aliw","nag-iisa","mag-isa","nahihirapan","stress","usap","alalay"
   ],
 
   rant: [
-    "rant","complain","reklamo",
-    "angry","galit","inis","frustrated","bwisit","vent"
+    // EN
+    "rant","complain","angry","anger","frustrated","upset","mad","annoyed","vent","pissed",
+    // TL
+    "rant","reklamo","galit","inis","bwisit","badtrip","yamot","irita","sama ng loob","gigil"
   ],
 
-  greetings: [
-    "hello","hi","hey","kumusta",
-    "good morning","good evening"
+  sleep: [
+    // EN
+    "sleep","sleepy","tired","insomnia","rest","wake","awake","nightmare","nap","exhausted",
+    // TL
+    "tulog","antok","pagod","hirap matulog","pahinga","gising","puyat","bangungot","idlip","hapo"
   ],
 
-  kids_safe: [
-    "kids","bata","child","kid safe",
-    "simple explanation","madaling intindihin"
+  food: [
+    // EN
+    "food","eat","eating","hungry","meal","snack","dessert","lunch","dinner","breakfast",
+    // TL
+    "pagkain","kain","gutom","ulam","meryenda","panghimagas","almusal","tanghalian","hapunan","inumin"
   ],
 
-  bot_intro: [
-    "who are you","sino ka","what are you",
-    "bot ka ba","what can you do","anong kaya mo"
+  daily_life: [
+    // EN
+    "daily life","routine","schedule","day","work","school","chores","time","busy","normal day",
+    // TL
+    "araw-araw","routine","iskedyul","trabaho","eskwela","gawain","oras","abala","pang-araw-araw","normal na araw"
   ],
 
-  language: [
-    "language","wika","tagalog","english",
-    "change language","palitan ang wika"
+  cp_support: [
+    // EN
+    "cerebral palsy","cp","disability","condition","support","care","therapy","child with cp","special needs","diagnosis",
+    // TL
+    "cerebral palsy","cp","kondisyon","kapansanan","alaga","therapy","ehersisyo","batang may cp","espesyal na pangangailangan","diagnosis"
   ],
 
-  settings: [
-    "settings","options","privacy",
-    "kids mode","private mode","clear history","reset chat"
+  family_support: [
+    // EN
+    "family","parents","mother","father","sibling","home","caregiving","child","parenting","relatives",
+    // TL
+    "pamilya","magulang","nanay","tatay","kapatid","bahay","pag-aalaga","anak","pagiging magulang","kamag-anak"
   ],
 
   grounding: [
-    "grounding","breathing","hinga",
-    "inhale","exhale","calm","relax","focus"
+    // EN
+    "breathing","breathe","calm","relax","grounding","focus","slow down","inhale","exhale","center",
+    // TL
+    "hinga","paghinga","kalma","relax","grounding","focus","dahan-dahan","inhale","exhale","sentro"
   ],
 
-  encouragement: [
-    "encouragement","affirmation",
-    "you got this","kaya mo yan",
-    "stay strong","hope","motivation"
-  ],
-
-  fallback: []
+  casual: [
+    // EN
+    "casual","chat","talk","random","chill","fun","joke","vibes","small talk","kwento",
+    // TL
+    "kwentuhan","usap","random","chill","saya","biro","trip","vibes","simpleng usap","kwento"
+  ]
 };
 
 // ================= UTIL =================
-function normalize(text){
+function normalize(text) {
   return text
     .toLowerCase()
     .replace(/[^\w\s]/g, "")
     .trim();
 }
 
-// ================= TAGALOG MARKERS =================
-const TAGALOG_MARKERS = [
-  "ako","ikaw","ka","ko","mo","siya","kami","tayo","sila",
-  "hindi","oo","wala","meron","lang","kasi",
-  "ano","bakit","paano","saan","kailan","sino",
-  "ganito","ganyan","ganon","ganun","tuloy","sige","oo nga",
-  "kumusta","kamusta","magandang umaga","magandang gabi",
-  "pakiramdam","nararamdaman","emosyon","mabigat","magaan",
-  "malungkot","pagod","walang laman",
-  "kwento","magkwento","makinig","makinig lang",
-  "pagkain","kain","gutom","panghimagas","meryenda",
-  "ulam","inumin","almusal","tanghalian","hapunan",
-  "matamis","maalat",
-  "trip","chill","kwentuhan","random","saya","bisyo",
-  "libangan","bakanteng oras","hilig",
-  "crush","gusto","may gusto","mahal",
-  "ligaw","nililigawan","relasyon",
-  "ano ang cp","ano ang cerebral palsy",
-  "palatandaan","sintomas","hirap gumalaw","matigas",
-  "ehersisyo","rehab",
-  "alaga","pag-aalaga","pang araw araw na alaga",
-  "tulong","aliw","nag iisa","nag-iisa",
-  "pamilya","magulang","nanay","tatay","kapatid",
-  "araw araw","araw-araw","routine","iskedyul","araw araw na buhay",
-  "doktor","doctor","gamot","reseta",
-  "balisa","nerbyos",
-  "tulog","antok","hirap matulog","puyat","pahinga",
-  "krisis","agarang tulong",
-  "ibig sabihin","kahulugan",
-  "uri","tindi",
-  "pagiging magulang","alaga ng bata","anak na may cp",
-  "kaibigan","komunidad",
-  "reklamo","inis","galit","bwisit",
-  "bata","pang bata","madaling intindihin","simple",
-  "sino ka","ano ka","bot ka ba","anong kaya mo",
-  "tagalog","wika","palitan ang wika",
-  "burahin ang chat",
-  "hinga","paghinga",
-  "kaya mo yan","laban lang","pag asa","pampalakas loob"
-];
-
 // ================= LANGUAGE =================
-function detectLanguage(text){
+function detectLanguage(text) {
   const t = normalize(text);
-  return TAGALOG_MARKERS.some(w => t.includes(w)) ? "tl" : "en";
+  return CATEGORY_KEYWORDS.mood
+    .filter(w => w.match(/[a-z]/i) === null)
+    .some(w => t.includes(w))
+    ? "tl"
+    : "en";
 }
 
 // ================= CATEGORY =================
-function detectCategory(text){
+function detectCategory(text) {
   const t = normalize(text);
 
-  for (const cat in CATEGORY_KEYWORDS) {
-    if (CATEGORY_KEYWORDS[cat].some(k => t.includes(k))) {
-      return cat;
+  for (const category in CATEGORY_KEYWORDS) {
+    if (CATEGORY_KEYWORDS[category].some(k => t.includes(k))) {
+      return category;
     }
   }
 
-  return lastCategory || "mood";
+  return lastCategory || "cp_support"; // DEFAULT = CP + COMPANION
 }
 
 // ================= MAIN ROUTER =================
-function routeMessage(userText){
+function routeMessage(userText) {
 
   if (typeof REPLIES === "undefined") {
     return {
       category: "error",
       language: "en",
-      text: "Replies not loaded.",
+      text: "System error.",
       options: []
     };
   }
@@ -244,16 +126,15 @@ function routeMessage(userText){
   const category = detectCategory(userText);
 
   lastCategory = category;
-  lastLanguage = language;
 
-  const replySet = REPLIES[category] || REPLIES.fallback;
+  const replySet = REPLIES[category] || REPLIES.cp_support;
   const reply = replySet[language] || replySet.en;
 
   return {
     category,
     language,
     text: reply.text,
-    options: []
+    options: reply.options
   };
 }
 
