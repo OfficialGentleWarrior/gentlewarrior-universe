@@ -1,12 +1,3 @@
-body::before{
-  content:"STYLE LOADED";
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:9999;
-  color:red;
-}
-
 /* ===== RESET ===== */
 * {
   box-sizing: border-box;
