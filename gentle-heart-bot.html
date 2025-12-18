@@ -7,50 +7,33 @@
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#06442a">
-
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header class="gh-header">
   <div class="gh-left">
-    <img src="avatar.png" class="gh-avatar" alt="Avatar">
+    <img src="avatar.png" class="gh-avatar" id="userAvatar" alt="Avatar">
     <div class="gh-title">
       <div class="gh-name">Gentle Heart</div>
-      <div class="gh-sub">Your gentle companion</div>
+      <div class="gh-sub">Your Gentle Companion</div>
     </div>
   </div>
-
   <button class="gh-gear" id="openSettings">⚙️</button>
 </header>
 
-<!-- CHAT AREA -->
-<main class="gh-chat" id="chatArea">
-  <div class="gh-empty">
-    <div class="gh-empty-title">You’re safe here.</div>
-    <div class="gh-empty-sub">Start typing whenever you’re ready.</div>
-  </div>
-</main>
+<main class="gh-chat" id="chatArea"></main>
 
-<!-- TYPING INDICATOR -->
 <div class="gh-typing hidden" id="typingIndicator">
   <span></span><span></span><span></span>
 </div>
 
-<!-- INPUT AREA -->
 <footer class="gh-input">
-  <input
-    type="text"
-    id="userInput"
-    placeholder="Type your reply…"
-    autocomplete="off"
-  />
+  <input type="text" id="userInput" placeholder="Type here…" autocomplete="off" />
   <button id="sendBtn">Send</button>
 </footer>
 
-<!-- SETTINGS MODAL -->
 <div class="gh-modal hidden" id="settingsModal">
   <div class="gh-modal-box">
     <h3>Settings</h3>
@@ -63,22 +46,28 @@
       </select>
     </label>
 
-    <label>
-      <input type="checkbox" id="kidsMode">
-      Kids Mode
-    </label>
-
-    <label>
-      <input type="checkbox" id="privateMode">
-      Private Mode
-    </label>
+    <label><input type="checkbox" id="kidsMode"> Kids Mode</label>
+    <label><input type="checkbox" id="privateMode"> Private Mode</label>
 
     <button id="clearChat">Clear chat</button>
     <button id="closeSettings">Close</button>
   </div>
 </div>
 
-<!-- UI LOGIC -->
+<!-- ✅ RESPONSE MODULES FIRST -->
+<script src="responses/info.cp.js"></script>
+<script src="responses/feeling.js"></script>
+<script src="responses/support.js"></script>
+<script src="responses/desire.js"></script>
+<script src="responses/playful.js"></script>
+<script src="responses/grounding.js"></script>
+<script src="responses/help.js"></script>
+<script src="responses/open.js"></script>
+
+<!-- ✅ LOGIC ONCE -->
+<script src="logic.js"></script>
+
+<!-- ✅ UI LAST (LOCKED) -->
 <script src="ui.js"></script>
 
 </body>
