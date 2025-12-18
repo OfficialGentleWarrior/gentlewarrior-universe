@@ -13,7 +13,7 @@ html, body {
 #app {
   display: flex;
   flex-direction: column;
-  height: 100dvh; /* 🔑 dynamic viewport */
+  height: 100%;      /* ✅ STABLE SA ANDROID */
   overflow: hidden;
 }
 
