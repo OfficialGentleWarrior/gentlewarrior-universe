@@ -1,6 +1,6 @@
 // logic.js
-// Gentle Heart — Stateful Logic Router (FINAL, STABLE)
-// Works with existing 7 response files (NO CHANGES REQUIRED)
+// Gentle Heart — Stateful Logic Router (FINAL, FIXED)
+// INFO follow-up works correctly
 
 (function () {
 
@@ -8,6 +8,7 @@
   let currentModule = null;
   let currentNode = "entry";
   let currentLanguage = "en";
+  let pendingFollowup = null; // ✅ IMPORTANT
 
   // ================= NORMALIZE =================
   function normalize(text) {
@@ -18,9 +19,9 @@
   const ENGLISH_MARKERS = [
     "what","why","how","when","where","who",
     "is","are","can","does","do",
-    "cerebral","palsy","cp","therapy","cause","causes","type","types",
-    "feel","feeling","sad","tired","happy","stress","help","support",
-    "want","need","sleep","food","talk"
+    "cerebral","palsy","cp","therapy","cause","type",
+    "feel","feeling","sad","tired","happy","stress",
+    "want","need","food","talk"
   ];
 
   function detectLanguage(text) {
@@ -29,61 +30,19 @@
   }
 
   // ================= INTENT DETECT =================
-function detectIntent(text) {
-  const t = normalize(text);
+  function detectIntent(text) {
+    const t = normalize(text);
 
-  // ================= INFO (CP / EDUCATION) =================
-  if (
-    /\b(cp|cerebral\s+palsy|therapy|therapies|cause|causes|risk|risks|type|types|diagnosis|symptom|symptoms)\b/.test(t)
-  ) {
-    return "INFO";
+    if (/\b(cp|cerebral\s+palsy|therapy|cause|type|symptom)\b/.test(t)) return "INFO";
+    if (/\b(feel|sad|happy|tired|pagod|malungkot)\b/.test(t)) return "FEELING";
+    if (/\b(want|gusto|food|kain|gutom)\b/.test(t)) return "DESIRE";
+    if (/\b(help|support|hirap|nahihirapan)\b/.test(t)) return "SUPPORT";
+    if (/\b(joke|funny|haha|trip|biro)\b/.test(t)) return "PLAYFUL";
+    if (/\b(breath|hinga|calm|relax)\b/.test(t)) return "GROUNDING";
+    if (/\b(emergency|suicide|panic)\b/.test(t)) return "HELP";
+
+    return "OPEN";
   }
-
-  // ================= FEELING (EMOTIONS) =================
-  if (
-    /\b(feel|feeling|feelings|emotion|emotions|sad|happy|tired|stress|stressed|anxious|down|pagod|malungkot|masaya|naiiyak|naiinis|kinakabahan|okay\s+lang|hindi\s+okay)\b/.test(t)
-  ) {
-    return "FEELING";
-  }
-
-  // ================= DESIRE (WANTS / FOOD / CRAVINGS) =================
-  if (
-    /\b(want|wants|need|needs|crave|craving|food|eat|eating|hungry|gusto|kain|kumain|gutom|dessert|matamis|maalat)\b/.test(t)
-  ) {
-    return "DESIRE";
-  }
-
-  // ================= SUPPORT (STRUGGLE / CARE) =================
-  if (
-    /\b(help|support|struggle|hard|difficult|overwhelmed|hirap|nahihirapan|pagod\s+na|di\s+kaya|kailangan\s+ng\s+tulong)\b/.test(t)
-  ) {
-    return "SUPPORT";
-  }
-
-  // ================= PLAYFUL (LIGHT / FUN / GENZ) =================
-  if (
-    /\b(crush|joke|funny|lol|haha|vibes|mood|trip|biro|kulit|kilig|asaran)\b/.test(t)
-  ) {
-    return "PLAYFUL";
-  }
-
-  // ================= GROUNDING (CALM / BREATHING) =================
-  if (
-    /\b(breath|breathe|breathing|calm|relax|ground|grounding|panic|hinga|huminga|kalma|relax\s+muna)\b/.test(t)
-  ) {
-    return "GROUNDING";
-  }
-
-  // ================= HELP (CRISIS / EMERGENCY) =================
-  if (
-    /\b(emergency|hotline|suicide|kill\s+myself|self\s+harm|panic\s+attack|gusto\s+kong\s+mawala|ayoko\s+na|saktan\s+ang\s+sarili)\b/.test(t)
-  ) {
-    return "HELP";
-  }
-
-  // ================= DEFAULT =================
-  return "OPEN";
-}
 
   // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
@@ -100,53 +59,55 @@ function detectIntent(text) {
   // ================= MAIN ROUTER =================
   function routeMessage(userText) {
     const text = normalize(userText);
-
-    // detect language once per turn
     currentLanguage = detectLanguage(text);
 
-    // ========= CONTINUE EXISTING FLOW =========
-    if (
-      currentModule &&
-      currentModule[currentNode] &&
-      typeof currentModule[currentNode] === "function"
-    ) {
-      const nodeResponse = currentModule[currentNode](currentLanguage);
+    // ================= FOLLOW-UP HANDLER (INFO ONLY) =================
+    if (pendingFollowup && pendingFollowup.type === "INFO") {
+      pendingFollowup = null;
 
-      // user chose an option
-      if (nodeResponse.options && nodeResponse.options.includes(text)) {
-        currentNode = text;
+      if (text.includes("simple")) {
+        return {
+          text: currentLanguage === "en"
+            ? "Cerebral palsy is a condition that affects movement and posture because the brain developed differently early on."
+            : "Ang cerebral palsy ay kondisyon na nakaapekto sa galaw at postura dahil sa maagang pag-develop ng utak.",
+          options: []
+        };
+      }
 
-        if (typeof currentModule[currentNode] === "function") {
-          const next = currentModule[currentNode](currentLanguage);
-          return {
-            text: next.text,
-            options: next.options || []
-          };
-        }
+      if (text.includes("daily") || text.includes("life") || text.includes("araw")) {
+        return {
+          text: currentLanguage === "en"
+            ? "In daily life, CP can affect walking, balance, speech, or muscle control, but therapy and support help a lot."
+            : "Sa araw-araw, puwedeng maapektuhan ang paglakad, balanse, pagsasalita, o muscles, pero malaking tulong ang therapy.",
+          options: []
+        };
       }
     }
 
-    // ========= START NEW FLOW =========
+    // ================= RESET STATE =================
+    currentModule = null;
+    currentNode = "entry";
 
-// 🔑 RESET STATE (IMPORTANT FIX)
-currentModule = null;
-currentNode = "entry";
+    // ================= START NEW FLOW =================
+    const intent = detectIntent(text);
+    const moduleGetter = RESPONSE_MODULES[intent];
+    currentModule = moduleGetter ? moduleGetter() : window.RESPONSES_OPEN;
 
-const intent = detectIntent(text);
-const moduleGetter = RESPONSE_MODULES[intent];
-currentModule = moduleGetter ? moduleGetter() : window.RESPONSES_OPEN;
-currentNode = "entry";
+    if (!currentModule || typeof currentModule.entry !== "function") {
+      currentModule = window.RESPONSES_OPEN;
+    }
 
-if (!currentModule || typeof currentModule.entry !== "function") {
-  currentModule = window.RESPONSES_OPEN;
-}
+    const response = currentModule.entry(currentLanguage);
 
-const response = currentModule.entry(currentLanguage);
+    // ================= SET FOLLOW-UP =================
+    if (intent === "INFO") {
+      pendingFollowup = { type: "INFO" };
+    }
 
-return {
-  text: response.text,
-  options: response.options || []
-};
+    return {
+      text: response.text,
+      options: response.options || []
+    };
   }
 
   // expose globally
