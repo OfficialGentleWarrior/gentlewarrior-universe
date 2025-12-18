@@ -1,140 +1,81 @@
 // logic.js
-// Gentle Heart — Keyword Router (CLEAN RESET)
-// Depends on: replies.js (global REPLIES)
+// Gentle Heart — Core Logic Router (FINAL, FIXED)
+// Calls ALL 7 response modules correctly
 
-// ================= STATE =================
-let lastCategory = null;
-
-// ================= KEYWORDS =================
-const CATEGORY_KEYWORDS = {
-
-  mood: [
-    // EN
-    "mood","feeling","feelings","emotion","emotional","sad","tired","heavy","empty","down",
-    // TL
-    "pakiramdam","nararamdaman","emosyon","malungkot","pagod","mabigat","walang laman","okay","hindi okay","lungkot"
-  ],
-
-  emotional_support: [
-    // EN
-    "help","support","listen","comfort","lonely","alone","overwhelmed","stress","talk","care",
-    // TL
-    "tulong","suporta","makinig","aliw","nag-iisa","mag-isa","nahihirapan","stress","usap","alalay"
-  ],
-
-  rant: [
-    // EN
-    "rant","complain","angry","anger","frustrated","upset","mad","annoyed","vent","pissed",
-    // TL
-    "rant","reklamo","galit","inis","bwisit","badtrip","yamot","irita","sama ng loob","gigil"
-  ],
-
-  sleep: [
-    // EN
-    "sleep","sleepy","tired","insomnia","rest","wake","awake","nightmare","nap","exhausted",
-    // TL
-    "tulog","antok","pagod","hirap matulog","pahinga","gising","puyat","bangungot","idlip","hapo"
-  ],
-
-  food: [
-    // EN
-    "food","eat","eating","hungry","meal","snack","dessert","lunch","dinner","breakfast",
-    // TL
-    "pagkain","kain","gutom","ulam","meryenda","panghimagas","almusal","tanghalian","hapunan","inumin"
-  ],
-
-  daily_life: [
-    // EN
-    "daily life","routine","schedule","day","work","school","chores","time","busy","normal day",
-    // TL
-    "araw-araw","routine","iskedyul","trabaho","eskwela","gawain","oras","abala","pang-araw-araw","normal na araw"
-  ],
-
-  cp_support: [
-    // EN
-    "cerebral palsy","cp","disability","condition","support","care","therapy","child with cp","special needs","diagnosis",
-    // TL
-    "cerebral palsy","cp","kondisyon","kapansanan","alaga","therapy","ehersisyo","batang may cp","espesyal na pangangailangan","diagnosis"
-  ],
-
-  family_support: [
-    // EN
-    "family","parents","mother","father","sibling","home","caregiving","child","parenting","relatives",
-    // TL
-    "pamilya","magulang","nanay","tatay","kapatid","bahay","pag-aalaga","anak","pagiging magulang","kamag-anak"
-  ],
-
-  grounding: [
-    // EN
-    "breathing","breathe","calm","relax","grounding","focus","slow down","inhale","exhale","center",
-    // TL
-    "hinga","paghinga","kalma","relax","grounding","focus","dahan-dahan","inhale","exhale","sentro"
-  ],
-
-  casual: [
-    // EN
-    "casual","chat","talk","random","chill","fun","joke","vibes","small talk","kwento",
-    // TL
-    "kwentuhan","usap","random","chill","saya","biro","trip","vibes","simpleng usap","kwento"
-  ]
-};
-
-// ================= UTIL =================
+// ================= NORMALIZE =================
 function normalize(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s]/g, "")
-    .trim();
+  return text.toLowerCase().trim();
 }
 
-// ================= LANGUAGE =================
+// ================= LANGUAGE DETECT =================
+const ENGLISH_MARKERS = [
+  "what","why","how","when","where","who",
+  "is","are","can","does","do",
+  "cerebral","palsy","cp","therapy","cause","causes","type","types",
+  "feel","feeling","sad","tired","happy","stress","help","support",
+  "want","need","sleep","food","talk"
+];
+
 function detectLanguage(text) {
   const t = normalize(text);
-  return CATEGORY_KEYWORDS.mood
-    .filter(w => w.match(/[a-z]/i) === null)
-    .some(w => t.includes(w))
-    ? "tl"
-    : "en";
+  return ENGLISH_MARKERS.some(w => t.includes(w)) ? "en" : "tl";
 }
 
-// ================= CATEGORY =================
-function detectCategory(text) {
+// ================= INTENT DETECT =================
+function detectIntent(text) {
   const t = normalize(text);
 
-  for (const category in CATEGORY_KEYWORDS) {
-    if (CATEGORY_KEYWORDS[category].some(k => t.includes(k))) {
-      return category;
-    }
-  }
+  if (/(cp|cerebral palsy|therapy|cause|causes|type|types)/.test(t)) return "INFO";
+  if (/(feel|feeling|sad|happy|pagod|malungkot|kilig)/.test(t)) return "FEELING";
+  if (/(want|gusto|crave|food|kain|dessert)/.test(t)) return "DESIRE";
+  if (/(help|hirap|support|tulong|nahihirapan)/.test(t)) return "SUPPORT";
+  if (/(crush|joke|vibes|trip|biro)/.test(t)) return "PLAYFUL";
+  if (/(breath|hinga|calm|relax)/.test(t)) return "GROUNDING";
+  if (/(emergency|hotline|suicide|panic|atak)/.test(t)) return "HELP";
 
-  return lastCategory || "cp_support"; // DEFAULT = CP + COMPANION
+  return "OPEN";
 }
+
+// ================= RESPONSE MODULE MAP =================
+const RESPONSE_MODULES = {
+  INFO: () => window.RESPONSES_INFO_CP,
+  FEELING: () => window.RESPONSES_FEELING,
+  DESIRE: () => window.RESPONSES_DESIRE,
+  SUPPORT: () => window.RESPONSES_SUPPORT,
+  PLAYFUL: () => window.RESPONSES_PLAYFUL,
+  GROUNDING: () => window.RESPONSES_GROUNDING,
+  HELP: () => window.RESPONSES_HELP
+};
 
 // ================= MAIN ROUTER =================
 function routeMessage(userText) {
+  const language = detectLanguage(userText); // "en" | "tl"
+  const intent = detectIntent(userText);
 
-  if (typeof REPLIES === "undefined") {
+  const moduleGetter = RESPONSE_MODULES[intent];
+  const module = moduleGetter ? moduleGetter() : null;
+
+  // SAFETY FALLBACK
+  if (!module || typeof module.entry !== "function") {
     return {
-      category: "error",
-      language: "en",
-      text: "System error.",
+      language,
+      intent: "OPEN",
+      text:
+        language === "en"
+          ? "I’m here — do you want to keep talking or change the topic?"
+          : "Andito lang ako — gusto mo bang magpatuloy o mag-iba ng usapan?",
       options: []
     };
   }
 
-  const language = detectLanguage(userText);
-  const category = detectCategory(userText);
-
-  lastCategory = category;
-
-  const replySet = REPLIES[category] || REPLIES.cp_support;
-  const reply = replySet[language] || replySet.en;
+  // ✅ CORRECT CALL
+  const response = module.entry(language);
 
   return {
-    category,
     language,
-    text: reply.text,
-    options: reply.options
+    intent,
+    text: response.text,
+    options: response.options || []
   };
 }
 
