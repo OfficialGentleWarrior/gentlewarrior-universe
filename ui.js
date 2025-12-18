@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsModal = document.getElementById("settingsModal");
   const clearChat = document.getElementById("clearChat");
 
-  // ✅ HEADER AVATAR ONLY
+  // ===== HEADER AVATAR ONLY =====
   const headerUserAvatar = document.getElementById("userAvatar");
   const avatarInput = document.getElementById("avatarInput");
 
@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.scrollTop = chat.scrollHeight;
   }
 
-  // ✅ FIXED: NO avatar inside chat
   function addUser(text) {
     const msg = document.createElement("div");
     msg.className = "msg user";
@@ -64,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.scrollTop = chat.scrollHeight;
   }
 
+  // ===== TYPING INDICATOR =====
   function showTyping() {
     isTyping = true;
     sendBtn.disabled = true;
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const typing = document.createElement("div");
     typing.className = "typing";
-    typing.id = "typing";
+    typing.id = "typingIndicator";
     typing.innerHTML = "<span></span><span></span><span></span>";
     chat.appendChild(typing);
     chat.scrollTop = chat.scrollHeight;
@@ -82,12 +82,13 @@ document.addEventListener("DOMContentLoaded", () => {
     sendBtn.disabled = false;
     input.disabled = false;
 
-    const t = document.getElementById("typing");
-    if (t) t.remove();
+    const typing = document.getElementById("typingIndicator");
+    if (typing) typing.remove();
+
     input.focus();
   }
 
-  // ===== SEND =====
+  // ===== SEND FLOW =====
   function send() {
     if (isTyping) return;
 
@@ -99,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     addUser(text);
     input.value = "";
+
     showTyping();
 
     setTimeout(() => {
@@ -109,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sendBtn.addEventListener("click", send);
 
-  input.addEventListener("keydown", e => {
+  input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       send();
@@ -117,29 +119,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== SETTINGS =====
-  openSettings.addEventListener("click", () => {
-    settingsModal.classList.remove("hidden");
-  });
+  if (openSettings && closeSettings && settingsModal) {
+    openSettings.addEventListener("click", () => {
+      settingsModal.classList.remove("hidden");
+    });
 
-  closeSettings.addEventListener("click", () => {
-    settingsModal.classList.add("hidden");
-  });
-
-  clearChat.addEventListener("click", () => {
-    chat.innerHTML = "";
-    settingsModal.classList.add("hidden");
-  });
-
-// ===== ANDROID CHROME KEYBOARD FIX =====
-if (window.visualViewport) {
-  const viewport = window.visualViewport;
-
-  function resizeApp() {
-    document.body.style.height = viewport.height + "px";
+    closeSettings.addEventListener("click", () => {
+      settingsModal.classList.add("hidden");
+    });
   }
 
-  resizeApp();
-  viewport.addEventListener("resize", resizeApp);
-}
+  if (clearChat) {
+    clearChat.addEventListener("click", () => {
+      chat.innerHTML = "";
+      settingsModal.classList.add("hidden");
+    });
+  }
+
+  // ===== ANDROID CHROME KEYBOARD FIX =====
+  if (window.visualViewport) {
+    const viewport = window.visualViewport;
+
+    function resizeApp() {
+      document.body.style.height = viewport.height + "px";
+    }
+
+    resizeApp();
+    viewport.addEventListener("resize", resizeApp);
+  }
 
 });
