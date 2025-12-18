@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", () => {
 
   const chat = document.getElementById("chat");
   const input = document.getElementById("userInput");
@@ -9,95 +9,134 @@ document.addEventListener("DOMContentLoaded",()=>{
   const settingsModal = document.getElementById("settingsModal");
   const clearChat = document.getElementById("clearChat");
 
+  // ✅ AVATAR ELEMENTS
+  const headerUserAvatar = document.getElementById("userAvatar");
+  const avatarInput = document.getElementById("avatarInput");
+
   let isTyping = false;
 
-  // ===== USER AVATAR =====
+  // ===== USER AVATAR (LOAD) =====
   let userAvatar = localStorage.getItem("userAvatar");
-  if(!userAvatar){
+  if (!userAvatar) {
     userAvatar = "avatar.png";
     localStorage.setItem("userAvatar", userAvatar);
   }
 
-  // ===== HELPERS =====
-  function addBot(text){
-    const msg=document.createElement("div");
-    msg.className="msg bot";
-    msg.textContent=text;
-    chat.appendChild(msg);
-    chat.scrollTop=chat.scrollHeight;
+  if (headerUserAvatar) {
+    headerUserAvatar.src = userAvatar;
   }
 
-  function addUser(text){
-    const wrap=document.createElement("div");
-    wrap.className="user-wrap";
+  // ===== AVATAR UPLOAD =====
+  if (headerUserAvatar && avatarInput) {
+    headerUserAvatar.addEventListener("click", () => {
+      avatarInput.click();
+    });
 
-    const msg=document.createElement("div");
-    msg.className="msg user";
-    msg.textContent=text;
+    avatarInput.addEventListener("change", () => {
+      const file = avatarInput.files[0];
+      if (!file) return;
 
-    const img=document.createElement("img");
-    img.src=userAvatar;
-    img.className="user-avatar";
+      const reader = new FileReader();
+      reader.onload = () => {
+        userAvatar = reader.result;
+        localStorage.setItem("userAvatar", userAvatar);
+        headerUserAvatar.src = userAvatar;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ===== HELPERS =====
+  function addBot(text) {
+    const msg = document.createElement("div");
+    msg.className = "msg bot";
+    msg.textContent = text;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function addUser(text) {
+    const wrap = document.createElement("div");
+    wrap.className = "user-wrap";
+
+    const msg = document.createElement("div");
+    msg.className = "msg user";
+    msg.textContent = text;
+
+    const img = document.createElement("img");
+    img.src = userAvatar;
+    img.className = "user-avatar";
 
     wrap.appendChild(msg);
     wrap.appendChild(img);
     chat.appendChild(wrap);
-    chat.scrollTop=chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
   }
 
-  function showTyping(){
-    isTyping=true;
-    sendBtn.disabled=true;
-    input.disabled=true;
+  function showTyping() {
+    isTyping = true;
+    sendBtn.disabled = true;
+    input.disabled = true;
 
-    const typing=document.createElement("div");
-    typing.className="typing";
-    typing.id="typing";
-    typing.innerHTML="<span></span><span></span><span></span>";
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.id = "typing";
+    typing.innerHTML = "<span></span><span></span><span></span>";
     chat.appendChild(typing);
-    chat.scrollTop=chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
   }
 
-  function hideTyping(){
-    isTyping=false;
-    sendBtn.disabled=false;
-    input.disabled=false;
-    const t=document.getElementById("typing");
-    if(t) t.remove();
+  function hideTyping() {
+    isTyping = false;
+    sendBtn.disabled = false;
+    input.disabled = false;
+
+    const t = document.getElementById("typing");
+    if (t) t.remove();
     input.focus();
   }
 
   // ===== SEND =====
-  function send(){
-    if(isTyping) return;
-    const text=input.value.trim();
-    if(!text) return;
+  function send() {
+    if (isTyping) return;
 
-    const welcome=document.querySelector(".welcome");
-    if(welcome) welcome.remove();
+    const text = input.value.trim();
+    if (!text) return;
+
+    const welcome = document.querySelector(".welcome");
+    if (welcome) welcome.remove();
 
     addUser(text);
-    input.value="";
+    input.value = "";
     showTyping();
 
-    setTimeout(()=>{
+    setTimeout(() => {
       hideTyping();
       addBot("I’m here with you.");
-    },1200);
+    }, 1200);
   }
 
-  sendBtn.onclick=send;
-  input.addEventListener("keydown",e=>{
-    if(e.key==="Enter") send();
+  sendBtn.addEventListener("click", send);
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      send();
+    }
   });
 
   // ===== SETTINGS =====
-  openSettings.onclick=()=>settingsModal.classList.remove("hidden");
-  closeSettings.onclick=()=>settingsModal.classList.add("hidden");
+  openSettings.addEventListener("click", () => {
+    settingsModal.classList.remove("hidden");
+  });
 
-  clearChat.onclick=()=>{
-    chat.innerHTML="";
+  closeSettings.addEventListener("click", () => {
     settingsModal.classList.add("hidden");
-  };
+  });
+
+  clearChat.addEventListener("click", () => {
+    chat.innerHTML = "";
+    settingsModal.classList.add("hidden");
+  });
 
 });
