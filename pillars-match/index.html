@@ -5,9 +5,54 @@
   <title>Pillar Match</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Game styling -->
-  <link rel="stylesheet" href="style.css">
+  <!-- FORCE correct base path -->
+  <base href="./">
+
+  <!-- Main CSS (cache-busted) -->
+  <link rel="stylesheet" href="style.css?v=3">
+
+  <!-- FAILSAFE: inline minimal styles (always applies) -->
+  <style>
+    body {
+      margin: 0;
+      background: #0b2f22;
+      color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      text-align: center;
+    }
+
+    header {
+      padding: 12px 8px;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      font-size: 14px;
+      background: rgba(0,0,0,0.25);
+    }
+
+    .game-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 56px);
+      gap: 6px;
+    }
+
+    .tile {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
+
 <body>
 
   <header>
@@ -28,6 +73,7 @@
   </main>
 
   <!-- Game Logic -->
-  <script src="game.js"></script>
+  <script src="game.js?v=3"></script>
+
 </body>
 </html>
