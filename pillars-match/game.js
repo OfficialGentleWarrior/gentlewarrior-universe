@@ -56,6 +56,11 @@ document.addEventListener("DOMContentLoaded", () => {
       img.dataset.pillar = pillar;
       img.src = `../assets/pillars/${pillar}.png`;
 
+      // 🔒 IMPORTANT MOBILE FIXES
+      img.draggable = false;
+      img.style.touchAction = "manipulation";
+      img.decoding = "async";
+
       img.addEventListener("click", () => onTileClick(img));
 
       tiles.push(img);
@@ -157,8 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (curr && curr === prev) count++;
         else {
           if (count >= 3 && prev !== "empty") {
-            for (let k = 0; k < count; k++)
+            for (let k = 0; k < count; k++) {
               matches.add(r * GRID_SIZE + (c - 1 - k));
+            }
           }
           count = 1;
         }
@@ -174,8 +180,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (curr && curr === prev) count++;
         else {
           if (count >= 3 && prev !== "empty") {
-            for (let k = 0; k < count; k++)
+            for (let k = 0; k < count; k++) {
               matches.add((r - 1 - k) * GRID_SIZE + c);
+            }
           }
           count = 1;
         }
@@ -227,8 +234,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- INIT ---------- */
-  preloadImages();   // silent
-  createGrid();      // immediate
-  isResolving = false;
+  preloadImages();
+  createGrid();
+
+  // 🔓 IMPORTANT: stabilize board once, then unlock
+  isResolving = true;
+  setTimeout(resolveBoard, 50);
 
 });
