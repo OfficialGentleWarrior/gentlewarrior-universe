@@ -69,6 +69,15 @@ function onTileClick(tile) {
 
   if (isAdjacent(i1, i2)) {
     swapTiles(selectedTile, tile);
+
+    // 🔍 CHECK MATCH AFTER SWAP
+    const matches = findMatches();
+    if (matches.length === 0) {
+      // ❌ invalid move → revert swap
+      setTimeout(() => swapTiles(selectedTile, tile), 150);
+    } else {
+      highlightMatches(matches);
+    }
   }
 
   deselectTile();
@@ -91,13 +100,72 @@ function swapTiles(t1, t2) {
   const p1 = t1.dataset.pillar;
   const p2 = t2.dataset.pillar;
 
-  // swap data
   t1.dataset.pillar = p2;
   t2.dataset.pillar = p1;
 
-  // swap images
   t1.src = `../assets/pillars/${p2}.png`;
   t2.src = `../assets/pillars/${p1}.png`;
+}
+
+/* ---------- MATCH DETECTION ---------- */
+function findMatches() {
+  const matches = new Set();
+
+  // Horizontal
+  for (let r = 0; r < GRID_SIZE; r++) {
+    let count = 1;
+    for (let c = 1; c <= GRID_SIZE; c++) {
+      const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+      const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
+
+      if (curr === prev) {
+        count++;
+      } else {
+        if (count >= 3) {
+          for (let k = 0; k < count; k++) {
+            matches.add(r * GRID_SIZE + (c - 1 - k));
+          }
+        }
+        count = 1;
+      }
+    }
+  }
+
+  // Vertical
+  for (let c = 0; c < GRID_SIZE; c++) {
+    let count = 1;
+    for (let r = 1; r <= GRID_SIZE; r++) {
+      const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+      const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
+
+      if (curr === prev) {
+        count++;
+      } else {
+        if (count >= 3) {
+          for (let k = 0; k < count; k++) {
+            matches.add((r - 1 - k) * GRID_SIZE + c);
+          }
+        }
+        count = 1;
+      }
+    }
+  }
+
+  return [...matches];
+}
+
+/* ---------- VISUAL DEBUG (TEMP) ---------- */
+function highlightMatches(indices) {
+  indices.forEach(i => {
+    tiles[i].classList.add("matched");
+  });
+
+  // remove highlight after preview
+  setTimeout(() => {
+    indices.forEach(i => {
+      tiles[i].classList.remove("matched");
+    });
+  }, 400);
 }
 
 /* ---------- init ---------- */
