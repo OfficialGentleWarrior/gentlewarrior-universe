@@ -16,6 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTile = null;
   let isResolving = false;
 
+  /* ---------- PRELOAD IMAGES ---------- */
+  function preloadImages() {
+    PILLARS.forEach(name => {
+      const img = new Image();
+      img.src = `../assets/pillars/${name}.png`;
+    });
+  }
+
   /* ---------- helpers ---------- */
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
@@ -46,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = pillar;
+      img.loading = "eager";
+      img.decoding = "async";
       img.src = `../assets/pillars/${pillar}.png`;
 
       img.addEventListener("click", () => onTileClick(img));
@@ -162,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CLEAR (NO BROKEN IMAGES) ---------- */
+  /* ---------- CLEAR ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
       const tile = tiles[i];
@@ -176,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let c = 0; c < GRID_SIZE; c++) {
       let stack = [];
 
-      // collect non-empty tiles
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
         if (tile.dataset.pillar !== "empty") {
@@ -184,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // refill column
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
         const pillar = stack.shift() || randomPillar();
@@ -196,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- RESOLVE LOOP (CASCADE) ---------- */
+  /* ---------- RESOLVE LOOP ---------- */
   function resolveBoard() {
     isResolving = true;
 
@@ -218,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- init ---------- */
+  preloadImages();
   createGrid();
 
 });
