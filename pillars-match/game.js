@@ -1,181 +1,178 @@
-const PILLARS = [
-  "aurelion",
-  "gaialune",
-  "ignara",
-  "solyndra",
-  "umbrath",
-  "zeratheon"
-];
+document.addEventListener("DOMContentLoaded", () => {
 
-const GRID_SIZE = 7;
-const gridEl = document.querySelector(".grid");
+  const PILLARS = [
+    "aurelion",
+    "gaialune",
+    "ignara",
+    "solyndra",
+    "umbrath",
+    "zeratheon"
+  ];
 
-let tiles = [];
-let selectedTile = null;
+  const GRID_SIZE = 7;
+  const gridEl = document.querySelector(".grid");
 
-/* ---------- helpers ---------- */
-function randomPillar() {
-  return PILLARS[Math.floor(Math.random() * PILLARS.length)];
-}
+  let tiles = [];
+  let selectedTile = null;
 
-function indexToRowCol(index) {
-  return {
-    row: Math.floor(index / GRID_SIZE),
-    col: index % GRID_SIZE
-  };
-}
-
-function isAdjacent(i1, i2) {
-  const a = indexToRowCol(i1);
-  const b = indexToRowCol(i2);
-  return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
-}
-
-/* ---------- grid creation ---------- */
-function createGrid() {
-  gridEl.innerHTML = "";
-  tiles = [];
-
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-    const pillar = randomPillar();
-
-    const img = document.createElement("img");
-    img.className = "tile";
-    img.dataset.index = i;
-    img.dataset.pillar = pillar;
-    img.src = `../assets/pillars/${pillar}.png`;
-
-    img.addEventListener("click", () => onTileClick(img));
-
-    tiles.push(img);
-    gridEl.appendChild(img);
-  }
-}
-
-/* ---------- interaction ---------- */
-function onTileClick(tile) {
-  if (!selectedTile) {
-    selectTile(tile);
-    return;
+  /* ---------- helpers ---------- */
+  function randomPillar() {
+    return PILLARS[Math.floor(Math.random() * PILLARS.length)];
   }
 
-  if (tile === selectedTile) {
+  function indexToRowCol(index) {
+    return {
+      row: Math.floor(index / GRID_SIZE),
+      col: index % GRID_SIZE
+    };
+  }
+
+  function isAdjacent(i1, i2) {
+    const a = indexToRowCol(i1);
+    const b = indexToRowCol(i2);
+    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
+  }
+
+  /* ---------- grid creation ---------- */
+  function createGrid() {
+    gridEl.innerHTML = "";
+    tiles = [];
+
+    for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+      const pillar = randomPillar();
+
+      const img = document.createElement("img");
+      img.className = "tile";
+      img.dataset.index = i;
+      img.dataset.pillar = pillar;
+      img.src = `../assets/pillars/${pillar}.png`;
+
+      img.addEventListener("click", () => onTileClick(img));
+
+      tiles.push(img);
+      gridEl.appendChild(img);
+    }
+  }
+
+  /* ---------- interaction ---------- */
+  function onTileClick(tile) {
+    if (!selectedTile) {
+      selectTile(tile);
+      return;
+    }
+
+    if (tile === selectedTile) {
+      deselectTile();
+      return;
+    }
+
+    const i1 = Number(selectedTile.dataset.index);
+    const i2 = Number(tile.dataset.index);
+
+    if (isAdjacent(i1, i2)) {
+      swapTiles(selectedTile, tile);
+
+      const matches = findMatches();
+      if (matches.length === 0) {
+        // invalid move → revert
+        setTimeout(() => swapTiles(selectedTile, tile), 150);
+      } else {
+        highlightMatches(matches);
+      }
+    }
+
     deselectTile();
-    return;
   }
 
-  const i1 = Number(selectedTile.dataset.index);
-  const i2 = Number(tile.dataset.index);
+  function selectTile(tile) {
+    selectedTile = tile;
+    tile.classList.add("selected");
+  }
 
-  if (isAdjacent(i1, i2)) {
-    swapTiles(selectedTile, tile);
-
-    // 🔍 CHECK MATCH AFTER SWAP
-    const matches = findMatches();
-    if (matches.length === 0) {
-      // ❌ invalid move → revert swap
-      setTimeout(() => swapTiles(selectedTile, tile), 150);
-    } else {
-      highlightMatches(matches);
+  function deselectTile() {
+    if (selectedTile) {
+      selectedTile.classList.remove("selected");
     }
+    selectedTile = null;
   }
 
-  deselectTile();
-}
+  /* ---------- swap ---------- */
+  function swapTiles(t1, t2) {
+    const p1 = t1.dataset.pillar;
+    const p2 = t2.dataset.pillar;
 
-function selectTile(tile) {
-  selectedTile = tile;
-  tile.classList.add("selected");
-}
+    t1.dataset.pillar = p2;
+    t2.dataset.pillar = p1;
 
-function deselectTile() {
-  if (selectedTile) {
-    selectedTile.classList.remove("selected");
+    t1.src = `../assets/pillars/${p2}.png`;
+    t2.src = `../assets/pillars/${p1}.png`;
   }
-  selectedTile = null;
-}
 
-/* ---------- swap ---------- */
-function swapTiles(t1, t2) {
-  const p1 = t1.dataset.pillar;
-  const p2 = t2.dataset.pillar;
+  /* ---------- MATCH DETECTION ---------- */
+  function findMatches() {
+    const matches = new Set();
 
-  t1.dataset.pillar = p2;
-  t2.dataset.pillar = p1;
+    // Horizontal
+    for (let r = 0; r < GRID_SIZE; r++) {
+      let count = 1;
+      for (let c = 1; c <= GRID_SIZE; c++) {
+        const curr =
+          c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
-  t1.src = `../assets/pillars/${p2}.png`;
-  t2.src = `../assets/pillars/${p1}.png`;
-}
-
-/* ---------- MATCH DETECTION ---------- */
-function findMatches() {
-  const matches = new Set();
-
-  // Horizontal
-  for (let r = 0; r < GRID_SIZE; r++) {
-    let count = 1;
-    for (let c = 1; c <= GRID_SIZE; c++) {
-      const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-      const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
-
-      if (curr === prev) {
-        count++;
-      } else {
-        if (count >= 3) {
-          for (let k = 0; k < count; k++) {
-            matches.add(r * GRID_SIZE + (c - 1 - k));
+        if (curr === prev) {
+          count++;
+        } else {
+          if (count >= 3) {
+            for (let k = 0; k < count; k++) {
+              matches.add(r * GRID_SIZE + (c - 1 - k));
+            }
           }
+          count = 1;
         }
-        count = 1;
       }
     }
-  }
 
-  // Vertical
-  for (let c = 0; c < GRID_SIZE; c++) {
-    let count = 1;
-    for (let r = 1; r <= GRID_SIZE; r++) {
-      const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-      const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
+    // Vertical
+    for (let c = 0; c < GRID_SIZE; c++) {
+      let count = 1;
+      for (let r = 1; r <= GRID_SIZE; r++) {
+        const curr =
+          r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
-      if (curr === prev) {
-        count++;
-      } else {
-        if (count >= 3) {
-          for (let k = 0; k < count; k++) {
-            matches.add((r - 1 - k) * GRID_SIZE + c);
+        if (curr === prev) {
+          count++;
+        } else {
+          if (count >= 3) {
+            for (let k = 0; k < count; k++) {
+              matches.add((r - 1 - k) * GRID_SIZE + c);
+            }
           }
+          count = 1;
         }
-        count = 1;
       }
     }
+
+    return [...matches];
   }
 
-  return [...matches];
-}
-
-/* ---------- VISUAL DEBUG (TEMP) ---------- */
-function highlightMatches(indices) {
-  indices.forEach(i => {
-    tiles[i].style.outline = "4px solid gold";
-    tiles[i].style.boxShadow = "0 0 20px gold";
-  });
-
-  setTimeout(() => {
+  /* ---------- VISUAL DEBUG ---------- */
+  function highlightMatches(indices) {
     indices.forEach(i => {
-      tiles[i].style.outline = "";
-      tiles[i].style.boxShadow = "";
+      tiles[i].style.outline = "4px solid gold";
+      tiles[i].style.boxShadow = "0 0 20px gold";
     });
-  }, 400);
-}
 
-  // remove highlight after preview
-  setTimeout(() => {
-    indices.forEach(i => {
-      tiles[i].classList.remove("matched");
-    });
-  }, 400);
-}
+    setTimeout(() => {
+      indices.forEach(i => {
+        tiles[i].style.outline = "";
+        tiles[i].style.boxShadow = "";
+      });
+    }, 400);
+  }
 
-/* ---------- init ---------- */
-createGrid();
+  /* ---------- init ---------- */
+  createGrid();
+
+});
