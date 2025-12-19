@@ -16,12 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTile = null;
   let isResolving = false;
 
-  /* ---------- PRELOAD IMAGES ---------- */
+  /* ---------- PRELOAD IMAGES (REAL) ---------- */
   function preloadImages() {
-    PILLARS.forEach(name => {
-      const img = new Image();
-      img.src = `../assets/pillars/${name}.png`;
-    });
+    return Promise.all(
+      PILLARS.map(name => {
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = resolve;
+          img.src = `../assets/pillars/${name}.png`;
+        });
+      })
+    );
   }
 
   /* ---------- helpers ---------- */
@@ -54,8 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = pillar;
-      img.loading = "eager";
-      img.decoding = "async";
       img.src = `../assets/pillars/${pillar}.png`;
 
       img.addEventListener("click", () => onTileClick(img));
@@ -63,8 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tiles.push(img);
       gridEl.appendChild(img);
     }
-
-    resolveBoard(); // remove accidental starting matches
   }
 
   /* ---------- INTERACTION ---------- */
@@ -89,13 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 🔒 CHECK FIRST: no match = no swap
+    // 🔒 NO MATCH = NO SWAP
     if (!wouldMatch(selectedTile, tile)) {
       deselectTile();
       return;
     }
 
-    // ✅ VALID MOVE
+    isResolving = true;
+
     animateSwap(selectedTile, tile, () => {
       commitSwap(selectedTile, tile);
       resolveBoard();
@@ -116,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedTile = null;
   }
 
-  /* ---------- SWAP VALIDATION ---------- */
+  /* ---------- MATCH CHECK ---------- */
   function wouldMatch(t1, t2) {
     const p1 = t1.dataset.pillar;
     const p2 = t2.dataset.pillar;
@@ -206,13 +208,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- CLEAR ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
-      const tile = tiles[i];
-      tile.dataset.pillar = "empty";
-      tile.style.opacity = "0";
+      tiles[i].dataset.pillar = "empty";
+      tiles[i].style.opacity = "0";
     });
   }
 
-  /* ---------- GRAVITY + REFILL ---------- */
+  /* ---------- GRAVITY ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       let stack = [];
@@ -235,29 +236,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- RESOLVE LOOP ---------- */
+  /* ---------- RESOLVE LOOP (SAFE) ---------- */
   function resolveBoard() {
-    isResolving = true;
+    const matches = findMatches();
+
+    if (matches.length === 0) {
+      isResolving = false; // 🔓 unlock input
+      return;
+    }
+
+    clearMatches(matches);
 
     setTimeout(() => {
-      const matches = findMatches();
-      if (matches.length === 0) {
-        isResolving = false;
-        return;
-      }
-
-      clearMatches(matches);
-
-      setTimeout(() => {
-        applyGravity();
-        resolveBoard();
-      }, 200);
-
-    }, 100);
+      applyGravity();
+      setTimeout(resolveBoard, 150);
+    }, 150);
   }
 
-  /* ---------- init ---------- */
-  preloadImages();
-  createGrid();
+  /* ---------- INIT ---------- */
+  preloadImages().then(() => {
+    createGrid();
+    isResolving = false;
+  });
 
 });
