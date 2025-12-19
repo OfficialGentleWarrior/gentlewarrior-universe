@@ -2,9 +2,9 @@
 html, body {
   height: 100%;
   margin: 0;
-  overflow: hidden;              /* 🔒 no page scroll */
-  touch-action: manipulation;    /* better mobile tap */
-  overscroll-behavior: none;     /* no bounce */
+  overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 * {
@@ -59,34 +59,43 @@ header p {
   gap: 6px;
 }
 
-/* ---------- TILE ---------- */
+/* ---------- TILE (BASE) ---------- */
 .tile {
   width: 56px;
   height: 56px;
   border-radius: 10px;
   cursor: pointer;
 
-  /* 🔒 prevent layout shift */
-  box-sizing: border-box;
+  /* critical for animations */
   will-change: transform, box-shadow;
-
   transition: box-shadow 0.12s ease;
 }
 
-/* Selected tile (NO SCALE to avoid screen movement) */
+/* ---------- SELECTED (NO SCALE) ---------- */
 .tile.selected {
   box-shadow: 0 0 0 3px #ffd86b;
 }
 
-/* Matched tile (visual only, no outline) */
+/* ---------- MATCHED (GLOW ONLY) ---------- */
 .tile.matched {
   box-shadow: 0 0 20px 4px rgba(255, 216, 107, 0.9);
 }
 
-/* Hover (desktop only, very subtle) */
+/* ---------- SWAP ANIMATION ---------- */
+.tile.swapping {
+  animation: swapPulse 0.15s ease;
+}
+
+@keyframes swapPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- HOVER (DESKTOP ONLY, SUBTLE) ---------- */
 @media (hover: hover) {
   .tile:hover {
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
   }
 }
 
