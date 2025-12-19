@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
       gridEl.appendChild(img);
     }
 
-    // prevent starting board with matches
+    // remove accidental starting matches
     resolveBoard();
   }
 
@@ -125,10 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
           c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
-        if (curr === prev) {
+        if (curr && curr === prev) {
           count++;
         } else {
-          if (count >= 3) {
+          if (count >= 3 && prev !== "empty") {
             for (let k = 0; k < count; k++) {
               matches.add(r * GRID_SIZE + (c - 1 - k));
             }
@@ -146,10 +146,10 @@ document.addEventListener("DOMContentLoaded", () => {
           r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
-        if (curr === prev) {
+        if (curr && curr === prev) {
           count++;
         } else {
-          if (count >= 3) {
+          if (count >= 3 && prev !== "empty") {
             for (let k = 0; k < count; k++) {
               matches.add((r - 1 - k) * GRID_SIZE + c);
             }
@@ -162,39 +162,41 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CLEAR ---------- */
+  /* ---------- CLEAR (NO BROKEN IMAGES) ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
-      tiles[i].dataset.pillar = "";
-      tiles[i].src = "";
-      tiles[i].classList.add("matched");
+      const tile = tiles[i];
+      tile.dataset.pillar = "empty";
+      tile.style.opacity = "0";
     });
   }
 
-  /* ---------- GRAVITY ---------- */
+  /* ---------- GRAVITY + REFILL ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       let stack = [];
 
+      // collect non-empty tiles
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
-        if (tile.dataset.pillar) {
+        if (tile.dataset.pillar !== "empty") {
           stack.push(tile.dataset.pillar);
         }
       }
 
+      // refill column
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
         const pillar = stack.shift() || randomPillar();
 
         tile.dataset.pillar = pillar;
         tile.src = `../assets/pillars/${pillar}.png`;
-        tile.classList.remove("matched");
+        tile.style.opacity = "1";
       }
     }
   }
 
-  /* ---------- RESOLVE LOOP ---------- */
+  /* ---------- RESOLVE LOOP (CASCADE) ---------- */
   function resolveBoard() {
     isResolving = true;
 
@@ -209,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(() => {
         applyGravity();
-        resolveBoard(); // cascade
+        resolveBoard();
       }, 200);
 
     }, 100);
