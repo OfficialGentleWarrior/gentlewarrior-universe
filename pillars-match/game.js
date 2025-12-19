@@ -64,11 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
       gridEl.appendChild(img);
     }
 
-    // remove accidental starting matches
-    resolveBoard();
+    resolveBoard(); // remove accidental starting matches
   }
 
-  /* ---------- interaction ---------- */
+  /* ---------- INTERACTION ---------- */
   function onTileClick(tile) {
     if (isResolving) return;
 
@@ -85,16 +84,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const i1 = Number(selectedTile.dataset.index);
     const i2 = Number(tile.dataset.index);
 
-    if (isAdjacent(i1, i2)) {
-      swapTiles(selectedTile, tile);
-
-      const matches = findMatches();
-      if (matches.length === 0) {
-        setTimeout(() => swapTiles(selectedTile, tile), 150);
-      } else {
-        resolveBoard();
-      }
+    if (!isAdjacent(i1, i2)) {
+      deselectTile();
+      return;
     }
+
+    // 🔒 CHECK FIRST: no match = no swap
+    if (!wouldMatch(selectedTile, tile)) {
+      deselectTile();
+      return;
+    }
+
+    // ✅ VALID MOVE
+    animateSwap(selectedTile, tile, () => {
+      commitSwap(selectedTile, tile);
+      resolveBoard();
+    });
 
     deselectTile();
   }
@@ -111,8 +116,36 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedTile = null;
   }
 
-  /* ---------- swap ---------- */
-  function swapTiles(t1, t2) {
+  /* ---------- SWAP VALIDATION ---------- */
+  function wouldMatch(t1, t2) {
+    const p1 = t1.dataset.pillar;
+    const p2 = t2.dataset.pillar;
+
+    t1.dataset.pillar = p2;
+    t2.dataset.pillar = p1;
+
+    const hasMatch = findMatches().length > 0;
+
+    t1.dataset.pillar = p1;
+    t2.dataset.pillar = p2;
+
+    return hasMatch;
+  }
+
+  /* ---------- SWAP ANIMATION ---------- */
+  function animateSwap(t1, t2, done) {
+    t1.classList.add("swapping");
+    t2.classList.add("swapping");
+
+    setTimeout(() => {
+      t1.classList.remove("swapping");
+      t2.classList.remove("swapping");
+      done();
+    }, 150);
+  }
+
+  /* ---------- COMMIT SWAP ---------- */
+  function commitSwap(t1, t2) {
     const p1 = t1.dataset.pillar;
     const p2 = t2.dataset.pillar;
 
@@ -131,8 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
-        const curr =
-          c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
         if (curr && curr === prev) {
@@ -152,8 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
-        const curr =
-          r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
         if (curr && curr === prev) {
