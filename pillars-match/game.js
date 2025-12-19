@@ -16,17 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTile = null;
   let isResolving = false;
 
-  /* ---------- PRELOAD IMAGES (REAL) ---------- */
+  /* ---------- PRELOAD (NON-BLOCKING) ---------- */
   function preloadImages() {
-    return Promise.all(
-      PILLARS.map(name => {
-        return new Promise(resolve => {
-          const img = new Image();
-          img.onload = resolve;
-          img.src = `../assets/pillars/${name}.png`;
-        });
-      })
-    );
+    PILLARS.forEach(name => {
+      const img = new Image();
+      img.src = `../assets/pillars/${name}.png`;
+    });
   }
 
   /* ---------- helpers ---------- */
@@ -47,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
   }
 
-  /* ---------- grid creation ---------- */
+  /* ---------- GRID ---------- */
   function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
@@ -68,17 +63,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- INTERACTION ---------- */
+  /* ---------- INPUT ---------- */
   function onTileClick(tile) {
     if (isResolving) return;
 
     if (!selectedTile) {
-      selectTile(tile);
+      selectedTile = tile;
+      tile.classList.add("selected");
       return;
     }
 
     if (tile === selectedTile) {
-      deselectTile();
+      tile.classList.remove("selected");
+      selectedTile = null;
       return;
     }
 
@@ -86,13 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const i2 = Number(tile.dataset.index);
 
     if (!isAdjacent(i1, i2)) {
-      deselectTile();
+      selectedTile.classList.remove("selected");
+      selectedTile = null;
       return;
     }
 
-    // 🔒 NO MATCH = NO SWAP
     if (!wouldMatch(selectedTile, tile)) {
-      deselectTile();
+      selectedTile.classList.remove("selected");
+      selectedTile = null;
       return;
     }
 
@@ -103,18 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resolveBoard();
     });
 
-    deselectTile();
-  }
-
-  function selectTile(tile) {
-    selectedTile = tile;
-    tile.classList.add("selected");
-  }
-
-  function deselectTile() {
-    if (selectedTile) {
-      selectedTile.classList.remove("selected");
-    }
+    selectedTile.classList.remove("selected");
     selectedTile = null;
   }
 
@@ -126,15 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
     t1.dataset.pillar = p2;
     t2.dataset.pillar = p1;
 
-    const hasMatch = findMatches().length > 0;
+    const valid = findMatches().length > 0;
 
     t1.dataset.pillar = p1;
     t2.dataset.pillar = p2;
 
-    return hasMatch;
+    return valid;
   }
 
-  /* ---------- SWAP ANIMATION ---------- */
+  /* ---------- SWAP ---------- */
   function animateSwap(t1, t2, done) {
     t1.classList.add("swapping");
     t2.classList.add("swapping");
@@ -146,7 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 150);
   }
 
-  /* ---------- COMMIT SWAP ---------- */
   function commitSwap(t1, t2) {
     const p1 = t1.dataset.pillar;
     const p2 = t2.dataset.pillar;
@@ -162,40 +148,34 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatches() {
     const matches = new Set();
 
-    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
         const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
-        if (curr && curr === prev) {
-          count++;
-        } else {
+        if (curr && curr === prev) count++;
+        else {
           if (count >= 3 && prev !== "empty") {
-            for (let k = 0; k < count; k++) {
+            for (let k = 0; k < count; k++)
               matches.add(r * GRID_SIZE + (c - 1 - k));
-            }
           }
           count = 1;
         }
       }
     }
 
-    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
         const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
-        if (curr && curr === prev) {
-          count++;
-        } else {
+        if (curr && curr === prev) count++;
+        else {
           if (count >= 3 && prev !== "empty") {
-            for (let k = 0; k < count; k++) {
+            for (let k = 0; k < count; k++)
               matches.add((r - 1 - k) * GRID_SIZE + c);
-            }
           }
           count = 1;
         }
@@ -205,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CLEAR ---------- */
+  /* ---------- CLEAR + GRAVITY ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
       tiles[i].dataset.pillar = "empty";
@@ -213,40 +193,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ---------- GRAVITY ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       let stack = [];
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        if (tile.dataset.pillar !== "empty") {
-          stack.push(tile.dataset.pillar);
-        }
+        const t = tiles[r * GRID_SIZE + c];
+        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
       }
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        const pillar = stack.shift() || randomPillar();
-
-        tile.dataset.pillar = pillar;
-        tile.src = `../assets/pillars/${pillar}.png`;
-        tile.style.opacity = "1";
+        const t = tiles[r * GRID_SIZE + c];
+        const p = stack.shift() || randomPillar();
+        t.dataset.pillar = p;
+        t.src = `../assets/pillars/${p}.png`;
+        t.style.opacity = "1";
       }
     }
   }
 
-  /* ---------- RESOLVE LOOP (SAFE) ---------- */
   function resolveBoard() {
     const matches = findMatches();
-
     if (matches.length === 0) {
-      isResolving = false; // 🔓 unlock input
+      isResolving = false;
       return;
     }
 
     clearMatches(matches);
-
     setTimeout(() => {
       applyGravity();
       setTimeout(resolveBoard, 150);
@@ -254,9 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- INIT ---------- */
-  preloadImages().then(() => {
-    createGrid();
-    isResolving = false;
-  });
+  preloadImages();   // silent
+  createGrid();      // immediate
+  isResolving = false;
 
 });
