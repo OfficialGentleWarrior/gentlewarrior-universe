@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
+  let isResolving = false;
 
   /* ---------- helpers ---------- */
   function randomPillar() {
@@ -40,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
       const pillar = randomPillar();
-
       const img = document.createElement("img");
+
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = pillar;
@@ -52,10 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
       tiles.push(img);
       gridEl.appendChild(img);
     }
+
+    // prevent starting board with matches
+    resolveBoard();
   }
 
   /* ---------- interaction ---------- */
   function onTileClick(tile) {
+    if (isResolving) return;
+
     if (!selectedTile) {
       selectTile(tile);
       return;
@@ -74,10 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const matches = findMatches();
       if (matches.length === 0) {
-        // invalid move → revert
         setTimeout(() => swapTiles(selectedTile, tile), 150);
       } else {
-        highlightMatches(matches);
+        resolveBoard();
       }
     }
 
@@ -157,19 +162,57 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- VISUAL DEBUG ---------- */
-  function highlightMatches(indices) {
+  /* ---------- CLEAR ---------- */
+  function clearMatches(indices) {
     indices.forEach(i => {
-      tiles[i].style.outline = "4px solid gold";
-      tiles[i].style.boxShadow = "0 0 20px gold";
+      tiles[i].dataset.pillar = "";
+      tiles[i].src = "";
+      tiles[i].classList.add("matched");
     });
+  }
+
+  /* ---------- GRAVITY ---------- */
+  function applyGravity() {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      let stack = [];
+
+      for (let r = GRID_SIZE - 1; r >= 0; r--) {
+        const tile = tiles[r * GRID_SIZE + c];
+        if (tile.dataset.pillar) {
+          stack.push(tile.dataset.pillar);
+        }
+      }
+
+      for (let r = GRID_SIZE - 1; r >= 0; r--) {
+        const tile = tiles[r * GRID_SIZE + c];
+        const pillar = stack.shift() || randomPillar();
+
+        tile.dataset.pillar = pillar;
+        tile.src = `../assets/pillars/${pillar}.png`;
+        tile.classList.remove("matched");
+      }
+    }
+  }
+
+  /* ---------- RESOLVE LOOP ---------- */
+  function resolveBoard() {
+    isResolving = true;
 
     setTimeout(() => {
-      indices.forEach(i => {
-        tiles[i].style.outline = "";
-        tiles[i].style.boxShadow = "";
-      });
-    }, 400);
+      const matches = findMatches();
+      if (matches.length === 0) {
+        isResolving = false;
+        return;
+      }
+
+      clearMatches(matches);
+
+      setTimeout(() => {
+        applyGravity();
+        resolveBoard(); // cascade
+      }, 200);
+
+    }, 100);
   }
 
   /* ---------- init ---------- */
