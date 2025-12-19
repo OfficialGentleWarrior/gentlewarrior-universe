@@ -1,15 +1,86 @@
-body {
-  background: #0b2f22;
-  color: white;
-  font-family: sans-serif;
+/* ---------- GLOBAL ---------- */
+* {
+  box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #103c2c, #071f17);
+  color: #ffffff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  text-align: center;
+}
+
+/* ---------- HEADER ---------- */
+header {
+  padding: 12px 8px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ---------- HUD ---------- */
+.hud {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- GAME WRAPPER ---------- */
+.game-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* ---------- GRID ---------- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 64px);
+  grid-template-columns: repeat(7, 56px);
   gap: 6px;
 }
+
+/* ---------- TILE ---------- */
 .tile {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* Hover (desktop only) */
+@media (hover: hover) {
+  .tile:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Selected tile */
+.tile.selected {
+  box-shadow: 0 0 0 3px #ffd86b;
+  transform: scale(1.08);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 400px) {
+  .grid {
+    grid-template-columns: repeat(7, 48px);
+    gap: 5px;
+  }
+
+  .tile {
+    width: 48px;
+    height: 48px;
+  }
 }
