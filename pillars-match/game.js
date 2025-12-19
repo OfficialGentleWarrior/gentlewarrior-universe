@@ -157,8 +157,17 @@ function findMatches() {
 /* ---------- VISUAL DEBUG (TEMP) ---------- */
 function highlightMatches(indices) {
   indices.forEach(i => {
-    tiles[i].classList.add("matched");
+    tiles[i].style.outline = "4px solid gold";
+    tiles[i].style.boxShadow = "0 0 20px gold";
   });
+
+  setTimeout(() => {
+    indices.forEach(i => {
+      tiles[i].style.outline = "";
+      tiles[i].style.boxShadow = "";
+    });
+  }, 400);
+}
 
   // remove highlight after preview
   setTimeout(() => {
