@@ -1,10 +1,18 @@
-/* ---------- GLOBAL ---------- */
+/* ---------- GLOBAL / LOCK SCREEN ---------- */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;              /* 🔒 no page scroll */
+  touch-action: manipulation;    /* better mobile tap */
+  overscroll-behavior: none;     /* no bounce */
+}
+
 * {
   box-sizing: border-box;
 }
 
+/* ---------- BODY ---------- */
 body {
-  margin: 0;
   background: radial-gradient(circle at top, #103c2c, #071f17);
   color: #ffffff;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -40,6 +48,7 @@ header p {
 .game-wrapper {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 12px;
 }
 
@@ -56,31 +65,29 @@ header p {
   height: 56px;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+
+  /* 🔒 prevent layout shift */
+  box-sizing: border-box;
+  will-change: transform, box-shadow;
+
+  transition: box-shadow 0.12s ease;
 }
 
-/* Selected tile */
+/* Selected tile (NO SCALE to avoid screen movement) */
 .tile.selected {
   box-shadow: 0 0 0 3px #ffd86b;
-  transform: scale(1.08);
 }
 
-/* ✅ MATCHED tiles (ADD THIS HERE) */
+/* Matched tile (visual only, no outline) */
 .tile.matched {
-  box-shadow: 0 0 12px 4px rgba(255, 216, 107, 0.9);
+  box-shadow: 0 0 20px 4px rgba(255, 216, 107, 0.9);
 }
 
-/* Hover (desktop only) */
+/* Hover (desktop only, very subtle) */
 @media (hover: hover) {
   .tile:hover {
-    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
   }
-}
-
-/* Selected tile */
-.tile.selected {
-  box-shadow: 0 0 0 3px #ffd86b;
-  transform: scale(1.08);
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -94,9 +101,4 @@ header p {
     width: 48px;
     height: 48px;
   }
-}
-
-.tile.matched {
-  outline: 4px solid red !important;
-  box-shadow: 0 0 20px red !important;
 }
