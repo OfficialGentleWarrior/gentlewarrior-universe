@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-  let isResolving = true; // 🔒 lock during init
+  let isResolving = false;
 
-  /* ---------- PRELOAD (BACKGROUND ONLY) ---------- */
+  /* ---------- PRELOAD (FAST, NON-BLOCKING) ---------- */
   PILLARS.forEach(p => {
     const img = new Image();
     img.src = `../assets/pillars/${p}.png`;
@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       img.dataset.pillar = pillar;
       img.src = `../assets/pillars/${pillar}.png`;
 
-      // 🔥 HARD MOBILE FIX
       img.draggable = false;
       img.oncontextmenu = e => e.preventDefault();
       img.addEventListener("pointerdown", onTilePointer, { passive: false });
@@ -59,12 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- INPUT (REAL FIX) ---------- */
+  /* ---------- INPUT ---------- */
   function onTilePointer(e) {
-    e.preventDefault(); // 🔥 STOP SCROLL / ZOOM / DRAG
+    e.preventDefault();
+    if (isResolving) return;
 
     const tile = e.currentTarget;
-    if (isResolving) return;
 
     if (!selectedTile) {
       selectedTile = tile;
@@ -81,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const i1 = Number(selectedTile.dataset.index);
     const i2 = Number(tile.dataset.index);
 
-    if (!isAdjacent(i1, i2) || !wouldMatch(selectedTile, tile)) {
+    if (!isAdjacent(i1, i2)) {
       selectedTile.classList.remove("selected");
       selectedTile = null;
       return;
@@ -91,26 +90,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animateSwap(selectedTile, tile, () => {
       commitSwap(selectedTile, tile);
-      resolveBoard();
+
+      const matches = findMatches();
+      if (matches.length === 0) {
+        // ❌ invalid → swap back
+        setTimeout(() => {
+          animateSwap(tile, selectedTile, () => {
+            commitSwap(tile, selectedTile);
+            isResolving = false;
+          });
+        }, 120);
+      } else {
+        resolveBoard();
+      }
     });
 
     selectedTile.classList.remove("selected");
     selectedTile = null;
-  }
-
-  /* ---------- MATCH CHECK ---------- */
-  function wouldMatch(a, b) {
-    const p1 = a.dataset.pillar;
-    const p2 = b.dataset.pillar;
-
-    a.dataset.pillar = p2;
-    b.dataset.pillar = p1;
-
-    const ok = findMatches().length > 0;
-
-    a.dataset.pillar = p1;
-    b.dataset.pillar = p2;
-    return ok;
   }
 
   /* ---------- SWAP ---------- */
@@ -194,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function resolveBoard() {
     const m = findMatches();
     if (m.length === 0) {
-      isResolving = false; // 🔓 unlock input
+      isResolving = false;
       return;
     }
     clearMatches(m);
@@ -206,6 +202,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- INIT ---------- */
   createGrid();
-  setTimeout(resolveBoard, 50); // stabilize once
-
 });
