@@ -5,7 +5,7 @@
   <title>Pillar Match</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Basic styling -->
+  <!-- Game styling -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,19 +23,9 @@
   </div>
 
   <!-- Game Grid -->
-  <div class="game-wrapper">
-    <div class="grid"></div>
-  </div>
-
-  <!-- Fallback test (can remove later) -->
-  <div class="symbol-test">
-    <img src="../assets/pillars/aurelion.png" width="48">
-    <img src="../assets/pillars/gaialune.png" width="48">
-    <img src="../assets/pillars/ignara.png" width="48">
-    <img src="../assets/pillars/solyndra.png" width="48">
-    <img src="../assets/pillars/umbrath.png" width="48">
-    <img src="../assets/pillars/zeratheon.png" width="48">
-  </div>
+  <main class="game-wrapper">
+    <div class="grid" aria-label="Pillar match grid"></div>
+  </main>
 
   <!-- Game Logic -->
   <script src="game.js"></script>
