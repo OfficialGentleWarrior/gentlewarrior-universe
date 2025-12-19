@@ -59,6 +59,17 @@ header p {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
+/* Selected tile */
+.tile.selected {
+  box-shadow: 0 0 0 3px #ffd86b;
+  transform: scale(1.08);
+}
+
+/* ✅ MATCHED tiles (ADD THIS HERE) */
+.tile.matched {
+  box-shadow: 0 0 12px 4px rgba(255, 216, 107, 0.9);
+}
+
 /* Hover (desktop only) */
 @media (hover: hover) {
   .tile:hover {
