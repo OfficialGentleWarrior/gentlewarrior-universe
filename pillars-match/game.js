@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(done, 180);
   }
 
-  /*/* ---------- INIT ---------- */
+  /* ---------- INIT ---------- */
 createGrid();
 
 /* 🔥 TEMP TEST: force ignara core glow */
