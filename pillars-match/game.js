@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  /* =========================
+     CONFIG
+  ========================== */
+
   const PILLARS = [
     "aurelion",
     "gaialune",
@@ -11,31 +15,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const GRID_SIZE = 7;
   const TILE_SIZE = 56 + 6;
-  const gridEl = document.querySelector(".grid");
 
+  const LEVEL_CONFIG = {
+    baseMoves: 20,
+    scoreTarget: level => 1500 + (level - 1) * 500
+  };
+
+  /* =========================
+     DOM
+  ========================== */
+
+  const gridEl = document.querySelector(".grid");
   const scoreEl = document.getElementById("score");
   const levelEl = document.getElementById("level");
+  const movesEl = document.getElementById("moves");
+  const progressBar = document.getElementById("progressBar");
 
-  let score = 0;
-  let level = 1;
+  const levelOverlay = document.getElementById("levelOverlay");
+  const failOverlay = document.getElementById("failOverlay");
+
+  /* =========================
+     STATE
+  ========================== */
 
   let tiles = [];
   let selectedTile = null;
   let isResolving = true;
 
-  /* ---------- SCORE ---------- */
-  function addScore(amount) {
-    score += amount;
-    scoreEl.textContent = score;
+  let score = 0;
+  let level = 1;
+  let moves = LEVEL_CONFIG.baseMoves;
 
-    const nextLevel = Math.floor(score / 2000) + 1;
-    if (nextLevel > level) {
-      level = nextLevel;
-      levelEl.textContent = level;
-    }
+  /* =========================
+     UI HELPERS
+  ========================== */
+
+  function updateHUD() {
+    scoreEl.textContent = score;
+    levelEl.textContent = level;
+    movesEl.textContent = moves;
+
+    const target = LEVEL_CONFIG.scoreTarget(level);
+    const pct = Math.min(100, (score / target) * 100);
+    progressBar.style.width = pct + "%";
   }
 
-  /* ---------- HELPERS ---------- */
+  function showLevelComplete() {
+    levelOverlay.classList.remove("hidden");
+  }
+
+  function showFail() {
+    failOverlay.classList.remove("hidden");
+  }
+
+  function nextLevel() {
+    level++;
+    moves = LEVEL_CONFIG.baseMoves;
+    updateHUD();
+    levelOverlay.classList.add("hidden");
+  }
+
+  /* =========================
+     HELPERS
+  ========================== */
+
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
   }
@@ -50,7 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
   }
 
-  /* ---------- GRID ---------- */
+  /* =========================
+     GRID
+  ========================== */
+
   function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
@@ -72,9 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- INPUT ---------- */
+  /* =========================
+     INPUT
+  ========================== */
+
   function onTileClick(tile) {
-    if (isResolving) return;
+    if (isResolving || moves <= 0) return;
 
     if (!selectedTile) {
       selectedTile = tile;
@@ -109,6 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
           isResolving = false;
         });
       } else {
+        moves--;
+        updateHUD();
         resolveBoard(groups);
       }
     });
@@ -117,7 +168,10 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedTile = null;
   }
 
-  /* ---------- SWAP ---------- */
+  /* =========================
+     SWAP
+  ========================== */
+
   function animateSwap(a, b, done) {
     const p1 = indexToRowCol(+a.dataset.index);
     const p2 = indexToRowCol(+b.dataset.index);
@@ -146,7 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
     b.src = `../assets/pillars/${p1}.png`;
   }
 
-  /* ---------- MATCH DETECTION ---------- */
+  /* =========================
+     MATCH DETECTION
+  ========================== */
+
   function findMatchesDetailed() {
     const groups = [];
 
@@ -189,22 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return groups;
   }
 
-  /* ---------- EFFECT HELPERS ---------- */
-  function clearRow(row, set) {
-    for (let c = 0; c < GRID_SIZE; c++) set.add(row * GRID_SIZE + c);
-  }
+  /* =========================
+     RESOLUTION (MATCH SIZE EFFECTS)
+  ========================== */
 
-  function clearColumn(col, set) {
-    for (let r = 0; r < GRID_SIZE; r++) set.add(r * GRID_SIZE + col);
-  }
-
-  function clearCross(index, set) {
-    const { row, col } = indexToRowCol(index);
-    clearRow(row, set);
-    clearColumn(col, set);
-  }
-
-  /* ---------- RESOLUTION ---------- */
   function resolveBoard(groups) {
     const toClear = new Set();
 
@@ -212,31 +257,44 @@ document.addEventListener("DOMContentLoaded", () => {
       const size = group.length;
 
       // SCORE
-      if (size === 3) addScore(100);
-      else if (size === 4) addScore(200);
-      else if (size === 5) addScore(400);
-      else if (size >= 6) addScore(600 + (size - 6) * 100);
+      score += size === 3 ? 100 :
+               size === 4 ? 200 :
+               size === 5 ? 400 :
+               600 + (size - 6) * 100;
 
       group.forEach(i => toClear.add(i));
 
       if (size === 5) {
         const { row, col } = indexToRowCol(group[0]);
         const sameRow = group.every(i => indexToRowCol(i).row === row);
-        sameRow ? clearRow(row, toClear) : clearColumn(col, toClear);
+        for (let i = 0; i < GRID_SIZE; i++) {
+          toClear.add(sameRow ? row * GRID_SIZE + i : i * GRID_SIZE + col);
+        }
       }
 
       if (size >= 6) {
-        clearCross(group[Math.floor(size / 2)], toClear);
+        const mid = group[Math.floor(group.length / 2)];
+        const { row, col } = indexToRowCol(mid);
+        for (let i = 0; i < GRID_SIZE; i++) {
+          toClear.add(row * GRID_SIZE + i);
+          toClear.add(i * GRID_SIZE + col);
+        }
       }
     });
 
+    updateHUD();
     clearTiles([...toClear]);
 
     setTimeout(() => {
       applyGravityAnimated(() => {
         const next = findMatchesDetailed();
         if (next.length) resolveBoard(next);
-        else isResolving = false;
+        else {
+          isResolving = false;
+
+          if (score >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
+          else if (moves <= 0) showFail();
+        }
       });
     }, 120);
   }
@@ -250,7 +308,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ---------- GRAVITY ---------- */
+  /* =========================
+     GRAVITY
+  ========================== */
+
   function applyGravityAnimated(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
@@ -263,7 +324,6 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
         const p = stack.shift() || randomPillar();
-
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
         t.style.opacity = "1";
@@ -274,8 +334,13 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(done, 180);
   }
 
-  /* ---------- INIT ---------- */
+  /* =========================
+     INIT
+  ========================== */
+
   createGrid();
+  updateHUD();
+
   setTimeout(() => {
     const init = findMatchesDetailed();
     if (init.length) resolveBoard(init);
