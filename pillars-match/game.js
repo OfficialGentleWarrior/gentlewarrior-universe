@@ -16,6 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTile = null;
   let isResolving = false;
 
+  /* ---------- FAST IMAGE PRELOAD ---------- */
+  function preloadImages() {
+    return Promise.all(
+      PILLARS.map(name => {
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = resolve;
+          img.src = `../assets/pillars/${name}.png`;
+        });
+      })
+    );
+  }
+
   /* ---------- helpers ---------- */
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
@@ -77,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const matches = findMatches();
       if (matches.length === 0) {
-        // invalid move → revert
         setTimeout(() => swapTiles(selectedTile, tile), 150);
       } else {
         isResolving = true;
@@ -116,17 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatches() {
     const matches = new Set();
 
-    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
-        const curr =
-          c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
-        if (curr === prev) {
-          count++;
-        } else {
+        if (curr === prev) count++;
+        else {
           if (count >= 3) {
             for (let k = 0; k < count; k++) {
               matches.add(r * GRID_SIZE + (c - 1 - k));
@@ -137,17 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
-        const curr =
-          r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
-        if (curr === prev) {
-          count++;
-        } else {
+        if (curr === prev) count++;
+        else {
           if (count >= 3) {
             for (let k = 0; k < count; k++) {
               matches.add((r - 1 - k) * GRID_SIZE + c);
@@ -161,62 +167,53 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CASCADE RESOLUTION ---------- */
-  function resolveBoard(initialMatches) {
-    clearMatches(initialMatches);
+  /* ---------- CASCADE ---------- */
+  function resolveBoard(matches) {
+    clearMatches(matches);
 
     setTimeout(() => {
       applyGravity();
-
       setTimeout(() => {
-        const newMatches = findMatches();
-        if (newMatches.length > 0) {
-          resolveBoard(newMatches); // 🔁 cascade
-        } else {
-          isResolving = false; // unlock input
-        }
-      }, 150);
-
-    }, 150);
+        const next = findMatches();
+        if (next.length) resolveBoard(next);
+        else isResolving = false;
+      }, 120);
+    }, 120);
   }
 
-  /* ---------- CLEAR MATCHES ---------- */
+  /* ---------- CLEAR ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
-      const tile = tiles[i];
-      tile.dataset.pillar = "empty";
-      tile.style.opacity = "0";
-      tile.style.pointerEvents = "none";
+      const t = tiles[i];
+      t.dataset.pillar = "empty";
+      t.style.opacity = "0";
+      t.style.pointerEvents = "none";
     });
   }
 
-  /* ---------- GRAVITY + REFILL ---------- */
+  /* ---------- GRAVITY ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
-
-      // collect non-empty tiles
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        if (tile.dataset.pillar !== "empty") {
-          stack.push(tile.dataset.pillar);
-        }
+        const t = tiles[r * GRID_SIZE + c];
+        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
       }
 
-      // drop + refill
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        const pillar = stack.shift() || randomPillar();
-
-        tile.dataset.pillar = pillar;
-        tile.src = `../assets/pillars/${pillar}.png`;
-        tile.style.opacity = "1";
-        tile.style.pointerEvents = "auto";
+        const t = tiles[r * GRID_SIZE + c];
+        const p = stack.shift() || randomPillar();
+        t.dataset.pillar = p;
+        t.src = `../assets/pillars/${p}.png`;
+        t.style.opacity = "1";
+        t.style.pointerEvents = "auto";
       }
     }
   }
 
-  /* ---------- init ---------- */
-  createGrid();
+  /* ---------- INIT (FAST) ---------- */
+  preloadImages().then(() => {
+    createGrid();   // 🔥 instant render, no image lag
+  });
 
 });
