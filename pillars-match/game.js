@@ -14,15 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-  let isResolving = false;
+  let isResolving = true;        // 🔒 lock during init
+  let isInitPhase = true;        // 🔑 silent cleanup flag
 
-  /* ---------- NON-BLOCKING IMAGE PRELOAD ---------- */
-  function preloadImages() {
-    PILLARS.forEach(name => {
-      const img = new Image();
-      img.src = `../assets/pillars/${name}.png`;
-    });
-  }
+  /* ---------- FAST IMAGE PRELOAD ---------- */
+  PILLARS.forEach(name => {
+    const img = new Image();
+    img.src = `../assets/pillars/${name}.png`;
+  });
 
   /* ---------- helpers ---------- */
   function randomPillar() {
@@ -42,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
   }
 
-  /* ---------- grid creation ---------- */
+  /* ---------- GRID CREATION ---------- */
   function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
@@ -64,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- interaction ---------- */
+  /* ---------- INPUT ---------- */
   function onTileClick(tile) {
     if (isResolving) return;
 
@@ -83,23 +82,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const i1 = Number(selectedTile.dataset.index);
     const i2 = Number(tile.dataset.index);
 
-    if (isAdjacent(i1, i2)) {
-      swapTiles(selectedTile, tile);
+    if (!isAdjacent(i1, i2)) {
+      selectedTile.classList.remove("selected");
+      selectedTile = null;
+      return;
+    }
 
-      const matches = findMatches();
-      if (matches.length === 0) {
-        setTimeout(() => swapTiles(selectedTile, tile), 150);
-      } else {
-        isResolving = true;
-        resolveBoard(matches);
-      }
+    swapTiles(selectedTile, tile);
+
+    const matches = findMatches();
+    if (matches.length === 0) {
+      setTimeout(() => swapTiles(selectedTile, tile), 150);
+    } else {
+      isResolving = true;
+      resolveBoard(matches);
     }
 
     selectedTile.classList.remove("selected");
     selectedTile = null;
   }
 
-  /* ---------- swap ---------- */
+  /* ---------- SWAP ---------- */
   function swapTiles(t1, t2) {
     const p1 = t1.dataset.pillar;
     const p2 = t2.dataset.pillar;
@@ -156,17 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CASCADE ---------- */
+  /* ---------- RESOLUTION (INIT + GAMEPLAY) ---------- */
   function resolveBoard(matches) {
     clearMatches(matches);
 
     setTimeout(() => {
       applyGravity();
+
       setTimeout(() => {
         const next = findMatches();
-        if (next.length) resolveBoard(next);
-        else isResolving = false;
+        if (next.length) {
+          resolveBoard(next);          // cascade
+        } else {
+          isResolving = false;
+          if (isInitPhase) isInitPhase = false; // 🔓 unlock gameplay
+        }
       }, 120);
+
     }, 120);
   }
 
@@ -203,7 +212,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- INIT ---------- */
-  preloadImages();   // background only, no blocking
-  createGrid();      // ALWAYS renders
+  createGrid();
+
+  // 🔒 silent cleanup before player sees anything
+  setTimeout(() => {
+    const initMatches = findMatches();
+    if (initMatches.length) resolveBoard(initMatches);
+    else {
+      isResolving = false;
+      isInitPhase = false;
+    }
+  }, 0);
 
 });
