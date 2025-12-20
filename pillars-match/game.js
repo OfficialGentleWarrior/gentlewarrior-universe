@@ -42,11 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let tiles = [];
   let selectedTile = null;
   let isResolving = true;
-  let isInitPhase = true; // 🔑 IMPORTANT FIX
+  let isInitPhase = true;          // 🔑 blocks auto-clear scoring
 
   let score = 0;
   let level = 1;
   let moves = LEVEL_CONFIG.baseMoves;
+
+  let levelStartScore = 0;         // 🔑 per-level progress baseline
 
   /* =========================
      UI HELPERS
@@ -58,7 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
     movesEl.textContent = moves;
 
     const target = LEVEL_CONFIG.scoreTarget(level);
-    const pct = Math.min(100, (score / target) * 100);
+    const gained = score - levelStartScore;
+    const pct = Math.min(100, (gained / target) * 100);
+
     progressBar.style.width = pct + "%";
   }
 
@@ -72,8 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
     failOverlay.classList.remove("hidden");
   }
 
-  function resetLevel() {
+  function startLevel() {
     moves = LEVEL_CONFIG.baseMoves;
+    levelStartScore = score;
+    isInitPhase = true;
+
     createGrid();
     updateHUD();
 
@@ -94,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   nextBtn?.addEventListener("click", () => {
     levelOverlay.classList.add("hidden");
     level++;
-    resetLevel();
+    startLevel();
   });
 
   /* =========================
@@ -278,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
     groups.forEach(group => {
       const size = group.length;
 
-      // 🚫 NO SCORE DURING INIT
+      // 🚫 NO SCORE DURING INIT PHASE
       if (!isInitPhase) {
         score += size === 3 ? 100 :
                  size === 4 ? 200 :
@@ -317,7 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
           isResolving = false;
           isInitPhase = false;
 
-          if (score >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
+          const gained = score - levelStartScore;
+          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
           else if (moves <= 0) showFail();
         }
       });
@@ -363,16 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
      INIT
   ========================== */
 
-  createGrid();
-  updateHUD();
-
-  setTimeout(() => {
-    const init = findMatchesDetailed();
-    if (init.length) resolveBoard(init);
-    else {
-      isResolving = false;
-      isInitPhase = false;
-    }
-  }, 0);
+  startLevel();
 
 });
