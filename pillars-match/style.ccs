@@ -66,24 +66,26 @@ header p {
   border-radius: 10px;
   cursor: pointer;
 
-  /* performance-critical */
+  /* 🔥 critical fixes */
+  position: relative;
+  overflow: visible;                 /* allow ignara ring to render */
   will-change: transform, box-shadow;
-  transform: translateZ(0); /* 🔑 force GPU compositing */
+  transform: translateZ(0);           /* force GPU compositing */
 
   transition: box-shadow 0.12s ease;
 }
 
-/* ---------- SELECTED (NO SCALE) ---------- */
+/* ---------- SELECTED ---------- */
 .tile.selected {
   box-shadow: 0 0 0 3px #ffd86b;
 }
 
-/* ---------- MATCHED (GLOW ONLY) ---------- */
+/* ---------- MATCHED ---------- */
 .tile.matched {
   box-shadow: 0 0 20px 4px rgba(255, 216, 107, 0.9);
 }
 
-/* ---------- SWAP ANIMATION (FIXED & VISIBLE) ---------- */
+/* ---------- SWAP PULSE ---------- */
 .tile.swapping {
   animation: swapPulse 0.15s ease-out;
 }
@@ -111,5 +113,34 @@ header p {
   .tile {
     width: 48px;
     height: 48px;
+  }
+}
+
+/* ---------- IGNARA CORE VISUAL ---------- */
+.tile.ignara-core::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 120, 60, 0.75);
+
+  opacity: 0;
+  pointer-events: none;
+
+  animation: ignaraPulse 1.6s ease-out infinite;
+  will-change: transform, opacity;   /* 🔒 animation stability */
+}
+
+@keyframes ignaraPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
   }
 }
