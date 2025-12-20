@@ -10,29 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const GRID_SIZE = 7;
+  const TILE_SIZE = 56 + 6; // tile + gap (must match CSS)
   const gridEl = document.querySelector(".grid");
 
   let tiles = [];
   let selectedTile = null;
-  let isResolving = true;        // 🔒 lock during init
-  let isInitPhase = true;        // 🔑 silent cleanup flag
+  let isResolving = true;
+  let isInitPhase = true;
 
   /* ---------- FAST IMAGE PRELOAD ---------- */
-  PILLARS.forEach(name => {
+  PILLARS.forEach(p => {
     const img = new Image();
-    img.src = `../assets/pillars/${name}.png`;
+    img.src = `../assets/pillars/${p}.png`;
   });
 
-  /* ---------- helpers ---------- */
+  /* ---------- HELPERS ---------- */
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
   }
 
-  function indexToRowCol(index) {
-    return {
-      row: Math.floor(index / GRID_SIZE),
-      col: index % GRID_SIZE
-    };
+  function indexToRowCol(i) {
+    return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
   }
 
   function isAdjacent(i1, i2) {
@@ -41,19 +39,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
   }
 
-  /* ---------- GRID CREATION ---------- */
+  /* ---------- GRID ---------- */
   function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const pillar = randomPillar();
       const img = document.createElement("img");
+      const p = randomPillar();
 
       img.className = "tile";
       img.dataset.index = i;
-      img.dataset.pillar = pillar;
-      img.src = `../assets/pillars/${pillar}.png`;
+      img.dataset.pillar = p;
+      img.src = `../assets/pillars/${p}.png`;
       img.draggable = false;
 
       img.addEventListener("click", () => onTileClick(img));
@@ -88,100 +86,114 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    swapTiles(selectedTile, tile);
+    isResolving = true;
+    animateSwap(selectedTile, tile, () => {
+      commitSwap(selectedTile, tile);
 
-    const matches = findMatches();
-    if (matches.length === 0) {
-      setTimeout(() => swapTiles(selectedTile, tile), 150);
-    } else {
-      isResolving = true;
-      resolveBoard(matches);
-    }
+      const matches = findMatches();
+      if (matches.length === 0) {
+        // revert
+        animateSwap(selectedTile, tile, () => {
+          commitSwap(selectedTile, tile);
+          isResolving = false;
+        });
+      } else {
+        resolveBoard(matches);
+      }
+    });
 
     selectedTile.classList.remove("selected");
     selectedTile = null;
   }
 
-  /* ---------- SWAP ---------- */
-  function swapTiles(t1, t2) {
-    const p1 = t1.dataset.pillar;
-    const p2 = t2.dataset.pillar;
+  /* ---------- SWAP SLIDE ---------- */
+  function animateSwap(a, b, done) {
+    const i1 = Number(a.dataset.index);
+    const i2 = Number(b.dataset.index);
+    const p1 = indexToRowCol(i1);
+    const p2 = indexToRowCol(i2);
 
-    t1.dataset.pillar = p2;
-    t2.dataset.pillar = p1;
+    const dx = (p2.col - p1.col) * TILE_SIZE;
+    const dy = (p2.row - p1.row) * TILE_SIZE;
 
-    t1.src = `../assets/pillars/${p2}.png`;
-    t2.src = `../assets/pillars/${p1}.png`;
+    a.style.transition = "transform 0.15s ease";
+    b.style.transition = "transform 0.15s ease";
+
+    a.style.transform = `translate(${dx}px, ${dy}px)`;
+    b.style.transform = `translate(${-dx}px, ${-dy}px)`;
+
+    setTimeout(() => {
+      a.style.transition = "";
+      b.style.transition = "";
+      a.style.transform = "";
+      b.style.transform = "";
+      done();
+    }, 150);
+  }
+
+  function commitSwap(a, b) {
+    const p1 = a.dataset.pillar;
+    const p2 = b.dataset.pillar;
+
+    a.dataset.pillar = p2;
+    b.dataset.pillar = p1;
+
+    a.src = `../assets/pillars/${p2}.png`;
+    b.src = `../assets/pillars/${p1}.png`;
   }
 
   /* ---------- MATCH DETECTION ---------- */
   function findMatches() {
-    const matches = new Set();
+    const m = new Set();
 
-    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
-      let count = 1;
-      for (let c = 1; c <= GRID_SIZE; c++) {
-        const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
-
-        if (curr === prev) count++;
+      let c = 1;
+      for (let x = 1; x <= GRID_SIZE; x++) {
+        const cur = x < GRID_SIZE ? tiles[r * GRID_SIZE + x].dataset.pillar : null;
+        const prev = tiles[r * GRID_SIZE + x - 1].dataset.pillar;
+        if (cur === prev) c++;
         else {
-          if (count >= 3) {
-            for (let k = 0; k < count; k++) {
-              matches.add(r * GRID_SIZE + (c - 1 - k));
-            }
-          }
-          count = 1;
+          if (c >= 3) for (let k = 0; k < c; k++) m.add(r * GRID_SIZE + x - 1 - k);
+          c = 1;
         }
       }
     }
 
-    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
-      let count = 1;
-      for (let r = 1; r <= GRID_SIZE; r++) {
-        const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
-
-        if (curr === prev) count++;
+      let r = 1;
+      for (let y = 1; y <= GRID_SIZE; y++) {
+        const cur = y < GRID_SIZE ? tiles[y * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[(y - 1) * GRID_SIZE + c].dataset.pillar;
+        if (cur === prev) r++;
         else {
-          if (count >= 3) {
-            for (let k = 0; k < count; k++) {
-              matches.add((r - 1 - k) * GRID_SIZE + c);
-            }
-          }
-          count = 1;
+          if (r >= 3) for (let k = 0; k < r; k++) m.add((y - 1 - k) * GRID_SIZE + c);
+          r = 1;
         }
       }
     }
 
-    return [...matches];
+    return [...m];
   }
 
-  /* ---------- RESOLUTION (INIT + GAMEPLAY) ---------- */
+  /* ---------- RESOLVE ---------- */
   function resolveBoard(matches) {
     clearMatches(matches);
 
     setTimeout(() => {
       applyGravity();
-
       setTimeout(() => {
         const next = findMatches();
-        if (next.length) {
-          resolveBoard(next);          // cascade
-        } else {
+        if (next.length) resolveBoard(next);
+        else {
           isResolving = false;
-          if (isInitPhase) isInitPhase = false; // 🔓 unlock gameplay
+          if (isInitPhase) isInitPhase = false;
         }
       }, 120);
-
     }, 120);
   }
 
-  /* ---------- CLEAR ---------- */
-  function clearMatches(indices) {
-    indices.forEach(i => {
+  function clearMatches(list) {
+    list.forEach(i => {
       const t = tiles[i];
       t.dataset.pillar = "empty";
       t.style.opacity = "0";
@@ -189,20 +201,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ---------- GRAVITY ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
-
+      const s = [];
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
+        if (t.dataset.pillar !== "empty") s.push(t.dataset.pillar);
       }
-
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        const p = stack.shift() || randomPillar();
-
+        const p = s.shift() || randomPillar();
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
         t.style.opacity = "1";
@@ -213,11 +221,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- INIT ---------- */
   createGrid();
-
-  // 🔒 silent cleanup before player sees anything
   setTimeout(() => {
-    const initMatches = findMatches();
-    if (initMatches.length) resolveBoard(initMatches);
+    const init = findMatches();
+    if (init.length) resolveBoard(init);
     else {
       isResolving = false;
       isInitPhase = false;
