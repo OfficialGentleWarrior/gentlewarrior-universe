@@ -221,44 +221,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 120);
   }
 
-  /* ---------- RESOLUTION (IGNARA CORE CREATION) ---------- */
-  function resolveBoard(groups) {
-    const toClear = new Set();
+  /*/* ---------- RESOLUTION (FIXED IGNARA CORE LOGIC) ---------- */
+function resolveBoard(groups) {
+  const toClear = new Set();
 
-    groups.forEach(group => {
-      // 🔥 4 MATCH = IGNARA CORE
-      if (group.length === 4) {
-        const coreIndex = group[1];
-        const t = tiles[coreIndex];
+  groups.forEach(group => {
 
-        if (t.dataset.pillar === "ignara") {
-          t.dataset.special = "ignara";
-          t.classList.add("ignara-core"); // 🔥 ORANGE GLOW FROM CSS
+    // 🔥 IGNARA CORE: EXACT 4 MATCH ONLY
+    if (group.length === 4) {
 
-          group.forEach(i => {
-            if (i !== coreIndex) toClear.add(i);
-          });
-          return;
-        }
+      // hanapin ang ignara sa group
+      const ignaraIndex = group.find(
+        i => tiles[i].dataset.pillar === "ignara"
+      );
+
+      // kung may ignara, siya lang ang core
+      if (ignaraIndex !== undefined) {
+        const coreTile = tiles[ignaraIndex];
+
+        coreTile.dataset.special = "ignara";
+        coreTile.classList.add("ignara-core"); // class marker lang
+
+        // clear lahat EXCEPT ignara
+        group.forEach(i => {
+          if (i !== ignaraIndex) toClear.add(i);
+        });
+
+        return; // stop processing this group
       }
+    }
 
-      // normal clear
-      group.forEach(i => toClear.add(i));
+    // normal clear (3-match or non-ignara)
+    group.forEach(i => toClear.add(i));
+  });
+
+  clearMatches([...toClear]);
+
+  setTimeout(() => {
+    applyGravityAnimated(() => {
+      const next = findMatchesDetailed();
+      if (next.length) resolveBoard(next);
+      else {
+        isResolving = false;
+        isInitPhase = false;
+      }
     });
-
-    clearMatches([...toClear]);
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.length) resolveBoard(next);
-        else {
-          isResolving = false;
-          isInitPhase = false;
-        }
-      });
-    }, 120);
-  }
+  }, 120);
+}
 
   function clearMatches(list) {
     list.forEach(i => {
