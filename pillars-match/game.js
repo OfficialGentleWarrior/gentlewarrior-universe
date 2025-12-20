@@ -291,16 +291,17 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(done, 180);
   }
 
-  /* ---------- INIT ---------- */
-  createGrid();
+  /*/* ---------- INIT ---------- */
+createGrid();
 
-  setTimeout(() => {
-    const init = findMatchesDetailed();
-    if (init.matches.length) resolveBoard(init);
-    else {
-      isResolving = false;
-      isInitPhase = false;
-    }
-  }, 0);
+/* 🔥 TEMP TEST: force ignara core glow */
+tiles[24].classList.add("ignara-core");
 
-});
+setTimeout(() => {
+  const init = findMatchesDetailed();
+  if (init.matches.length) resolveBoard(init);
+  else {
+    isResolving = false;
+    isInitPhase = false;
+  }
+}, 0);
