@@ -82,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     createGrid();
     updateHUD();
-
     setTimeout(resolveInitMatches, 0);
   }
 
@@ -260,6 +259,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
+     ✨ SPARKLE EFFECT
+  ========================== */
+
+  function spawnSparkle(tile) {
+    const sparkle = document.createElement("div");
+    sparkle.style.position = "absolute";
+    sparkle.style.width = "10px";
+    sparkle.style.height = "10px";
+    sparkle.style.borderRadius = "50%";
+    sparkle.style.pointerEvents = "none";
+    sparkle.style.background =
+      "radial-gradient(circle, #fff, rgba(255,255,255,0.2), transparent)";
+
+    const rect = tile.getBoundingClientRect();
+    sparkle.style.left = rect.left + rect.width / 2 + "px";
+    sparkle.style.top = rect.top + rect.height / 2 + "px";
+
+    document.body.appendChild(sparkle);
+
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 20 + Math.random() * 20;
+
+    sparkle.animate([
+      { transform: "scale(0.5)", opacity: 1 },
+      {
+        transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(1.2)`,
+        opacity: 0
+      }
+    ], {
+      duration: 400,
+      easing: "ease-out"
+    });
+
+    setTimeout(() => sparkle.remove(), 420);
+  }
+
+  /* =========================
      RESOLUTION
   ========================== */
 
@@ -276,7 +312,10 @@ document.addEventListener("DOMContentLoaded", () => {
                  600 + (size - 6) * 100;
       }
 
-      group.forEach(i => toClear.add(i));
+      group.forEach(i => {
+        toClear.add(i);
+        spawnSparkle(tiles[i]); // ✨ sparkle here
+      });
     });
 
     updateHUD();
@@ -310,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     GRAVITY (FIXED & SAFE)
+     GRAVITY
   ========================== */
 
   function applyGravityAnimated(done) {
@@ -319,9 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") {
-          newColumn.push(t.dataset.pillar);
-        }
+        if (t.dataset.pillar !== "empty") newColumn.push(t.dataset.pillar);
       }
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
@@ -332,10 +369,6 @@ document.addEventListener("DOMContentLoaded", () => {
         t.src = `../assets/pillars/${p}.png`;
         t.style.opacity = "1";
         t.style.pointerEvents = "auto";
-
-        t.style.transition = "transform 0.2s ease";
-        t.style.transform = "translateY(-14px)";
-        setTimeout(() => (t.style.transform = ""), 20);
       }
     }
 
