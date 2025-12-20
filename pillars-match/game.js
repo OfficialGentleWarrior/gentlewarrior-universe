@@ -172,12 +172,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 150);
   }
 
-  /* ---------- GRAVITY ---------- */
+  /* ---------- GRAVITY + REFILL ---------- */
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
 
-      // collect non-empty tiles from bottom to top
+      // collect non-empty tiles
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
         if (tile.dataset.pillar !== "empty") {
@@ -185,21 +185,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // drop tiles
+      // drop + refill from top
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
-        const pillar = stack.shift() || "empty";
+        const pillar = stack.shift() || randomPillar();
 
         tile.dataset.pillar = pillar;
-
-        if (pillar === "empty") {
-          tile.style.opacity = "0";
-          tile.style.pointerEvents = "none";
-        } else {
-          tile.src = `../assets/pillars/${pillar}.png`;
-          tile.style.opacity = "1";
-          tile.style.pointerEvents = "auto";
-        }
+        tile.src = `../assets/pillars/${pillar}.png`;
+        tile.style.opacity = "1";
+        tile.style.pointerEvents = "auto";
       }
     }
   }
