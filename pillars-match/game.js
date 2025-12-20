@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
+  let isResolving = false;
 
   /* ---------- helpers ---------- */
   function randomPillar() {
@@ -56,6 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- interaction ---------- */
   function onTileClick(tile) {
+    if (isResolving) return;
+
     if (!selectedTile) {
       selectTile(tile);
       return;
@@ -77,7 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // invalid move → revert
         setTimeout(() => swapTiles(selectedTile, tile), 150);
       } else {
-        clearMatches(matches);
+        isResolving = true;
+        resolveBoard(matches);
       }
     }
 
@@ -157,6 +161,25 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
+  /* ---------- CASCADE RESOLUTION ---------- */
+  function resolveBoard(initialMatches) {
+    clearMatches(initialMatches);
+
+    setTimeout(() => {
+      applyGravity();
+
+      setTimeout(() => {
+        const newMatches = findMatches();
+        if (newMatches.length > 0) {
+          resolveBoard(newMatches); // 🔁 cascade
+        } else {
+          isResolving = false; // unlock input
+        }
+      }, 150);
+
+    }, 150);
+  }
+
   /* ---------- CLEAR MATCHES ---------- */
   function clearMatches(indices) {
     indices.forEach(i => {
@@ -165,11 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tile.style.opacity = "0";
       tile.style.pointerEvents = "none";
     });
-
-    // apply gravity after clear
-    setTimeout(() => {
-      applyGravity();
-    }, 150);
   }
 
   /* ---------- GRAVITY + REFILL ---------- */
@@ -185,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // drop + refill from top
+      // drop + refill
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const tile = tiles[r * GRID_SIZE + c];
         const pillar = stack.shift() || randomPillar();
