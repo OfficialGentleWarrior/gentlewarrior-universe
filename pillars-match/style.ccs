@@ -2,9 +2,9 @@
 html, body {
   height: 100%;
   margin: 0;
-  overflow: hidden;              /* 🔒 no page scroll */
-  touch-action: manipulation;    /* better mobile tap */
-  overscroll-behavior: none;     /* no bounce */
+  overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 * {
@@ -66,11 +66,10 @@ header p {
   border-radius: 10px;
   cursor: pointer;
 
-  /* 🔥 critical fixes */
   position: relative;
-  overflow: visible;                 /* allow ignara ring to render */
+  overflow: visible;
   will-change: transform, box-shadow;
-  transform: translateZ(0);           /* force GPU compositing */
+  transform: translateZ(0);
 
   transition: box-shadow 0.12s ease;
 }
@@ -116,31 +115,64 @@ header p {
   }
 }
 
-/* ---------- IGNARA CORE VISUAL ---------- */
+/* =====================================================
+   🔥 IGNARA CORE — FIXED & VISIBLE
+   ===================================================== */
+
+/* ---------- IGNARA CORE (IDLE) ---------- */
+.tile.ignara-core {
+  z-index: 2;
+}
+
 .tile.ignara-core::after {
   content: "";
   position: absolute;
-  inset: -4px;
-  border-radius: 12px;
-  border: 2px solid rgba(255, 120, 60, 0.75);
+  inset: -5px;
+  border-radius: 14px;
 
-  opacity: 0;
+  border: 2px solid rgba(255, 120, 60, 0.95);
+  box-shadow:
+    0 0 8px rgba(255, 120, 60, 0.65),
+    0 0 16px rgba(255, 90, 40, 0.45);
+
+  opacity: 1;
   pointer-events: none;
 
-  animation: ignaraPulse 1.6s ease-out infinite;
-  will-change: transform, opacity;   /* 🔒 animation stability */
+  animation: ignaraIdle 2.2s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
-@keyframes ignaraPulse {
+@keyframes ignaraIdle {
   0% {
-    transform: scale(0.85);
-    opacity: 0.8;
+    transform: scale(0.95);
+    opacity: 0.9;
   }
-  70% {
-    transform: scale(1.15);
-    opacity: 0;
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
   }
   100% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+}
+
+/* ---------- IGNARA EXPLOSION ---------- */
+.tile.ignara-explode::after {
+  animation: ignaraExplode 0.35s ease-out forwards;
+}
+
+@keyframes ignaraExplode {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
     opacity: 0;
   }
 }
