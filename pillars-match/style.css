@@ -72,7 +72,7 @@ header p {
   will-change: transform;
   transform: translateZ(0);
 
-  /* IMPORTANT: no default glow here */
+  /* No default glow */
   box-shadow: none;
   outline: none;
 }
@@ -82,7 +82,7 @@ header p {
   box-shadow: 0 0 0 3px #ffd86b;
 }
 
-/* ---------- MATCHED (NORMAL MATCH FEEDBACK) ---------- */
+/* ---------- MATCHED (NORMAL FEEDBACK) ---------- */
 .tile.matched {
   box-shadow: 0 0 16px 3px rgba(255, 216, 107, 0.8);
 }
@@ -119,24 +119,26 @@ header p {
 }
 
 /* =====================================================
-   🔥 IGNARA CORE — SYMBOL GLOW ONLY (FINAL)
+   🟢 OVERLAYS (LEVEL COMPLETE / FAIL)
    ===================================================== */
 
-/*
-IMPORTANT NOTES:
-- NO tile outline
-- NO tile box-shadow
-- Glow applies ONLY to the image (symbol)
-- Uses drop-shadow so alpha of PNG glows naturally
-*/
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
 
-.tile.ignara-core {
-  outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
+.overlay.hidden {
+  display: none;
+}
 
-  filter:
-    drop-shadow(0 0 6px rgba(255, 120, 60, 0.95))
-    drop-shadow(0 0 12px rgba(255, 90, 40, 0.75))
-    drop-shadow(0 0 20px rgba(255, 70, 30, 0.55));
+.overlay-box {
+  background: #0f3d2e;
+  padding: 20px 26px;
+  border-radius: 12px;
+  text-align: center;
 }
