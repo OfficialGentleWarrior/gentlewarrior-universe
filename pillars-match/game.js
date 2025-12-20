@@ -16,17 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTile = null;
   let isResolving = false;
 
-  /* ---------- FAST IMAGE PRELOAD ---------- */
+  /* ---------- NON-BLOCKING IMAGE PRELOAD ---------- */
   function preloadImages() {
-    return Promise.all(
-      PILLARS.map(name => {
-        return new Promise(resolve => {
-          const img = new Image();
-          img.onload = resolve;
-          img.src = `../assets/pillars/${name}.png`;
-        });
-      })
-    );
+    PILLARS.forEach(name => {
+      const img = new Image();
+      img.src = `../assets/pillars/${name}.png`;
+    });
   }
 
   /* ---------- helpers ---------- */
@@ -54,12 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
       const pillar = randomPillar();
-
       const img = document.createElement("img");
+
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = pillar;
       img.src = `../assets/pillars/${pillar}.png`;
+      img.draggable = false;
 
       img.addEventListener("click", () => onTileClick(img));
 
@@ -73,12 +69,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isResolving) return;
 
     if (!selectedTile) {
-      selectTile(tile);
+      selectedTile = tile;
+      tile.classList.add("selected");
       return;
     }
 
     if (tile === selectedTile) {
-      deselectTile();
+      tile.classList.remove("selected");
+      selectedTile = null;
       return;
     }
 
@@ -97,18 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    deselectTile();
-  }
-
-  function selectTile(tile) {
-    selectedTile = tile;
-    tile.classList.add("selected");
-  }
-
-  function deselectTile() {
-    if (selectedTile) {
-      selectedTile.classList.remove("selected");
-    }
+    selectedTile.classList.remove("selected");
     selectedTile = null;
   }
 
@@ -128,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatches() {
     const matches = new Set();
 
+    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
@@ -146,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
@@ -195,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyGravity() {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
+
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
         if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
@@ -203,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
         const p = stack.shift() || randomPillar();
+
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
         t.style.opacity = "1";
@@ -211,9 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ---------- INIT (FAST) ---------- */
-  preloadImages().then(() => {
-    createGrid();   // 🔥 instant render, no image lag
-  });
+  /* ---------- INIT ---------- */
+  preloadImages();   // background only, no blocking
+  createGrid();      // ALWAYS renders
 
 });
