@@ -5,10 +5,10 @@
   <title>Pillar Match</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- CSS (cache-busted) -->
-  <link rel="stylesheet" href="./style.css?v=4">
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="./style.css?v=5">
 
-  <!-- Inline fallback (keeps layout alive even if CSS fails) -->
+  <!-- Inline fallback (layout safety net) -->
   <style>
     body {
       margin: 0;
@@ -39,28 +39,67 @@
       height: 56px;
       border-radius: 10px;
     }
+
+    /* fallback progress bar */
+    .progress-wrap {
+      width: 90%;
+      height: 8px;
+      margin: 10px auto;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #ffd86b;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- HEADER -->
   <header>
     <h1>Pillar Match</h1>
     <p>Match the Six Pillars</p>
   </header>
 
+  <!-- HUD -->
   <div class="hud">
     <div>Level: <span id="level">1</span></div>
     <div>Score: <span id="score">0</span></div>
     <div>Moves: <span id="moves">20</span></div>
   </div>
 
+  <!-- PROGRESS BAR -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- GAME GRID -->
   <main class="game-wrapper">
     <div class="grid"></div>
   </main>
 
-  <!-- JS MUST LOAD AFTER DOM -->
-  <script src="./game.js?v=4" defer></script>
+  <!-- LEVEL COMPLETE OVERLAY -->
+  <div id="levelOverlay" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>Level Complete</h2>
+      <button id="nextLevelBtn">Next Level</button>
+    </div>
+  </div>
+
+  <!-- FAIL OVERLAY -->
+  <div id="failOverlay" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>Out of Moves</h2>
+      <button id="retryBtn">Retry</button>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="./game.js?v=5" defer></script>
 
 </body>
 </html>
