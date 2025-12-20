@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const levelOverlay = document.getElementById("levelOverlay");
   const failOverlay = document.getElementById("failOverlay");
+  const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
      STATE
@@ -41,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let tiles = [];
   let selectedTile = null;
   let isResolving = true;
+  let isInitPhase = true; // 🔑 IMPORTANT FIX
 
   let score = 0;
   let level = 1;
@@ -61,19 +63,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showLevelComplete() {
+    isResolving = true;
     levelOverlay.classList.remove("hidden");
   }
 
   function showFail() {
+    isResolving = true;
     failOverlay.classList.remove("hidden");
   }
 
-  function nextLevel() {
-    level++;
+  function resetLevel() {
     moves = LEVEL_CONFIG.baseMoves;
+    createGrid();
     updateHUD();
-    levelOverlay.classList.add("hidden");
+
+    setTimeout(() => {
+      const init = findMatchesDetailed();
+      if (init.length) resolveBoard(init);
+      else {
+        isResolving = false;
+        isInitPhase = false;
+      }
+    }, 0);
   }
+
+  /* =========================
+     EVENTS
+  ========================== */
+
+  nextBtn?.addEventListener("click", () => {
+    levelOverlay.classList.add("hidden");
+    level++;
+    resetLevel();
+  });
 
   /* =========================
      HELPERS
@@ -256,11 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
     groups.forEach(group => {
       const size = group.length;
 
-      // SCORE
-      score += size === 3 ? 100 :
-               size === 4 ? 200 :
-               size === 5 ? 400 :
-               600 + (size - 6) * 100;
+      // 🚫 NO SCORE DURING INIT
+      if (!isInitPhase) {
+        score += size === 3 ? 100 :
+                 size === 4 ? 200 :
+                 size === 5 ? 400 :
+                 600 + (size - 6) * 100;
+      }
 
       group.forEach(i => toClear.add(i));
 
@@ -291,6 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (next.length) resolveBoard(next);
         else {
           isResolving = false;
+          isInitPhase = false;
 
           if (score >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
           else if (moves <= 0) showFail();
@@ -344,7 +369,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     const init = findMatchesDetailed();
     if (init.length) resolveBoard(init);
-    else isResolving = false;
+    else {
+      isResolving = false;
+      isInitPhase = false;
+    }
   }, 0);
 
 });
