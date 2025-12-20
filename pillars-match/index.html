@@ -5,10 +5,41 @@
   <title>Pillar Match</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- MAIN CSS -->
-  <link rel="stylesheet" href="./style.css">
+  <!-- CSS (cache-busted) -->
+  <link rel="stylesheet" href="./style.css?v=4">
 
-  <!-- ❌ REMOVE INLINE GRID/TILE CSS (was overriding effects) -->
+  <!-- Inline fallback (keeps layout alive even if CSS fails) -->
+  <style>
+    body {
+      margin: 0;
+      background: #0b2f22;
+      color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      text-align: center;
+    }
+    header { padding: 12px 8px; }
+    .hud {
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      background: rgba(0,0,0,0.25);
+    }
+    .game-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 56px);
+      gap: 6px;
+    }
+    .tile {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
@@ -24,13 +55,12 @@
     <div>Moves: <span id="moves">20</span></div>
   </div>
 
-  <!-- 🔑 GRID MUST EXIST -->
   <main class="game-wrapper">
     <div class="grid"></div>
   </main>
 
-  <!-- JS AFTER DOM (defer is OK) -->
-  <script src="./game.js"></script>
+  <!-- JS MUST LOAD AFTER DOM -->
+  <script src="./game.js?v=4" defer></script>
 
 </body>
 </html>
