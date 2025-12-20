@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const GRID_SIZE = 7;
-  const TILE_SIZE = 56 + 6;
+  const TILE_SIZE = 56 + 6; // tile + gap
   const gridEl = document.querySelector(".grid");
 
   let tiles = [];
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isResolving = true;
   let isInitPhase = true;
 
-  /* ---------- PRELOAD ---------- */
+  /* ---------- FAST IMAGE PRELOAD ---------- */
   PILLARS.forEach(p => {
     const img = new Image();
     img.src = `../assets/pillars/${p}.png`;
@@ -45,13 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const p = randomPillar();
       const img = document.createElement("img");
+      const p = randomPillar();
 
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = p;
-      img.dataset.special = "";
       img.src = `../assets/pillars/${p}.png`;
       img.draggable = false;
 
@@ -80,8 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const a = selectedTile;
     const b = tile;
+    const i1 = Number(a.dataset.index);
+    const i2 = Number(b.dataset.index);
 
-    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) {
+    if (!isAdjacent(i1, i2)) {
       a.classList.remove("selected");
       selectedTile = null;
       return;
@@ -92,25 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
     animateSwap(a, b, () => {
       commitSwap(a, b);
 
-      // 🔥 IGNARA CORE ACTIVATION
-      if (a.dataset.special === "ignara") {
-        triggerIgnara(+a.dataset.index);
-        return;
-      }
-      if (b.dataset.special === "ignara") {
-        triggerIgnara(+b.dataset.index);
-        return;
-      }
-
-      const result = findMatchesDetailed();
-
-      if (result.matches.length === 0) {
+      const matches = findMatches();
+      if (matches.length === 0) {
         animateSwap(a, b, () => {
           commitSwap(a, b);
           isResolving = false;
         });
       } else {
-        resolveBoard(result);
+        resolveBoard(matches);
       }
     });
 
@@ -125,13 +115,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const dx = (p2.col - p1.col) * TILE_SIZE;
     const dy = (p2.row - p1.row) * TILE_SIZE;
 
-    a.style.transition = b.style.transition = "transform 0.15s ease";
+    a.style.transition = "transform 0.15s ease";
+    b.style.transition = "transform 0.15s ease";
+
     a.style.transform = `translate(${dx}px, ${dy}px)`;
     b.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
     setTimeout(() => {
-      a.style.transition = b.style.transition = "";
-      a.style.transform = b.style.transform = "";
+      a.style.transition = "";
+      b.style.transition = "";
+      a.style.transform = "";
+      b.style.transform = "";
       done();
     }, 150);
   }
@@ -148,107 +142,49 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- MATCH DETECTION ---------- */
-  function findMatchesDetailed() {
-    const matches = [];
+  function findMatches() {
+    const m = new Set();
 
-    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
-      let count = 1;
-      for (let c = 1; c <= GRID_SIZE; c++) {
-        const cur = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
-
-        if (cur === prev) count++;
+      let c = 1;
+      for (let x = 1; x <= GRID_SIZE; x++) {
+        const cur = x < GRID_SIZE ? tiles[r * GRID_SIZE + x].dataset.pillar : null;
+        const prev = tiles[r * GRID_SIZE + x - 1].dataset.pillar;
+        if (cur === prev) c++;
         else {
-          if (count >= 3) {
-            const group = [];
-            for (let k = 0; k < count; k++)
-              group.push(r * GRID_SIZE + (c - 1 - k));
-            matches.push(group);
-          }
-          count = 1;
+          if (c >= 3) for (let k = 0; k < c; k++) m.add(r * GRID_SIZE + x - 1 - k);
+          c = 1;
         }
       }
     }
 
-    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
-      let count = 1;
-      for (let r = 1; r <= GRID_SIZE; r++) {
-        const cur = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
-
-        if (cur === prev) count++;
+      let r = 1;
+      for (let y = 1; y <= GRID_SIZE; y++) {
+        const cur = y < GRID_SIZE ? tiles[y * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[(y - 1) * GRID_SIZE + c].dataset.pillar;
+        if (cur === prev) r++;
         else {
-          if (count >= 3) {
-            const group = [];
-            for (let k = 0; k < count; k++)
-              group.push((r - 1 - k) * GRID_SIZE + c);
-            matches.push(group);
-          }
-          count = 1;
+          if (r >= 3) for (let k = 0; k < r; k++) m.add((y - 1 - k) * GRID_SIZE + c);
+          r = 1;
         }
       }
     }
 
-    return { matches };
-  }
-
-  /* ---------- IGNARA EXPLOSION ---------- */
-  function triggerIgnara(index) {
-    const { row, col } = indexToRowCol(index);
-    const blast = [];
-
-    for (let dr = -1; dr <= 1; dr++) {
-      for (let dc = -1; dc <= 1; dc++) {
-        const r = row + dr;
-        const c = col + dc;
-        if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE)
-          blast.push(r * GRID_SIZE + c);
-      }
-    }
-
-    clearMatches(blast);
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.matches.length) resolveBoard(next);
-        else isResolving = false;
-      });
-    }, 120);
+    return [...m];
   }
 
   /* ---------- RESOLUTION ---------- */
-  function resolveBoard(result) {
-    const toClear = new Set();
-
-    result.matches.forEach(group => {
-      if (group.length === 4) {
-        const core = group[1];
-        const t = tiles[core];
-
-        if (t.dataset.pillar === "ignara") {
-          t.dataset.special = "ignara";
-          t.classList.add("ignara-core");
-          group.forEach(i => { if (i !== core) toClear.add(i); });
-        } else {
-          group.forEach(i => toClear.add(i));
-        }
-      } else {
-        group.forEach(i => toClear.add(i));
-      }
-    });
-
-    clearMatches([...toClear]);
+  function resolveBoard(matches) {
+    clearMatches(matches);
 
     setTimeout(() => {
       applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.matches.length) resolveBoard(next);
+        const next = findMatches();
+        if (next.length) resolveBoard(next);
         else {
           isResolving = false;
-          isInitPhase = false;
+          if (isInitPhase) isInitPhase = false;
         }
       });
     }, 120);
@@ -257,18 +193,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function clearMatches(list) {
     list.forEach(i => {
       const t = tiles[i];
-      if (t.dataset.special === "ignara") return; // 🔒 keep core
-
       t.dataset.pillar = "empty";
-      t.dataset.special = "";
-      t.classList.remove("ignara-core");
       t.style.opacity = "0";
       t.style.pointerEvents = "none";
     });
   }
 
-  /* ---------- GRAVITY ---------- */
+  /* ---------- GRAVITY (ANIMATED) ---------- */
   function applyGravityAnimated(done) {
+    let maxDelay = 0;
+
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
 
@@ -279,29 +213,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        const p = stack.shift() || randomPillar();
+        const newPillar = stack.shift() || randomPillar();
 
-        t.dataset.pillar = p;
-        t.src = `../assets/pillars/${p}.png`;
+        const oldRow = indexToRowCol(+t.dataset.index).row;
+        const newRow = r;
+        const dy = (oldRow - newRow) * TILE_SIZE;
+
+        t.dataset.pillar = newPillar;
+        t.src = `../assets/pillars/${newPillar}.png`;
         t.style.opacity = "1";
         t.style.pointerEvents = "auto";
+
+        if (dy !== 0) {
+          t.style.transform = `translateY(${dy}px)`;
+          t.style.transition = "transform 0.18s ease-out";
+          maxDelay = 180;
+
+          requestAnimationFrame(() => {
+            t.style.transform = "";
+          });
+        }
       }
     }
 
-    setTimeout(done, 180);
+    setTimeout(() => {
+      tiles.forEach(t => {
+        t.style.transition = "";
+        t.style.transform = "";
+      });
+      done();
+    }, maxDelay);
   }
 
   /* ---------- INIT ---------- */
-createGrid();
+  createGrid();
 
-/* 🔥 TEMP TEST: force ignara core glow */
-tiles[24].classList.add("ignara-core");
+  setTimeout(() => {
+    const initMatches = findMatches();
+    if (initMatches.length) resolveBoard(initMatches);
+    else {
+      isResolving = false;
+      isInitPhase = false;
+    }
+  }, 0);
 
-setTimeout(() => {
-  const init = findMatchesDetailed();
-  if (init.matches.length) resolveBoard(init);
-  else {
-    isResolving = false;
-    isInitPhase = false;
-  }
-}, 0);
+});
