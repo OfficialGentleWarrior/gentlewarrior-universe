@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const GRID_SIZE = 7;
-  const TILE_SIZE = 56 + 6;
+  const TILE_SIZE = 62;
 
   const LEVEL_CONFIG = {
     baseMoves: 20,
@@ -58,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     levelEl.textContent = level;
     movesEl.textContent = moves;
 
-    const target = LEVEL_CONFIG.scoreTarget(level);
     const gained = score - levelStartScore;
+    const target = LEVEL_CONFIG.scoreTarget(level);
     progressBar.style.width = Math.min(100, (gained / target) * 100) + "%";
   }
 
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHUD();
 
     setTimeout(() => {
-      const init = findMatchesDetailed();
+      const init = findMatches();
       if (init.length) resolveBoard(init);
       else {
         isResolving = false;
@@ -102,19 +102,19 @@ document.addEventListener("DOMContentLoaded", () => {
      HELPERS
   ========================== */
 
-  function randomPillar() {
-    return PILLARS[Math.floor(Math.random() * PILLARS.length)];
-  }
+  const randomPillar = () =>
+    PILLARS[Math.floor(Math.random() * PILLARS.length)];
 
-  function indexToRowCol(i) {
-    return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
-  }
+  const indexToRowCol = i => ({
+    row: Math.floor(i / GRID_SIZE),
+    col: i % GRID_SIZE
+  });
 
-  function isAdjacent(i1, i2) {
-    const a = indexToRowCol(i1);
-    const b = indexToRowCol(i2);
-    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
-  }
+  const isAdjacent = (a, b) => {
+    const A = indexToRowCol(a);
+    const B = indexToRowCol(b);
+    return Math.abs(A.row - B.row) + Math.abs(A.col - B.col) === 1;
+  };
 
   /* =========================
      GRID
@@ -173,9 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animateSwap(a, b, () => {
       commitSwap(a, b);
+      const matches = findMatches();
 
-      const groups = findMatchesDetailed();
-      if (!groups.length) {
+      if (!matches.length) {
         animateSwap(a, b, () => {
           commitSwap(a, b);
           isResolving = false;
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         moves--;
         updateHUD();
-        resolveBoard(groups);
+        resolveBoard(matches);
       }
     });
 
@@ -198,34 +198,33 @@ document.addEventListener("DOMContentLoaded", () => {
   function animateSwap(a, b, done) {
     const p1 = indexToRowCol(+a.dataset.index);
     const p2 = indexToRowCol(+b.dataset.index);
+
     const dx = (p2.col - p1.col) * TILE_SIZE;
     const dy = (p2.row - p1.row) * TILE_SIZE;
 
-    a.style.transition = b.style.transition = "transform 0.15s ease";
     a.style.transform = `translate(${dx}px, ${dy}px)`;
     b.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
     setTimeout(() => {
-      a.style.transition = b.style.transition = "";
-      a.style.transform = b.style.transform = "";
+      a.style.transform = "";
+      b.style.transform = "";
       done();
     }, 150);
   }
 
   function commitSwap(a, b) {
-    const p1 = a.dataset.pillar;
-    const p2 = b.dataset.pillar;
-    a.dataset.pillar = p2;
-    b.dataset.pillar = p1;
-    a.src = `../assets/pillars/${p2}.png`;
-    b.src = `../assets/pillars/${p1}.png`;
+    const t = a.dataset.pillar;
+    a.dataset.pillar = b.dataset.pillar;
+    b.dataset.pillar = t;
+    a.src = `../assets/pillars/${a.dataset.pillar}.png`;
+    b.src = `../assets/pillars/${b.dataset.pillar}.png`;
   }
 
   /* =========================
-     MATCH DETECTION
+     MATCHING
   ========================== */
 
-  function findMatchesDetailed() {
+  function findMatches() {
     const groups = [];
 
     for (let r = 0; r < GRID_SIZE; r++) {
@@ -233,11 +232,13 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let c = 1; c <= GRID_SIZE; c++) {
         const cur = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
+
         if (cur === prev) count++;
         else {
           if (count >= 3) {
             const g = [];
-            for (let k = 0; k < count; k++) g.push(r * GRID_SIZE + c - 1 - k);
+            for (let k = 0; k < count; k++)
+              g.push(r * GRID_SIZE + c - 1 - k);
             groups.push(g);
           }
           count = 1;
@@ -250,11 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let r = 1; r <= GRID_SIZE; r++) {
         const cur = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
+
         if (cur === prev) count++;
         else {
           if (count >= 3) {
             const g = [];
-            for (let k = 0; k < count; k++) g.push((r - 1 - k) * GRID_SIZE + c);
+            for (let k = 0; k < count; k++)
+              g.push((r - 1 - k) * GRID_SIZE + c);
             groups.push(g);
           }
           count = 1;
@@ -266,84 +269,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     NO MOVE DETECTION
-  ========================== */
-
-  function hasValidMove() {
-    for (let i = 0; i < tiles.length; i++) {
-      const { row, col } = indexToRowCol(i);
-
-      const neighbors = [
-        [row, col + 1],
-        [row + 1, col]
-      ];
-
-      for (const [r, c] of neighbors) {
-        if (r >= GRID_SIZE || c >= GRID_SIZE) continue;
-
-        const j = r * GRID_SIZE + c;
-        swapData(i, j);
-        if (findMatchesDetailed().length) {
-          swapData(i, j);
-          return true;
-        }
-        swapData(i, j);
-      }
-    }
-    return false;
-  }
-
-  function swapData(i, j) {
-    const a = tiles[i];
-    const b = tiles[j];
-    const tmp = a.dataset.pillar;
-    a.dataset.pillar = b.dataset.pillar;
-    b.dataset.pillar = tmp;
-  }
-
-  function ensurePlayableBoard() {
-    if (hasValidMove()) return;
-
-    // reshuffle silently
-    const pool = tiles.map(t => t.dataset.pillar);
-    pool.sort(() => Math.random() - 0.5);
-
-    tiles.forEach((t, i) => {
-      t.dataset.pillar = pool[i];
-      t.src = `../assets/pillars/${pool[i]}.png`;
-    });
-
-    setTimeout(() => {
-      const matches = findMatchesDetailed();
-      if (matches.length) resolveBoard(matches);
-      else ensurePlayableBoard();
-    }, 0);
-  }
-
-  /* =========================
-     RESOLUTION
+     RESOLUTION (WITH ANIMATION)
   ========================== */
 
   function resolveBoard(groups) {
     const toClear = new Set();
 
-    groups.forEach(group => {
-      const size = group.length;
+    groups.forEach(g => {
       if (!isInitPhase) {
-        score += size === 3 ? 100 :
-                 size === 4 ? 200 :
-                 size === 5 ? 400 :
-                 600 + (size - 6) * 100;
+        score += g.length === 3 ? 100 :
+                 g.length === 4 ? 200 :
+                 g.length === 5 ? 400 :
+                 600;
       }
-      group.forEach(i => toClear.add(i));
+      g.forEach(i => toClear.add(i));
     });
 
     updateHUD();
-    clearTiles([...toClear]);
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
+    animateClear([...toClear], () => {
+      applyGravity(() => {
+        const next = findMatches();
         if (next.length) resolveBoard(next);
         else {
           isResolving = false;
@@ -355,35 +300,99 @@ document.addEventListener("DOMContentLoaded", () => {
           else if (moves <= 0) showFail();
         }
       });
-    }, 120);
-  }
-
-  function clearTiles(list) {
-    list.forEach(i => {
-      const t = tiles[i];
-      t.dataset.pillar = "empty";
-      t.style.opacity = "0";
-      t.style.pointerEvents = "none";
     });
   }
 
-  function applyGravityAnimated(done) {
+  function animateClear(list, done) {
+    list.forEach(i => {
+      const t = tiles[i];
+      t.style.transition = "transform 0.15s, opacity 0.15s";
+      t.style.transform = "scale(0.5)";
+      t.style.opacity = "0";
+    });
+
+    setTimeout(() => {
+      list.forEach(i => tiles[i].dataset.pillar = "empty");
+      done();
+    }, 160);
+  }
+
+  /* =========================
+     GRAVITY (FALL ANIMATION)
+  ========================== */
+
+  function applyGravity(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
+      let write = GRID_SIZE - 1;
+
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
+        if (t.dataset.pillar !== "empty") {
+          const target = tiles[write * GRID_SIZE + c];
+          target.dataset.pillar = t.dataset.pillar;
+          target.src = t.src;
+          write--;
+        }
       }
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r * GRID_SIZE + c];
-        const p = stack.shift() || randomPillar();
+
+      while (write >= 0) {
+        const t = tiles[write * GRID_SIZE + c];
+        const p = randomPillar();
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
-        t.style.opacity = "1";
-        t.style.pointerEvents = "auto";
+        t.style.transform = `translateY(-${TILE_SIZE}px)`;
+        setTimeout(() => t.style.transform = "", 20);
+        write--;
       }
     }
-    setTimeout(done, 180);
+
+    setTimeout(done, 200);
+  }
+
+  /* =========================
+     NO MOVE DETECTION
+  ========================== */
+
+  function ensurePlayableBoard() {
+    if (hasValidMove()) return;
+
+    gridEl.classList.add("reshuffle");
+    setTimeout(() => {
+      const pool = tiles.map(t => t.dataset.pillar).sort(() => Math.random() - 0.5);
+      tiles.forEach((t, i) => {
+        t.dataset.pillar = pool[i];
+        t.src = `../assets/pillars/${pool[i]}.png`;
+      });
+      gridEl.classList.remove("reshuffle");
+
+      const m = findMatches();
+      if (m.length) resolveBoard(m);
+      else ensurePlayableBoard();
+    }, 250);
+  }
+
+  function hasValidMove() {
+    for (let i = 0; i < tiles.length; i++) {
+      const { row, col } = indexToRowCol(i);
+      const dirs = [[1,0],[0,1]];
+      for (const [dr,dc] of dirs) {
+        const r = row + dr, c = col + dc;
+        if (r >= GRID_SIZE || c >= GRID_SIZE) continue;
+        swapData(i, r * GRID_SIZE + c);
+        if (findMatches().length) {
+          swapData(i, r * GRID_SIZE + c);
+          return true;
+        }
+        swapData(i, r * GRID_SIZE + c);
+      }
+    }
+    return false;
+  }
+
+  function swapData(a, b) {
+    const t = tiles[a].dataset.pillar;
+    tiles[a].dataset.pillar = tiles[b].dataset.pillar;
+    tiles[b].dataset.pillar = t;
   }
 
   /* =========================
