@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = p;
+      img.dataset.special = "";
       img.src = `../assets/pillars/${p}.png`;
       img.draggable = false;
 
@@ -91,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     animateSwap(a, b, () => {
       commitSwap(a, b);
 
-      // 🔥 IGNARA TRIGGER ON SWAP
+      // 🔥 IGNARA CORE ACTIVATION
       if (a.dataset.special === "ignara") {
         triggerIgnara(+a.dataset.index);
         return;
@@ -146,10 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     b.src = `../assets/pillars/${p1}.png`;
   }
 
-  /* ---------- MATCH DETECTION (DETAILED) ---------- */
+  /* ---------- MATCH DETECTION ---------- */
   function findMatchesDetailed() {
     const matches = [];
-    const specials = [];
 
     // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
@@ -162,11 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
         else {
           if (count >= 3) {
             const group = [];
-            for (let k = 0; k < count; k++) {
+            for (let k = 0; k < count; k++)
               group.push(r * GRID_SIZE + (c - 1 - k));
-            }
             matches.push(group);
-            if (count === 4) specials.push(group[1]);
           }
           count = 1;
         }
@@ -184,18 +182,16 @@ document.addEventListener("DOMContentLoaded", () => {
         else {
           if (count >= 3) {
             const group = [];
-            for (let k = 0; k < count; k++) {
+            for (let k = 0; k < count; k++)
               group.push((r - 1 - k) * GRID_SIZE + c);
-            }
             matches.push(group);
-            if (count === 4) specials.push(group[1]);
           }
           count = 1;
         }
       }
     }
 
-    return { matches, specials };
+    return { matches };
   }
 
   /* ---------- IGNARA EXPLOSION ---------- */
@@ -207,18 +203,20 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let dc = -1; dc <= 1; dc++) {
         const r = row + dr;
         const c = col + dc;
-        if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE) {
+        if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE)
           blast.push(r * GRID_SIZE + c);
-        }
       }
     }
 
     clearMatches(blast);
-    setTimeout(() => applyGravityAnimated(() => {
-      const next = findMatchesDetailed();
-      if (next.matches.length) resolveBoard(next);
-      else isResolving = false;
-    }), 120);
+
+    setTimeout(() => {
+      applyGravityAnimated(() => {
+        const next = findMatchesDetailed();
+        if (next.matches.length) resolveBoard(next);
+        else isResolving = false;
+      });
+    }, 120);
   }
 
   /* ---------- RESOLUTION ---------- */
@@ -228,10 +226,15 @@ document.addEventListener("DOMContentLoaded", () => {
     result.matches.forEach(group => {
       if (group.length === 4) {
         const core = group[1];
-        const tile = tiles[core];
-        tile.dataset.special = "ignara";
-        tile.classList.add("special", "ignara");
-        group.forEach(i => { if (i !== core) toClear.add(i); });
+        const t = tiles[core];
+
+        if (t.dataset.pillar === "ignara") {
+          t.dataset.special = "ignara";
+          t.classList.add("ignara-core");
+          group.forEach(i => { if (i !== core) toClear.add(i); });
+        } else {
+          group.forEach(i => toClear.add(i));
+        }
       } else {
         group.forEach(i => toClear.add(i));
       }
@@ -254,9 +257,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function clearMatches(list) {
     list.forEach(i => {
       const t = tiles[i];
+      if (t.dataset.special === "ignara") return; // 🔒 keep core
+
       t.dataset.pillar = "empty";
       t.dataset.special = "";
-      t.classList.remove("special", "ignara");
+      t.classList.remove("ignara-core");
       t.style.opacity = "0";
       t.style.pointerEvents = "none";
     });
@@ -264,8 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- GRAVITY ---------- */
   function applyGravityAnimated(done) {
-    let delay = 0;
-
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
 
@@ -285,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    setTimeout(done, delay);
+    setTimeout(done, 180);
   }
 
   /* ---------- INIT ---------- */
