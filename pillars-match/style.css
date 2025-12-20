@@ -123,16 +123,17 @@ header p {
    ===================================================== */
 
 /*
-  IMPORTANT NOTES:
-  - NO tile outline
-  - NO tile box-shadow
-  - Glow applies ONLY to the image (symbol)
-  - Uses drop-shadow so alpha of PNG glows naturally
+IMPORTANT NOTES:
+- NO tile outline
+- NO tile box-shadow
+- Glow applies ONLY to the image (symbol)
+- Uses drop-shadow so alpha of PNG glows naturally
 */
 
 .tile.ignara-core {
   outline: none !important;
   box-shadow: none !important;
+  background: transparent !important;
 
   filter:
     drop-shadow(0 0 6px rgba(255, 120, 60, 0.95))
