@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const GRID_SIZE = 7;
-  const TILE_SIZE = 56 + 6; // tile + gap
+  const TILE_SIZE = 56 + 6;
   const gridEl = document.querySelector(".grid");
 
   let tiles = [];
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isResolving = true;
   let isInitPhase = true;
 
-  /* ---------- FAST IMAGE PRELOAD ---------- */
+  /* ---------- PRELOAD ---------- */
   PILLARS.forEach(p => {
     const img = new Image();
     img.src = `../assets/pillars/${p}.png`;
@@ -45,12 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const img = document.createElement("img");
       const p = randomPillar();
+      const img = document.createElement("img");
 
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = p;
+      img.dataset.special = ""; // 🔑 IMPORTANT
       img.src = `../assets/pillars/${p}.png`;
       img.draggable = false;
 
@@ -79,10 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const a = selectedTile;
     const b = tile;
-    const i1 = Number(a.dataset.index);
-    const i2 = Number(b.dataset.index);
 
-    if (!isAdjacent(i1, i2)) {
+    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) {
       a.classList.remove("selected");
       selectedTile = null;
       return;
@@ -93,14 +92,24 @@ document.addEventListener("DOMContentLoaded", () => {
     animateSwap(a, b, () => {
       commitSwap(a, b);
 
-      const matches = findMatches();
-      if (matches.length === 0) {
+      // 🔥 IGNARA CORE ACTIVATION ON SWAP
+      if (a.dataset.special === "ignara") {
+        triggerIgnara(+a.dataset.index);
+        return;
+      }
+      if (b.dataset.special === "ignara") {
+        triggerIgnara(+b.dataset.index);
+        return;
+      }
+
+      const result = findMatchesDetailed();
+      if (result.length === 0) {
         animateSwap(a, b, () => {
           commitSwap(a, b);
           isResolving = false;
         });
       } else {
-        resolveBoard(matches);
+        resolveBoard(result);
       }
     });
 
@@ -115,17 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const dx = (p2.col - p1.col) * TILE_SIZE;
     const dy = (p2.row - p1.row) * TILE_SIZE;
 
-    a.style.transition = "transform 0.15s ease";
-    b.style.transition = "transform 0.15s ease";
-
+    a.style.transition = b.style.transition = "transform 0.15s ease";
     a.style.transform = `translate(${dx}px, ${dy}px)`;
     b.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
     setTimeout(() => {
-      a.style.transition = "";
-      b.style.transition = "";
-      a.style.transform = "";
-      b.style.transform = "";
+      a.style.transition = b.style.transition = "";
+      a.style.transform = b.style.transform = "";
       done();
     }, 150);
   }
@@ -141,50 +146,115 @@ document.addEventListener("DOMContentLoaded", () => {
     b.src = `../assets/pillars/${p1}.png`;
   }
 
-  /* ---------- MATCH DETECTION ---------- */
-  function findMatches() {
-    const m = new Set();
+  /* ---------- MATCH DETECTION (GROUPED) ---------- */
+  function findMatchesDetailed() {
+    const groups = [];
 
+    // Horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
-      let c = 1;
-      for (let x = 1; x <= GRID_SIZE; x++) {
-        const cur = x < GRID_SIZE ? tiles[r * GRID_SIZE + x].dataset.pillar : null;
-        const prev = tiles[r * GRID_SIZE + x - 1].dataset.pillar;
-        if (cur === prev) c++;
+      let count = 1;
+      for (let c = 1; c <= GRID_SIZE; c++) {
+        const cur = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
+
+        if (cur === prev) count++;
         else {
-          if (c >= 3) for (let k = 0; k < c; k++) m.add(r * GRID_SIZE + x - 1 - k);
-          c = 1;
+          if (count >= 3) {
+            const group = [];
+            for (let k = 0; k < count; k++) {
+              group.push(r * GRID_SIZE + (c - 1 - k));
+            }
+            groups.push(group);
+          }
+          count = 1;
         }
       }
     }
 
+    // Vertical
     for (let c = 0; c < GRID_SIZE; c++) {
-      let r = 1;
-      for (let y = 1; y <= GRID_SIZE; y++) {
-        const cur = y < GRID_SIZE ? tiles[y * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[(y - 1) * GRID_SIZE + c].dataset.pillar;
-        if (cur === prev) r++;
+      let count = 1;
+      for (let r = 1; r <= GRID_SIZE; r++) {
+        const cur = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
+
+        if (cur === prev) count++;
         else {
-          if (r >= 3) for (let k = 0; k < r; k++) m.add((y - 1 - k) * GRID_SIZE + c);
-          r = 1;
+          if (count >= 3) {
+            const group = [];
+            for (let k = 0; k < count; k++) {
+              group.push((r - 1 - k) * GRID_SIZE + c);
+            }
+            groups.push(group);
+          }
+          count = 1;
         }
       }
     }
 
-    return [...m];
+    return groups;
   }
 
-  /* ---------- RESOLUTION ---------- */
-  function resolveBoard(matches) {
-    clearMatches(matches);
+  /* ---------- IGNARA BLAST ---------- */
+  function triggerIgnara(index) {
+    const { row, col } = indexToRowCol(index);
+    const blast = [];
+
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const r = row + dr;
+        const c = col + dc;
+        if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE) {
+          blast.push(r * GRID_SIZE + c);
+        }
+      }
+    }
+
+    clearMatches(blast);
 
     setTimeout(() => {
       applyGravityAnimated(() => {
-        const next = findMatches();
+        const next = findMatchesDetailed();
+        if (next.length) resolveBoard(next);
+        else isResolving = false;
+      });
+    }, 120);
+  }
+
+  /* ---------- RESOLUTION (IGNARA CORE CREATION) ---------- */
+  function resolveBoard(groups) {
+    const toClear = new Set();
+
+    groups.forEach(group => {
+      // 🔥 4 MATCH = IGNARA CORE
+      if (group.length === 4) {
+        const coreIndex = group[1];
+        const t = tiles[coreIndex];
+
+        if (t.dataset.pillar === "ignara") {
+          t.dataset.special = "ignara";
+          t.classList.add("ignara-core"); // 🔥 ORANGE GLOW FROM CSS
+
+          group.forEach(i => {
+            if (i !== coreIndex) toClear.add(i);
+          });
+          return;
+        }
+      }
+
+      // normal clear
+      group.forEach(i => toClear.add(i));
+    });
+
+    clearMatches([...toClear]);
+
+    setTimeout(() => {
+      applyGravityAnimated(() => {
+        const next = findMatchesDetailed();
         if (next.length) resolveBoard(next);
         else {
           isResolving = false;
-          if (isInitPhase) isInitPhase = false;
+          isInitPhase = false;
         }
       });
     }, 120);
@@ -193,16 +263,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function clearMatches(list) {
     list.forEach(i => {
       const t = tiles[i];
+      if (t.dataset.special === "ignara") return; // 🔒 DO NOT CLEAR CORE
+
       t.dataset.pillar = "empty";
       t.style.opacity = "0";
       t.style.pointerEvents = "none";
+      t.classList.remove("ignara-core");
     });
   }
 
-  /* ---------- GRAVITY (ANIMATED) ---------- */
+  /* ---------- GRAVITY ---------- */
   function applyGravityAnimated(done) {
-    let maxDelay = 0;
-
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
 
@@ -213,44 +284,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        const newPillar = stack.shift() || randomPillar();
+        const p = stack.shift() || randomPillar();
 
-        const oldRow = indexToRowCol(+t.dataset.index).row;
-        const newRow = r;
-        const dy = (oldRow - newRow) * TILE_SIZE;
-
-        t.dataset.pillar = newPillar;
-        t.src = `../assets/pillars/${newPillar}.png`;
+        t.dataset.pillar = p;
+        t.dataset.special = "";
+        t.src = `../assets/pillars/${p}.png`;
         t.style.opacity = "1";
         t.style.pointerEvents = "auto";
-
-        if (dy !== 0) {
-          t.style.transform = `translateY(${dy}px)`;
-          t.style.transition = "transform 0.18s ease-out";
-          maxDelay = 180;
-
-          requestAnimationFrame(() => {
-            t.style.transform = "";
-          });
-        }
       }
     }
 
-    setTimeout(() => {
-      tiles.forEach(t => {
-        t.style.transition = "";
-        t.style.transform = "";
-      });
-      done();
-    }, maxDelay);
+    setTimeout(done, 180);
   }
 
   /* ---------- INIT ---------- */
   createGrid();
 
   setTimeout(() => {
-    const initMatches = findMatches();
-    if (initMatches.length) resolveBoard(initMatches);
+    const init = findMatchesDetailed();
+    if (init.length) resolveBoard(init);
     else {
       isResolving = false;
       isInitPhase = false;
