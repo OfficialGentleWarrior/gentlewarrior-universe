@@ -14,13 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-  let isBusy = false;
-
-  /* ---------- FAST IMAGE PRELOAD (NON-BLOCKING) ---------- */
-  PILLARS.forEach(p => {
-    const img = new Image();
-    img.src = `../assets/pillars/${p}.png`;
-  });
 
   /* ---------- helpers ---------- */
   function randomPillar() {
@@ -47,13 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
       const pillar = randomPillar();
-      const img = document.createElement("img");
 
+      const img = document.createElement("img");
       img.className = "tile";
       img.dataset.index = i;
       img.dataset.pillar = pillar;
       img.src = `../assets/pillars/${pillar}.png`;
-      img.draggable = false;
 
       img.addEventListener("click", () => onTileClick(img));
 
@@ -64,63 +56,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- interaction ---------- */
   function onTileClick(tile) {
-    if (isBusy) return;
-
     if (!selectedTile) {
-      selectedTile = tile;
-      tile.classList.add("selected");
+      selectTile(tile);
       return;
     }
 
     if (tile === selectedTile) {
-      tile.classList.remove("selected");
-      selectedTile = null;
+      deselectTile();
       return;
     }
 
     const i1 = Number(selectedTile.dataset.index);
     const i2 = Number(tile.dataset.index);
 
-    if (!isAdjacent(i1, i2)) {
-      selectedTile.classList.remove("selected");
-      selectedTile = null;
-      return;
-    }
-
-    isBusy = true;
-
-    animateSwap(selectedTile, tile, () => {
+    if (isAdjacent(i1, i2)) {
       swapTiles(selectedTile, tile);
 
       const matches = findMatches();
       if (matches.length === 0) {
-        // invalid move → swap back
-        setTimeout(() => {
-          animateSwap(tile, selectedTile, () => {
-            swapTiles(tile, selectedTile);
-            isBusy = false;
-          });
-        }, 120);
+        // invalid move → revert
+        setTimeout(() => swapTiles(selectedTile, tile), 150);
       } else {
-        resolveBoard();
+        highlightMatches(matches);
       }
-    });
+    }
 
-    selectedTile.classList.remove("selected");
+    deselectTile();
+  }
+
+  function selectTile(tile) {
+    selectedTile = tile;
+    tile.classList.add("selected");
+  }
+
+  function deselectTile() {
+    if (selectedTile) {
+      selectedTile.classList.remove("selected");
+    }
     selectedTile = null;
   }
 
-  /* ---------- swap animation ---------- */
-  function animateSwap(a, b, done) {
-    a.classList.add("swapping");
-    b.classList.add("swapping");
-    setTimeout(() => {
-      a.classList.remove("swapping");
-      b.classList.remove("swapping");
-      done();
-    }, 150);
-  }
-
+  /* ---------- swap ---------- */
   function swapTiles(t1, t2) {
     const p1 = t1.dataset.pillar;
     const p2 = t2.dataset.pillar;
@@ -140,13 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
-        const curr = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr =
+          c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
 
         if (curr === prev) {
           count++;
         } else {
-          if (count >= 3 && prev !== "empty") {
+          if (count >= 3) {
             for (let k = 0; k < count; k++) {
               matches.add(r * GRID_SIZE + (c - 1 - k));
             }
@@ -160,13 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
-        const curr = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
+        const curr =
+          r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
         const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
 
         if (curr === prev) {
           count++;
         } else {
-          if (count >= 3 && prev !== "empty") {
+          if (count >= 3) {
             for (let k = 0; k < count; k++) {
               matches.add((r - 1 - k) * GRID_SIZE + c);
             }
@@ -179,49 +157,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return [...matches];
   }
 
-  /* ---------- CLEAR + GRAVITY ---------- */
-  function clearMatches(indices) {
-    indices.forEach(i => {
-      tiles[i].dataset.pillar = "empty";
-      tiles[i].style.opacity = "0";
-    });
-  }
+ /* ---------- CLEAR MATCHES ---------- */
+function highlightMatches(indices) {
+  indices.forEach(i => {
+    const tile = tiles[i];
 
-  function applyGravity() {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
+    // mark as empty
+    tile.dataset.pillar = "empty";
 
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        if (tile.dataset.pillar !== "empty") {
-          stack.push(tile.dataset.pillar);
-        }
-      }
-
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const tile = tiles[r * GRID_SIZE + c];
-        const pillar = stack.shift() || randomPillar();
-
-        tile.dataset.pillar = pillar;
-        tile.src = `../assets/pillars/${pillar}.png`;
-        tile.style.opacity = "1";
-      }
-    }
-  }
-
-  function resolveBoard() {
-    const matches = findMatches();
-    if (matches.length === 0) {
-      isBusy = false;
-      return;
-    }
-
-    clearMatches(matches);
-    setTimeout(() => {
-      applyGravity();
-      setTimeout(resolveBoard, 150);
-    }, 150);
-  }
+    // visually remove
+    tile.style.opacity = "0";
+    tile.style.pointerEvents = "none";
+  });
+}
 
   /* ---------- init ---------- */
   createGrid();
