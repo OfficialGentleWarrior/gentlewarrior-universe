@@ -191,6 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let level = 1;
   let moves = LEVEL_CONFIG.baseMoves;
   let levelStartScore = 0;
+  let runStartTime = Date.now();
+  let runSubmitted = false;
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
@@ -213,6 +215,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("beforeunload", saveGame);
 
+function submitWeeklyRun() {
+  if (runSubmitted) return;
+  if (!window.weeklyLeaderboard) return;
+
+  runSubmitted = true;
+
+  const timeSeconds = Math.floor((Date.now() - runStartTime) / 1000);
+
+  const name =
+    localStorage.getItem("pm_player_name") ||
+    prompt("Enter your name for the weekly leaderboard:");
+
+  if (!name) return;
+
+  localStorage.setItem("pm_player_name", name);
+
+  window.weeklyLeaderboard.submitRun({
+    name,
+    level,
+    score,
+    moves,
+    time: timeSeconds
+  });
+}
+
   /* =========================
      UI
   ========================== */
@@ -234,9 +261,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showFail() {
-    isResolving = true;
-    failOverlay.classList.remove("hidden");
-  }
+  isResolving = true;
+  submitWeeklyRun(); // ✅ SUBMIT BEST RUN ONCE
+  failOverlay.classList.remove("hidden");
+}
 
   /* =========================
      START LEVEL (LOCKED)
@@ -244,6 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startLevel() {
     const saved = loadGame();
+
+    runStartTime = Date.now();
+    runSubmitted = false;
 
     isResolving = true;
     isInitPhase = true;
