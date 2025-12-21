@@ -177,10 +177,8 @@ const retryBtn = document.getElementById("retryBtn");
 const shareXBtn = document.getElementById("shareXBtn");
 const nextBtn = document.getElementById("nextLevelBtn");
 retryBtn?.addEventListener("click", () => {
-  // hide overlay
   failOverlay.classList.add("hidden");
 
-  // FULL CLEAN RESET
   localStorage.removeItem("pm_save");
 
   isRunOver = false;
@@ -197,8 +195,7 @@ retryBtn?.addEventListener("click", () => {
   runStartTime = Date.now();
   runSubmitted = false;
 
-  // ✅ USE ENGINE ENTRY POINT (IMPORTANT)
-  startLevel();
+  startLevel(true); // ✅ FORCE FRESH START
 });
 shareXBtn?.addEventListener("click", () => {
   const cpLine =
@@ -328,8 +325,8 @@ function submitWeeklyRun() {
      START LEVEL (LOCKED)
   ========================== */
 
-  function startLevel() {
-    const saved = loadGame();
+  function startLevel(forceFresh = false) {
+  const saved = forceFresh ? null : loadGame();
 
     runStartTime = Date.now();
     runSubmitted = false;
