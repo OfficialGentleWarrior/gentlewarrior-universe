@@ -221,6 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatchesDetailed() {
     const groups = [];
 
+    // horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
@@ -238,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
@@ -259,18 +261,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     ✨ SPARKLE EFFECT
+     ✨ SPARKLE EFFECT (SCALED)
   ========================== */
 
-  function spawnSparkle(tile) {
+  function spawnSparkle(tile, intensity = 1) {
     const sparkle = document.createElement("div");
     sparkle.style.position = "absolute";
-    sparkle.style.width = "10px";
-    sparkle.style.height = "10px";
+    sparkle.style.width = 10 + intensity * 2 + "px";
+    sparkle.style.height = 10 + intensity * 2 + "px";
     sparkle.style.borderRadius = "50%";
     sparkle.style.pointerEvents = "none";
     sparkle.style.background =
-      "radial-gradient(circle, #fff, rgba(255,255,255,0.2), transparent)";
+      "radial-gradient(circle, #fff, rgba(255,255,255,0.25), transparent)";
 
     const rect = tile.getBoundingClientRect();
     sparkle.style.left = rect.left + rect.width / 2 + "px";
@@ -279,21 +281,21 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(sparkle);
 
     const angle = Math.random() * Math.PI * 2;
-    const dist = 20 + Math.random() * 20;
+    const dist = 18 + intensity * 10;
 
     sparkle.animate([
-      { transform: "scale(0.5)", opacity: 1 },
+      { transform: "scale(0.6)", opacity: 1 },
       {
         transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(1.2)`,
         opacity: 0
       }
-    ], { duration: 400, easing: "ease-out" });
+    ], { duration: 400 + intensity * 120, easing: "ease-out" });
 
-    setTimeout(() => sparkle.remove(), 420);
+    setTimeout(() => sparkle.remove(), 600);
   }
 
   /* =========================
-     RESOLUTION
+     RESOLUTION (PATCHED)
   ========================== */
 
   function resolveBoard(groups) {
@@ -301,16 +303,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     groups.forEach(group => {
       const size = group.length;
+
       if (!isInitPhase) {
         score += size === 3 ? 100 :
                  size === 4 ? 200 :
                  size === 5 ? 400 :
                  600 + (size - 6) * 100;
       }
+
+      // base clear
       group.forEach(i => {
         toClear.add(i);
-        spawnSparkle(tiles[i]);
+        spawnSparkle(tiles[i], size >= 5 ? 2 : 1);
       });
+
+      // 5-match: row OR column
+      if (size === 5) {
+        const { row, col } = indexToRowCol(group[0]);
+        const sameRow = group.every(i => indexToRowCol(i).row === row);
+
+        for (let i = 0; i < GRID_SIZE; i++) {
+          const idx = sameRow ? row * GRID_SIZE + i : i * GRID_SIZE + col;
+          toClear.add(idx);
+        }
+      }
+
+      // 6+ match: cross
+      if (size >= 6) {
+        const mid = group[Math.floor(group.length / 2)];
+        const { row, col } = indexToRowCol(mid);
+
+        for (let i = 0; i < GRID_SIZE; i++) {
+          toClear.add(row * GRID_SIZE + i);
+          toClear.add(i * GRID_SIZE + col);
+        }
+      }
     });
 
     updateHUD();
@@ -344,26 +371,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     GRAVITY (FIXED)
+     GRAVITY (SAFE)
   ========================== */
 
   function applyGravityAnimated(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
-      const newColumn = [];
+      const stack = [];
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") newColumn.push(t.dataset.pillar);
+        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
       }
 
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
-        const p = newColumn.shift() || randomPillar();
+        const p = stack.shift() || randomPillar();
 
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
-
-        /* 🔑 FIX: RESET TRANSFORM STATE */
         t.style.transition = "";
         t.style.transform = "scale(1)";
         t.style.opacity = "1";
