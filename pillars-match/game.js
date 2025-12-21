@@ -1,16 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
+     SPARKLE STYLE (INJECTED)
+  ========================== */
+  (function injectSparkleStyle(){
+    const style = document.createElement("style");
+    style.textContent = `
+      .tile { position: relative; }
+
+      @keyframes sparklePop {
+        0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+        40%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  /* =========================
      CONFIG
   ========================== */
 
   const PILLARS = [
-    "aurelion",
-    "gaialune",
-    "ignara",
-    "solyndra",
-    "umbrath",
-    "zeratheon"
+    "aurelion","gaialune","ignara",
+    "solyndra","umbrath","zeratheon"
   ];
 
   const GRID_SIZE = 7;
@@ -30,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const levelEl = document.getElementById("level");
   const movesEl = document.getElementById("moves");
   const progressBar = document.getElementById("progressBar");
-  const footerEl = document.querySelector("footer");
 
   const levelOverlay = document.getElementById("levelOverlay");
   const failOverlay = document.getElementById("failOverlay");
@@ -42,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-
   let isResolving = true;
   let isInitPhase = true;
 
@@ -57,17 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function saveGame() {
     localStorage.setItem("pm_save", JSON.stringify({
-      level,
-      score,
-      moves,
-      levelStartScore,
+      level, score, moves, levelStartScore,
       board: tiles.map(t => t.dataset.pillar)
     }));
-
-    progressBar?.animate(
-      [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
-      { duration: 600 }
-    );
   }
 
   function loadGame() {
@@ -87,8 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
     movesEl.textContent = moves;
 
     const gained = score - levelStartScore;
-    const pct = Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100);
-    progressBar.style.width = pct + "%";
+    progressBar.style.width =
+      Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
   }
 
   function showLevelComplete() {
@@ -107,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startLevel() {
     const saved = loadGame();
-
     isResolving = true;
     isInitPhase = true;
     selectedTile = null;
@@ -171,8 +173,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     INPUT
+     INPUT / SWAP
   ========================== */
+
+  function isAdjacent(i1, i2) {
+    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
+    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
+    return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+  }
 
   function onTileClick(tile) {
     if (isResolving || moves <= 0) return;
@@ -183,20 +191,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (tile === selectedTile) {
-      tile.classList.remove("selected");
-      selectedTile = null;
-      return;
-    }
-
     const a = selectedTile;
     const b = tile;
+    a.classList.remove("selected");
+    selectedTile = null;
 
-    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) {
-      a.classList.remove("selected");
-      selectedTile = null;
-      return;
-    }
+    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
 
     isResolving = true;
 
@@ -215,21 +215,12 @@ document.addEventListener("DOMContentLoaded", () => {
         resolveBoard(matches);
       }
     });
-
-    a.classList.remove("selected");
-    selectedTile = null;
-  }
-
-  function isAdjacent(i1, i2) {
-    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
-    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
-    return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
   }
 
   function animateSwap(a, b, done) {
-    const p1 = a.dataset.index, p2 = b.dataset.index;
-    const r1 = Math.floor(p1 / GRID_SIZE), c1 = p1 % GRID_SIZE;
-    const r2 = Math.floor(p2 / GRID_SIZE), c2 = p2 % GRID_SIZE;
+    const i1 = +a.dataset.index, i2 = +b.dataset.index;
+    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
+    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
 
     const dx = (c2 - c1) * TILE_SIZE;
     const dy = (r2 - r1) * TILE_SIZE;
@@ -244,9 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function commitSwap(a, b) {
-    const p1 = a.dataset.pillar;
+    const p = a.dataset.pillar;
     a.dataset.pillar = b.dataset.pillar;
-    b.dataset.pillar = p1;
+    b.dataset.pillar = p;
     a.src = `../assets/pillars/${a.dataset.pillar}.png`;
     b.src = `../assets/pillars/${b.dataset.pillar}.png`;
   }
@@ -255,24 +246,39 @@ document.addEventListener("DOMContentLoaded", () => {
      MATCH + SPARKLE + CLEAR
   ========================== */
 
+  function spawnSparkle(tile, big) {
+    const s = document.createElement("div");
+    s.style.position = "absolute";
+    s.style.left = "50%";
+    s.style.top = "50%";
+    s.style.width = big ? "140%" : "110%";
+    s.style.height = big ? "140%" : "110%";
+    s.style.borderRadius = "50%";
+    s.style.pointerEvents = "none";
+    s.style.background = big
+      ? "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))"
+      : "radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0))";
+    s.style.animation = "sparklePop 0.45s ease-out forwards";
+
+    tile.appendChild(s);
+    setTimeout(() => s.remove(), 500);
+  }
+
   function resolveBoard(groups) {
     const toClear = new Set();
     let maxSize = 0;
 
-    groups.forEach(group => {
-      maxSize = Math.max(maxSize, group.length);
-      if (!isInitPhase) score += group.length >= 4 ? 200 : 100;
-      group.forEach(i => toClear.add(i));
+    groups.forEach(g => {
+      maxSize = Math.max(maxSize, g.length);
+      if (!isInitPhase) score += g.length >= 4 ? 200 : 100;
+      g.forEach(i => toClear.add(i));
     });
 
     updateHUD();
 
-    const sparkleDuration = maxSize >= 4 ? 480 : 260;
+    const sparkleTime = maxSize >= 4 ? 480 : 260;
 
-    toClear.forEach(i => {
-      const t = tiles[i];
-      spawnSparkle(t, maxSize >= 4);
-    });
+    toClear.forEach(i => spawnSparkle(tiles[i], maxSize >= 4));
 
     setTimeout(() => {
       toClear.forEach(i => {
@@ -296,27 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
           else if (moves <= 0) showFail();
         }
       });
-    }, sparkleDuration);
-  }
-
-  /* =========================
-     SPARKLE EFFECT (JS ONLY)
-  ========================== */
-
-  function spawnSparkle(tile, big = false) {
-    const s = document.createElement("div");
-    s.style.position = "absolute";
-    s.style.inset = "0";
-    s.style.borderRadius = "50%";
-    s.style.pointerEvents = "none";
-    s.style.background =
-      big
-        ? "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))"
-        : "radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0))";
-    s.style.animation = "sparkle 0.45s ease-out forwards";
-
-    tile.appendChild(s);
-    setTimeout(() => s.remove(), 500);
+    }, sparkleTime);
   }
 
   /* =========================
@@ -384,7 +370,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
     return groups;
   }
 
