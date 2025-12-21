@@ -8,7 +8,7 @@
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="./style.css?v=5" />
 
-  <!-- INLINE SAFETY CSS (CRITICAL – DO NOT REMOVE) -->
+  <!-- INLINE SAFETY CSS -->
   <style>
     body {
       margin: 0;
@@ -52,7 +52,6 @@
       user-select: none;
     }
 
-    /* PROGRESS BAR */
     .progress-wrap {
       width: 90%;
       height: 8px;
@@ -69,28 +68,6 @@
       transition: width 0.2s linear;
     }
 
-    /* WEEKLY INFO */
-    .weekly-info {
-      margin-top: 12px;
-      font-size: 14px;
-      opacity: 0.95;
-    }
-
-    .weekly-leaderboard {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    .weekly-leaderboard ul {
-      list-style: none;
-      padding: 0;
-      margin: 6px 0 0;
-    }
-
-    .weekly-leaderboard li {
-      padding: 4px 0;
-    }
-
     footer {
       margin-top: 14px;
       padding-bottom: 10px;
@@ -98,10 +75,7 @@
       opacity: 0.6;
     }
 
-    /* =========================
-       OVERLAY SYSTEM (CRITICAL)
-       ========================= */
-
+    /* OVERLAY */
     .overlay {
       position: fixed;
       inset: 0;
@@ -110,7 +84,6 @@
       align-items: center;
       justify-content: center;
       z-index: 50;
-      pointer-events: auto;
     }
 
     .hidden {
@@ -139,10 +112,6 @@
       font-size: 14px;
       cursor: pointer;
     }
-
-    .overlay-box button + button {
-      margin-left: 8px;
-    }
   </style>
 </head>
 
@@ -166,27 +135,6 @@
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <!-- WEEKLY INFO -->
-  <section class="weekly-info">
-    <h2>🛡️ Pillar Match — Weekly Challenge</h2>
-    <p class="countdown">
-      Next weekly reset in
-      <span id="utcCountdown">--h --m --s</span> (UTC)
-    </p>
-    <p class="weekly-note">
-      Your best run this week will be recorded.
-      Reset happens every Monday (UTC).
-    </p>
-  </section>
-
-  <!-- WEEKLY LEADERBOARD -->
-  <section class="weekly-leaderboard">
-    <h3>Weekly Leaderboard</h3>
-    <ul id="leaderboardList">
-      <li>Loading...</li>
-    </ul>
-  </section>
-
   <!-- GAME GRID -->
   <main class="game-wrapper">
     <div class="grid" id="grid"></div>
@@ -197,7 +145,7 @@
     Every step counts.
   </footer>
 
-  <!-- LEVEL COMPLETE OVERLAY -->
+  <!-- LEVEL COMPLETE OVERLAY (CP LINE ONLY) -->
   <div id="levelOverlay" class="overlay hidden">
     <div class="overlay-box">
       <h2>Progress Reached</h2>
@@ -206,18 +154,7 @@
     </div>
   </div>
 
-  <!-- FAIL OVERLAY -->
-  <div id="failOverlay" class="overlay hidden">
-    <div class="overlay-box">
-      <h2>Take a Breath</h2>
-      <p>You can try again when you're ready.</p>
-      <button id="retryBtn" type="button">Try Again</button>
-      <button id="shareXBtn" type="button">Share on X</button>
-    </div>
-  </div>
-
-  <!-- JS (ORDER IS IMPORTANT) -->
-  <script src="./weekly-leaderboard.js?v=1" defer></script>
+  <!-- GAME SCRIPT -->
   <script src="./game.js?v=5" defer></script>
 
 </body>
