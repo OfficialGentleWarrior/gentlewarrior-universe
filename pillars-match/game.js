@@ -161,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const progressBar = document.getElementById("progressBar");
 
   const levelOverlay = document.getElementById("levelOverlay");
-  const failOverlay = document.getElementById("failOverlay");
   const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
@@ -192,20 +191,23 @@ document.addEventListener("DOMContentLoaded", () => {
   let moves = LEVEL_CONFIG.baseMoves;
   let levelStartScore = 0;
   let runStartTime = Date.now();
+  let isRunActive = true;
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
   ========================== */
 
   function saveGame() {
-    localStorage.setItem("pm_save", JSON.stringify({
-      level,
-      score,
-      moves,
-      levelStartScore,
-      board: tiles.map(t => t.dataset.pillar)
-    }));
-  }
+  if (!isRunActive) return;
+
+  localStorage.setItem("pm_save", JSON.stringify({
+    level,
+    score,
+    moves,
+    levelStartScore,
+    board: tiles.map(t => t.dataset.pillar)
+  }));
+}
 
   function loadGame() {
     const raw = localStorage.getItem("pm_save");
@@ -233,12 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cpLineEl.textContent = getRandomCpLine(level); // 🔁 RANDOM EACH TIME
     levelOverlay.classList.remove("hidden");
   }
-
-  function showFail() {
-    isResolving = true;
-    failOverlay.classList.remove("hidden");
-  }
-
   /* =========================
      START LEVEL (LOCKED)
   ========================== */
@@ -442,47 +438,75 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resolveBoard(groups) {
-    const toClear = new Set();
+  const toClear = new Set();
 
-    groups.forEach(group => {
-      const size = group.length;
-      if (!isInitPhase) {
-        score += size === 3 ? 100 :
-                 size === 4 ? 200 :
-                 size === 5 ? 400 :
-                 600 + (size - 6) * 100;
+  groups.forEach(group => {
+    const size = group.length;
+    if (!isInitPhase) {
+      score += size === 3 ? 100 :
+               size === 4 ? 200 :
+               size === 5 ? 400 :
+               600 + (size - 6) * 100;
+    }
+    group.forEach(i => {
+      toClear.add(i);
+      spawnSparkle(tiles[i]);
+    });
+  });
+
+  updateHUD();
+
+  toClear.forEach(i => {
+    const t = tiles[i];
+    t.dataset.pillar = "empty";
+    t.style.opacity = "0";
+    t.style.transform = "scale(0.6)";
+    t.style.pointerEvents = "none";
+  });
+
+  setTimeout(() => {
+    applyGravityAnimated(() => {
+      const next = findMatchesDetailed();
+      if (next.length) resolveBoard(next);
+      else {
+        isResolving = false;
+        isInitPhase = false;
+
+        const gained = score - levelStartScore;
+
+if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
+  saveGame();              // ✅ SAVE ON LEVEL CLEAR
+  showLevelComplete();
+}
+else if (moves <= 0) {
+  // 🔒 END CURRENT RUN
+  isRunActive = false;
+  localStorage.removeItem("pm_save");
+
+  // 🔁 RESET
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+
+  isInitPhase = true;
+  isResolving = true;
+  selectedTile = null;
+
+  // 🔓 NEW RUN
+  isRunActive = true;
+
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+}
+else {
+  saveGame();              // ✅ SAVE DURING NORMAL PLAY
+}
       }
-      group.forEach(i => {
-        toClear.add(i);
-        spawnSparkle(tiles[i]);
-      });
     });
-
-    updateHUD();
-
-    toClear.forEach(i => {
-      const t = tiles[i];
-      t.dataset.pillar = "empty";
-      t.style.opacity = "0";
-      t.style.transform = "scale(0.6)";
-      t.style.pointerEvents = "none";
-    });
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.length) resolveBoard(next);
-        else {
-          isResolving = false;
-          isInitPhase = false;
-          saveGame();
-          const gained = score - levelStartScore;
-          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
-          else if (moves <= 0) showFail();
-        }
-      });
-    }, 180);
-  }
+  }, 180);
+}
 
   function applyGravityAnimated(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
