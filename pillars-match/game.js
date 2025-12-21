@@ -186,6 +186,11 @@ resetBtn?.addEventListener("click", () => {
   updateHUD();
   setTimeout(resolveInitMatches, 0);
 });
+const endRunBtn = document.getElementById("endRunBtn");
+
+endRunBtn?.addEventListener("click", () => {
+  endRun("manual");
+});
 
   /* =========================
      CP LINE CONTAINER (SAFE)
@@ -259,6 +264,36 @@ resetBtn?.addEventListener("click", () => {
     cpLineEl.textContent = getRandomCpLine(level); // 🔁 RANDOM EACH TIME
     levelOverlay.classList.remove("hidden");
   }
+/* =========================
+   END RUN (CANONICAL)
+========================== */
+
+function endRun(reason = "manual") {
+  console.log("END RUN:", reason);
+
+  // 🔒 stop saving immediately
+  isRunActive = false;
+
+  // 🧹 clear current run save
+  localStorage.removeItem("pm_save");
+
+  // 🔁 reset state
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+
+  isInitPhase = true;
+  isResolving = true;
+  selectedTile = null;
+
+  // 🔓 allow saving for new run
+  isRunActive = true;
+
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+}
   /* =========================
      START LEVEL (LOCKED)
   ========================== */
