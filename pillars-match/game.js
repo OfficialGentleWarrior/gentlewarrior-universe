@@ -151,17 +151,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     DOM
-  ========================== */
+   DOM
+========================== */
 
-  const gridEl = document.querySelector(".grid");
-  const scoreEl = document.getElementById("score");
-  const levelEl = document.getElementById("level");
-  const movesEl = document.getElementById("moves");
-  const progressBar = document.getElementById("progressBar");
+const gridEl = document.querySelector(".grid");
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
+const movesEl = document.getElementById("moves");
+const progressBar = document.getElementById("progressBar");
 
-  const levelOverlay = document.getElementById("levelOverlay");
-  const nextBtn = document.getElementById("nextLevelBtn");
+const levelOverlay = document.getElementById("levelOverlay");
+const nextBtn = document.getElementById("nextLevelBtn");
+const resetBtn = document.getElementById("resetRunBtn");
+
+resetBtn?.addEventListener("click", () => {
+  // 🔒 END CURRENT RUN
+  isRunActive = false;
+  localStorage.removeItem("pm_save");
+
+  // 🔁 RESET VALUES
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+
+  isInitPhase = true;
+  isResolving = true;
+  selectedTile = null;
+
+  // 🔓 START NEW RUN
+  isRunActive = true;
+
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+});
 
   /* =========================
      CP LINE CONTAINER (SAFE)
