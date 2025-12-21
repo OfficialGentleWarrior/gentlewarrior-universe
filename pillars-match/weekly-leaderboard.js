@@ -100,7 +100,7 @@
   };
 
   /* =========================
-     RENDER
+     RENDER (FIXED OUTPUT)
   ========================== */
 
   function render() {
@@ -123,7 +123,7 @@
     entries.forEach((p, i) => {
       const li = document.createElement("li");
       li.textContent =
-        `#${i + 1} — ${p.name} · Stage ${p.level} · ${p.moves} moves · ${p.time}s`;
+        `#${i + 1} — ${p.name} · Stage ${p.level} · Progress ${p.score}`;
       listEl.appendChild(li);
     });
   }
