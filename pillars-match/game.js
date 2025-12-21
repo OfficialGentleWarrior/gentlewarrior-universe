@@ -180,28 +180,25 @@ retryBtn?.addEventListener("click", () => {
   // hide overlay
   failOverlay.classList.add("hidden");
 
-  // 🔥 CLEAR saved run completely
+  // FULL CLEAN RESET
   localStorage.removeItem("pm_save");
 
-  // 🔄 RESET CORE STATE
+  isRunOver = false;
+
   score = 0;
   level = 1;
   moves = LEVEL_CONFIG.baseMoves;
   levelStartScore = 0;
+
   selectedTile = null;
   isResolving = true;
   isInitPhase = true;
 
-  // ⏱ reset run timing
   runStartTime = Date.now();
   runSubmitted = false;
 
-  // 🧱 rebuild fresh board
-  createGrid();
-  updateHUD();
-
-  // allow play again
-  setTimeout(resolveInitMatches, 0);
+  // ✅ USE ENGINE ENTRY POINT (IMPORTANT)
+  startLevel();
 });
 shareXBtn?.addEventListener("click", () => {
   const cpLine =
@@ -235,33 +232,37 @@ shareXBtn?.addEventListener("click", () => {
 
   /* =========================
      STATE
-  ========================== */
+========================== */
 
-  let tiles = [];
-  let selectedTile = null;
-  let isResolving = true;
-  let isInitPhase = true;
+let isRunOver = false;
 
-  let score = 0;
-  let level = 1;
-  let moves = LEVEL_CONFIG.baseMoves;
-  let levelStartScore = 0;
-  let runStartTime = Date.now();
-  let runSubmitted = false;
+let tiles = [];
+let selectedTile = null;
+let isResolving = true;
+let isInitPhase = true;
+
+let score = 0;
+let level = 1;
+let moves = LEVEL_CONFIG.baseMoves;
+let levelStartScore = 0;
+let runStartTime = Date.now();
+let runSubmitted = false;
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
   ========================== */
 
   function saveGame() {
-    localStorage.setItem("pm_save", JSON.stringify({
-      level,
-      score,
-      moves,
-      levelStartScore,
-      board: tiles.map(t => t.dataset.pillar)
-    }));
-  }
+  if (isRunOver) return; // ⛔ DO NOT SAVE AFTER FAIL
+
+  localStorage.setItem("pm_save", JSON.stringify({
+    level,
+    score,
+    moves,
+    levelStartScore,
+    board: tiles.map(t => t.dataset.pillar)
+  }));
+}
 
   function loadGame() {
     const raw = localStorage.getItem("pm_save");
@@ -317,8 +318,9 @@ function submitWeeklyRun() {
 
   function showFail() {
   isResolving = true;
-  selectedTile = null; // ✅ CLEAR ANY SELECTED TILE
-  submitWeeklyRun(); // ✅ SUBMIT BEST RUN ONCE
+  isRunOver = true;        // 🔒 LOCK SAVE
+  selectedTile = null;
+  submitWeeklyRun();
   failOverlay.classList.remove("hidden");
 }
 
