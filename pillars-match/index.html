@@ -54,6 +54,14 @@
       width: 0%;
       background: #ffd86b;
     }
+
+    /* footer fallback */
+    footer {
+      margin-top: 14px;
+      padding-bottom: 10px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
   </style>
 </head>
 
@@ -65,11 +73,11 @@
     <p>Match the Six Pillars</p>
   </header>
 
-  <!-- HUD -->
+  <!-- HUD (CP-aligned language) -->
   <div class="hud">
-    <div>Level: <span id="level">1</span></div>
-    <div>Score: <span id="score">0</span></div>
-    <div>Moves: <span id="moves">20</span></div>
+    <div>Level <span id="level">1</span></div>
+    <div>Progress <span id="score">0</span></div>
+    <div>Effort <span id="moves">20</span></div>
   </div>
 
   <!-- PROGRESS BAR -->
@@ -82,19 +90,25 @@
     <div class="grid"></div>
   </main>
 
+  <!-- FOOTER (gentle CP-aligned message) -->
+  <footer>
+    Every step counts.
+  </footer>
+
   <!-- LEVEL COMPLETE OVERLAY -->
   <div id="levelOverlay" class="overlay hidden">
     <div class="overlay-box">
-      <h2>Level Complete</h2>
-      <button id="nextLevelBtn">Next Level</button>
+      <h2>Progress Reached</h2>
+      <button id="nextLevelBtn">Continue</button>
     </div>
   </div>
 
-  <!-- FAIL OVERLAY -->
+  <!-- FAIL OVERLAY (CP-aligned tone) -->
   <div id="failOverlay" class="overlay hidden">
     <div class="overlay-box">
-      <h2>Out of Moves</h2>
-      <button id="retryBtn">Retry</button>
+      <h2>Take a Breath</h2>
+      <p>You can try again when you're ready.</p>
+      <button id="retryBtn">Try Again</button>
     </div>
   </div>
 
