@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     💾 SAVE / LOAD (OPTION C)
+     💾 SAVE / LOAD (OPTION C — FIXED)
   ========================== */
 
   function saveGame() {
@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       level,
       score,
       moves,
+      levelStartScore,
       board: tiles.map(t => t.dataset.pillar)
     };
     localStorage.setItem("pm_save", JSON.stringify(state));
@@ -114,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       level = saved.level;
       score = saved.score;
       moves = saved.moves;
-      levelStartScore = score;
+      levelStartScore = saved.levelStartScore;
       isInitPhase = false;
       isResolving = false;
       createGrid(saved.board);
