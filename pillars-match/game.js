@@ -141,6 +141,17 @@ document.addEventListener("DOMContentLoaded", () => {
     99:"Resilience remains.",
     100:"Milestone reached — gentle strength."
   };
+/* =========================
+   CP SHARE LINES (FOR X SHARE)
+========================== */
+
+const CP_SHARE_LINES = [
+  "For children with cerebral palsy, progress is built through patience and daily effort.",
+  "Cerebral palsy progress looks different for every child — and every step matters.",
+  "For kids with cerebral palsy, care and consistency matter more than speed.",
+  "Cerebral palsy isn’t about limits — it’s about steady progress over time.",
+  "For children with cerebral palsy, small gains are real victories."
+];
 
   function getRandomCpLine(level) {
     const pool = [];
@@ -151,18 +162,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     DOM
-  ========================== */
+DOM
+========================== */
 
-  const gridEl = document.querySelector(".grid");
-  const scoreEl = document.getElementById("score");
-  const levelEl = document.getElementById("level");
-  const movesEl = document.getElementById("moves");
-  const progressBar = document.getElementById("progressBar");
+const gridEl = document.querySelector(".grid");
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
+const movesEl = document.getElementById("moves");
+const progressBar = document.getElementById("progressBar");
 
-  const levelOverlay = document.getElementById("levelOverlay");
-  const failOverlay = document.getElementById("failOverlay");
-  const nextBtn = document.getElementById("nextLevelBtn");
+const levelOverlay = document.getElementById("levelOverlay");
+const failOverlay = document.getElementById("failOverlay");
+const retryBtn = document.getElementById("retryBtn");
+const shareXBtn = document.getElementById("shareXBtn");
+const nextBtn = document.getElementById("nextLevelBtn");
+retryBtn?.addEventListener("click", () => {
+failOverlay.classList.add("hidden");
+startLevel(); // reset run cleanly
+});
+shareXBtn?.addEventListener("click", () => {
+  const cpLine =
+    CP_SHARE_LINES[Math.floor(Math.random() * CP_SHARE_LINES.length)];
+
+  const text =
+    `I just finished a Pillar Match run.\n\n` +
+    `${cpLine}\n\n` +
+    `Play here: https://gentlewarrior.github.io`;
+
+  const url =
+    "https://twitter.com/intent/tweet?text=" +
+    encodeURIComponent(text);
+
+  window.open(url, "_blank");
+});
 
   /* =========================
      CP LINE CONTAINER (SAFE)
