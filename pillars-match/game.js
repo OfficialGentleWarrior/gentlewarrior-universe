@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      CP AWARENESS LINES (1–100)
      🔁 RANDOM PER LEVEL CLEAR
-     ⚠️ MUST BE OBJECT, NOT ARRAY
   ========================== */
 
   const CP_LINES = {
@@ -146,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getRandomCpLine(level) {
     const pool = [];
     for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
-      if (CP_LINES[i]) pool.push(CP_LINES[i]);
+      pool.push(CP_LINES[i]);
     }
     return pool[Math.floor(Math.random() * pool.length)];
   }
@@ -166,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
-     CP LINE ELEMENT
+     CP LINE CONTAINER (SAFE)
   ========================== */
 
   let cpLineEl = levelOverlay.querySelector(".cp-line");
@@ -224,16 +223,13 @@ document.addEventListener("DOMContentLoaded", () => {
     movesEl.textContent = moves;
 
     const gained = score - levelStartScore;
-    const pct = Math.min(
-      100,
-      (gained / LEVEL_CONFIG.scoreTarget(level)) * 100
-    );
-    progressBar.style.width = pct + "%";
+    progressBar.style.width =
+      Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
   }
 
   function showLevelComplete() {
     isResolving = true;
-    cpLineEl.textContent = getRandomCpLine(level);
+    cpLineEl.textContent = getRandomCpLine(level); // 🔁 RANDOM EACH TIME
     levelOverlay.classList.remove("hidden");
   }
 
@@ -274,8 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
     level++;
     moves = LEVEL_CONFIG.baseMoves;
     levelStartScore = score;
-    isResolving = true;
     isInitPhase = true;
+    isResolving = true;
     createGrid();
     updateHUD();
     setTimeout(resolveInitMatches, 0);
@@ -283,7 +279,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================
-     HELPERS
+     HELPERS / GRID / GAMEPLAY
+     (UNCHANGED — SAME AS YOUR CODE)
   ========================== */
 
   function randomPillar() {
@@ -299,10 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const b = indexToRowCol(i2);
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
   }
-
-  /* =========================
-     GRID
-  ========================== */
 
   function createGrid(boardData = null) {
     gridEl.innerHTML = "";
@@ -323,10 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
       gridEl.appendChild(img);
     }
   }
-
-  /* =========================
-     INPUT / SWAP / MATCH
-  ========================== */
 
   function onTileClick(tile) {
     if (isResolving || moves <= 0) return;
@@ -366,7 +355,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function animateSwap(a, b, done) {
     const p1 = indexToRowCol(+a.dataset.index);
     const p2 = indexToRowCol(+b.dataset.index);
-
     const dx = (p2.col - p1.col) * TILE_SIZE;
     const dy = (p2.row - p1.row) * TILE_SIZE;
 
@@ -390,13 +378,8 @@ document.addEventListener("DOMContentLoaded", () => {
     b.src = `../assets/pillars/${p1}.png`;
   }
 
-  /* =========================
-     MATCH DETECTION
-  ========================== */
-
   function findMatchesDetailed() {
     const groups = [];
-
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
@@ -413,7 +396,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
@@ -430,13 +412,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-
     return groups;
   }
-
-  /* =========================
-     SPARKLE EFFECT
-  ========================== */
 
   function spawnSparkle(tile) {
     const sparkle = document.createElement("div");
@@ -447,16 +424,12 @@ document.addEventListener("DOMContentLoaded", () => {
     sparkle.style.pointerEvents = "none";
     sparkle.style.background =
       "radial-gradient(circle, #fff, rgba(255,255,255,0.2), transparent)";
-
     const rect = tile.getBoundingClientRect();
     sparkle.style.left = rect.left + rect.width / 2 + "px";
     sparkle.style.top = rect.top + rect.height / 2 + "px";
-
     document.body.appendChild(sparkle);
-
     const angle = Math.random() * Math.PI * 2;
     const dist = 20 + Math.random() * 20;
-
     sparkle.animate([
       { transform: "scale(0.5)", opacity: 1 },
       {
@@ -464,13 +437,8 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: 0
       }
     ], { duration: 400, easing: "ease-out" });
-
     setTimeout(() => sparkle.remove(), 420);
   }
-
-  /* =========================
-     RESOLUTION
-  ========================== */
 
   function resolveBoard(groups) {
     const toClear = new Set();
@@ -507,7 +475,6 @@ document.addEventListener("DOMContentLoaded", () => {
           isResolving = false;
           isInitPhase = false;
           saveGame();
-
           const gained = score - levelStartScore;
           if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
           else if (moves <= 0) showFail();
@@ -519,12 +486,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyGravityAnimated(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
-
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r*GRID_SIZE+c];
         if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
       }
-
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r*GRID_SIZE+c];
         const p = stack.shift() || randomPillar();
