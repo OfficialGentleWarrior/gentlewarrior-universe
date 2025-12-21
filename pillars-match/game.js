@@ -141,17 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
     99:"Resilience remains.",
     100:"Milestone reached — gentle strength."
   };
-/* =========================
-   CP SHARE LINES (FOR X SHARE)
-========================== */
-
-const CP_SHARE_LINES = [
-  "For children with cerebral palsy, progress is built through patience and daily effort.",
-  "Cerebral palsy progress looks different for every child — and every step matters.",
-  "For kids with cerebral palsy, care and consistency matter more than speed.",
-  "Cerebral palsy isn’t about limits — it’s about steady progress over time.",
-  "For children with cerebral palsy, small gains are real victories."
-];
 
   function getRandomCpLine(level) {
     const pool = [];
@@ -162,56 +151,18 @@ const CP_SHARE_LINES = [
   }
 
   /* =========================
-DOM
-========================== */
+     DOM
+  ========================== */
 
-const gridEl = document.querySelector(".grid");
-const scoreEl = document.getElementById("score");
-const levelEl = document.getElementById("level");
-const movesEl = document.getElementById("moves");
-const progressBar = document.getElementById("progressBar");
+  const gridEl = document.querySelector(".grid");
+  const scoreEl = document.getElementById("score");
+  const levelEl = document.getElementById("level");
+  const movesEl = document.getElementById("moves");
+  const progressBar = document.getElementById("progressBar");
 
-const levelOverlay = document.getElementById("levelOverlay");
-const failOverlay = document.getElementById("failOverlay");
-const retryBtn = document.getElementById("retryBtn");
-const shareXBtn = document.getElementById("shareXBtn");
-const nextBtn = document.getElementById("nextLevelBtn");
-retryBtn?.addEventListener("click", () => {
-  failOverlay.classList.add("hidden");
-
-  localStorage.removeItem("pm_save");
-
-  isRunOver = false;
-
-  score = 0;
-  level = 1;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  selectedTile = null;
-  isResolving = true;
-  isInitPhase = true;
-
-  runStartTime = Date.now();
-  runSubmitted = false;
-
-  startLevel(true); // ✅ FORCE FRESH START
-});
-shareXBtn?.addEventListener("click", () => {
-  const cpLine =
-    CP_SHARE_LINES[Math.floor(Math.random() * CP_SHARE_LINES.length)];
-
-  const text =
-    `I just finished a Pillar Match run.\n\n` +
-    `${cpLine}\n\n` +
-    `Play here: https://gentlewarrior.github.io`;
-
-  const url =
-    "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(text);
-
-  window.open(url, "_blank");
-});
+  const levelOverlay = document.getElementById("levelOverlay");
+  const failOverlay = document.getElementById("failOverlay");
+  const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
      CP LINE CONTAINER (SAFE)
@@ -229,37 +180,32 @@ shareXBtn?.addEventListener("click", () => {
 
   /* =========================
      STATE
-========================== */
+  ========================== */
 
-let isRunOver = false;
+  let tiles = [];
+  let selectedTile = null;
+  let isResolving = true;
+  let isInitPhase = true;
 
-let tiles = [];
-let selectedTile = null;
-let isResolving = true;
-let isInitPhase = true;
-
-let score = 0;
-let level = 1;
-let moves = LEVEL_CONFIG.baseMoves;
-let levelStartScore = 0;
-let runStartTime = Date.now();
-let runSubmitted = false;
+  let score = 0;
+  let level = 1;
+  let moves = LEVEL_CONFIG.baseMoves;
+  let levelStartScore = 0;
+  let runStartTime = Date.now();
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
   ========================== */
 
   function saveGame() {
-  if (isRunOver) return; // ⛔ DO NOT SAVE AFTER FAIL
-
-  localStorage.setItem("pm_save", JSON.stringify({
-    level,
-    score,
-    moves,
-    levelStartScore,
-    board: tiles.map(t => t.dataset.pillar)
-  }));
-}
+    localStorage.setItem("pm_save", JSON.stringify({
+      level,
+      score,
+      moves,
+      levelStartScore,
+      board: tiles.map(t => t.dataset.pillar)
+    }));
+  }
 
   function loadGame() {
     const raw = localStorage.getItem("pm_save");
@@ -267,31 +213,6 @@ let runSubmitted = false;
   }
 
   window.addEventListener("beforeunload", saveGame);
-
-function submitWeeklyRun() {
-  if (runSubmitted) return;
-  if (!window.weeklyLeaderboard) return;
-
-  runSubmitted = true;
-
-  const timeSeconds = Math.floor((Date.now() - runStartTime) / 1000);
-
-  const name =
-    localStorage.getItem("pm_player_name") ||
-    prompt("Enter your name for the weekly leaderboard:");
-
-  if (!name) return;
-
-  localStorage.setItem("pm_player_name", name);
-
-  window.weeklyLeaderboard.submitRun({
-    name,
-    level,
-    score,
-    moves,
-    time: timeSeconds
-  });
-}
 
   /* =========================
      UI
@@ -314,22 +235,16 @@ function submitWeeklyRun() {
   }
 
   function showFail() {
-  isResolving = true;
-  isRunOver = true;        // 🔒 LOCK SAVE
-  selectedTile = null;
-  submitWeeklyRun();
-  failOverlay.classList.remove("hidden");
-}
+    isResolving = true;
+    failOverlay.classList.remove("hidden");
+  }
 
   /* =========================
      START LEVEL (LOCKED)
   ========================== */
 
-  function startLevel(forceFresh = false) {
-  const saved = forceFresh ? null : loadGame();
-
-    runStartTime = Date.now();
-    runSubmitted = false;
+  function startLevel() {
+    const saved = loadGame();
 
     isResolving = true;
     isInitPhase = true;
@@ -558,20 +473,13 @@ function submitWeeklyRun() {
         const next = findMatchesDetailed();
         if (next.length) resolveBoard(next);
         else {
-  isResolving = false;
-  isInitPhase = false;
-
-  const gained = score - levelStartScore;
-
-  if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
-    saveGame();            // ✅ save ONLY on success
-    showLevelComplete();
-  } else if (moves <= 0) {
-    showFail();            // ❌ NO SAVE on fail
-  } else {
-    saveGame();            // normal play save
-  }
-}
+          isResolving = false;
+          isInitPhase = false;
+          saveGame();
+          const gained = score - levelStartScore;
+          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
+          else if (moves <= 0) showFail();
+        }
       });
     }, 180);
   }
