@@ -51,25 +51,34 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     💾 SAVE / LOAD (MINIMAL PATCH)
+     💾 SAVE / LOAD (OPTION C)
   ========================== */
 
-  function saveProgress() {
-    localStorage.setItem("pm_progress", JSON.stringify({ level, score }));
-    progressBar.animate(
+  function saveGame() {
+    const state = {
+      level,
+      score,
+      moves,
+      board: tiles.map(t => t.dataset.pillar)
+    };
+    localStorage.setItem("pm_save", JSON.stringify(state));
+
+    // gentle saved pulse (no text)
+    progressBar?.animate(
       [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
       { duration: 600, easing: "ease-out" }
     );
   }
 
-  (function loadProgress() {
-    const saved = JSON.parse(localStorage.getItem("pm_progress") || "null");
-    if (saved) { level = saved.level; score = saved.score; }
-  })();
+  function loadGame() {
+    const raw = localStorage.getItem("pm_save");
+    return raw ? JSON.parse(raw) : null;
+  }
 
+  // Hidden respectful reset (right-click / long-press footer)
   footerEl?.addEventListener("contextmenu", e => {
     e.preventDefault();
-    localStorage.removeItem("pm_progress");
+    localStorage.removeItem("pm_save");
     location.reload();
   });
 
@@ -99,20 +108,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startLevel() {
-    moves = LEVEL_CONFIG.baseMoves;
-    levelStartScore = score;
-    isInitPhase = true;
-    isResolving = true;
+    const saved = loadGame();
 
-    createGrid();
+    if (saved) {
+      level = saved.level;
+      score = saved.score;
+      moves = saved.moves;
+      levelStartScore = score;
+      isInitPhase = false;
+      isResolving = false;
+      createGrid(saved.board);
+    } else {
+      moves = LEVEL_CONFIG.baseMoves;
+      levelStartScore = score;
+      isInitPhase = true;
+      isResolving = true;
+      createGrid();
+      setTimeout(resolveInitMatches, 0);
+    }
+
     updateHUD();
-    setTimeout(resolveInitMatches, 0);
   }
 
   nextBtn?.addEventListener("click", () => {
     levelOverlay.classList.add("hidden");
     level++;
-    startLevel();
+    moves = LEVEL_CONFIG.baseMoves;
+    levelStartScore = score;
+    isInitPhase = true;
+    isResolving = true;
+    createGrid();
+    updateHUD();
+    setTimeout(resolveInitMatches, 0);
+    saveGame();
   });
 
   /* =========================
@@ -137,13 +165,13 @@ document.addEventListener("DOMContentLoaded", () => {
      GRID
   ========================== */
 
-  function createGrid() {
+  function createGrid(boardData = null) {
     gridEl.innerHTML = "";
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
       const img = document.createElement("img");
-      const p = randomPillar();
+      const p = boardData ? boardData[i] : randomPillar();
 
       img.className = "tile";
       img.dataset.index = i;
@@ -301,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     updateHUD();
-    saveProgress(); // 🔑 minimal patch hook
+    saveGame();
     clearTiles([...toClear]);
 
     setTimeout(() => {
