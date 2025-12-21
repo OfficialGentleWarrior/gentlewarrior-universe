@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- MAIN CSS -->
-  <link rel="stylesheet" href="./style.css?v=5" />
+  <link rel="stylesheet" href="./style.css?v=7" />
 
   <!-- INLINE SAFETY CSS -->
   <style>
@@ -129,19 +129,50 @@
   <div>Progress <span id="score">0</span></div>
   <div>Effort <span id="moves">20</span></div>
 </div>
+<!-- RUN CONTROLS -->
+<div id="runControls" style="
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin:8px 0;
+">
 
-<!-- END RUN BUTTON -->
-<div style="margin:6px 0;">
   <button id="endRunBtn" style="
-    padding:6px 14px;
+    padding:6px 12px;
     border-radius:8px;
     border:none;
     background:#8b2c2c;
     color:#fff;
     font-size:12px;
+    cursor:pointer;
   ">
     End Run
   </button>
+
+  <button id="saveRunBtn" style="
+    padding:6px 12px;
+    border-radius:8px;
+    border:none;
+    background:#555;
+    color:#fff;
+    font-size:12px;
+    cursor:pointer;
+  ">
+    Save
+  </button>
+
+  <button id="resetRunBtn" style="
+    padding:6px 12px;
+    border-radius:8px;
+    border:none;
+    background:#1aa667;
+    color:#fff;
+    font-size:12px;
+    cursor:pointer;
+  ">
+    Restart
+  </button>
+
 </div>
 
 <!-- PROGRESS BAR -->
@@ -157,18 +188,6 @@
   <!-- FOOTER -->
   <footer>
   <div style="margin-bottom:6px;">Every step counts.</div>
-
-  <button id="resetRunBtn" style="
-    padding:6px 12px;
-    border-radius:8px;
-    border:none;
-    background:#1aa667;
-    color:#fff;
-    font-size:12px;
-    cursor:pointer;
-  ">
-    Restart Run
-  </button>
 </footer>
 
   <!-- LEVEL COMPLETE OVERLAY (CP LINE ONLY) -->
