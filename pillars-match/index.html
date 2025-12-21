@@ -124,16 +124,30 @@
   </header>
 
   <!-- HUD -->
-  <div class="hud">
-    <div>Level <span id="level">1</span></div>
-    <div>Progress <span id="score">0</span></div>
-    <div>Effort <span id="moves">20</span></div>
-  </div>
+<div class="hud">
+  <div>Level <span id="level">1</span></div>
+  <div>Progress <span id="score">0</span></div>
+  <div>Effort <span id="moves">20</span></div>
+</div>
 
-  <!-- PROGRESS BAR -->
-  <div class="progress-wrap">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+<!-- END RUN BUTTON -->
+<div style="margin:6px 0;">
+  <button id="endRunBtn" style="
+    padding:6px 14px;
+    border-radius:8px;
+    border:none;
+    background:#8b2c2c;
+    color:#fff;
+    font-size:12px;
+  ">
+    End Run
+  </button>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
 
   <!-- GAME GRID -->
   <main class="game-wrapper">
@@ -167,7 +181,7 @@
   </div>
 
   <!-- GAME SCRIPT -->
-  <script src="./game.js?v=6" defer></script>
+  <script src="./game.js?v=7" defer></script>
 
 </body>
 </html>
