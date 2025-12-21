@@ -260,3 +260,7 @@ footer.fading {
     font-size: 13px;
   }
 }
+/* 🔒 FORCE HIDDEN OVERLAYS TO STAY HIDDEN */
+.overlay.hidden {
+  display: none !important;
+}
