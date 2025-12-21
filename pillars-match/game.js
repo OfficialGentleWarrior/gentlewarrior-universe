@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let tiles = [];
   let selectedTile = null;
 
-  let isResolving = true;     // 🔒 locked until stable
+  let isResolving = true;
   let isInitPhase = true;
 
   let score = 0;
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     SAVE / LOAD (LOCKED BOARD)
+     SAVE / LOAD
   ========================== */
 
   function saveGame() {
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     progressBar?.animate(
       [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
-      { duration: 600, easing: "ease-out" }
+      { duration: 600 }
     );
   }
 
@@ -76,12 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("beforeunload", saveGame);
-
-  footerEl?.addEventListener("contextmenu", e => {
-    e.preventDefault();
-    localStorage.removeItem("pm_save");
-    location.reload();
-  });
 
   /* =========================
      UI
@@ -108,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     START LEVEL (FIXED)
+     START LEVEL
   ========================== */
 
   function startLevel() {
@@ -131,8 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     updateHUD();
-
-    // 🔑 ALWAYS normalize board
     setTimeout(resolveInitMatches, 0);
   }
 
@@ -150,26 +142,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================
-     HELPERS
+     GRID
   ========================== */
 
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
   }
-
-  function indexToRowCol(i) {
-    return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
-  }
-
-  function isAdjacent(i1, i2) {
-    const a = indexToRowCol(i1);
-    const b = indexToRowCol(i2);
-    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
-  }
-
-  /* =========================
-     GRID
-  ========================== */
 
   function createGrid(boardData = null) {
     gridEl.innerHTML = "";
@@ -242,22 +220,24 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedTile = null;
   }
 
-  /* =========================
-     SWAP
-  ========================== */
+  function isAdjacent(i1, i2) {
+    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
+    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
+    return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+  }
 
   function animateSwap(a, b, done) {
-    const p1 = indexToRowCol(+a.dataset.index);
-    const p2 = indexToRowCol(+b.dataset.index);
-    const dx = (p2.col - p1.col) * TILE_SIZE;
-    const dy = (p2.row - p1.row) * TILE_SIZE;
+    const p1 = a.dataset.index, p2 = b.dataset.index;
+    const r1 = Math.floor(p1 / GRID_SIZE), c1 = p1 % GRID_SIZE;
+    const r2 = Math.floor(p2 / GRID_SIZE), c2 = p2 % GRID_SIZE;
 
-    a.style.transition = b.style.transition = "transform 0.15s ease";
+    const dx = (c2 - c1) * TILE_SIZE;
+    const dy = (r2 - r1) * TILE_SIZE;
+
     a.style.transform = `translate(${dx}px, ${dy}px)`;
     b.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
     setTimeout(() => {
-      a.style.transition = b.style.transition = "";
       a.style.transform = b.style.transform = "";
       done();
     }, 150);
@@ -265,11 +245,103 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function commitSwap(a, b) {
     const p1 = a.dataset.pillar;
-    const p2 = b.dataset.pillar;
-    a.dataset.pillar = p2;
+    a.dataset.pillar = b.dataset.pillar;
     b.dataset.pillar = p1;
-    a.src = `../assets/pillars/${p2}.png`;
-    b.src = `../assets/pillars/${p1}.png`;
+    a.src = `../assets/pillars/${a.dataset.pillar}.png`;
+    b.src = `../assets/pillars/${b.dataset.pillar}.png`;
+  }
+
+  /* =========================
+     MATCH + SPARKLE + CLEAR
+  ========================== */
+
+  function resolveBoard(groups) {
+    const toClear = new Set();
+    let maxSize = 0;
+
+    groups.forEach(group => {
+      maxSize = Math.max(maxSize, group.length);
+      if (!isInitPhase) score += group.length >= 4 ? 200 : 100;
+      group.forEach(i => toClear.add(i));
+    });
+
+    updateHUD();
+
+    const sparkleDuration = maxSize >= 4 ? 480 : 260;
+
+    toClear.forEach(i => {
+      const t = tiles[i];
+      spawnSparkle(t, maxSize >= 4);
+    });
+
+    setTimeout(() => {
+      toClear.forEach(i => {
+        const t = tiles[i];
+        t.dataset.pillar = "empty";
+        t.style.opacity = "0";
+        t.style.transform = "scale(0.6)";
+        t.style.pointerEvents = "none";
+      });
+
+      applyGravityAnimated(() => {
+        const next = findMatchesDetailed();
+        if (next.length) resolveBoard(next);
+        else {
+          isResolving = false;
+          isInitPhase = false;
+          saveGame();
+
+          const gained = score - levelStartScore;
+          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
+          else if (moves <= 0) showFail();
+        }
+      });
+    }, sparkleDuration);
+  }
+
+  /* =========================
+     SPARKLE EFFECT (JS ONLY)
+  ========================== */
+
+  function spawnSparkle(tile, big = false) {
+    const s = document.createElement("div");
+    s.style.position = "absolute";
+    s.style.inset = "0";
+    s.style.borderRadius = "50%";
+    s.style.pointerEvents = "none";
+    s.style.background =
+      big
+        ? "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))"
+        : "radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0))";
+    s.style.animation = "sparkle 0.45s ease-out forwards";
+
+    tile.appendChild(s);
+    setTimeout(() => s.remove(), 500);
+  }
+
+  /* =========================
+     GRAVITY
+  ========================== */
+
+  function applyGravityAnimated(done) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      const stack = [];
+      for (let r = GRID_SIZE - 1; r >= 0; r--) {
+        const t = tiles[r * GRID_SIZE + c];
+        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
+      }
+
+      for (let r = GRID_SIZE - 1; r >= 0; r--) {
+        const t = tiles[r * GRID_SIZE + c];
+        const p = stack.shift() || randomPillar();
+        t.dataset.pillar = p;
+        t.src = `../assets/pillars/${p}.png`;
+        t.style.opacity = "1";
+        t.style.transform = "scale(1)";
+        t.style.pointerEvents = "auto";
+      }
+    }
+    setTimeout(done, 220);
   }
 
   /* =========================
@@ -279,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatchesDetailed() {
     const groups = [];
 
-    // horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
@@ -297,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
@@ -318,76 +388,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return groups;
   }
 
-  /* =========================
-     RESOLUTION
-  ========================== */
-
-  function resolveBoard(groups) {
-    const toClear = new Set();
-
-    groups.forEach(group => {
-      const size = group.length;
-      if (!isInitPhase) {
-        score += size === 3 ? 100 :
-                 size === 4 ? 200 :
-                 size === 5 ? 400 :
-                 600 + (size - 6) * 100;
-      }
-      group.forEach(i => toClear.add(i));
-    });
-
-    updateHUD();
-
-    toClear.forEach(i => {
-      const t = tiles[i];
-      t.dataset.pillar = "empty";
-      t.style.opacity = "0";
-      t.style.pointerEvents = "none";
-    });
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.length) {
-          resolveBoard(next);
-        } else {
-          isResolving = false;
-          isInitPhase = false;
-          saveGame();
-
-          const gained = score - levelStartScore;
-          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
-          else if (moves <= 0) showFail();
-        }
-      });
-    }, 180);
-  }
-
-  function applyGravityAnimated(done) {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
-      }
-
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r * GRID_SIZE + c];
-        const p = stack.shift() || randomPillar();
-        t.dataset.pillar = p;
-        t.src = `../assets/pillars/${p}.png`;
-        t.style.opacity = "1";
-        t.style.pointerEvents = "auto";
-      }
-    }
-    setTimeout(done, 220);
-  }
-
   function resolveInitMatches() {
     const init = findMatchesDetailed();
-    if (init.length) {
-      resolveBoard(init);
-    } else {
+    if (init.length) resolveBoard(init);
+    else {
       isResolving = false;
       isInitPhase = false;
       saveGame();
