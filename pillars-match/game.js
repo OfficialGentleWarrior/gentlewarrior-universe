@@ -1,38 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
-     SPARKLE STYLE (INJECTED)
+     SPARKLE STYLE (REAL)
   ========================== */
-  (function injectSparkleStyle(){
-    const style = document.createElement("style");
-    style.textContent = `
-      .tile { position: relative; }
-
-      @keyframes sparklePop {
-        0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-        40%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
-      }
-    `;
-    document.head.appendChild(style);
-  })();
+  const style = document.createElement("style");
+  style.textContent = `
+    .tile {
+      position: relative;
+      width: 62px;
+      height: 62px;
+    }
+    .tile img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .sparkle {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: sparklePop 0.45s ease-out forwards;
+    }
+    @keyframes sparklePop {
+      0%   { transform: scale(0.3); opacity: 0; }
+      40%  { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
 
   /* =========================
      CONFIG
   ========================== */
 
-  const PILLARS = [
-    "aurelion","gaialune","ignara",
-    "solyndra","umbrath","zeratheon"
-  ];
-
+  const PILLARS = ["aurelion","gaialune","ignara","solyndra","umbrath","zeratheon"];
   const GRID_SIZE = 7;
   const TILE_SIZE = 62;
-
-  const LEVEL_CONFIG = {
-    baseMoves: 20,
-    scoreTarget: level => 1500 + (level - 1) * 500
-  };
 
   /* =========================
      DOM
@@ -43,10 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const levelEl = document.getElementById("level");
   const movesEl = document.getElementById("moves");
   const progressBar = document.getElementById("progressBar");
-
-  const levelOverlay = document.getElementById("levelOverlay");
-  const failOverlay = document.getElementById("failOverlay");
-  const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
      STATE
@@ -59,210 +59,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let score = 0;
   let level = 1;
-  let moves = LEVEL_CONFIG.baseMoves;
+  let moves = 20;
   let levelStartScore = 0;
 
   /* =========================
-     SAVE / LOAD
-  ========================== */
-
-  function saveGame() {
-    localStorage.setItem("pm_save", JSON.stringify({
-      level, score, moves, levelStartScore,
-      board: tiles.map(t => t.dataset.pillar)
-    }));
-  }
-
-  function loadGame() {
-    const raw = localStorage.getItem("pm_save");
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  window.addEventListener("beforeunload", saveGame);
-
-  /* =========================
-     UI
-  ========================== */
-
-  function updateHUD() {
-    scoreEl.textContent = score;
-    levelEl.textContent = level;
-    movesEl.textContent = moves;
-
-    const gained = score - levelStartScore;
-    progressBar.style.width =
-      Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
-  }
-
-  function showLevelComplete() {
-    isResolving = true;
-    levelOverlay.classList.remove("hidden");
-  }
-
-  function showFail() {
-    isResolving = true;
-    failOverlay.classList.remove("hidden");
-  }
-
-  /* =========================
-     START LEVEL
-  ========================== */
-
-  function startLevel() {
-    const saved = loadGame();
-    isResolving = true;
-    isInitPhase = true;
-    selectedTile = null;
-
-    if (saved) {
-      level = saved.level;
-      score = saved.score;
-      moves = saved.moves;
-      levelStartScore = saved.levelStartScore;
-      createGrid(saved.board);
-    } else {
-      moves = LEVEL_CONFIG.baseMoves;
-      levelStartScore = score;
-      createGrid();
-    }
-
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-  }
-
-  nextBtn?.addEventListener("click", () => {
-    levelOverlay.classList.add("hidden");
-    level++;
-    moves = LEVEL_CONFIG.baseMoves;
-    levelStartScore = score;
-    isResolving = true;
-    isInitPhase = true;
-    createGrid();
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-    saveGame();
-  });
-
-  /* =========================
-     GRID
+     GRID (FIXED)
   ========================== */
 
   function randomPillar() {
     return PILLARS[Math.floor(Math.random() * PILLARS.length)];
   }
 
-  function createGrid(boardData = null) {
+  function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const img = document.createElement("img");
-      const p = boardData ? boardData[i] : randomPillar();
+      const wrapper = document.createElement("div");
+      wrapper.className = "tile";
+      wrapper.dataset.index = i;
+      wrapper.dataset.pillar = randomPillar();
 
-      img.className = "tile";
-      img.dataset.index = i;
-      img.dataset.pillar = p;
-      img.src = `../assets/pillars/${p}.png`;
+      const img = document.createElement("img");
+      img.src = `../assets/pillars/${wrapper.dataset.pillar}.png`;
       img.draggable = false;
 
-      img.addEventListener("click", () => onTileClick(img));
+      wrapper.appendChild(img);
+      wrapper.addEventListener("click", () => onTileClick(wrapper));
 
-      tiles.push(img);
-      gridEl.appendChild(img);
+      tiles.push(wrapper);
+      gridEl.appendChild(wrapper);
     }
   }
 
   /* =========================
-     INPUT / SWAP
-  ========================== */
-
-  function isAdjacent(i1, i2) {
-    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
-    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
-    return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
-  }
-
-  function onTileClick(tile) {
-    if (isResolving || moves <= 0) return;
-
-    if (!selectedTile) {
-      selectedTile = tile;
-      tile.classList.add("selected");
-      return;
-    }
-
-    const a = selectedTile;
-    const b = tile;
-    a.classList.remove("selected");
-    selectedTile = null;
-
-    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
-
-    isResolving = true;
-
-    animateSwap(a, b, () => {
-      commitSwap(a, b);
-      const matches = findMatchesDetailed();
-
-      if (!matches.length) {
-        animateSwap(a, b, () => {
-          commitSwap(a, b);
-          isResolving = false;
-        });
-      } else {
-        moves--;
-        updateHUD();
-        resolveBoard(matches);
-      }
-    });
-  }
-
-  function animateSwap(a, b, done) {
-    const i1 = +a.dataset.index, i2 = +b.dataset.index;
-    const r1 = Math.floor(i1 / GRID_SIZE), c1 = i1 % GRID_SIZE;
-    const r2 = Math.floor(i2 / GRID_SIZE), c2 = i2 % GRID_SIZE;
-
-    const dx = (c2 - c1) * TILE_SIZE;
-    const dy = (r2 - r1) * TILE_SIZE;
-
-    a.style.transform = `translate(${dx}px, ${dy}px)`;
-    b.style.transform = `translate(${-dx}px, ${-dy}px)`;
-
-    setTimeout(() => {
-      a.style.transform = b.style.transform = "";
-      done();
-    }, 150);
-  }
-
-  function commitSwap(a, b) {
-    const p = a.dataset.pillar;
-    a.dataset.pillar = b.dataset.pillar;
-    b.dataset.pillar = p;
-    a.src = `../assets/pillars/${a.dataset.pillar}.png`;
-    b.src = `../assets/pillars/${b.dataset.pillar}.png`;
-  }
-
-  /* =========================
-     MATCH + SPARKLE + CLEAR
+     SPARKLE (NOW VISIBLE)
   ========================== */
 
   function spawnSparkle(tile, big) {
     const s = document.createElement("div");
-    s.style.position = "absolute";
-    s.style.left = "50%";
-    s.style.top = "50%";
-    s.style.width = big ? "140%" : "110%";
-    s.style.height = big ? "140%" : "110%";
-    s.style.borderRadius = "50%";
-    s.style.pointerEvents = "none";
+    s.className = "sparkle";
     s.style.background = big
-      ? "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0))"
-      : "radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0))";
-    s.style.animation = "sparklePop 0.45s ease-out forwards";
-
+      ? "radial-gradient(circle, rgba(255,255,255,.9), transparent)"
+      : "radial-gradient(circle, rgba(255,255,255,.6), transparent)";
     tile.appendChild(s);
     setTimeout(() => s.remove(), 500);
   }
+
+  /* =========================
+     MATCH CLEAR (FIXED)
+  ========================== */
 
   function resolveBoard(groups) {
     const toClear = new Set();
@@ -270,13 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     groups.forEach(g => {
       maxSize = Math.max(maxSize, g.length);
-      if (!isInitPhase) score += g.length >= 4 ? 200 : 100;
       g.forEach(i => toClear.add(i));
     });
-
-    updateHUD();
-
-    const sparkleTime = maxSize >= 4 ? 480 : 260;
 
     toClear.forEach(i => spawnSparkle(tiles[i], maxSize >= 4));
 
@@ -286,107 +127,56 @@ document.addEventListener("DOMContentLoaded", () => {
         t.dataset.pillar = "empty";
         t.style.opacity = "0";
         t.style.transform = "scale(0.6)";
-        t.style.pointerEvents = "none";
       });
 
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.length) resolveBoard(next);
-        else {
-          isResolving = false;
-          isInitPhase = false;
-          saveGame();
+      setTimeout(() => {
+        tiles.forEach(t => {
+          if (t.dataset.pillar === "empty") {
+            const p = randomPillar();
+            t.dataset.pillar = p;
+            t.querySelector("img").src = `../assets/pillars/${p}.png`;
+            t.style.opacity = "1";
+            t.style.transform = "scale(1)";
+          }
+        });
+        isResolving = false;
+      }, 220);
 
-          const gained = score - levelStartScore;
-          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
-          else if (moves <= 0) showFail();
-        }
-      });
-    }, sparkleTime);
+    }, maxSize >= 4 ? 480 : 260);
   }
 
   /* =========================
-     GRAVITY
+     BASIC MATCH (MINIMAL)
   ========================== */
 
-  function applyGravityAnimated(done) {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r * GRID_SIZE + c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
-      }
-
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r * GRID_SIZE + c];
-        const p = stack.shift() || randomPillar();
-        t.dataset.pillar = p;
-        t.src = `../assets/pillars/${p}.png`;
-        t.style.opacity = "1";
-        t.style.transform = "scale(1)";
-        t.style.pointerEvents = "auto";
-      }
-    }
-    setTimeout(done, 220);
-  }
-
-  /* =========================
-     MATCH DETECTION
-  ========================== */
-
-  function findMatchesDetailed() {
+  function findMatches() {
     const groups = [];
-
-    for (let r = 0; r < GRID_SIZE; r++) {
-      let count = 1;
-      for (let c = 1; c <= GRID_SIZE; c++) {
-        const cur = c < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[r * GRID_SIZE + c - 1].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push(r * GRID_SIZE + c - 1 - k);
-            groups.push(g);
-          }
-          count = 1;
-        }
-      }
-    }
-
-    for (let c = 0; c < GRID_SIZE; c++) {
-      let count = 1;
-      for (let r = 1; r <= GRID_SIZE; r++) {
-        const cur = r < GRID_SIZE ? tiles[r * GRID_SIZE + c].dataset.pillar : null;
-        const prev = tiles[(r - 1) * GRID_SIZE + c].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push((r - 1 - k) * GRID_SIZE + c);
-            groups.push(g);
-          }
-          count = 1;
-        }
+    for (let i = 0; i < tiles.length - 2; i++) {
+      const p = tiles[i].dataset.pillar;
+      if (
+        p &&
+        tiles[i+1]?.dataset.pillar === p &&
+        tiles[i+2]?.dataset.pillar === p
+      ) {
+        groups.push([i,i+1,i+2]);
       }
     }
     return groups;
   }
 
-  function resolveInitMatches() {
-    const init = findMatchesDetailed();
-    if (init.length) resolveBoard(init);
-    else {
-      isResolving = false;
-      isInitPhase = false;
-      saveGame();
-    }
+  function onTileClick(tile) {
+    if (isResolving) return;
+    isResolving = true;
+    const matches = findMatches();
+    if (matches.length) resolveBoard(matches);
+    else isResolving = false;
   }
 
   /* =========================
      INIT
   ========================== */
 
-  startLevel();
+  createGrid();
+  isResolving = false;
 
 });
