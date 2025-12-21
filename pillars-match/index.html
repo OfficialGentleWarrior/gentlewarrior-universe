@@ -1,66 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Pillar Match</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- MAIN CSS -->
-  <link rel="stylesheet" href="./style.css?v=5">
+  <link rel="stylesheet" href="./style.css?v=5" />
 
-  <!-- Inline fallback (layout safety net) -->
+  <!-- INLINE SAFETY CSS (CRITICAL – DO NOT REMOVE) -->
   <style>
     body {
       margin: 0;
       background: #0b2f22;
-      color: #fff;
+      color: #ffffff;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       text-align: center;
     }
-    header { padding: 12px 8px; }
+
+    header {
+      padding: 12px 8px;
+    }
+
     .hud {
       display: flex;
       justify-content: space-around;
       padding: 8px 0;
-      background: rgba(0,0,0,0.25);
+      background: rgba(0, 0, 0, 0.25);
     }
+
     .game-wrapper {
       display: flex;
       justify-content: center;
       margin-top: 12px;
+      position: relative;
+      z-index: 1;
     }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(7, 56px);
       gap: 6px;
+      pointer-events: auto;
     }
+
     .tile {
       width: 56px;
       height: 56px;
       border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
     }
 
-    /* fallback progress bar */
+    /* PROGRESS BAR */
     .progress-wrap {
       width: 90%;
       height: 8px;
       margin: 10px auto;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
       border-radius: 6px;
       overflow: hidden;
     }
+
     .progress-bar {
       height: 100%;
       width: 0%;
       background: #ffd86b;
+      transition: width 0.2s linear;
     }
 
-    /* footer fallback */
+    /* WEEKLY INFO */
+    .weekly-info {
+      margin-top: 12px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .weekly-leaderboard {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .weekly-leaderboard ul {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+    }
+
+    .weekly-leaderboard li {
+      padding: 4px 0;
+    }
+
     footer {
       margin-top: 14px;
       padding-bottom: 10px;
       font-size: 12px;
       opacity: 0.6;
+    }
+
+    /* =========================
+       OVERLAY SYSTEM (CRITICAL)
+       ========================= */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .overlay-box {
+      background: #123a2b;
+      padding: 18px 20px;
+      border-radius: 14px;
+      max-width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .overlay-box h2 {
+      margin-top: 0;
+    }
+
+    .overlay-box button {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #1aa667;
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .overlay-box button + button {
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -73,7 +154,7 @@
     <p>Match the Six Pillars</p>
   </header>
 
-  <!-- HUD (CP-aligned language) -->
+  <!-- HUD -->
   <div class="hud">
     <div>Level <span id="level">1</span></div>
     <div>Progress <span id="score">0</span></div>
@@ -85,22 +166,20 @@
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
-<!-- WEEKLY CHALLENGE INFO -->
+  <!-- WEEKLY INFO -->
   <section class="weekly-info">
     <h2>🛡️ Pillar Match — Weekly Challenge</h2>
-
     <p class="countdown">
       Next weekly reset in
       <span id="utcCountdown">--h --m --s</span> (UTC)
     </p>
-
     <p class="weekly-note">
       Your best run this week will be recorded.
       Reset happens every Monday (UTC).
     </p>
   </section>
 
-  <!-- WEEKLY LEADERBOARD (Top 10) -->
+  <!-- WEEKLY LEADERBOARD -->
   <section class="weekly-leaderboard">
     <h3>Weekly Leaderboard</h3>
     <ul id="leaderboardList">
@@ -110,38 +189,36 @@
 
   <!-- GAME GRID -->
   <main class="game-wrapper">
-    <div class="grid"></div>
+    <div class="grid" id="grid"></div>
   </main>
 
-  <!-- FOOTER (gentle CP-aligned message) -->
+  <!-- FOOTER -->
   <footer>
     Every step counts.
   </footer>
 
   <!-- LEVEL COMPLETE OVERLAY -->
-<div id="levelOverlay" class="overlay hidden">
-  <div class="overlay-box">
-    <h2>Progress Reached</h2>
-
-    <p class="cp-line"></p>
-
-    <button id="nextLevelBtn">Continue</button>
+  <div id="levelOverlay" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>Progress Reached</h2>
+      <p class="cp-line"></p>
+      <button id="nextLevelBtn" type="button">Continue</button>
+    </div>
   </div>
-</div>
-  <!-- FAIL OVERLAY (CP-aligned tone) -->
+
+  <!-- FAIL OVERLAY -->
   <div id="failOverlay" class="overlay hidden">
-  <div class="overlay-box">
-    <h2>Take a Breath</h2>
-    <p>You can try again when you're ready.</p>
-
-    <button id="retryBtn">Try Again</button>
-    <button id="shareXBtn">Share on X</button>
+    <div class="overlay-box">
+      <h2>Take a Breath</h2>
+      <p>You can try again when you're ready.</p>
+      <button id="retryBtn" type="button">Try Again</button>
+      <button id="shareXBtn" type="button">Share on X</button>
+    </div>
   </div>
-</div>
 
-  <!-- JS -->
-  <script src="./game.js?v=5" defer></script>
+  <!-- JS (ORDER IS IMPORTANT) -->
   <script src="./weekly-leaderboard.js?v=1" defer></script>
+  <script src="./game.js?v=5" defer></script>
 
 </body>
 </html>
