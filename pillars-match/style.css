@@ -179,33 +179,50 @@ footer.fading {
   text-align: center;
 }
 /* =====================================================
-   🧠 CP AWARENESS OVERLAY FIX (LAYOUT ONLY)
+   🧠 CP AWARENESS OVERLAY FIX (FINAL)
    ===================================================== */
 
-/* Ensure overlay truly centers content */
+/* Force overlay to true fullscreen center */
 .overlay {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: fixed;
+  inset: 0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   padding: 16px;
+  z-index: 999;
 }
 
-/* Limit width for mobile readability */
+/* Hard reset any inherited layout */
 .overlay-box {
-  max-width: 300px;
+  position: relative !important;
+  margin: 0 auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+
+  background: #0f3d2e;
+  padding: 20px 26px;
+  border-radius: 12px;
+
   width: 100%;
+  max-width: 320px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
-/* Title spacing */
+/* Title */
 .overlay-box h2 {
   margin: 0 0 10px;
   font-size: 18px;
 }
 
-/* CP awareness line */
+/* CP awareness line — ALWAYS CENTERED */
 .overlay-box .cp-line {
   margin: 10px 0 14px;
   font-size: 14px;
@@ -213,22 +230,23 @@ footer.fading {
   color: #d7efe4;
   opacity: 0.95;
   text-align: center;
+  max-width: 260px;
 }
 
-/* Continue / Next button */
+/* Button */
 .overlay-box button {
-  margin-top: 4px;
+  margin-top: 6px;
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 8px;
 }
 
-/* Special milestone emphasis */
+/* Milestone emphasis (Level 10 / 25 / 50 / 100 ready) */
 .overlay-box.milestone {
-  box-shadow: 0 0 24px rgba(255, 216, 107, 0.35);
+  box-shadow: 0 0 26px rgba(255, 216, 107, 0.4);
 }
 
-/* Extra breathing room on very small screens */
+/* Small-height devices */
 @media (max-height: 620px) {
   .overlay-box {
     padding: 16px 20px;
