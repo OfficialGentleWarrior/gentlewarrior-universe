@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const GRID_SIZE = 7;
-  const TILE_SIZE = 62;
+  const TILE_SIZE = 56 + 6;
 
   const LEVEL_CONFIG = {
     baseMoves: 20,
@@ -42,8 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-
-  let isResolving = true;     // 🔒 locked until stable
+  let isResolving = true;
   let isInitPhase = true;
 
   let score = 0;
@@ -52,39 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     SAVE / LOAD (LOCKED BOARD)
-  ========================== */
-
-  function saveGame() {
-    localStorage.setItem("pm_save", JSON.stringify({
-      level,
-      score,
-      moves,
-      levelStartScore,
-      board: tiles.map(t => t.dataset.pillar)
-    }));
-
-    progressBar?.animate(
-      [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
-      { duration: 600, easing: "ease-out" }
-    );
-  }
-
-  function loadGame() {
-    const raw = localStorage.getItem("pm_save");
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  window.addEventListener("beforeunload", saveGame);
-
-  footerEl?.addEventListener("contextmenu", e => {
-    e.preventDefault();
-    localStorage.removeItem("pm_save");
-    location.reload();
-  });
-
-  /* =========================
-     UI
+     UI HELPERS
   ========================== */
 
   function updateHUD() {
@@ -92,8 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
     levelEl.textContent = level;
     movesEl.textContent = moves;
 
+    const target = LEVEL_CONFIG.scoreTarget(level);
     const gained = score - levelStartScore;
-    const pct = Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100);
+    const pct = Math.min(100, (gained / target) * 100);
     progressBar.style.width = pct + "%";
   }
 
@@ -107,46 +75,21 @@ document.addEventListener("DOMContentLoaded", () => {
     failOverlay.classList.remove("hidden");
   }
 
-  /* =========================
-     START LEVEL (FIXED)
-  ========================== */
-
   function startLevel() {
-    const saved = loadGame();
-
-    isResolving = true;
+    moves = LEVEL_CONFIG.baseMoves;
+    levelStartScore = score;
     isInitPhase = true;
-    selectedTile = null;
+    isResolving = true;
 
-    if (saved) {
-      level = saved.level;
-      score = saved.score;
-      moves = saved.moves;
-      levelStartScore = saved.levelStartScore;
-      createGrid(saved.board);
-    } else {
-      moves = LEVEL_CONFIG.baseMoves;
-      levelStartScore = score;
-      createGrid();
-    }
-
+    createGrid();
     updateHUD();
-
-    // 🔑 ALWAYS normalize board
     setTimeout(resolveInitMatches, 0);
   }
 
   nextBtn?.addEventListener("click", () => {
     levelOverlay.classList.add("hidden");
     level++;
-    moves = LEVEL_CONFIG.baseMoves;
-    levelStartScore = score;
-    isResolving = true;
-    isInitPhase = true;
-    createGrid();
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-    saveGame();
+    startLevel();
   });
 
   /* =========================
@@ -171,13 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
      GRID
   ========================== */
 
-  function createGrid(boardData = null) {
+  function createGrid() {
     gridEl.innerHTML = "";
     tiles = [];
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
       const img = document.createElement("img");
-      const p = boardData ? boardData[i] : randomPillar();
+      const p = randomPillar();
 
       img.className = "tile";
       img.dataset.index = i;
@@ -224,9 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animateSwap(a, b, () => {
       commitSwap(a, b);
-      const matches = findMatchesDetailed();
+      const groups = findMatchesDetailed();
 
-      if (!matches.length) {
+      if (!groups.length) {
         animateSwap(a, b, () => {
           commitSwap(a, b);
           isResolving = false;
@@ -234,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         moves--;
         updateHUD();
-        resolveBoard(matches);
+        resolveBoard(groups);
       }
     });
 
@@ -279,7 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function findMatchesDetailed() {
     const groups = [];
 
-    // horizontal
     for (let r = 0; r < GRID_SIZE; r++) {
       let count = 1;
       for (let c = 1; c <= GRID_SIZE; c++) {
@@ -297,7 +239,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // vertical
     for (let c = 0; c < GRID_SIZE; c++) {
       let count = 1;
       for (let r = 1; r <= GRID_SIZE; r++) {
@@ -319,6 +260,98 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
+     DEAD BOARD HELPERS
+  ========================== */
+
+  function hasPossibleMoves() {
+    for (let i = 0; i < tiles.length; i++) {
+      const neighbors = [i + 1, i - 1, i + GRID_SIZE, i - GRID_SIZE];
+      for (const j of neighbors) {
+        if (j < 0 || j >= tiles.length) continue;
+        if (!isAdjacent(i, j)) continue;
+
+        const a = tiles[i].dataset.pillar;
+        const b = tiles[j].dataset.pillar;
+
+        tiles[i].dataset.pillar = b;
+        tiles[j].dataset.pillar = a;
+
+        const matches = findMatchesDetailed();
+
+        tiles[i].dataset.pillar = a;
+        tiles[j].dataset.pillar = b;
+
+        if (matches.length) return true;
+      }
+    }
+    return false;
+  }
+
+  function showHintGlow() {
+    for (let i = 0; i < tiles.length; i++) {
+      const neighbors = [i + 1, i - 1, i + GRID_SIZE, i - GRID_SIZE];
+      for (const j of neighbors) {
+        if (j < 0 || j >= tiles.length) continue;
+        if (!isAdjacent(i, j)) continue;
+
+        const a = tiles[i].dataset.pillar;
+        const b = tiles[j].dataset.pillar;
+
+        tiles[i].dataset.pillar = b;
+        tiles[j].dataset.pillar = a;
+
+        if (findMatchesDetailed().length) {
+          tiles[i].classList.add("hint");
+          tiles[j].classList.add("hint");
+          setTimeout(() => {
+            tiles[i].classList.remove("hint");
+            tiles[j].classList.remove("hint");
+          }, 600);
+          tiles[i].dataset.pillar = a;
+          tiles[j].dataset.pillar = b;
+          return;
+        }
+
+        tiles[i].dataset.pillar = a;
+        tiles[j].dataset.pillar = b;
+      }
+    }
+  }
+
+  function pulseProgress() {
+    progressBar.animate([
+      { transform: "scaleY(1)", opacity: 1 },
+      { transform: "scaleY(1.4)", opacity: 0.9 },
+      { transform: "scaleY(1)", opacity: 1 }
+    ], { duration: 600, easing: "ease-out" });
+  }
+
+  function gentleReshuffle() {
+    showHintGlow();
+    pulseProgress();
+    if (footerEl) {
+      footerEl.style.opacity = "0.3";
+      setTimeout(() => footerEl.style.opacity = "0.6", 400);
+    }
+
+    isResolving = true;
+
+    const pool = tiles.map(t => t.dataset.pillar);
+    pool.sort(() => Math.random() - 0.5);
+
+    tiles.forEach((t, i) => {
+      t.dataset.pillar = pool[i];
+      t.src = `../assets/pillars/${pool[i]}.png`;
+    });
+
+    setTimeout(() => {
+      const matches = findMatchesDetailed();
+      if (matches.length) resolveBoard(matches);
+      else isResolving = false;
+    }, 300);
+  }
+
+  /* =========================
      RESOLUTION
   ========================== */
 
@@ -337,23 +370,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     updateHUD();
-
-    toClear.forEach(i => {
-      const t = tiles[i];
-      t.dataset.pillar = "empty";
-      t.style.opacity = "0";
-      t.style.pointerEvents = "none";
-    });
+    clearTiles([...toClear]);
 
     setTimeout(() => {
       applyGravityAnimated(() => {
         const next = findMatchesDetailed();
-        if (next.length) {
-          resolveBoard(next);
-        } else {
+        if (next.length) resolveBoard(next);
+        else {
           isResolving = false;
           isInitPhase = false;
-          saveGame();
+
+          if (!hasPossibleMoves()) {
+            gentleReshuffle();
+            return;
+          }
 
           const gained = score - levelStartScore;
           if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
@@ -363,9 +393,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 180);
   }
 
+  function clearTiles(list) {
+    list.forEach(i => {
+      const t = tiles[i];
+      t.dataset.pillar = "empty";
+      t.style.opacity = "0";
+      t.style.pointerEvents = "none";
+    });
+  }
+
+  /* =========================
+     GRAVITY
+  ========================== */
+
   function applyGravityAnimated(done) {
     for (let c = 0; c < GRID_SIZE; c++) {
       const stack = [];
+
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
         const t = tiles[r * GRID_SIZE + c];
         if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
@@ -380,17 +424,16 @@ document.addEventListener("DOMContentLoaded", () => {
         t.style.pointerEvents = "auto";
       }
     }
+
     setTimeout(done, 220);
   }
 
   function resolveInitMatches() {
     const init = findMatchesDetailed();
-    if (init.length) {
-      resolveBoard(init);
-    } else {
+    if (init.length) resolveBoard(init);
+    else {
       isResolving = false;
       isInitPhase = false;
-      saveGame();
     }
   }
 
