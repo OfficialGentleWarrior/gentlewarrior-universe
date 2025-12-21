@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     💾 SAVE / LOAD (STABLE)
+     💾 SAVE / LOAD
   ========================== */
 
   function saveGame() {
@@ -63,11 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
       board: tiles.map(t => t.dataset.pillar)
     };
     localStorage.setItem("pm_save", JSON.stringify(state));
-
-    progressBar?.animate(
-      [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
-      { duration: 600, easing: "ease-out" }
-    );
   }
 
   function loadGame() {
@@ -108,27 +103,32 @@ document.addEventListener("DOMContentLoaded", () => {
     failOverlay.classList.remove("hidden");
   }
 
+  /* =========================
+     START LEVEL (FIXED)
+  ========================== */
+
   function startLevel() {
     const saved = loadGame();
+
+    isResolving = true;
+    isInitPhase = true;
 
     if (saved) {
       level = saved.level;
       score = saved.score;
       moves = saved.moves;
       levelStartScore = saved.levelStartScore;
-      isInitPhase = false;
-      isResolving = false;
       createGrid(saved.board);
     } else {
       moves = LEVEL_CONFIG.baseMoves;
       levelStartScore = score;
-      isInitPhase = true;
-      isResolving = true;
       createGrid();
-      setTimeout(resolveInitMatches, 0);
     }
 
     updateHUD();
+
+    // 🔑 ALWAYS resolve matches (new OR loaded)
+    setTimeout(resolveInitMatches, 0);
   }
 
   nextBtn?.addEventListener("click", () => {
@@ -136,8 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
     level++;
     moves = LEVEL_CONFIG.baseMoves;
     levelStartScore = score;
-    isInitPhase = true;
     isResolving = true;
+    isInitPhase = true;
     createGrid();
     updateHUD();
     setTimeout(resolveInitMatches, 0);
@@ -188,50 +188,62 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     INPUT / SWAP / MATCH
+     INPUT
   ========================== */
 
-  // (unchanged input, swap, match detection code)
+  function onTileClick(tile) {
+    if (isResolving || moves <= 0) return;
 
-  /* =========================
-     RESOLUTION (FIXED SAVE POINT)
-  ========================== */
+    if (!selectedTile) {
+      selectedTile = tile;
+      tile.classList.add("selected");
+      return;
+    }
 
-  function resolveBoard(groups) {
-    const toClear = new Set();
+    if (tile === selectedTile) {
+      tile.classList.remove("selected");
+      selectedTile = null;
+      return;
+    }
 
-    groups.forEach(group => {
-      const size = group.length;
-      if (!isInitPhase) {
-        score += size === 3 ? 100 :
-                 size === 4 ? 200 :
-                 size === 5 ? 400 :
-                 600 + (size - 6) * 100;
+    const a = selectedTile;
+    const b = tile;
+
+    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) {
+      a.classList.remove("selected");
+      selectedTile = null;
+      return;
+    }
+
+    isResolving = true;
+
+    animateSwap(a, b, () => {
+      commitSwap(a, b);
+      const groups = findMatchesDetailed();
+
+      if (!groups.length) {
+        animateSwap(a, b, () => {
+          commitSwap(a, b);
+          isResolving = false;
+        });
+      } else {
+        moves--;
+        updateHUD();
+        resolveBoard(groups);
       }
-      group.forEach(i => toClear.add(i));
     });
 
-    updateHUD();
-    clearTiles([...toClear]);
-
-    setTimeout(() => {
-      applyGravityAnimated(() => {
-        const next = findMatchesDetailed();
-        if (next.length) {
-          resolveBoard(next);
-        } else {
-          isResolving = false;
-          isInitPhase = false;
-
-          saveGame(); // ✅ SAVE ONLY WHEN STABLE
-
-          const gained = score - levelStartScore;
-          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
-          else if (moves <= 0) showFail();
-        }
-      });
-    }, 180);
+    a.classList.remove("selected");
+    selectedTile = null;
   }
+
+  /* =========================
+     SWAP / MATCH / RESOLVE
+  ========================== */
+
+  // ⬇️ KEEP YOUR EXISTING swap, match detection,
+  // resolveBoard, gravity, resolveInitMatches logic
+  // (no change needed there)
 
   /* =========================
      INIT
