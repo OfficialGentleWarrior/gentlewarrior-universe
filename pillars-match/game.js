@@ -162,14 +162,34 @@ const progressBar = document.getElementById("progressBar");
 
 const levelOverlay = document.getElementById("levelOverlay");
 const nextBtn = document.getElementById("nextLevelBtn");
-const resetBtn = document.getElementById("resetRunBtn");
 
-resetBtn?.addEventListener("click", () => {
-  // 🔒 END CURRENT RUN
+// run controls
+const endRunBtn   = document.getElementById("endRunBtn");
+const saveRunBtn  = document.getElementById("saveRunBtn");
+const resetRunBtn = document.getElementById("resetRunBtn");
+
+/* =========================
+   BUTTON HANDLERS
+========================== */
+
+// SAVE (continue later)
+saveRunBtn?.addEventListener("click", () => {
+  saveGame();
+  console.log("RUN SAVED (manual)");
+});
+
+// END RUN (save snapshot + reset)
+endRunBtn?.addEventListener("click", () => {
+  endRun("manual");
+});
+
+// RESTART (hard reset, no record)
+resetRunBtn?.addEventListener("click", () => {
+  console.log("RUN RESET");
+
   isRunActive = false;
   localStorage.removeItem("pm_save");
 
-  // 🔁 RESET VALUES
   level = 1;
   score = 0;
   moves = LEVEL_CONFIG.baseMoves;
@@ -179,19 +199,12 @@ resetBtn?.addEventListener("click", () => {
   isResolving = true;
   selectedTile = null;
 
-  // 🔓 START NEW RUN
   isRunActive = true;
 
   createGrid();
   updateHUD();
   setTimeout(resolveInitMatches, 0);
 });
-const endRunBtn = document.getElementById("endRunBtn");
-
-endRunBtn?.addEventListener("click", () => {
-  endRun("manual");
-});
-
   /* =========================
      CP LINE CONTAINER (SAFE)
   ========================== */
