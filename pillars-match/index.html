@@ -85,6 +85,29 @@
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
+<!-- WEEKLY CHALLENGE INFO -->
+  <section class="weekly-info">
+    <h2>🛡️ Pillar Match — Weekly Challenge</h2>
+
+    <p class="countdown">
+      Next weekly reset in
+      <span id="utcCountdown">--h --m --s</span> (UTC)
+    </p>
+
+    <p class="weekly-note">
+      Your best run this week will be recorded.
+      Reset happens every Monday (UTC).
+    </p>
+  </section>
+
+  <!-- WEEKLY LEADERBOARD (Top 10) -->
+  <section class="weekly-leaderboard">
+    <h3>Weekly Leaderboard</h3>
+    <ul id="leaderboardList">
+      <li>Loading...</li>
+    </ul>
+  </section>
+
   <!-- GAME GRID -->
   <main class="game-wrapper">
     <div class="grid"></div>
@@ -105,7 +128,6 @@
     <button id="nextLevelBtn">Continue</button>
   </div>
 </div>
-
   <!-- FAIL OVERLAY (CP-aligned tone) -->
   <div id="failOverlay" class="overlay hidden">
     <div class="overlay-box">
@@ -117,6 +139,7 @@
 
   <!-- JS -->
   <script src="./game.js?v=5" defer></script>
+  <script src="./weekly-leaderboard.js?v=1" defer></script>
 
 </body>
 </html>
