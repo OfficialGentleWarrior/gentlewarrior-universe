@@ -287,10 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(1.2)`,
         opacity: 0
       }
-    ], {
-      duration: 400,
-      easing: "ease-out"
-    });
+    ], { duration: 400, easing: "ease-out" });
 
     setTimeout(() => sparkle.remove(), 420);
   }
@@ -304,17 +301,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     groups.forEach(group => {
       const size = group.length;
-
       if (!isInitPhase) {
         score += size === 3 ? 100 :
                  size === 4 ? 200 :
                  size === 5 ? 400 :
                  600 + (size - 6) * 100;
       }
-
       group.forEach(i => {
         toClear.add(i);
-        spawnSparkle(tiles[i]); // ✨ sparkle here
+        spawnSparkle(tiles[i]);
       });
     });
 
@@ -349,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     GRAVITY
+     GRAVITY (FIXED)
   ========================== */
 
   function applyGravityAnimated(done) {
@@ -367,6 +362,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         t.dataset.pillar = p;
         t.src = `../assets/pillars/${p}.png`;
+
+        /* 🔑 FIX: RESET TRANSFORM STATE */
+        t.style.transition = "";
+        t.style.transform = "scale(1)";
         t.style.opacity = "1";
         t.style.pointerEvents = "auto";
       }
