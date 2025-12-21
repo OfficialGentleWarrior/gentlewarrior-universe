@@ -51,6 +51,29 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
+     💾 SAVE / LOAD (MINIMAL PATCH)
+  ========================== */
+
+  function saveProgress() {
+    localStorage.setItem("pm_progress", JSON.stringify({ level, score }));
+    progressBar.animate(
+      [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
+      { duration: 600, easing: "ease-out" }
+    );
+  }
+
+  (function loadProgress() {
+    const saved = JSON.parse(localStorage.getItem("pm_progress") || "null");
+    if (saved) { level = saved.level; score = saved.score; }
+  })();
+
+  footerEl?.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    localStorage.removeItem("pm_progress");
+    location.reload();
+  });
+
+  /* =========================
      UI HELPERS
   ========================== */
 
@@ -260,98 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     DEAD BOARD HELPERS
-  ========================== */
-
-  function hasPossibleMoves() {
-    for (let i = 0; i < tiles.length; i++) {
-      const neighbors = [i + 1, i - 1, i + GRID_SIZE, i - GRID_SIZE];
-      for (const j of neighbors) {
-        if (j < 0 || j >= tiles.length) continue;
-        if (!isAdjacent(i, j)) continue;
-
-        const a = tiles[i].dataset.pillar;
-        const b = tiles[j].dataset.pillar;
-
-        tiles[i].dataset.pillar = b;
-        tiles[j].dataset.pillar = a;
-
-        const matches = findMatchesDetailed();
-
-        tiles[i].dataset.pillar = a;
-        tiles[j].dataset.pillar = b;
-
-        if (matches.length) return true;
-      }
-    }
-    return false;
-  }
-
-  function showHintGlow() {
-    for (let i = 0; i < tiles.length; i++) {
-      const neighbors = [i + 1, i - 1, i + GRID_SIZE, i - GRID_SIZE];
-      for (const j of neighbors) {
-        if (j < 0 || j >= tiles.length) continue;
-        if (!isAdjacent(i, j)) continue;
-
-        const a = tiles[i].dataset.pillar;
-        const b = tiles[j].dataset.pillar;
-
-        tiles[i].dataset.pillar = b;
-        tiles[j].dataset.pillar = a;
-
-        if (findMatchesDetailed().length) {
-          tiles[i].classList.add("hint");
-          tiles[j].classList.add("hint");
-          setTimeout(() => {
-            tiles[i].classList.remove("hint");
-            tiles[j].classList.remove("hint");
-          }, 600);
-          tiles[i].dataset.pillar = a;
-          tiles[j].dataset.pillar = b;
-          return;
-        }
-
-        tiles[i].dataset.pillar = a;
-        tiles[j].dataset.pillar = b;
-      }
-    }
-  }
-
-  function pulseProgress() {
-    progressBar.animate([
-      { transform: "scaleY(1)", opacity: 1 },
-      { transform: "scaleY(1.4)", opacity: 0.9 },
-      { transform: "scaleY(1)", opacity: 1 }
-    ], { duration: 600, easing: "ease-out" });
-  }
-
-  function gentleReshuffle() {
-    showHintGlow();
-    pulseProgress();
-    if (footerEl) {
-      footerEl.style.opacity = "0.3";
-      setTimeout(() => footerEl.style.opacity = "0.6", 400);
-    }
-
-    isResolving = true;
-
-    const pool = tiles.map(t => t.dataset.pillar);
-    pool.sort(() => Math.random() - 0.5);
-
-    tiles.forEach((t, i) => {
-      t.dataset.pillar = pool[i];
-      t.src = `../assets/pillars/${pool[i]}.png`;
-    });
-
-    setTimeout(() => {
-      const matches = findMatchesDetailed();
-      if (matches.length) resolveBoard(matches);
-      else isResolving = false;
-    }, 300);
-  }
-
-  /* =========================
      RESOLUTION
   ========================== */
 
@@ -370,6 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     updateHUD();
+    saveProgress(); // 🔑 minimal patch hook
     clearTiles([...toClear]);
 
     setTimeout(() => {
@@ -379,11 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
         else {
           isResolving = false;
           isInitPhase = false;
-
-          if (!hasPossibleMoves()) {
-            gentleReshuffle();
-            return;
-          }
 
           const gained = score - levelStartScore;
           if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
