@@ -558,13 +558,20 @@ function submitWeeklyRun() {
         const next = findMatchesDetailed();
         if (next.length) resolveBoard(next);
         else {
-          isResolving = false;
-          isInitPhase = false;
-          saveGame();
-          const gained = score - levelStartScore;
-          if (gained >= LEVEL_CONFIG.scoreTarget(level)) showLevelComplete();
-          else if (moves <= 0) showFail();
-        }
+  isResolving = false;
+  isInitPhase = false;
+
+  const gained = score - levelStartScore;
+
+  if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
+    saveGame();            // ✅ save ONLY on success
+    showLevelComplete();
+  } else if (moves <= 0) {
+    showFail();            // ❌ NO SAVE on fail
+  } else {
+    saveGame();            // normal play save
+  }
+}
       });
     }, 180);
   }
