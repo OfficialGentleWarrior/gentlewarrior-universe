@@ -30,14 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const levelEl = document.getElementById("level");
   const movesEl = document.getElementById("moves");
   const progressBar = document.getElementById("progressBar");
-  const footerEl = document.querySelector("footer");
 
   const levelOverlay = document.getElementById("levelOverlay");
   const failOverlay = document.getElementById("failOverlay");
   const nextBtn = document.getElementById("nextLevelBtn");
 
   /* =========================
-     SAVE BUTTON (INJECTED)
+     SAVE BUTTON
   ========================== */
 
   const saveBtn = document.createElement("button");
@@ -62,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tiles = [];
   let selectedTile = null;
-
   let isResolving = true;
   let isInitPhase = true;
 
@@ -262,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     MATCH + SPARKLE
+     MATCH + SPARKLE (FIXED)
   ========================== */
 
   function resolveBoard(groups) {
@@ -277,15 +275,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateHUD();
 
-    // ✨ Sparkle duration
     const sparkleTime = maxSize >= 4 ? 450 : 250;
+    const sparkleClass = maxSize >= 4 ? ["sparkle", "sparkle-big"] : ["sparkle"];
 
-    toClear.forEach(i => tiles[i].classList.add("matched"));
+    toClear.forEach(i => {
+      tiles[i].classList.add(...sparkleClass);
+    });
 
     setTimeout(() => {
       toClear.forEach(i => {
         const t = tiles[i];
-        t.classList.remove("matched");
+        t.classList.remove("sparkle", "sparkle-big");
         t.dataset.pillar = "empty";
         t.style.opacity = "0";
       });
