@@ -65,13 +65,10 @@ header p {
   height: 56px;
   border-radius: 10px;
   cursor: pointer;
-
   position: relative;
   overflow: visible;
-
   will-change: transform, box-shadow;
   transform: translateZ(0);
-
   box-shadow: none;
   outline: none;
 }
@@ -81,12 +78,12 @@ header p {
   box-shadow: 0 0 0 3px #ffd86b;
 }
 
-/* ---------- MATCHED (NORMAL FEEDBACK) ---------- */
+/* ---------- MATCHED ---------- */
 .tile.matched {
   box-shadow: 0 0 16px 3px rgba(255, 216, 107, 0.8);
 }
 
-/* ---------- SUBTLE HINT GLOW (PRE-RESHUFFLE) ---------- */
+/* ---------- HINT ---------- */
 .tile.hint {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
   animation: hintGlow 1.6s ease-in-out infinite;
@@ -98,7 +95,7 @@ header p {
   100% { box-shadow: 0 0 6px rgba(255,255,255,0.18); }
 }
 
-/* ---------- SWAP PULSE ---------- */
+/* ---------- SWAP ---------- */
 .tile.swapping {
   animation: swapPulse 0.15s ease-out;
 }
@@ -109,7 +106,7 @@ header p {
   100% { transform: scale(1); }
 }
 
-/* ---------- SYMBOLIC HELP PULSE (BOARD HELPS PLAYER) ---------- */
+/* ---------- HELP PULSE ---------- */
 body.helped {
   animation: helpedPulse 0.9s ease-out;
 }
@@ -129,12 +126,11 @@ footer {
   transition: opacity 0.4s ease;
 }
 
-/* ---------- FOOTER FADE DURING RESHUFFLE ---------- */
 footer.fading {
   opacity: 0.25;
 }
 
-/* ---------- HOVER (DESKTOP ONLY) ---------- */
+/* ---------- HOVER ---------- */
 @media (hover: hover) {
   .tile:hover {
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
@@ -155,54 +151,28 @@ footer.fading {
 }
 
 /* =====================================================
-   🟢 OVERLAYS (LEVEL COMPLETE / FAIL)
+   🟢 OVERLAYS (FINAL — CENTERED, NO DUPLICATES)
    ===================================================== */
 
 .overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-}
 
-.overlay.hidden {
-  display: none;
-}
-
-.overlay-box {
-  background: #0f3d2e;
-  padding: 20px 26px;
-  border-radius: 12px;
-  text-align: center;
-}
-/* =====================================================
-   🧠 CP AWARENESS OVERLAY FIX (FINAL)
-   ===================================================== */
-
-/* Force overlay to true fullscreen center */
-.overlay {
-  position: fixed;
-  inset: 0;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   padding: 16px;
   z-index: 999;
 }
 
-/* Hard reset any inherited layout */
-.overlay-box {
-  position: relative !important;
-  margin: 0 auto !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  transform: none !important;
+.overlay.hidden {
+  display: none !important;
+}
 
+/* ---------- OVERLAY BOX ---------- */
+.overlay-box {
   background: #0f3d2e;
   padding: 20px 26px;
   border-radius: 12px;
@@ -213,27 +183,28 @@ footer.fading {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+
   text-align: center;
 }
 
-/* Title */
+/* ---------- OVERLAY TITLE ---------- */
 .overlay-box h2 {
   margin: 0 0 10px;
   font-size: 18px;
 }
 
-/* CP awareness line — ALWAYS CENTERED */
+/* ---------- CP LINE ---------- */
 .overlay-box .cp-line {
   margin: 10px 0 14px;
   font-size: 14px;
   line-height: 1.45;
   color: #d7efe4;
   opacity: 0.95;
-  text-align: center;
   max-width: 260px;
 }
 
-/* Button */
+/* ---------- BUTTON ---------- */
 .overlay-box button {
   margin-top: 6px;
   padding: 8px 16px;
@@ -241,12 +212,12 @@ footer.fading {
   border-radius: 8px;
 }
 
-/* Milestone emphasis (Level 10 / 25 / 50 / 100 ready) */
+/* ---------- MILESTONE ---------- */
 .overlay-box.milestone {
   box-shadow: 0 0 26px rgba(255, 216, 107, 0.4);
 }
 
-/* Small-height devices */
+/* ---------- SMALL HEIGHT ---------- */
 @media (max-height: 620px) {
   .overlay-box {
     padding: 16px 20px;
@@ -259,8 +230,4 @@ footer.fading {
   .overlay-box .cp-line {
     font-size: 13px;
   }
-}
-/* 🔒 FORCE HIDDEN OVERLAYS TO STAY HIDDEN */
-.overlay.hidden {
-  display: none !important;
 }
