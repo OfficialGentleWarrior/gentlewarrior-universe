@@ -36,6 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const failOverlay = document.getElementById("failOverlay");
   const nextBtn = document.getElementById("nextLevelBtn");
 
+  /* ➕ Save button (optional but reassuring) */
+  const saveBtn = document.getElementById("saveBtn");
+
   /* =========================
      STATE
   ========================== */
@@ -43,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let tiles = [];
   let selectedTile = null;
 
-  let isResolving = true;     // 🔒 locked until stable
+  let isResolving = true;
   let isInitPhase = true;
 
   let score = 0;
@@ -52,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let levelStartScore = 0;
 
   /* =========================
-     SAVE / LOAD (LOCKED BOARD)
+     SAVE / LOAD
   ========================== */
 
   function saveGame() {
@@ -64,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       board: tiles.map(t => t.dataset.pillar)
     }));
 
+    // gentle saved pulse (no text)
     progressBar?.animate(
       [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
       { duration: 600, easing: "ease-out" }
@@ -77,11 +81,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("beforeunload", saveGame);
 
+  /* Hidden respectful reset */
   footerEl?.addEventListener("contextmenu", e => {
     e.preventDefault();
     localStorage.removeItem("pm_save");
     location.reload();
   });
+
+  saveBtn?.addEventListener("click", saveGame);
 
   /* =========================
      UI
@@ -108,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     START LEVEL (FIXED)
+     START LEVEL (FAIL RESTORE)
   ========================== */
 
   function startLevel() {
@@ -132,8 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateHUD();
 
-    // 🔑 ALWAYS normalize board
-    setTimeout(resolveInitMatches, 0);
+    setTimeout(() => {
+      resolveInitMatches();
+
+      // ✅ FAIL-STATE RESTORE AFTER REFRESH
+      if (moves <= 0) {
+        showFail();
+      }
+    }, 0);
   }
 
   nextBtn?.addEventListener("click", () => {
