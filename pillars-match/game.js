@@ -177,8 +177,31 @@ const retryBtn = document.getElementById("retryBtn");
 const shareXBtn = document.getElementById("shareXBtn");
 const nextBtn = document.getElementById("nextLevelBtn");
 retryBtn?.addEventListener("click", () => {
-failOverlay.classList.add("hidden");
-startLevel(); // reset run cleanly
+  // hide overlay
+  failOverlay.classList.add("hidden");
+
+  // 🔥 CLEAR saved run completely
+  localStorage.removeItem("pm_save");
+
+  // 🔄 RESET CORE STATE
+  score = 0;
+  level = 1;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  selectedTile = null;
+  isResolving = true;
+  isInitPhase = true;
+
+  // ⏱ reset run timing
+  runStartTime = Date.now();
+  runSubmitted = false;
+
+  // 🧱 rebuild fresh board
+  createGrid();
+  updateHUD();
+
+  // allow play again
+  setTimeout(resolveInitMatches, 0);
 });
 shareXBtn?.addEventListener("click", () => {
   const cpLine =
@@ -294,6 +317,7 @@ function submitWeeklyRun() {
 
   function showFail() {
   isResolving = true;
+  selectedTile = null; // ✅ CLEAR ANY SELECTED TILE
   submitWeeklyRun(); // ✅ SUBMIT BEST RUN ONCE
   failOverlay.classList.remove("hidden");
 }
