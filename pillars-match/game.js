@@ -601,23 +601,29 @@ function swapCreatesMatch(i1, i2) {
 }
 
 function findHintMove() {
+  const directions = [
+    { dr: 0, dc: 1 },   // right
+    { dr: 1, dc: 0 },   // down
+    { dr: 0, dc: -1 },  // left
+    { dr: -1, dc: 0 }   // up
+  ];
+
   for (let i = 0; i < tiles.length; i++) {
     const { row, col } = indexToRowCol(i);
 
-    const neighbors = [
-      { r: row, c: col + 1 },
-      { r: row + 1, c: col }
-    ];
+    for (const d of directions) {
+      const r = row + d.dr;
+      const c = col + d.dc;
 
-    for (const n of neighbors) {
-      if (n.r >= GRID_SIZE || n.c >= GRID_SIZE) continue;
+      if (r < 0 || c < 0 || r >= GRID_SIZE || c >= GRID_SIZE) continue;
 
-      const j = n.r * GRID_SIZE + n.c;
+      const j = r * GRID_SIZE + c;
       if (swapCreatesMatch(i, j)) {
         return [i, j];
       }
     }
   }
+
   return null;
 }
 
