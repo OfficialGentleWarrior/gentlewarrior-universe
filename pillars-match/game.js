@@ -496,8 +496,8 @@ function endRun(reason = "manual") {
       wrongAttempts++;
 
       if (wrongAttempts >= 2) {
-        showHint();
-      }
+  setTimeout(showHint, 0); // wait for board to stabilize
+}
 
       animateSwap(a, b, () => {
         commitSwap(a, b);
@@ -630,8 +630,16 @@ function findHintMove() {
 function showHint() {
   if (hintShown) return;
 
+  console.log("SHOW HINT CALLED");
+
   const hint = findHintMove();
-  if (!hint) return;
+  console.log("HINT RESULT:", hint);
+
+  if (!hint) {
+    console.warn("DEAD BOARD — reshuffle needed");
+    // reshuffleBoard(); // OPTIONAL — wag muna kung wala ka pa
+    return;
+  }
 
   hintTiles = hint;
   hintShown = true;
