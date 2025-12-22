@@ -312,9 +312,6 @@ resetRunBtn?.addEventListener("click", () => {
   let levelStartScore = 0;
   let runStartTime = Date.now();
   let isRunActive = true;
-  let wrongAttempts = 0;
-  let hintTiles = [];
-  let hintShown = false;
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
@@ -468,57 +465,39 @@ function endRun(reason = "manual") {
   }
 
   function onTileClick(tile) {
+    if (isResolving || moves <= 0) return;
 
-  // ⛔ HARD GUARD
-  if (isResolving || moves <= 0 || hintShown) return;
-
-  if (!selectedTile) {
-    selectedTile = tile;
-    tile.classList.add("selected");
-    return;
-  }
-
-  const a = selectedTile;
-  const b = tile;
-  a.classList.remove("selected");
-  selectedTile = null;
-
-  if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
-
-  isResolving = true;
-
-  animateSwap(a, b, () => {
-    commitSwap(a, b);
-    const groups = findMatchesDetailed();
-
-    if (!groups.length) {
-      // ❌ wrong move
-      wrongAttempts++;
-
-      if (wrongAttempts >= 2) {
-  setTimeout(showHint, 0); // wait for board to stabilize
-}
-
-      animateSwap(a, b, () => {
-        commitSwap(a, b);
-        isResolving = false;
-      });
-
-    } else {
-      moves--;
-
-      // ✅ reset hint state
-      wrongAttempts = 0;
-      hintShown = false;
-      tiles.forEach(t => t.classList.remove("hint"));
-      document.body.classList.remove("helped");
-
-      updateHUD();
-      resolveBoard(groups);
+    if (!selectedTile) {
+      selectedTile = tile;
+      tile.classList.add("selected");
+      return;
     }
-  });
-}
 
+    const a = selectedTile;
+    const b = tile;
+    a.classList.remove("selected");
+    selectedTile = null;
+
+    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
+
+    isResolving = true;
+
+    animateSwap(a, b, () => {
+      commitSwap(a, b);
+      const groups = findMatchesDetailed();
+
+      if (!groups.length) {
+        animateSwap(a, b, () => {
+          commitSwap(a, b);
+          isResolving = false;
+        });
+      } else {
+        moves--;
+        updateHUD();
+        resolveBoard(groups);
+      }
+    });
+  }
 
   function animateSwap(a, b, done) {
     const p1 = indexToRowCol(+a.dataset.index);
@@ -582,81 +561,6 @@ function endRun(reason = "manual") {
     }
     return groups;
   }
-
-function swapCreatesMatch(i1, i2) {
-  const t1 = tiles[i1].dataset.pillar;
-  const t2 = tiles[i2].dataset.pillar;
-
-  // temp swap
-  tiles[i1].dataset.pillar = t2;
-  tiles[i2].dataset.pillar = t1;
-
-  const hasMatch = findMatchesDetailed().length > 0;
-
-  // revert
-  tiles[i1].dataset.pillar = t1;
-  tiles[i2].dataset.pillar = t2;
-
-  return hasMatch;
-}
-
-function findHintMove() {
-  const directions = [
-    { dr: 0, dc: 1 },   // right
-    { dr: 1, dc: 0 },   // down
-    { dr: 0, dc: -1 },  // left
-    { dr: -1, dc: 0 }   // up
-  ];
-
-  for (let i = 0; i < tiles.length; i++) {
-    const { row, col } = indexToRowCol(i);
-
-    for (const d of directions) {
-      const r = row + d.dr;
-      const c = col + d.dc;
-
-      if (r < 0 || c < 0 || r >= GRID_SIZE || c >= GRID_SIZE) continue;
-
-      const j = r * GRID_SIZE + c;
-      if (swapCreatesMatch(i, j)) {
-        return [i, j];
-      }
-    }
-  }
-
-  return null;
-}
-
-function showHint() {
-  if (hintShown) return;
-
-  console.log("SHOW HINT CALLED");
-
-  const hint = findHintMove();
-  console.log("HINT RESULT:", hint);
-
-  if (!hint) {
-    console.warn("DEAD BOARD — reshuffle needed");
-    // reshuffleBoard(); // OPTIONAL — wag muna kung wala ka pa
-    return;
-  }
-
-  hintTiles = hint;
-  hintShown = true;
-
-  hintTiles.forEach(i => {
-    tiles[i].classList.add("hint");
-  });
-
-  document.body.classList.add("helped");
-
-  setTimeout(() => {
-    tiles.forEach(t => t.classList.remove("hint"));
-    document.body.classList.remove("helped");
-    hintShown = false;
-    wrongAttempts = 0;
-  }, 1600);
-}
 
   function spawnSparkle(tile) {
     const sparkle = document.createElement("div");
