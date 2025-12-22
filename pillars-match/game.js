@@ -248,8 +248,11 @@ shareXBtn?.addEventListener("click", () => {
 
   const text = `${cpLine}
 
-I reached Level ${level}
-Progress: ${score}
+Level ${level} complete
+Score: ${score}
+
+If you enjoy calm, thoughtful games,
+you might like this.
 
 Play Pillar Match:
 https://officialgentlewarrior.github.io/gentlewarrior-universe/pillars-match`;
