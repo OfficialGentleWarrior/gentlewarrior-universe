@@ -158,15 +158,47 @@ const gridEl = document.querySelector(".grid");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
-const progressBar = document.getElementById("progressBar");
+const progressBar =
+document.getElementById("progressBar");
 
-const levelOverlay = document.getElementById("levelOverlay");
-const nextBtn = document.getElementById("nextLevelBtn");
+const levelOverlay =
+document.getElementById("levelOverlay");
+const nextBtn =
+document.getElementById("nextLevelBtn");
 
-// run controls
-const endRunBtn   = document.getElementById("endRunBtn");
-const saveRunBtn  = document.getElementById("saveRunBtn");
-const resetRunBtn = document.getElementById("resetRunBtn");
+// END RUN OVERLAY
+const endRunOverlay =
+document.getElementById("endRunOverlay");
+const endRunLevel =
+document.getElementById("endRunLevel");
+const endRunScore =
+document.getElementById("endRunScore");
+const endRunCpLine =
+document.getElementById("endRunCpLine");
+const tryAgainBtn =
+document.getElementById("tryAgainBtn");
+const shareXBtn =
+document.getElementById("shareXBtn");
+
+function showEndRunOverlay() {
+  // fill stats
+  endRunLevel.textContent = level;
+  endRunScore.textContent = score;
+
+  // random CP line
+  endRunCpLine.textContent = getRandomCpLine(level);
+
+  // show overlay
+  endRunOverlay.classList.remove("hidden");
+}
+
+// RUN CONTROLS
+const endRunBtn =
+document.getElementById("endRunBtn");
+const saveRunBtn =
+document.getElementById("saveRunBtn");
+const resetRunBtn =
+document.getElementById("resetRunBtn");
 
 /* =========================
    BUTTON HANDLERS
@@ -178,9 +210,55 @@ saveRunBtn?.addEventListener("click", () => {
   console.log("RUN SAVED (manual)");
 });
 
-// END RUN (save snapshot + reset)
+// END RUN (save snapshot + overlay)
 endRunBtn?.addEventListener("click", () => {
-  endRun("manual");
+  isRunActive = false;
+  saveGame();               // save snapshot
+  showEndRunOverlay();      // show overlay instead of reset
+});
+
+tryAgainBtn?.addEventListener("click", () => {
+  // hide end run overlay
+  endRunOverlay.classList.add("hidden");
+
+  // reset run state
+  isRunActive = false;
+  localStorage.removeItem("pm_save");
+
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+
+  isInitPhase = true;
+  isResolving = true;
+  selectedTile = null;
+
+  // start fresh run
+  isRunActive = true;
+
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+});
+
+shareXBtn?.addEventListener("click", () => {
+  const cpLine =
+    endRunCpLine?.textContent || getRandomCpLine(level);
+
+  const text = `${cpLine}
+
+I reached Level ${level}
+Progress: ${score}
+
+Play Pillar Match:
+https://officialgentlewarrior.github.io/gentlewarrior-universe/pillars-match`;
+
+  const url =
+    "https://twitter.com/intent/tweet?text=" +
+    encodeURIComponent(text);
+
+  window.open(url, "_blank");
 });
 
 // RESTART (hard reset, no record)
@@ -551,26 +629,12 @@ if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
   showLevelComplete();
 }
 else if (moves <= 0) {
-  // 🔒 END CURRENT RUN
   isRunActive = false;
-  localStorage.removeItem("pm_save");
 
-  // 🔁 RESET
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
+  saveGame();          // ✅ save last progress
+  showEndRunOverlay(); // ✅ show Try Again + Share X
 
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  // 🔓 NEW RUN
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
+  return;              // ⛔ stop game flow here
 }
 else {
   saveGame();              // ✅ SAVE DURING NORMAL PLAY
