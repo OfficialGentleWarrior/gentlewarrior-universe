@@ -40,14 +40,14 @@ window.RESPONSES_INFO_CP = {
     text: lang === "en"
       ? "A common myth is that CP always gets worse — it does not. Do you want to hear another myth or learn about CP types?"
       : "Isang maling akala ay palaging lumalala ang CP — hindi ito totoo. Gusto mo bang makarinig ng isa pang maling akala o alamin ang mga uri ng CP?",
-    options: ["more_myths", "types"]
+    options: ["another_myth", "types"]
   }),
 
-  more_myths: (lang) => ({
+  another_myth: (lang) => ({
     text: lang === "en"
-      ? "Another myth is that people with CP can’t live independently — many can with the right support. Do you want to continue with myths or move to daily life?"
-      : "Isa pang maling akala ay hindi kayang maging independent ang may CP — marami ang nakakaya ito sa tamang suporta. Gusto mo bang magpatuloy sa myths o lumipat sa araw-araw na buhay?",
-    options: ["myths", "daily_life"]
+      ? "Another myth is that people with CP can’t live independently — many can with the right support. Do you want to know the types of cp or move to daily life?"
+      : "Isa pang maling akala ay hindi kayang maging independent ang may CP — marami ang nakakaya ito sa tamang suporta. Gusto mo bang malaman ang mga klase ng cp o lumipat sa araw-araw na buhay?",
+    options: ["types", "daily_life"]
   }),
 
   // ===== TYPES =====
