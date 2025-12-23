@@ -12,6 +12,7 @@
     return text.toLowerCase().trim();
   }
 
+
   // ================= LANGUAGE DETECT =================
   function detectLanguage(text) {
     const t = text.toLowerCase();
@@ -53,6 +54,84 @@
     return "OPEN";
   }
 
+const ALIASES = {
+
+  // ===== SIMPLE EXPLANATION =====
+  simple_explanation: [
+    "simple", "simple explanation", "explain", "basic",
+    "simpleng paliwanag", "paliwanag", "ipaliwanag"
+  ],
+
+  // ===== DAILY LIFE =====
+  daily_life: [
+    "daily life", "everyday", "daily", "life",
+    "araw-araw", "pang-araw-araw", "buhay", "pamumuhay"
+  ],
+
+  // ===== CAUSES =====
+  causes: [
+    "cause", "causes", "why", "reason",
+    "sanhi", "dahilan", "bakit"
+  ],
+
+  // ===== RISK FACTORS =====
+  risk_factors: [
+    "risk", "risk factor", "risk factors",
+    "panganib", "salik", "risk factors"
+  ],
+
+  // ===== MYTHS =====
+  myths: [
+    "myth", "myths", "misconception",
+    "maling akala", "hindi totoo", "paniniwala"
+  ],
+
+  more_myths: [
+    "another myth", "more myths", "other myths",
+    "isa pang myth", "iba pang maling akala"
+  ],
+
+  // ===== TYPES =====
+  types: [
+    "type", "types", "kind", "kinds",
+    "uri", "mga uri", "klase"
+  ],
+
+  short_list: [
+    "list", "short list", "main types",
+    "listahan", "maikling listahan", "pangunahing uri"
+  ],
+
+  differences: [
+    "difference", "differences", "compare", "comparison",
+    "pagkakaiba", "naiiba", "ikukumpara"
+  ],
+
+  // ===== DAILY LIFE DETAILS =====
+  examples: [
+    "example", "examples", "sample", "real life",
+    "halimbawa", "mga halimbawa"
+  ],
+
+  adaptation: [
+    "adapt", "adaptation", "adjust", "coping",
+    "pag-angkop", "umaangkop", "adjustment"
+  ],
+
+  // ===== THERAPY =====
+  therapy: [
+    "therapy", "therapies", "treatment", "rehab",
+    "therapy", "gamutan", "rehabilitation", "rehabilitasyon"
+  ],
+
+  // ===== HANDOFF TO FEELING =====
+  feeling_jump: [
+    "feeling", "emotion", "emotionally",
+    "pakiramdam", "damdamin", "emosyon"
+  ]
+
+};
+
   // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
     INFO: () => window.RESPONSES_INFO_CP,
@@ -67,26 +146,14 @@
 
   // ================= OPTION MATCHER =================
   function matchOption(userText, options) {
-  const t = normalize(userText);
+    const t = normalize(userText);
 
-  const ALIASES = {
-    simple_explanation: ["simple", "simpleng", "paliwanag"],
-    daily_life: ["daily life", "araw-araw", "araw araw", "epekto", "buhay"],
-    causes: ["cause", "causes", "sanhi"],
-    types: ["type", "types", "uri"],
-    examples: ["example", "examples", "halimbawa"],
-    adaptation: ["adapt", "adaptation", "pag-angkop"],
-    risk_factors: ["risk", "risk factor"],
-    myths: ["myth", "myths", "maling akala"],
-    more_myths: ["another myth", "ibang myth"],
-    therapy: ["therapy", "therapies"]
-  };
+    return options.find(opt =>
+      ALIASES[opt]?.some(word => t.includes(word))
+    );
+  }
 
-  return options.find(opt =>
-    ALIASES[opt]?.some(word => t.includes(word))
-  );
-}
-
+ 
   // ================= MAIN ROUTER =================
   function routeMessage(userText) {
     const text = normalize(userText);
@@ -96,6 +163,19 @@
     if (detectedLang) {
       currentLanguage = detectedLang;
     }
+/// ================= GLOBAL INTENT OVERRIDE =================
+const overrideIntent = detectIntent(text);
+
+// ONLY override if user did NOT choose a valid option
+if (
+  currentModule &&
+  !matchOption(text, currentModule[currentNode]?.(currentLanguage)?.options || []) &&
+  overrideIntent !== "INFO" &&
+  overrideIntent !== "OPEN"
+) {
+  currentModule = RESPONSE_MODULES[overrideIntent]?.() || window.RESPONSES_OPEN;
+  currentNode = "entry";
+}
 
     // ===== CONTINUE EXISTING BRANCH =====
     if (
@@ -116,23 +196,24 @@
       }
     }
 
-    // ===== START NEW FLOW =====
-    const intent = detectIntent(text);
-    currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
-    currentNode = "entry";
+    /// ===== START NEW FLOW (ONLY IF NO ACTIVE MODULE) =====
+if (!currentModule) {
+  const intent = overrideIntent || detectIntent(text);
+  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
+  currentNode = "entry";
 
-    if (!currentModule || typeof currentModule.entry !== "function") {
-      currentModule = window.RESPONSES_OPEN;
-    }
-
-    const entry = currentModule.entry(currentLanguage);
-    return {
-      text: entry.text,
-      options: entry.options || []
-    };
+  if (!currentModule || typeof currentModule.entry !== "function") {
+    currentModule = window.RESPONSES_OPEN;
   }
+}
 
-  // ================= EXPOSE =================
-  window.routeMessage = routeMessage;
+const entry = currentModule.entry(currentLanguage);
+return {
+  text: entry.text,
+  options: entry.options || []
+};
+}
+
+window.routeMessage = routeMessage;
 
 })();
