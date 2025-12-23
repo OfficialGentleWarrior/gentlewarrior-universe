@@ -172,25 +172,36 @@ const ALIASES = {
  
   // ================= MAIN ROUTER =================
   function routeMessage(userText) {
-    const text = normalize(userText);
+  const text = normalize(userText);
 
-    // 🔑 Update language PER MESSAGE
-    const detectedLang = detectLanguage(text);
-    if (detectedLang) {
-      currentLanguage = detectedLang;
+  // update language per message
+  currentLanguage = detectLanguage(text) || currentLanguage;
+
+  // try option match first (if may active flow)
+  if (currentModule && currentModule[currentNode]) {
+    const node = currentModule[currentNode](currentLanguage);
+    const nextKey = matchOption(text, node.options || []);
+
+    if (nextKey && typeof currentModule[nextKey] === "function") {
+      currentNode = nextKey;
+      const next = currentModule[currentNode](currentLanguage);
+      return {
+        text: next.text,
+        options: next.options || []
+      };
     }
-/// ================= GLOBAL INTENT OVERRIDE =================
-const overrideIntent = detectIntent(text);
+  }
 
-// ONLY override if user did NOT choose a valid option
-if (
-  currentModule &&
-  !matchOption(text, currentModule[currentNode]?.(currentLanguage)?.options || []) &&
-  overrideIntent !== "INFO" &&
-  overrideIntent !== "OPEN"
-) {
-  currentModule = RESPONSE_MODULES[overrideIntent]?.() || window.RESPONSES_OPEN;
+  // NO OPTION → INTENT ALWAYS WINS
+  const intent = detectIntent(text);
+  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
   currentNode = "entry";
+
+  const entry = currentModule.entry(currentLanguage);
+  return {
+    text: entry.text,
+    options: entry.options || []
+  };
 }
 
 // 🔁 DIRECT NODE JUMP (INFO shortcuts)
