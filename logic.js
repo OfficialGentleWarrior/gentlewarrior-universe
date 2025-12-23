@@ -193,6 +193,25 @@ if (
   currentNode = "entry";
 }
 
+// 🔁 DIRECT NODE JUMP (INFO shortcuts)
+if (
+  currentModule === window.RESPONSES_INFO_CP &&
+  currentNode === "entry"
+) {
+  const directKey = Object.keys(ALIASES).find(key =>
+    ALIASES[key]?.some(word => text.includes(word))
+  );
+
+  if (directKey && typeof currentModule[directKey] === "function") {
+    currentNode = directKey;
+    const next = currentModule[currentNode](currentLanguage);
+    return {
+      text: next.text,
+      options: next.options || []
+    };
+  }
+}
+
     // ===== CONTINUE EXISTING BRANCH =====
     if (
       currentModule &&
