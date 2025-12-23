@@ -1,4 +1,4 @@
-// logic.js — Gentle Heart BRANCHING ROUTER (FINAL CLEAN)
+// logic.js — Gentle Heart BRANCHING ROUTER (FINAL, STABLE)
 
 (function () {
 
@@ -12,25 +12,21 @@
     return text.toLowerCase().trim();
   }
 
-
   // ================= LANGUAGE DETECT =================
   function detectLanguage(text) {
-    const t = text.toLowerCase();
+    const t = text;
 
     const enHits = [
-  "what","why","how","is","are","do","does",
-  "daily","life","simple","explanation",
-  "therapy","types","causes","example","adaptation",
-
-  // ✅ ADD THESE
-  "another", "myth", "myths", "type", "types",
-  "risk", "factors", "example", "examples"
-];
+      "what","why","how","is","are","do","does",
+      "daily","life","simple","explanation",
+      "therapy","types","causes","example","adaptation",
+      "myth","myths","another","risk","factor","factors"
+    ];
 
     const tlHits = [
       "ano","bakit","paano","araw","buhay",
       "simpleng","paliwanag","halimbawa",
-      "pag-angkop","uri","sanhi"
+      "pag-angkop","uri","sanhi","maling akala"
     ];
 
     const enScore = enHits.filter(w => t.includes(w)).length;
@@ -38,14 +34,12 @@
 
     if (enScore > tlScore) return "en";
     if (tlScore > enScore) return "tl";
-
-    // fallback: keep current
-    return currentLanguage || "en";
+    return currentLanguage;
   }
 
   // ================= INTENT DETECT =================
   function detectIntent(text) {
-    const t = normalize(text);
+    const t = text;
 
     if (/\b(cp|cerebral)\b/.test(t)) return "INFO";
     if (/\b(feel|pagod|sad|tired)\b/.test(t)) return "FEELING";
@@ -58,95 +52,61 @@
     return "OPEN";
   }
 
-const ALIASES = {
-
-  // ===== SIMPLE EXPLANATION =====
-  simple_explanation: [
-    "simple", "simple explanation", "explain", "basic",
-    "simpleng paliwanag", "paliwanag", "ipaliwanag"
-  ],
-
-  // ===== DAILY LIFE =====
-  daily_life: [
-  "daily life",
-  "everyday",
-  "daily",
-  "life",
-  "how it shows up",
-  "shows up",
-  "shows",
-  "in daily life",
-
-  "araw-araw", 
-  "araw araw",
-  "pang-araw-araw",
-  "buhay",
-  "pamumuhay"
-]
-
-  // ===== CAUSES =====
-  causes: [
-    "cause", "causes", "why", "reason",
-    "sanhi", "dahilan", "bakit"
-  ],
-
-  // ===== RISK FACTORS =====
-  risk_factors: [
-    "risk", "risk factor", "risk factors",
-    "panganib", "salik", "risk factors"
-  ],
-
-  // ===== MYTHS =====
-  myths: [
-    "myth", "myths", "misconception",
-    "maling akala", "hindi totoo", "paniniwala"
-  ],
-
-  more_myths: [
-    "another myth", "more myths", "other myths",
-    "isa pang myth", "iba pang maling akala"
-  ],
-
-  // ===== TYPES =====
-  types: [
-    "type", "types", "kind", "kinds",
-    "uri", "mga uri", "klase"
-  ],
-
-  short_list: [
-    "list", "short list", "main types",
-    "listahan", "maikling listahan", "pangunahing uri"
-  ],
-
-  differences: [
-    "difference", "differences", "compare", "comparison",
-    "pagkakaiba", "naiiba", "ikukumpara"
-  ],
-
-  // ===== DAILY LIFE DETAILS =====
-  examples: [
-    "example", "examples", "sample", "real life",
-    "halimbawa", "mga halimbawa"
-  ],
-
-  adaptation: [
-    "adapt", "adaptation", "adjust", "coping",
-    "pag-angkop", "umaangkop", "adjustment"
-  ],
-
-  // ===== THERAPY =====
-  therapy: [
-    "therapy", "therapies", "treatment", "rehab",
-    "therapy", "gamutan", "rehabilitation", "rehabilitasyon"
-  ],
-
-  // ===== HANDOFF TO FEELING =====
-  feeling_jump: [
-    "feeling", "emotion", "emotionally",
-    "pakiramdam", "damdamin", "emosyon"
-  ]
-
-};
+  // ================= ALIASES =================
+  const ALIASES = {
+    simple_explanation: [
+      "simple","simple explanation","explain","basic",
+      "simpleng paliwanag","paliwanag","ipaliwanag"
+    ],
+    daily_life: [
+      "daily life","everyday","how it shows up","in daily life",
+      "araw-araw","pang-araw-araw","buhay","pamumuhay"
+    ],
+    causes: [
+      "cause","causes","why","reason",
+      "sanhi","dahilan","bakit"
+    ],
+    risk_factors: [
+      "risk","risk factor","risk factors",
+      "panganib","salik"
+    ],
+    myths: [
+      "myth","myths","misconception",
+      "maling akala","hindi totoo"
+    ],
+    more_myths: [
+      "another myth","more myths","other myths",
+      "isa pang myth"
+    ],
+    types: [
+      "type","types","kind","kinds",
+      "uri","mga uri"
+    ],
+    short_list: [
+      "list","short list","main types",
+      "listahan","pangunahing uri"
+    ],
+    differences: [
+      "difference","differences","compare",
+      "pagkakaiba"
+    ],
+    examples: [
+      "example","examples","real life",
+      "halimbawa"
+    ],
+    adaptation: [
+      "adapt","adaptation","adjust",
+      "pag-angkop","umaangkop"
+    ],
+    therapy: [
+      "therapy","therapies","treatment",
+      "gamutan","rehabilitation"
+    ],
+    feeling_jump: [
+      "feeling","emotion","emotionally",
+      "pakiramdam","damdamin","emosyon"
+    ]
+  };
 
   // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
@@ -161,105 +121,54 @@ const ALIASES = {
   };
 
   // ================= OPTION MATCHER =================
-  function matchOption(userText, options) {
-    const t = normalize(userText);
-
+  function matchOption(text, options) {
     return options.find(opt =>
-      ALIASES[opt]?.some(word => t.includes(word))
+      ALIASES[opt]?.some(word => text.includes(word))
     );
   }
 
- 
   // ================= MAIN ROUTER =================
   function routeMessage(userText) {
-  const text = normalize(userText);
+    const text = normalize(userText);
 
-  // update language per message
-  currentLanguage = detectLanguage(text) || currentLanguage;
+    // language per message
+    currentLanguage = detectLanguage(text);
 
-  // try option match first (if may active flow)
-  if (currentModule && currentModule[currentNode]) {
-    const node = currentModule[currentNode](currentLanguage);
-    const nextKey = matchOption(text, node.options || []);
+    // 🔁 DIRECT ALIAS JUMP (INFO anytime)
+    if (currentModule === window.RESPONSES_INFO_CP) {
+      const directKey = Object.keys(ALIASES).find(key =>
+        ALIASES[key].some(word => text.includes(word))
+      );
 
-    if (nextKey && typeof currentModule[nextKey] === "function") {
-      currentNode = nextKey;
-      const next = currentModule[currentNode](currentLanguage);
-      return {
-        text: next.text,
-        options: next.options || []
-      };
+      if (directKey && typeof currentModule[directKey] === "function") {
+        currentNode = directKey;
+        const next = currentModule[currentNode](currentLanguage);
+        return { text: next.text, options: next.options || [] };
+      }
     }
-  }
 
-  // NO OPTION → INTENT ALWAYS WINS
-  const intent = detectIntent(text);
-  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
-  currentNode = "entry";
-
-  const entry = currentModule.entry(currentLanguage);
-  return {
-    text: entry.text,
-    options: entry.options || []
-  };
-}
-
-// 🔁 DIRECT NODE JUMP (INFO shortcuts)
-if (
-  currentModule === window.RESPONSES_INFO_CP &&
-  currentNode === "entry"
-) {
-  const directKey = Object.keys(ALIASES).find(key =>
-    ALIASES[key]?.some(word => text.includes(word))
-  );
-
-  if (directKey && typeof currentModule[directKey] === "function") {
-    currentNode = directKey;
-    const next = currentModule[currentNode](currentLanguage);
-    return {
-      text: next.text,
-      options: next.options || []
-    };
-  }
-}
-
-    // ===== CONTINUE EXISTING BRANCH =====
-    if (
-      currentModule &&
-      currentModule[currentNode] &&
-      typeof currentModule[currentNode] === "function"
-    ) {
+    // 1️⃣ OPTION MATCH FIRST
+    if (currentModule && currentModule[currentNode]) {
       const node = currentModule[currentNode](currentLanguage);
       const nextKey = matchOption(text, node.options || []);
 
       if (nextKey && typeof currentModule[nextKey] === "function") {
         currentNode = nextKey;
         const next = currentModule[currentNode](currentLanguage);
-        return {
-          text: next.text,
-          options: next.options || []
-        };
+        return { text: next.text, options: next.options || [] };
       }
     }
 
-    /// ===== START NEW FLOW (ONLY IF NO ACTIVE MODULE) =====
-if (!currentModule) {
-  const intent = overrideIntent || detectIntent(text);
-  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
-  currentNode = "entry";
+    // 2️⃣ INTENT ALWAYS WINS
+    const intent = detectIntent(text);
+    currentModule = RESPONSE_MODULES[intent]();
+    currentNode = "entry";
 
-  if (!currentModule || typeof currentModule.entry !== "function") {
-    currentModule = window.RESPONSES_OPEN;
+    const entry = currentModule.entry(currentLanguage);
+    return { text: entry.text, options: entry.options || [] };
   }
-}
 
-const entry = currentModule.entry(currentLanguage);
-return {
-  text: entry.text,
-  options: entry.options || []
-};
-}
-
-window.routeMessage = routeMessage;
+  // ================= EXPOSE =================
+  window.routeMessage = routeMessage;
 
 })();
