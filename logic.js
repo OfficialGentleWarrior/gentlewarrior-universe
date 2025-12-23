@@ -68,9 +68,21 @@ const ALIASES = {
 
   // ===== DAILY LIFE =====
   daily_life: [
-    "daily life", "everyday", "daily", "life",
-    "araw-araw", "pang-araw-araw", "buhay", "pamumuhay"
-  ],
+  "daily life",
+  "everyday",
+  "daily",
+  "life",
+  "how it shows up",
+  "shows up",
+  "shows",
+  "in daily life",
+
+  "araw-araw", 
+  "araw araw",
+  "pang-araw-araw",
+  "buhay",
+  "pamumuhay"
+]
 
   // ===== CAUSES =====
   causes: [
