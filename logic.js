@@ -1,21 +1,44 @@
-// logic.js — Gentle Heart BRANCHING ROUTER (STABLE)
+// logic.js — Gentle Heart BRANCHING ROUTER (FINAL CLEAN)
 
 (function () {
 
+  // ================= STATE =================
   let currentModule = null;
   let currentNode = "entry";
   let currentLanguage = "en";
 
+  // ================= HELPERS =================
   function normalize(text) {
     return text.toLowerCase().trim();
   }
 
+  // ================= LANGUAGE DETECT =================
   function detectLanguage(text) {
-    return /\b(what|why|how|is|are|cp|cerebral|therapy)\b/i.test(text)
-      ? "en"
-      : "tl";
+    const t = text.toLowerCase();
+
+    const enHits = [
+      "what","why","how","is","are","do","does",
+      "daily","life","simple","explanation",
+      "therapy","types","causes","example","adaptation"
+    ];
+
+    const tlHits = [
+      "ano","bakit","paano","araw","buhay",
+      "simpleng","paliwanag","halimbawa",
+      "pag-angkop","uri","sanhi"
+    ];
+
+    const enScore = enHits.filter(w => t.includes(w)).length;
+    const tlScore = tlHits.filter(w => t.includes(w)).length;
+
+    if (enScore > tlScore) return "en";
+    if (tlScore > enScore) return "tl";
+
+    // fallback: keep current
+    return currentLanguage || "en";
   }
 
+  // ================= INTENT DETECT =================
   function detectIntent(text) {
     const t = normalize(text);
 
@@ -30,6 +53,7 @@
     return "OPEN";
   }
 
+  // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
     INFO: () => window.RESPONSES_INFO_CP,
     FEELING: () => window.RESPONSES_FEELING,
@@ -41,19 +65,27 @@
     OPEN: () => window.RESPONSES_OPEN
   };
 
+  // ================= OPTION MATCHER =================
   function matchOption(userText, options) {
     const t = normalize(userText).replace(/\s+/g, "_");
     return options.find(opt => t.includes(opt));
   }
 
+  // ================= MAIN ROUTER =================
   function routeMessage(userText) {
     const text = normalize(userText);
-    currentLanguage = detectLanguage(text);
 
-    // ===== CONTINUE BRANCH =====
+    // 🔑 Update language PER MESSAGE
+    const detectedLang = detectLanguage(text);
+    if (detectedLang) {
+      currentLanguage = detectedLang;
+    }
+
+    // ===== CONTINUE EXISTING BRANCH =====
     if (
       currentModule &&
-      currentModule[currentNode]
+      currentModule[currentNode] &&
+      typeof currentModule[currentNode] === "function"
     ) {
       const node = currentModule[currentNode](currentLanguage);
       const nextKey = matchOption(text, node.options || []);
@@ -61,21 +93,30 @@
       if (nextKey && typeof currentModule[nextKey] === "function") {
         currentNode = nextKey;
         const next = currentModule[currentNode](currentLanguage);
-        return { text: next.text, options: next.options || [] };
+        return {
+          text: next.text,
+          options: next.options || []
+        };
       }
     }
 
-    /// ===== START NEW FLOW (ONLY IF NO ACTIVE MODULE) =====
-if (!currentModule) {
-  const intent = detectIntent(text);
-  currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
-  currentNode = "entry";
-}
+    // ===== START NEW FLOW =====
+    const intent = detectIntent(text);
+    currentModule = RESPONSE_MODULES[intent]?.() || window.RESPONSES_OPEN;
+    currentNode = "entry";
+
+    if (!currentModule || typeof currentModule.entry !== "function") {
+      currentModule = window.RESPONSES_OPEN;
+    }
 
     const entry = currentModule.entry(currentLanguage);
-    return { text: entry.text, options: entry.options || [] };
+    return {
+      text: entry.text,
+      options: entry.options || []
+    };
   }
 
+  // ================= EXPOSE =================
   window.routeMessage = routeMessage;
 
 })();
