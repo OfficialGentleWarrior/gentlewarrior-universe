@@ -18,10 +18,14 @@
     const t = text.toLowerCase();
 
     const enHits = [
-      "what","why","how","is","are","do","does",
-      "daily","life","simple","explanation",
-      "therapy","types","causes","example","adaptation"
-    ];
+  "what","why","how","is","are","do","does",
+  "daily","life","simple","explanation",
+  "therapy","types","causes","example","adaptation",
+
+  // ✅ ADD THESE
+  "another", "myth", "myths", "type", "types",
+  "risk", "factors", "example", "examples"
+];
 
     const tlHits = [
       "ano","bakit","paano","araw","buhay",
