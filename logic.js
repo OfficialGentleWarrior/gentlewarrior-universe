@@ -67,9 +67,25 @@
 
   // ================= OPTION MATCHER =================
   function matchOption(userText, options) {
-    const t = normalize(userText).replace(/\s+/g, "_");
-    return options.find(opt => t.includes(opt));
-  }
+  const t = normalize(userText);
+
+  const ALIASES = {
+    simple_explanation: ["simple", "simpleng", "paliwanag"],
+    daily_life: ["daily life", "araw-araw", "araw araw", "epekto", "buhay"],
+    causes: ["cause", "causes", "sanhi"],
+    types: ["type", "types", "uri"],
+    examples: ["example", "examples", "halimbawa"],
+    adaptation: ["adapt", "adaptation", "pag-angkop"],
+    risk_factors: ["risk", "risk factor"],
+    myths: ["myth", "myths", "maling akala"],
+    more_myths: ["another myth", "ibang myth"],
+    therapy: ["therapy", "therapies"]
+  };
+
+  return options.find(opt =>
+    ALIASES[opt]?.some(word => t.includes(word))
+  );
+}
 
   // ================= MAIN ROUTER =================
   function routeMessage(userText) {
