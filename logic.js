@@ -32,7 +32,7 @@
   "maikling",
   "listahan",
   "pagkakaiba",
-  "uri ng cp"
+  "uri ng cp", "uri ng therapy",
 ];
 
     const enScore = enHits.filter(w => t.includes(w)).length;
@@ -117,6 +117,17 @@
       "therapy","therapies","treatment",
       "gamutan","rehabilitation"
     ],
+types_of_therapy: [
+  "types of therapy",
+  "therapy types",
+  "kind of therapy",
+  "kinds of therapy",
+  "uri ng therapy",
+  "mga therapy",
+  "physical therapy",
+  "occupational therapy",
+  "speech therapy"
+],
     feeling_jump: [
       "feeling","emotion","emotionally",
       "pakiramdam","damdamin","emosyon"
