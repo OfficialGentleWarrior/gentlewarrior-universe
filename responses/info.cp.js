@@ -1,113 +1,187 @@
-// responses/info.cp.js
-// Gentle Heart — CP INFO RESPONSES FLOW (FINAL, NO DEAD-ENDS, BRANCH-SAFE)
+// logic.js — Gentle Heart BRANCHING ROUTER (FINAL, STABLE)
 
-window.RESPONSES_INFO_CP = {
+(function () {
 
-  // ===== ENTRY =====
-  entry: (lang) => ({
-    text: lang === "en"
-      ? "Cerebral palsy (CP) affects movement and posture because of early brain injury — do you want a simple explanation or how it shows up in daily life?"
-      : "Ang cerebral palsy (CP) ay nakaapekto sa galaw at postura dahil sa maagang pinsala sa utak — gusto mo ba ng simpleng paliwanag o kung paano ito lumalabas sa araw-araw?",
-    options: ["simple_explanation", "daily_life"]
-  }),
+  // ================= STATE =================
+  let currentModule = null;
+  let currentNode = "entry";
+  let currentLanguage = "en";
 
-  // ===== SIMPLE EXPLANATION =====
-  simple_explanation: (lang) => ({
-    text: lang === "en"
-      ? "CP happens when the brain has difficulty sending signals to muscles — do you want to know the causes or the types of CP?"
-      : "Nangyayari ang CP kapag nahihirapan ang utak magpadala ng signal sa mga kalamnan — gusto mo bang malaman ang sanhi o mga uri ng CP?",
-    options: ["causes", "types"]
-  }),
+  // ================= HELPERS =================
+  function normalize(text) {
+    return text.toLowerCase().trim();
+  }
 
-  // ===== CAUSES =====
-  causes: (lang) => ({
-    text: lang === "en"
-      ? "CP can happen before birth, during delivery, or after — do you want to know the risk factors or common myths?"
-      : "Maaaring mangyari ang CP bago ipanganak, habang ipinapanganak, o pagkatapos — gusto mo bang malaman ang risk factors o mga maling akala?",
-    options: ["risk_factors", "myths"]
-  }),
+  // ================= LANGUAGE DETECT =================
+  function detectLanguage(text) {
+    const t = text;
 
-  // ===== RISK FACTORS =====
-  risk_factors: (lang) => ({
-    text: lang === "en"
-      ? "Risk factors include premature birth, infections, and lack of oxygen — do you want to learn about myths or daily life impact?"
-      : "Kasama sa risk factors ang premature birth, impeksyon, at kakulangan sa oxygen — gusto mo bang malaman ang mga maling akala o epekto nito sa araw-araw?",
-    options: ["myths", "daily_life"]
-  }),
+    const enHits = [
+      "what","why","how","is","are","do","does",
+      "daily","life","simple","explanation",
+      "therapy","types","causes","example","adaptation",
+      "myth","myths","another","risk","factor","factors"
+    ];
 
-  // ===== MYTHS =====
-  myths: (lang) => ({
-    text: lang === "en"
-      ? "A common myth is that CP always gets worse — it does not. Do you want to hear another myth or learn about CP types?"
-      : "Isang maling akala ay palaging lumalala ang CP — hindi ito totoo. Gusto mo bang makarinig ng isa pang maling akala o alamin ang mga uri ng CP?",
-    options: ["another_myth", "types"]
-  }),
+    const tlHits = [
+      "ano","bakit","paano","araw","buhay",
+      "simpleng","paliwanag","halimbawa",
+      "pag-angkop","uri","sanhi","maling akala"
+    ];
 
-  another_myth: (lang) => ({
-    text: lang === "en"
-      ? "Another myth is that people with CP can’t live independently — many can with the right support. Do you want to know the types of cp or move to daily life?"
-      : "Isa pang maling akala ay hindi kayang maging independent ang may CP — marami ang nakakaya ito sa tamang suporta. Gusto mo bang malaman ang mga klase ng cp o lumipat sa araw-araw na buhay?",
-    options: ["types", "daily_life"]
-  }),
+    const enScore = enHits.filter(w => t.includes(w)).length;
+    const tlScore = tlHits.filter(w => t.includes(w)).length;
 
-  // ===== TYPES =====
-  types: (lang) => ({
-    text: lang === "en"
-      ? "There are different types of CP — do you want a short list or how they differ from each other?"
-      : "May iba’t ibang uri ng CP — gusto mo ba ng maikling listahan o paliwanag kung paano sila nagkakaiba?",
-    options: ["short_list", "differ"]
-  }),
+    if (enScore > tlScore) return "en";
+    if (tlScore > enScore) return "tl";
+    return currentLanguage;
+  }
 
-  short_list: (lang) => ({
-    text: lang === "en"
-      ? "The main types are spastic, dyskinetic, ataxic, and mixed CP — do you want to learn how they differ or how therapy helps?"
-      : "Ang pangunahing uri ay spastic, dyskinetic, ataxic, at mixed CP — gusto mo bang malaman ang pagkakaiba nila o kung paano nakakatulong ang therapy?",
-    options: ["differences", "therapy"]
-  }),
+  // ================= INTENT DETECT =================
+  function detectIntent(text) {
+    const t = text;
 
-  differ: (lang) => ({
-    text: lang === "en"
-      ? "These types differ in muscle tone, control, and coordination — do you want to learn about therapy or daily life impact?"
-      : "Nagkakaiba sila sa muscle tone, kontrol, at koordinasyon — gusto mo bang malaman ang tungkol sa therapy o epekto sa araw-araw?",
-    options: ["therapy", "daily_life"]
-  }),
+    if (/\b(cp|cerebral)\b/.test(t)) return "INFO";
+    if (/\b(feel|pagod|sad|tired)\b/.test(t)) return "FEELING";
+    if (/\b(eat|food|kain|gutom)\b/.test(t)) return "DESIRE";
+    if (/\b(help|hirap|support)\b/.test(t)) return "SUPPORT";
+    if (/\b(joke|haha|lol)\b/.test(t)) return "PLAYFUL";
+    if (/\b(breath|hinga|calm)\b/.test(t)) return "GROUNDING";
+    if (/\b(suicide|hotline|emergency)\b/.test(t)) return "HELP";
 
-  // ===== DAILY LIFE =====
-  daily_life: (lang) => ({
-    text: lang === "en"
-      ? "In daily life, CP can affect walking, balance, or speech — do you want examples or how people adapt?"
-      : "Sa araw-araw, maaaring maapektuhan ang paglakad, balanse, o pagsasalita — gusto mo ba ng mga halimbawa o kung paano sila umaangkop?",
-    options: ["examples", "adaptation"]
-  }),
+    return "OPEN";
+  }
 
-  examples: (lang) => ({
-    text: lang === "en"
-      ? "Some people with CP walk independently, others use mobility aids — do you want to learn about adaptation or therapy?"
-      : "May mga taong may CP na nakakalakad mag-isa, ang iba ay gumagamit ng mobility aids — gusto mo bang malaman ang pag-angkop o therapy?",
-    options: ["adaptation", "therapy"]
-  }),
+  // ================= ALIASES =================
+  const ALIASES = {
+    simple_explanation: [
+      "simple","simple explanation","explain","basic",
+      "simpleng paliwanag","paliwanag","ipaliwanag"
+    ],
+    daily_life: [
+      "daily life","everyday","how it shows up","in daily life",
+      "araw-araw","pang-araw-araw","buhay","pamumuhay"
+    ],
+    causes: [
+      "cause","causes","why","reason",
+      "sanhi","dahilan","bakit"
+    ],
+    risk_factors: [
+      "risk","risk factor","risk factors",
+      "panganib","salik"
+    ],
+    myths: [
+      "myth","myths","misconception",
+      "maling akala","hindi totoo"
+    ],
+    another_myth: [
+  "another myth",
+  "another myths",
+  "more myths",
+  "other myths",
+  "isa pang myth",
+  "isa pang maling akala"
+],
+    types: [
+      "type","types","kind","kinds",
+      "uri","mga uri"
+    ],
+    short_list: [
+      "list","short list","main types",
+      "listahan","pangunahing uri"
+    ],
+    differences: [
+  "differ",
+  "difference",
+  "differences",
+  "compare",
+  "comparison",
+  "pagkakaiba",
+  "pinagkaiba"
+],
+    examples: [
+      "example","examples","real life",
+      "halimbawa"
+    ],
+    adaptation: [
+      "adapt","adaptation","adjust",
+      "pag-angkop","umaangkop"
+    ],
+    therapy: [
+      "therapy","therapies","treatment",
+      "gamutan","rehabilitation"
+    ],
+    feeling_jump: [
+      "feeling","emotion","emotionally",
+      "pakiramdam","damdamin","emosyon"
+    ]
+  };
 
-  adaptation: (lang) => ({
-    text: lang === "en"
-      ? "People adapt through routines, tools, and support — do you want to learn about therapy or talk about how this feels emotionally?"
-      : "Umaangkop ang mga may CP sa pamamagitan ng routines, tools, at suporta — gusto mo bang malaman ang therapy o pag-usapan ang nararamdaman nito?",
-    options: ["therapy", "feeling_jump"]
-  }),
+  // ================= RESPONSE MODULE MAP =================
+  const RESPONSE_MODULES = {
+    INFO: () => window.RESPONSES_INFO_CP,
+    FEELING: () => window.RESPONSES_FEELING,
+    DESIRE: () => window.RESPONSES_DESIRE,
+    SUPPORT: () => window.RESPONSES_SUPPORT,
+    PLAYFUL: () => window.RESPONSES_PLAYFUL,
+    GROUNDING: () => window.RESPONSES_GROUNDING,
+    HELP: () => window.RESPONSES_HELP,
+    OPEN: () => window.RESPONSES_OPEN
+  };
 
-  // ===== THERAPY =====
-  therapy: (lang) => ({
-    text: lang === "en"
-      ? "Therapy helps improve movement and independence over time — do you want to continue learning about CP or shift to how you’re feeling?"
-      : "Tinutulungan ng therapy ang galaw at pagiging independent sa paglipas ng panahon — gusto mo bang ipagpatuloy ang usapang CP o lumipat sa nararamdaman mo?",
-    options: ["entry", "feeling_jump"]
-  }),
+  // ================= OPTION MATCHER =================
+  function matchOption(text, options) {
+    return options.find(opt =>
+      ALIASES[opt]?.some(word => text.includes(word))
+    );
+  }
 
-  // ===== FEELING HANDOFF =====
-  feeling_jump: (lang) => ({
-    text: lang === "en"
-      ? "How are you feeling right now — physically or emotionally?"
-      : "Kumusta ang pakiramdam mo ngayon — sa katawan man o sa damdamin?",
-    options: ["__INTENT_FEELING__", "entry"]
-  })
+  // ================= MAIN ROUTER =================
+  function routeMessage(userText) {
+    const text = normalize(userText);
 
-};
+    // language per message
+    currentLanguage = detectLanguage(text);
+
+    /// 🔁 GLOBAL ALIAS JUMP (ANY MODULE, ANYTIME)
+const globalKey = Object.keys(ALIASES).find(key =>
+  ALIASES[key]?.some(word => text.includes(word))
+);
+
+if (
+  globalKey &&
+  window.RESPONSES_INFO_CP &&
+  typeof window.RESPONSES_INFO_CP[globalKey] === "function"
+) {
+  currentModule = window.RESPONSES_INFO_CP;
+  currentNode = globalKey;
+
+  const next = currentModule[currentNode](currentLanguage);
+  return { text: next.text, options: next.options || [] };
+}
+
+    // 1️⃣ OPTION MATCH FIRST
+    if (currentModule && currentModule[currentNode]) {
+      const node = currentModule[currentNode](currentLanguage);
+      const nextKey = matchOption(text, node.options || []);
+
+      if (nextKey && typeof currentModule[nextKey] === "function") {
+        currentNode = nextKey;
+        const next = currentModule[currentNode](currentLanguage);
+        return { text: next.text, options: next.options || [] };
+      }
+    }
+
+    // 2️⃣ INTENT ALWAYS WINS
+    const intent = detectIntent(text);
+    currentModule = RESPONSE_MODULES[intent]();
+    currentNode = "entry";
+
+    const entry = currentModule.entry(currentLanguage);
+    return { text: entry.text, options: entry.options || [] };
+  }
+
+  // ================= EXPOSE =================
+  window.routeMessage = routeMessage;
+
+})();
