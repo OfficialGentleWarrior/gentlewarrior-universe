@@ -55,7 +55,7 @@ window.RESPONSES_INFO_CP = {
     text: lang === "en"
       ? "There are different types of CP — do you want a short list or how they differ from each other?"
       : "May iba’t ibang uri ng CP — gusto mo ba ng maikling listahan o paliwanag kung paano sila nagkakaiba?",
-    options: ["short_list", "differences"]
+    options: ["short_list", "differ"]
   }),
 
   short_list: (lang) => ({
@@ -65,7 +65,7 @@ window.RESPONSES_INFO_CP = {
     options: ["differences", "therapy"]
   }),
 
-  differences: (lang) => ({
+  differ: (lang) => ({
     text: lang === "en"
       ? "These types differ in muscle tone, control, and coordination — do you want to learn about therapy or daily life impact?"
       : "Nagkakaiba sila sa muscle tone, kontrol, at koordinasyon — gusto mo bang malaman ang tungkol sa therapy o epekto sa araw-araw?",
