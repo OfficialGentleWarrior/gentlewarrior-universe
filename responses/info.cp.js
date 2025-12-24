@@ -110,11 +110,11 @@ types_of_therapy: (lang) => ({
 }),
 
   // ===== FEELING HANDOFF =====
-  feeling_jump: (lang) => ({
-    text: lang === "en"
-      ? "How are you feeling right now — physically or emotionally?"
-      : "Kumusta ang pakiramdam mo ngayon — sa katawan man o sa damdamin?",
-    options: ["__INTENT_FEELING__", "entry"]
-  })
+feeling_jump: (lang) => ({
+  text: lang === "en"
+    ? "How are you feeling right now — do you want to talk about it, or check in with what you might need?"
+    : "Kumusta ang pakiramdam mo ngayon — gusto mo bang pag-usapan ito, o silipin kung ano ang kailangan mo?",
+  options: ["__INTENT_FEELING__", "__INTENT_DESIRE__"]
+})
 
 };
