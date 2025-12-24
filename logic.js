@@ -74,10 +74,14 @@
       "myth","myths","misconception",
       "maling akala","hindi totoo"
     ],
-    more_myths: [
-      "another myth","more myths","other myths",
-      "isa pang myth"
-    ],
+    another_myth: [
+  "another myth",
+  "another myths",
+  "more myths",
+  "other myths",
+  "isa pang myth",
+  "isa pang maling akala"
+],
     types: [
       "type","types","kind","kinds",
       "uri","mga uri"
@@ -86,10 +90,15 @@
       "list","short list","main types",
       "listahan","pangunahing uri"
     ],
-    differ: [
-      "differ","difference", "diffetence", "compare",
-      "pagkakaiba"
-    ],
+    differences: [
+  "differ",
+  "difference",
+  "differences",
+  "compare",
+  "comparison",
+  "pagkakaiba",
+  "pinagkaiba"
+],
     examples: [
       "example","examples","real life",
       "halimbawa"
