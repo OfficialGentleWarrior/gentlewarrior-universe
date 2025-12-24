@@ -61,7 +61,7 @@
 
     if (/\b(cp|cerebral)\b/.test(t)) return "INFO";
     if (/\b(feel|pagod|sad|tired)\b/.test(t)) return "FEELING";
-    if (/\b(eat|food|kain|gutom)\b/.test(t)) return "DESIRE";
+    if (/\b(eat|food|kain|gutom|hungry)\b/.test(t)) return "DESIRE";
     if (/\b(help|hirap|support)\b/.test(t)) return "SUPPORT";
     if (/\b(joke|haha|lol)\b/.test(t)) return "PLAYFUL";
     if (/\b(breath|hinga|calm)\b/.test(t)) return "GROUNDING";
@@ -301,7 +301,7 @@ food: [
 
 hungry: [
   "gutom",
-  "hungry,
+  "hungry",
   "nagugutom",
   "gutom ako",
   "gutom na ako"
