@@ -88,11 +88,11 @@ window.RESPONSES_INFO_CP = {
   }),
 
   adaptation: (lang) => ({
-    text: lang === "en"
-      ? "People adapt through routines, tools, and support — do you want to learn about therapy or talk about how this feels emotionally?"
-      : "Umaangkop ang mga may CP sa pamamagitan ng routines, tools, at suporta — gusto mo bang malaman ang therapy o pag-usapan ang nararamdaman nito?",
-    options: ["therapy", "feeling_jump"]
-  }),
+  text: lang === "en"
+    ? "People adapt through routines, tools, and support — would you like to learn how therapy helps, or explore the different types of therapy?"
+    : "Umaangkop ang mga may CP sa pamamagitan ng routines, tools, at suporta — gusto mo bang malaman kung paano nakakatulong ang therapy, o alamin ang iba’t ibang uri ng therapy?",
+  options: ["therapy", "types_of_therapy"]
+}),
 
   // ===== THERAPY =====
   therapy: (lang) => ({
@@ -101,6 +101,13 @@ window.RESPONSES_INFO_CP = {
       : "Tinutulungan ng therapy ang galaw at pagiging independent sa paglipas ng panahon — gusto mo bang ipagpatuloy ang usapang CP o lumipat sa nararamdaman mo?",
     options: ["entry", "feeling_jump"]
   }),
+
+types_of_therapy: (lang) => ({
+  text: lang === "en"
+    ? "Common therapies include physical, occupational, and speech therapy — would you like to learn more about therapy benefits, or talk about how this feels emotionally?"
+    : "Kabilang sa mga karaniwang therapy ang physical, occupational, at speech therapy — gusto mo bang malaman pa ang benepisyo ng therapy, o pag-usapan ang nararamdaman nito?",
+  options: ["therapy", "feeling_jump"]
+}),
 
   // ===== FEELING HANDOFF =====
   feeling_jump: (lang) => ({
