@@ -301,6 +301,7 @@ food: [
 
 hungry: [
   "gutom",
+  "hungry,
   "nagugutom",
   "gutom ako",
   "gutom na ako"
@@ -337,6 +338,7 @@ comfort: [
 
 taste: [
   "lasa",
+  "taste",
   "matamis",
   "maalat",
   "pang-tikim"
