@@ -134,18 +134,22 @@
     // language per message
     currentLanguage = detectLanguage(text);
 
-    // 🔁 DIRECT ALIAS JUMP (INFO anytime)
-    if (currentModule === window.RESPONSES_INFO_CP) {
-      const directKey = Object.keys(ALIASES).find(key =>
-        ALIASES[key].some(word => text.includes(word))
-      );
+    /// 🔁 GLOBAL ALIAS JUMP (ANY MODULE, ANYTIME)
+const globalKey = Object.keys(ALIASES).find(key =>
+  ALIASES[key]?.some(word => text.includes(word))
+);
 
-      if (directKey && typeof currentModule[directKey] === "function") {
-        currentNode = directKey;
-        const next = currentModule[currentNode](currentLanguage);
-        return { text: next.text, options: next.options || [] };
-      }
-    }
+if (
+  globalKey &&
+  window.RESPONSES_INFO_CP &&
+  typeof window.RESPONSES_INFO_CP[globalKey] === "function"
+) {
+  currentModule = window.RESPONSES_INFO_CP;
+  currentNode = globalKey;
+
+  const next = currentModule[currentNode](currentLanguage);
+  return { text: next.text, options: next.options || [] };
+}
 
     // 1️⃣ OPTION MATCH FIRST
     if (currentModule && currentModule[currentNode]) {
