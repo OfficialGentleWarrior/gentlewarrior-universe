@@ -141,12 +141,6 @@ types_of_therapy: [
   "occupational therapy",
   "speech therapy"
 ],
-cp: [
-  "cp",
-  "cerebral palsy",
-  "ano ang cp",
-  "what is cp"
-],
 // ===== FEELING FLOW ALIASES =====
 
 feeling: [
@@ -276,40 +270,6 @@ low_energy: [
 ]
   };
 
-const ALIAS_MODULE_MAP = {
-  // INFO
-  simple_explanation: "INFO",
-  daily_life: "INFO",
-  causes: "INFO",
-  myths: "INFO",
-  types: "INFO",
-  differences: "INFO",
-  therapy: "INFO",
-  types_of_therapy: "INFO",
-  cp: "INFO",
-
-  // FEELING
-  feeling: "FEELING",
-  talk_about_it: "FEELING",
-  emotional: "FEELING",
-  physical: "FEELING",
-  heavy: "FEELING",
-  mixed: "FEELING",
-  tired: "FEELING",
-  low_energy: "FEELING",
-  sit_quietly: "FEELING",
-  pause: "FEELING",
-  seek_clarity: "FEELING",
-  take_space: "FEELING",
-
-  // DESIRE
-  hungry: "DESIRE",
-  craving: "DESIRE",
-
-  // GROUNDING
-  grounding: "GROUNDING"
-};
-
   // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
     INFO: () => window.RESPONSES_INFO_CP,
@@ -321,7 +281,7 @@ const ALIAS_MODULE_MAP = {
     HELP: () => window.RESPONSES_HELP,
     OPEN: () => window.RESPONSES_OPEN
   };
-} // ✅ END GLOBAL ALIAS JUMP
+
 
   // ================= OPTION MATCHER =================
   function matchOption(text, options) {
@@ -336,23 +296,6 @@ const ALIAS_MODULE_MAP = {
 
     // language per message
     currentLanguage = detectLanguage(text);
-
-    /// 🔁 GLOBAL ALIAS JUMP (ANY MODULE, ANYTIME)
-const globalKey = Object.keys(ALIASES).find(key =>
-  ALIASES[key]?.some(word => text.includes(word))
-);
-
-if (globalKey && ALIAS_MODULE_MAP[globalKey]) {
-  const targetIntent = ALIAS_MODULE_MAP[globalKey];
-  const targetModule = RESPONSE_MODULES[targetIntent]?.();
-
-  if (targetModule) {
-    currentModule = targetModule;
-    currentNode = globalKey === "feeling" ? "entry" : globalKey;
-
-    const next = currentModule[currentNode](currentLanguage);
-    return { text: next.text, options: next.options || [] };
-  }
 
 
     // 1️⃣ OPTION MATCH FIRST
