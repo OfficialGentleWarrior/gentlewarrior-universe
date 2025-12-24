@@ -65,9 +65,15 @@
       "simpleng paliwanag","paliwanag","ipaliwanag"
     ],
     daily_life: [
-      "daily life","everyday","how it shows up","in daily life",
-      "araw-araw","pang-araw-araw","buhay","pamumuhay"
-    ],
+  "daily life",
+  "everyday life",
+  "daily impact",
+  "day to day",
+  "how it affects daily life",
+  "araw-araw na buhay",
+  "pang-araw-araw na buhay",
+  "epekto sa araw-araw"
+],
     causes: [
       "cause","causes","why","reason",
       "sanhi","dahilan","bakit"
@@ -114,24 +120,154 @@
       "pag-angkop","umaangkop"
     ],
     therapy: [
-      "therapy","therapies","treatment",
-      "gamutan","rehabilitation"
-    ],
+  "therapy",
+  "therapies",
+  "treatment",
+  "rehabilitation",
+  "gamutan",
+  "therapy helps",
+  "paano nakakatulong ang therapy",
+  "tulong ng therapy"
+],
 types_of_therapy: [
   "types of therapy",
   "therapy types",
   "kind of therapy",
   "kinds of therapy",
   "uri ng therapy",
+  "mga uri ng therapy",
   "mga therapy",
   "physical therapy",
   "occupational therapy",
   "speech therapy"
 ],
-    feeling_jump: [
-      "feeling","emotion","emotionally",
-      "pakiramdam","damdamin","emosyon"
-    ]
+// ===== FEELING FLOW ALIASES =====
+
+feeling: [
+  "feel",
+  "feeling",
+  "i feel",
+  "i am feeling",
+  "emotion",
+  "emotional",
+  "nararamdaman",
+  "nararamdaman ko",
+  "pakiramdam",
+  "pakiramdam ko",
+  "damdamin",
+  "emosyon"
+],
+
+talk_about_it: [
+  "talk",
+  "talk about it",
+  "kwento",
+  "magkwento",
+  "maglabas",
+  "sabihin",
+  "share"
+],
+
+sit_quietly: [
+  "quiet",
+  "sit quietly",
+  "tahimik",
+  "manahimik",
+  "quiet muna",
+  "pause",
+  "pahinga muna"
+],
+
+emotional: [
+  "emotional",
+  "emotion",
+  "damdamin",
+  "emosyon",
+  "mental",
+  "sa loob"
+],
+
+physical: [
+  "physical",
+  "katawan",
+  "body",
+  "physically",
+  "pisikal"
+],
+
+heavy: [
+  "heavy",
+  "bigat",
+  "mabigat",
+  "overwhelmed",
+  "drained",
+  "stress",
+  "stressed",
+  "pagod na pagod"
+],
+
+mixed: [
+  "mixed",
+  "halo halo",
+  "halo-halo",
+  "confused",
+  "magulo",
+  "di ko alam",
+  "unsure",
+  "hindi malinaw"
+],
+
+talk_more: [
+  "talk more",
+  "continue",
+  "tuloy",
+  "sige",
+  "oo",
+  "go on"
+],
+
+pause: [
+  "pause",
+  "stop",
+  "wait",
+  "sandali",
+  "huminto",
+  "break"
+],
+
+seek_clarity: [
+  "clarity",
+  "clear",
+  "linawin",
+  "intindihin",
+  "maintindihan",
+  "explain"
+],
+
+take_space: [
+  "space",
+  "alone",
+  "mag-isa",
+  "espasyo",
+  "distance",
+  "time muna"
+],
+
+tired: [
+  "tired",
+  "pagod",
+  "exhausted",
+  "antok",
+  "ubos"
+],
+
+low_energy: [
+  "low energy",
+  "walang lakas",
+  "mahina",
+  "lethargic",
+  "burnout"
+]
   };
 
   // ================= RESPONSE MODULE MAP =================
