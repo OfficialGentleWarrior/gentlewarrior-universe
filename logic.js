@@ -24,10 +24,16 @@
     ];
 
     const tlHits = [
-      "ano","bakit","paano","araw","buhay",
-      "simpleng","paliwanag","halimbawa",
-      "pag-angkop","uri","sanhi","maling akala"
-    ];
+  "ano","bakit","paano","araw","buhay",
+  "simpleng","paliwanag","halimbawa",
+  "pag-angkop","uri","sanhi","maling akala",
+
+  // ✅ ADD THESE
+  "maikling",
+  "listahan",
+  "pagkakaiba",
+  "uri ng cp"
+];
 
     const enScore = enHits.filter(w => t.includes(w)).length;
     const tlScore = tlHits.filter(w => t.includes(w)).length;
