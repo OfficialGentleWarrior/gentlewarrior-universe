@@ -24,15 +24,24 @@
     ];
 
     const tlHits = [
+  // existing
   "ano","bakit","paano","araw","buhay",
   "simpleng","paliwanag","halimbawa",
   "pag-angkop","uri","sanhi","maling akala",
+  "maikling","listahan","pagkakaiba",
+  "uri ng cp","uri ng therapy",
 
-  // ✅ ADD THESE
-  "maikling",
-  "listahan",
-  "pagkakaiba",
-  "uri ng cp", "uri ng therapy",
+  // FEELING — extracted
+  "pagod","napapagod","antok","ubos","walang lakas",
+  "pakiramdam","nararamdaman","nararamdaman ko",
+  "emosyonal","pisikal","mabigat","halo-halo","magulo","hindi malinaw",
+  "pag-usapan","ilabas","maglabas",
+  "manahimik","tahimik","tahimik muna",
+  "maghinay-hinay","dahan-dahan","umatras",
+  "magpahinga","pahinga","pahinga muna",
+  "andito ako","kasama kita",
+  "espasyo","bigyan ng espasyo","mag-isa",
+  "silipin","kailangan","kailangan mo","kailangan mo ngayon"
 ];
 
     const enScore = enHits.filter(w => t.includes(w)).length;
