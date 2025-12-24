@@ -86,8 +86,8 @@
       "list","short list","main types",
       "listahan","pangunahing uri"
     ],
-    differences: [
-      "difference","differences","compare",
+    differ: [
+      "differ","difference", "diffetence", "compare",
       "pagkakaiba"
     ],
     examples: [
