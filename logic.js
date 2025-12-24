@@ -17,34 +17,78 @@
     const t = text;
 
     const enHits = [
-      "what","why","how","is","are","do","does",
-      "daily","life","simple","explanation",
-      "therapy","types","causes","example","adaptation",
-      "myth","myths","another","risk","factor","factors"
-    ];
+  // ===== INFO / CP =====
+  "what","why","how","is","are","do","does",
+  "daily","life","simple","explanation",
+  "therapy","types","causes","example","adaptation",
+  "myth","myths","another","risk","factor","factors",
+
+  // ===== FEELING =====
+  "feel","feeling","i feel","i am feeling",
+  "tired","exhausted","sleepy","drained","low energy",
+  "emotional","physical","heavy","mixed","confused","unclear",
+  "talk about","talk","share","let it out",
+  "quiet","sit quietly","pause","slow down",
+  "rest","take a break",
+  "space","alone","step back",
+
+  // ===== DESIRE =====
+  "hungry","hunger","food","eat","eating",
+  "craving","cravings","want","need",
+  "quick","fast","easy",
+  "filling","full","comforting",
+  "comfort","reassurance",
+  "taste","sweet","salty",
+
+  // ===== GROUNDING =====
+  "breath","breathe","breathing",
+  "calm","ground","grounding",
+  "slow down","relax","ease",
+  "body","body awareness",
+  "inhale","exhale",
+  "here","present","right now"
+];
 
     const tlHits = [
-  // existing
+  // ===== INFO / CP =====
   "ano","bakit","paano","araw","buhay",
   "simpleng","paliwanag","halimbawa",
   "pag-angkop","uri","sanhi","maling akala",
   "maikling","listahan","pagkakaiba",
   "uri ng cp","uri ng therapy",
 
-// add sa tlHits (optional)
-"gutom","pagkain","kain","kumain","busog","nakakabusog","aliw","comfort",
-
-  // FEELING — extracted
+  // ===== FEELING =====
   "pagod","napapagod","antok","ubos","walang lakas",
   "pakiramdam","nararamdaman","nararamdaman ko",
   "emosyonal","pisikal","mabigat","halo-halo","magulo","hindi malinaw",
   "pag-usapan","ilabas","maglabas",
   "manahimik","tahimik","tahimik muna",
-  "maghinay-hinay","dahan-dahan","umatras",
   "magpahinga","pahinga","pahinga muna",
   "andito ako","kasama kita",
   "espasyo","bigyan ng espasyo","mag-isa",
-  "silipin","kailangan","kailangan mo","kailangan mo ngayon"
+
+  // ===== DESIRE =====
+  "gutom","nagugutom","gutom ako","gutom na ako",
+  "pagkain","kain","kumain",
+  "busog","nakakabusog",
+  "craving","cravings","may gusto","may hinahanap",
+  "mabilis","mabilis lang","madali",
+  "aliw","umaliw","comfort","pampalakas-loob",
+  "lasa","matamis","maalat",
+  "kailangan","kailangan ko","kailangan mo",
+  "kailangan mo ngayon","ano ang kailangan",
+  "silipin","silipin ang kailangan",
+
+  // ===== GROUNDING =====
+  "hinga","huminga","paghinga","hinga muna",
+  "malalim na hinga","dahan-dahang hinga",
+  "kalma","kumalma","pakalma","pakalma muna",
+  "magpakalma","kalma lang",
+  "maghinay-hinay","dahan-dahan","dahan lang","bagalan",
+  "ground","grounding","mag-ground",
+  "dito muna","sa ngayon","nandito",
+  "relax","mag-relax","paluwagin",
+  "pakiramdam ng katawan","pakiramdaman ang katawan"
 ];
 
     const enScore = enHits.filter(w => t.includes(w)).length;
@@ -64,7 +108,8 @@
     if (/\b(eat|food|kain|gutom|hungry)\b/.test(t)) return "DESIRE";
     if (/\b(help|hirap|support)\b/.test(t)) return "SUPPORT";
     if (/\b(joke|haha|lol)\b/.test(t)) return "PLAYFUL";
-    if (/\b(breath|hinga|calm)\b/.test(t)) return "GROUNDING";
+    if (/\b(ground|grounding|hinga|huminga|paghinga|breathing|kalma|kumalma|relax|maghinay|dahan-dahan|pakalma)\b/.test(t))
+  return "GROUNDING";
     if (/\b(suicide|hotline|emergency)\b/.test(t)) return "HELP";
 
     return "OPEN";
@@ -356,6 +401,84 @@ quiet_company: [
   "may kasama",
   "andito ka",
   "andito ka lang"
+],
+// ===== GROUNDING FLOW ALIASES =====
+
+grounding: [
+  "ground",
+  "grounding",
+  "mag-ground",
+  "mag ground",
+  "kumalma",
+  "kalma",
+  "magpakalma",
+  "pakalma",
+  "maghinay-hinay",
+  "dahan-dahan",
+  "hinga muna",
+  "sandali lang",
+  "relax muna"
+],
+
+breathing: [
+  "hinga",
+  "paghinga",
+  "huminga",
+  "hinga muna",
+  "breathing",
+  "maghinga",
+  "malalim na hinga",
+  "hinga nang dahan-dahan"
+],
+
+one_breath: [
+  "isang hinga",
+  "isang malalim",
+  "isang malalim na hinga",
+  "one breath",
+  "isa lang",
+  "isa muna"
+],
+
+breathing_rhythm: [
+  "ritmo",
+  "rhythm",
+  "hinga ritmo",
+  "hinga 4 labas 6",
+  "hinga apat labas anim",
+  "bilang ng hinga",
+  "pattern ng hinga"
+],
+
+body: [
+  "katawan",
+  "pakiramdam ng katawan",
+  "body",
+  "pisikal",
+  "pisikal na pakiramdam",
+  "pansinin ang katawan"
+],
+
+relax: [
+  "relax",
+  "mag-relax",
+  "paluwagin",
+  "paluwagin ang balikat",
+  "paluwagin ang panga",
+  "tanggalin ang tension",
+  "pakawalan ang tensyon",
+  "i-relax",
+  "magluwag"
+],
+
+observe: [
+  "obserbahan",
+  "pansinin",
+  "tingnan lang",
+  "observe",
+  "mapansin",
+  "damhin",
+  "damhin ang katawan"
 ]
   };
 
