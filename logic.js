@@ -270,6 +270,39 @@ low_energy: [
 ]
   };
 
+const ALIAS_MODULE_MAP = {
+  // INFO
+  simple_explanation: "INFO",
+  daily_life: "INFO",
+  causes: "INFO",
+  myths: "INFO",
+  types: "INFO",
+  differences: "INFO",
+  therapy: "INFO",
+  types_of_therapy: "INFO",
+
+  // FEELING
+  feeling: "FEELING",
+  talk_about_it: "FEELING",
+  emotional: "FEELING",
+  physical: "FEELING",
+  heavy: "FEELING",
+  mixed: "FEELING",
+  tired: "FEELING",
+  low_energy: "FEELING",
+  sit_quietly: "FEELING",
+  pause: "FEELING",
+  seek_clarity: "FEELING",
+  take_space: "FEELING",
+
+  // DESIRE
+  hungry: "DESIRE",
+  craving: "DESIRE",
+
+  // GROUNDING
+  grounding: "GROUNDING"
+};
+
   // ================= RESPONSE MODULE MAP =================
   const RESPONSE_MODULES = {
     INFO: () => window.RESPONSES_INFO_CP,
@@ -301,17 +334,18 @@ const globalKey = Object.keys(ALIASES).find(key =>
   ALIASES[key]?.some(word => text.includes(word))
 );
 
-if (
-  globalKey &&
-  window.RESPONSES_INFO_CP &&
-  typeof window.RESPONSES_INFO_CP[globalKey] === "function"
-) {
-  currentModule = window.RESPONSES_INFO_CP;
-  currentNode = globalKey;
+if (globalKey && ALIAS_MODULE_MAP[globalKey]) {
+  const targetIntent = ALIAS_MODULE_MAP[globalKey];
+  const targetModule = RESPONSE_MODULES[targetIntent]?.();
 
-  const next = currentModule[currentNode](currentLanguage);
-  return { text: next.text, options: next.options || [] };
-}
+  if (targetModule) {
+    currentModule = targetModule;
+    currentNode = globalKey === "feeling" ? "entry" : globalKey;
+
+    const next = currentModule[currentNode](currentLanguage);
+    return { text: next.text, options: next.options || [] };
+  }
+
 
     // 1️⃣ OPTION MATCH FIRST
     if (currentModule && currentModule[currentNode]) {
