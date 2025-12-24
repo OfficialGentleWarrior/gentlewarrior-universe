@@ -31,6 +31,9 @@
   "maikling","listahan","pagkakaiba",
   "uri ng cp","uri ng therapy",
 
+// add sa tlHits (optional)
+"gutom","pagkain","kain","kumain","busog","nakakabusog","aliw","comfort",
+
   // FEELING — extracted
   "pagod","napapagod","antok","ubos","walang lakas",
   "pakiramdam","nararamdaman","nararamdaman ko",
@@ -276,6 +279,81 @@ low_energy: [
   "mahina",
   "lethargic",
   "burnout"
+],
+// ===== DESIRE FLOW ALIASES =====
+
+desire: [
+  "kailangan",
+  "kailangan ko",
+  "kailangan mo",
+  "silipin ang kailangan",
+  "ano ang kailangan",
+  "need",
+  "want"
+],
+
+food: [
+  "pagkain",
+  "kain",
+  "kumain",
+  "food"
+],
+
+hungry: [
+  "gutom",
+  "nagugutom",
+  "gutom ako",
+  "gutom na ako"
+],
+
+craving: [
+  "craving",
+  "cravings",
+  "may gusto",
+  "may hinahanap"
+],
+
+quick: [
+  "mabilis",
+  "mabilis lang",
+  "madali",
+  "quick"
+],
+
+filling: [
+  "nakakabusog",
+  "busog",
+  "masarap at busog",
+  "filling"
+],
+
+comfort: [
+  "comfort",
+  "aliw",
+  "umaliw",
+  "pampalakas-loob",
+  "kailangan ng comfort"
+],
+
+taste: [
+  "lasa",
+  "matamis",
+  "maalat",
+  "pang-tikim"
+],
+
+reassurance: [
+  "reassure",
+  "assurance",
+  "kumpirmasyon",
+  "palakas ng loob"
+],
+
+quiet_company: [
+  "kasama",
+  "may kasama",
+  "andito ka",
+  "andito ka lang"
 ]
   };
 
