@@ -1,17 +1,17 @@
 // responses/desire.js
-// Gentle Heart — DESIRE RESPONSES FLOW (FINAL, FIXED, ROUTER-SAFE)
+// Gentle Heart — DESIRE RESPONSES FLOW (REVISED, LINKED TO INFO + FEELING)
 
 window.RESPONSES_DESIRE = {
 
-  // ===== ENTRY =====
+  // ===== ENTRY (from INFO / FEELING jumps) =====
   entry: (lang) => ({
     text: lang === "en"
-      ? "Sounds like there’s something you want — is this about food, or something emotional?"
-      : "Mukhang may gusto ka — tungkol ba ito sa pagkain, o emosyon?",
-    options: ["food", "emotional"]
+      ? "Let’s check in with what you might need — is this about food, or comfort?"
+      : "Silipin natin ang kailangan mo — tungkol ba ito sa pagkain, o comfort?",
+    options: ["food", "comfort"]
   }),
 
-  // ===== FOOD =====
+  // ===== FOOD PATH =====
   food: (lang) => ({
     text: lang === "en"
       ? "Are you actually hungry, or just craving something?"
@@ -19,166 +19,61 @@ window.RESPONSES_DESIRE = {
     options: ["hungry", "craving"]
   }),
 
-  // ===== HUNGRY =====
   hungry: (lang) => ({
     text: lang === "en"
-      ? "Do you want a quick meal, or do you want to name what you’re craving?"
-      : "Gusto mo bang mabilis na kain, o pangalanan ang gusto mo?",
-    options: ["quick_meal", "name_it"]
+      ? "Do you want something quick, or something more filling?"
+      : "Gusto mo ba ng mabilis lang, o mas nakakabusog?",
+    options: ["quick", "filling"]
   }),
 
-  // ===== QUICK MEAL =====
-  quick_meal: (lang) => ({
+  quick: (lang) => ({
     text: lang === "en"
-      ? "Light and fast, or hot and filling?"
-      : "Magaan at mabilis, o mainit at nakakabusog?",
-    options: ["light", "filling"]
-  }),
-
-  light: (lang) => ({
-    text: lang === "en"
-      ? "Something light sounds good."
-      : "Mukhang okay ang magaan.",
-    options: ["exit"]
+      ? "Something light and easy can help — do you want to rest after, or check in with how you feel?"
+      : "Makakatulong ang magaan at madali — gusto mo bang magpahinga, o silipin ang nararamdaman mo?",
+    options: ["__INTENT_FEELING__", "__INTENT_INFO__"]
   }),
 
   filling: (lang) => ({
     text: lang === "en"
-      ? "Something filling makes sense."
-      : "Mukhang kailangan mo ng nakakabusog.",
-    options: ["exit"]
+      ? "A filling meal can ground you — do you want to talk about how you feel after, or shift topics?"
+      : "Nakakatulong ang nakakabusog — gusto mo bang pag-usapan ang pakiramdam mo, o mag-iba ng usapan?",
+    options: ["__INTENT_FEELING__", "__INTENT_INFO__"]
   }),
 
-  // ===== NAME IT =====
-  name_it: (lang) => ({
-    text: lang === "en"
-      ? "That sounds good — do you want to talk about it, or move on?"
-      : "Mukhang masarap — pag-usapan ba natin, o mag-iba na?",
-    options: ["talk_about_it", "change_topic"]
-  }),
-
-  talk_about_it: (lang) => ({
-    text: lang === "en"
-      ? "I’m listening."
-      : "Nakikinig ako.",
-    options: ["exit"]
-  }),
-
-  // ===== CRAVING =====
   craving: (lang) => ({
     text: lang === "en"
-      ? "Is it sweet, or savory?"
-      : "Matamis ba, o maalat?",
-    options: ["sweet", "savory"]
+      ? "Is the craving more about comfort, or just taste?"
+      : "Comfort ba ang hanap ng craving, o lasa lang?",
+    options: ["comfort", "taste"]
   }),
 
-  sweet: (lang) => ({
+  taste: (lang) => ({
     text: lang === "en"
-      ? "Sweet cravings often mean comfort — indulge, or check in with your feelings?"
-      : "Madalas comfort ang matamis — pagbigyan, o silipin ang pakiramdam?",
-    options: ["indulge", "my_feelings"]
+      ? "Enjoying a little is okay — do you want to stay here, or talk about something else?"
+      : "Okay lang mag-enjoy ng kaunti — gusto mo bang manatili dito, o mag-usap ng iba?",
+    options: ["__INTENT_FEELING__", "__INTENT_INFO__"]
   }),
 
-  indulge: (lang) => ({
-    text: lang === "en"
-      ? "Enjoying a little is okay."
-      : "Okay lang mag-enjoy ng kaunti.",
-    options: ["exit"]
-  }),
-
-  savory: (lang) => ({
-    text: lang === "en"
-      ? "Savory cravings can mean hunger — want an idea, or is that enough?"
-      : "Minsan gutom ang maalat — ideya ba, o sapat na?",
-    options: ["meal_idea", "enough"]
-  }),
-
-  meal_idea: (lang) => ({
-    text: lang === "en"
-      ? "A simple meal could help."
-      : "Makakatulong ang simpleng pagkain.",
-    options: ["exit"]
-  }),
-
-  enough: (lang) => ({
-    text: lang === "en"
-      ? "Got it — thanks for sharing."
-      : "Sige — salamat sa pagsabi.",
-    options: ["exit"]
-  }),
-
-  // ===== EMOTIONAL =====
-  emotional: (lang) => ({
-    text: lang === "en"
-      ? "Does this want come from comfort, or from wanting distraction?"
-      : "Aliw ba ang hanap mo, o distraction?",
-    options: ["comfort", "distraction"]
-  }),
-
+  // ===== COMFORT / EMOTIONAL DESIRE =====
   comfort: (lang) => ({
     text: lang === "en"
       ? "Do you want reassurance, or quiet company?"
-      : "Pampalakas-loob ba, o tahimik na kasama?",
+      : "Pampalakas-loob ba ang kailangan mo, o tahimik na kasama?",
     options: ["reassurance", "quiet_company"]
   }),
 
   reassurance: (lang) => ({
     text: lang === "en"
-      ? "You’re allowed to want comfort."
-      : "Karapat-dapat kang umaliw.",
-    options: ["exit"]
+      ? "You’re allowed to want comfort — do you want to talk about how you feel, or pause quietly?"
+      : "Karapat-dapat kang umaliw — gusto mo bang pag-usapan ang nararamdaman mo, o manahimik muna?",
+    options: ["__INTENT_FEELING__", "__INTENT_GROUNDING__"]
   }),
 
   quiet_company: (lang) => ({
     text: lang === "en"
-      ? "I’m here with you."
-      : "Andito lang ako.",
-    options: ["exit"]
-  }),
-
-  distraction: (lang) => ({
-    text: lang === "en"
-      ? "Do you want light talk, or grounding?"
-      : "Kwentuhan ba, o grounding?",
-    options: ["light_talk", "grounding"]
-  }),
-
-  light_talk: (lang) => ({
-    text: lang === "en"
-      ? "We can keep things light."
-      : "Pwede tayong mag-light lang.",
-    options: ["exit"]
-  }),
-
-  grounding: (lang) => ({
-    text: lang === "en"
-      ? "Let’s slow things down together."
-      : "Maghinay-hinay tayo.",
-    options: ["exit"]
-  }),
-
-  // ===== MY FEELINGS (FIXED NODE) =====
-  my_feelings: (lang) => ({
-    text: lang === "en"
-      ? "Let’s check in with how you’re feeling."
-      : "Silipin natin ang nararamdaman mo.",
-    options: ["exit"]
-  }),
-
-  // ===== CHANGE TOPIC =====
-  change_topic: (lang) => ({
-    text: lang === "en"
-      ? "We can change topics anytime."
-      : "Pwede tayong mag-iba ng usapan kahit kailan.",
-    options: ["exit"]
-  }),
-
-  // ===== EXIT =====
-  exit: (lang) => ({
-    text: lang === "en"
-      ? "We can keep talking, or shift to something else."
-      : "Pwede pa tayong mag-usap, o lumipat sa iba.",
-    options: []
+      ? "I’m here with you — do you want to sit quietly, or check in with another need?"
+      : "Andito lang ako — gusto mo bang manahimik, o silipin ang ibang kailangan?",
+    options: ["__INTENT_GROUNDING__", "__INTENT_FEELING__"]
   })
 
 };
