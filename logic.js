@@ -141,6 +141,12 @@ types_of_therapy: [
   "occupational therapy",
   "speech therapy"
 ],
+cp: [
+  "cp",
+  "cerebral palsy",
+  "ano ang cp",
+  "what is cp"
+],
 // ===== FEELING FLOW ALIASES =====
 
 feeling: [
@@ -280,6 +286,7 @@ const ALIAS_MODULE_MAP = {
   differences: "INFO",
   therapy: "INFO",
   types_of_therapy: "INFO",
+  cp: "INFO",
 
   // FEELING
   feeling: "FEELING",
@@ -314,6 +321,7 @@ const ALIAS_MODULE_MAP = {
     HELP: () => window.RESPONSES_HELP,
     OPEN: () => window.RESPONSES_OPEN
   };
+} // ✅ END GLOBAL ALIAS JUMP
 
   // ================= OPTION MATCHER =================
   function matchOption(text, options) {
