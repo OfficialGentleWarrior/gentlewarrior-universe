@@ -467,7 +467,24 @@
     @media (max-width:768px){
       .floating-play-cta{display:block;}
     }
+.spotify-embed{
+  max-width:380px;
+  margin:0 auto;
+}
 
+.spotify-embed iframe{
+  width:100%;
+  height:380px;
+  border-radius:14px;
+  border:none;
+  margin:20px auto;
+}
+
+@media (max-width:768px){
+  .spotify-embed iframe{
+    height:240px;
+  }
+}
     /* Game hub cards (Memory Game, Heart Defender, CP Myths Quiz) */
     .game-hub{
       display:grid;
@@ -623,6 +640,18 @@ shared with love, care, and permission.
       width: 100%;
       height: 100%;
     ">
+  </iframe>
+</div>
+<p style="text-align:center;font-size:13px;color:var(--muted);margin-top:8px;">
+Listen on Spotify — Gentle Warrior (Official Theme Song)
+</p>
+
+<!-- SPOTIFY OFFICIAL THEME SONG -->
+<div class="spotify-embed">
+  <iframe
+    src="https://open.spotify.com/embed/album/438CnMtDfkQmC8860coayj"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy">
   </iframe>
 </div>
 
