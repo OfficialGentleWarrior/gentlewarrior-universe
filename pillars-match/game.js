@@ -304,18 +304,20 @@ saveRunBtn?.addEventListener("click", () => {
 
 // END RUN (save snapshot + overlay)
 endRunBtn?.addEventListener("click", async () => {
-  // HARD STOP GAME
-  isResolving = true;
+  console.log("END RUN CLICKED"); // debug
+
+  // stop everything
   isRunActive = false;
+  isResolving = true;
 
-  // save snapshot
-  saveGame();
+  // freeze board
+  gridEl.style.pointerEvents = "none";
 
-  // submit to leaderboard
+  // submit run
   await submitRunToLeaderboard();
   await loadLeaderboard();
 
-  // show game over overlay
+  // show game over
   showEndRunOverlay();
 });
 
