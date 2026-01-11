@@ -304,10 +304,18 @@ saveRunBtn?.addEventListener("click", () => {
 
 // END RUN (save snapshot + overlay)
 endRunBtn?.addEventListener("click", async () => {
+  // HARD STOP GAME
+  isResolving = true;
   isRunActive = false;
+
+  // save snapshot
   saveGame();
+
+  // submit to leaderboard
   await submitRunToLeaderboard();
-  await loadLeaderboard();   // 🔁 refresh Top 10
+  await loadLeaderboard();
+
+  // show game over overlay
   showEndRunOverlay();
 });
 
@@ -625,6 +633,7 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   }
 
   function onTileClick(a, b) {
+  if (!isRunActive) return;      // <-- ITO ang idagdag
   if (isResolving || moves <= 0) return;
 
   if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
