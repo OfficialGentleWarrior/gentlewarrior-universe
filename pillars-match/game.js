@@ -840,14 +840,16 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
 
   // 🔥 FORCE END RUN (manual button trigger)
   window.forceEndRun = async function () {
-    isRunActive = false;
-    isResolving = true;
+  console.log("FORCE END RUN CLICKED");
 
-    saveGame();
-    await submitRunToLeaderboard();
-    await loadLeaderboard();
+  isRunActive = false;
+  isResolving = true;
 
-    showEndRunOverlay();
-  };
+  saveGame();
+  await submitRunToLeaderboard();
+  await loadLeaderboard();
+
+  showEndRunOverlay();
+};
 
 });
