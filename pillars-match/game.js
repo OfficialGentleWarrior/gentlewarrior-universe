@@ -276,12 +276,14 @@ function showEndRunOverlay() {
   // fill stats
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
-
-  // random CP line
   endRunCpLine.textContent = getRandomCpLine(level);
 
-  // show overlay
+  // force show (kahit anong CSS state)
   endRunOverlay.classList.remove("hidden");
+  endRunOverlay.style.display = "flex";
+  endRunOverlay.style.opacity = "1";
+  endRunOverlay.style.pointerEvents = "auto";
+  endRunOverlay.style.zIndex = "9999";
 }
 
 // RUN CONTROLS
