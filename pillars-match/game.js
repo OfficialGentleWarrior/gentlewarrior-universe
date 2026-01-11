@@ -1,5 +1,96 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+const {
+  db,
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} = window.pillarDB;
+// ===== LEADERBOARD HELPERS =====
+function getPlayerId() {
+  return getPillarDeviceTag();
+}
+
+async function submitRunToLeaderboard() {
+  const playerId = getPlayerId();
+  const seasonId = currentSeasonId();
+
+  const runData = {
+    playerId,
+    seasonId,
+    level,
+    score,
+    movesUsed: LEVEL_CONFIG.baseMoves - moves,
+    createdAt: Date.now()
+  };
+
+  // Save full run history
+  await addDoc(pillarRuns, runData);
+
+  // Save / update best score for this week
+  const playerDocId = `${seasonId}_${playerId}`;
+  const playerRef = doc(pillarPlayers, playerDocId);
+  const snap = await getDoc(playerRef);
+
+  if (!snap.exists() || snap.data().score < score) {
+    await setDoc(playerRef, {
+      playerId,
+      seasonId,
+      level,
+      score,
+      updatedAt: serverTimestamp()
+    });
+  }
+}
+async function loadLeaderboard() {
+  const seasonId = currentSeasonId();
+
+  const q = query(
+    pillarPlayers,
+    where("seasonId", "==", seasonId),
+    orderBy("score", "desc"),
+    limit(10)
+  );
+
+  const snap = await getDocs(q);
+  const listEl = document.getElementById("leaderboardList");
+
+  if (!listEl) return;
+
+  if (snap.empty) {
+    listEl.innerHTML = "<div>No runs yet this week.</div>";
+    return;
+  }
+
+  let html = "";
+  let rank = 1;
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    html += `
+      <div style="display:flex;justify-content:space-between;padding:2px 0;">
+        <span>#${rank}</span>
+        <span>${d.playerId.slice(-4)}</span>
+        <span>${d.score}</span>
+      </div>
+    `;
+    rank++;
+  });
+
+  listEl.innerHTML = html;
+}
+
   /* =========================
      CONFIG
   ========================== */
@@ -160,6 +251,7 @@ const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
 const progressBar =
 document.getElementById("progressBar");
+const leaderboardList = document.getElementById("leaderboardList");
 
 const levelOverlay =
 document.getElementById("levelOverlay");
@@ -211,10 +303,12 @@ saveRunBtn?.addEventListener("click", () => {
 });
 
 // END RUN (save snapshot + overlay)
-endRunBtn?.addEventListener("click", () => {
+endRunBtn?.addEventListener("click", async () => {
   isRunActive = false;
-  saveGame();               // save snapshot
-  showEndRunOverlay();      // show overlay instead of reset
+  saveGame();
+  await submitRunToLeaderboard();
+  await loadLeaderboard();   // 🔁 refresh Top 10
+  showEndRunOverlay();
 });
 
 tryAgainBtn?.addEventListener("click", () => {
@@ -642,7 +736,7 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
     setTimeout(() => sparkle.remove(), 420);
   }
 
-  function resolveBoard(groups) {
+  async function resolveBoard(groups) {
   const toClear = new Set();
 
   groups.forEach(group => {
@@ -670,33 +764,35 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   });
 
   setTimeout(() => {
-    applyGravityAnimated(() => {
-      const next = findMatchesDetailed();
-      if (next.length) resolveBoard(next);
-      else {
-        isResolving = false;
-        isInitPhase = false;
+  applyGravityAnimated(async () => {
+    const next = findMatchesDetailed();
+    if (next.length) {
+      resolveBoard(next);
+    } else {
+      isResolving = false;
+      isInitPhase = false;
 
-        const gained = score - levelStartScore;
+      const gained = score - levelStartScore;
 
-if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
-  saveGame();              // ✅ SAVE ON LEVEL CLEAR
-  showLevelComplete();
-}
-else if (moves <= 0) {
-  isRunActive = false;
-
-  saveGame();          // ✅ save last progress
-  showEndRunOverlay(); // ✅ show Try Again + Share X
-
-  return;              // ⛔ stop game flow here
-}
-else {
-  saveGame();              // ✅ SAVE DURING NORMAL PLAY
-}
+      if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
+        saveGame();
+        showLevelComplete();
       }
-    });
-  }, 180);
+      else if (moves <= 0) {
+        isRunActive = false;
+
+        saveGame();
+        await submitRunToLeaderboard();
+        await loadLeaderboard();   // refresh Top 10
+        showEndRunOverlay();
+        return;
+      }
+      else {
+        saveGame();
+      }
+    }
+  });
+}, 180);
 }
 
   function applyGravityAnimated(done) {
@@ -734,5 +830,6 @@ else {
   ========================== */
 
   startLevel();
+loadLeaderboard();
 
 });
