@@ -229,8 +229,79 @@
   </div>
 </div>
 
-  <!-- GAME SCRIPT -->
-  <script src="./game.js?v=8" defer></script>
+  <!-- FIREBASE FIRST -->
+<script type="module">
+  import { initializeApp, getApps, getApp } from
+    "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+
+  import {
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    addDoc,
+    updateDoc,
+    serverTimestamp,
+    query,
+    where,
+    getDocs
+  } from
+    "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+    authDomain: "gentle-warrior.firebaseapp.com",
+    projectId: "gentle-warrior",
+    storageBucket: "gentle-warrior.firebasestorage.app",
+    messagingSenderId: "206508766648",
+    appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+  };
+
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const pillarPlayers = collection(db, "pillarPlayers");
+  const pillarRuns    = collection(db, "pillarRuns");
+
+  function isoWeekId(date = new Date()) {
+    const d = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate()
+    ));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
+  }
+
+  function currentSeasonId() {
+    return isoWeekId() + "-pillar";
+  }
+
+  function getPillarDeviceTag() {
+    let tag = localStorage.getItem("gw_pillar_device_tag");
+    if (!tag) {
+      tag = "pillar_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("gw_pillar_device_tag", tag);
+    }
+    return tag;
+  }
+
+  window.pillarDB = {
+    db,
+    pillarPlayers,
+    pillarRuns,
+    currentSeasonId,
+    getPillarDeviceTag
+  };
+
+  console.log("🟢 Pillar Match Firebase ready");
+</script>
+
+<!-- GAME SCRIPT LAST -->
+<script src="./game.js?v=8" defer></script>
 
 </body>
 </html>
