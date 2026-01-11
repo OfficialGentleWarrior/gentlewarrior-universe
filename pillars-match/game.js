@@ -836,6 +836,18 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   ========================== */
 
   startLevel();
-loadLeaderboard();
+  loadLeaderboard();
+
+  // 🔥 FORCE END RUN (manual button trigger)
+  window.forceEndRun = async function () {
+    isRunActive = false;
+    isResolving = true;
+
+    saveGame();
+    await submitRunToLeaderboard();
+    await loadLeaderboard();
+
+    showEndRunOverlay();
+  };
 
 });
