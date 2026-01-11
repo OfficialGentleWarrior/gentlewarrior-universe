@@ -305,9 +305,13 @@ resetRunBtn?.addEventListener("click", () => {
   ========================== */
 
   let tiles = [];
-  let selectedTile = null;
-  let isResolving = true;
-  let isInitPhase = true;
+let isResolving = true;
+let isInitPhase = true;
+
+// SWIPE STATE
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTile = null;
 
   let score = 0;
   let level = 1;
@@ -442,10 +446,68 @@ function endRun(reason = "manual") {
   }
 
   function isAdjacent(i1, i2) {
-    const a = indexToRowCol(i1);
-    const b = indexToRowCol(i2);
-    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
+  const a = indexToRowCol(i1);
+  const b = indexToRowCol(i2);
+  return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
+}
+
+/* ===== SWIPE HANDLERS ===== */
+
+function onTouchStart(e) {
+  if (isResolving || moves <= 0) return;
+
+  const touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  touchStartTile = e.currentTarget;
+}
+
+function onTouchEnd(e) {
+  if (!touchStartTile) return;
+
+  const touch = e.changedTouches[0];
+  const dx = touch.clientX - touchStartX;
+  const dy = touch.clientY - touchStartY;
+
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+
+  if (Math.max(absX, absY) < 20) {
+    touchStartTile = null;
+    return;
   }
+
+  let dirRow = 0;
+  let dirCol = 0;
+
+  if (absX > absY) {
+    dirCol = dx > 0 ? 1 : -1;
+  } else {
+    dirRow = dy > 0 ? 1 : -1;
+  }
+
+  const i1 = +touchStartTile.dataset.index;
+  const { row, col } = indexToRowCol(i1);
+
+  const newRow = row + dirRow;
+  const newCol = col + dirCol;
+
+  if (
+    newRow < 0 || newRow >= GRID_SIZE ||
+    newCol < 0 || newCol >= GRID_SIZE
+  ) {
+    touchStartTile = null;
+    return;
+  }
+
+  const i2 = newRow * GRID_SIZE + newCol;
+  const targetTile = tiles[i2];
+  const startTile = touchStartTile;
+
+  touchStartTile = null;
+
+  onTileClick(startTile, targetTile);
+}
 
   function createGrid(boardData = null) {
     gridEl.innerHTML = "";
@@ -461,46 +523,36 @@ function endRun(reason = "manual") {
       img.src = `../assets/pillars/${p}.png`;
       img.draggable = false;
 
-      img.addEventListener("click", () => onTileClick(img));
+      img.addEventListener("touchstart", onTouchStart, { passive: true });
+img.addEventListener("touchend", onTouchEnd, { passive: true });
       tiles.push(img);
       gridEl.appendChild(img);
     }
   }
 
-  function onTileClick(tile) {
-    if (isResolving || moves <= 0) return;
+  function onTileClick(a, b) {
+  if (isResolving || moves <= 0) return;
 
-    if (!selectedTile) {
-      selectedTile = tile;
-      tile.classList.add("selected");
-      return;
+  if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
+
+  isResolving = true;
+
+  animateSwap(a, b, () => {
+    commitSwap(a, b);
+    const groups = findMatchesDetailed();
+
+    if (!groups.length) {
+      animateSwap(a, b, () => {
+        commitSwap(a, b);
+        isResolving = false;
+      });
+    } else {
+      moves--;
+      updateHUD();
+      resolveBoard(groups);
     }
-
-    const a = selectedTile;
-    const b = tile;
-    a.classList.remove("selected");
-    selectedTile = null;
-
-    if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
-
-    isResolving = true;
-
-    animateSwap(a, b, () => {
-      commitSwap(a, b);
-      const groups = findMatchesDetailed();
-
-      if (!groups.length) {
-        animateSwap(a, b, () => {
-          commitSwap(a, b);
-          isResolving = false;
-        });
-      } else {
-        moves--;
-        updateHUD();
-        resolveBoard(groups);
-      }
-    });
-  }
+  });
+}
 
   function animateSwap(a, b, done) {
     const p1 = indexToRowCol(+a.dataset.index);
