@@ -182,8 +182,24 @@
 
   <!-- GAME GRID -->
   <main class="game-wrapper">
-    <div class="grid" id="grid"></div>
-  </main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- WEEKLY LEADERBOARD -->
+<div id="leaderboardPanel" style="
+  width:100%;
+  max-width:420px;
+  margin:12px auto 0;
+  background:rgba(0,0,0,0.25);
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:12px;
+">
+  <div style="font-weight:600;margin-bottom:6px;">
+    🏆 Top 10 This Week (UTC)
+  </div>
+  <div id="leaderboardList">Loading...</div>
+</div>
 
   <!-- FOOTER -->
   <footer>
@@ -235,19 +251,21 @@
     "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
   import {
-    getFirestore,
-    collection,
-    doc,
-    getDoc,
-    setDoc,
-    addDoc,
-    updateDoc,
-    serverTimestamp,
-    query,
-    where,
-    getDocs
-  } from
-    "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  updateDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} from
+  "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
@@ -290,12 +308,25 @@
   }
 
   window.pillarDB = {
-    db,
-    pillarPlayers,
-    pillarRuns,
-    currentSeasonId,
-    getPillarDeviceTag
-  };
+  db,
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+
+  // leaderboard tools
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+};
 
   console.log("🟢 Pillar Match Firebase ready");
 </script>
