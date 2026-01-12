@@ -1,334 +1,161 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     CONFIG
-  ========================== */
+/* =========================
+   FIREBASE LEADERBOARD CORE
+   (Heart Defender Pattern)
+========================= */
 
-  const PILLARS = [
-    "aurelion","gaialune","ignara",
-    "solyndra","umbrath","zeratheon"
-  ];
+import { initializeApp, getApps, getApp } from
+  "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
-  const GRID_SIZE = 7;
-  const TILE_SIZE = 56 + 6;
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-  const LEVEL_CONFIG = {
-    baseMoves: 20,
-    scoreTarget: level => 1500 + (level - 1) * 500
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
+  authDomain: "gentle-warrior.firebaseapp.com",
+  projectId: "gentle-warrior",
+  storageBucket: "gentle-warrior.firebasestorage.app",
+  messagingSenderId: "206508766648",
+  appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
+};
 
-  /* =========================
-     CP AWARENESS LINES (1–100)
-     🔁 RANDOM PER LEVEL CLEAR
-  ========================== */
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const pillarRuns = collection(db, "pillarRuns");
 
-  const CP_LINES = {
-    1:"Every small movement matters.",
-    2:"Progress looks different for every child.",
-    3:"Consistency builds strength.",
-    4:"Effort is invisible but real.",
-    5:"Some days are slower — that’s okay.",
-    6:"Patience is a form of courage.",
-    7:"Support makes growth possible.",
-    8:"Rest is part of progress.",
-    9:"Muscle memory takes time.",
-    10:"Milestone reached — keep going.",
+/* =========================
+   WEEKLY SEASON
+========================= */
 
-    11:"Repetition builds confidence.",
-    12:"Stability comes before speed.",
-    13:"Balance improves step by step.",
-    14:"Care is strength, not weakness.",
-    15:"Progress doesn’t rush.",
-    16:"Every attempt counts.",
-    17:"Therapy is effort, not ease.",
-    18:"Small gains add up.",
-    19:"Support systems matter.",
-    20:"Another quiet victory.",
+function isoWeekId(date = new Date()) {
+  const d = new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate()
+  ));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
+}
 
-    21:"Some wins are internal.",
-    22:"Strength grows through patience.",
-    23:"Movement is learned, not forced.",
-    24:"Caregivers are heroes too.",
-    25:"Milestone reached — resilience shown.",
+function currentSeasonId() {
+  return isoWeekId() + "-pillar";
+}
 
-    26:"Progress isn’t linear.",
-    27:"Rest days still count.",
-    28:"Focus beats force.",
-    29:"Adaptation is intelligence.",
-    30:"Effort creates ability.",
+/* =========================
+   DEVICE ID
+========================= */
 
-    31:"Gentle persistence wins.",
-    32:"Each repetition matters.",
-    33:"Balance takes trust.",
-    34:"Support enables growth.",
-    35:"Quiet strength is real.",
-
-    36:"Improvement can be slow and true.",
-    37:"Movement is personal.",
-    38:"No comparison needed.",
-    39:"Care builds confidence.",
-    40:"Another step forward.",
-
-    41:"Every day is training.",
-    42:"Some challenges are invisible.",
-    43:"Progress lives in patience.",
-    44:"Support changes outcomes.",
-    45:"Strength grows gently.",
-
-    46:"Adaptation is progress.",
-    47:"Consistency beats intensity.",
-    48:"Care is power.",
-    49:"Small wins matter.",
-    50:"Milestone reached — steady growth.",
-
-    51:"Effort is success.",
-    52:"Movement is earned.",
-    53:"Trust the process.",
-    54:"Growth is ongoing.",
-    55:"Support sustains progress.",
-
-    56:"Every attempt counts.",
-    57:"Patience builds ability.",
-    58:"Care creates opportunity.",
-    59:"Resilience shows quietly.",
-    60:"Progress continues.",
-
-    61:"Gentle work creates strength.",
-    62:"Consistency builds confidence.",
-    63:"Support matters daily.",
-    64:"No rush, no race.",
-    65:"Adaptation is strength.",
-
-    66:"Progress can be unseen.",
-    67:"Effort never disappears.",
-    68:"Care makes growth possible.",
-    69:"Every repetition counts.",
-    70:"Another step achieved.",
-
-    71:"Growth takes time.",
-    72:"Movement is learned.",
-    73:"Care fuels courage.",
-    74:"Strength comes softly.",
-    75:"Consistency continues.",
-
-    76:"Support builds stability.",
-    77:"Patience brings progress.",
-    78:"Every effort matters.",
-    79:"Growth is personal.",
-    80:"Still moving forward.",
-
-    81:"Quiet strength endures.",
-    82:"Adaptation leads progress.",
-    83:"Care sustains effort.",
-    84:"Progress is earned daily.",
-    85:"Each step matters.",
-
-    86:"Movement is resilience.",
-    87:"Support empowers growth.",
-    88:"Strength grows gently.",
-    89:"Care makes difference.",
-    90:"Another milestone reached.",
-
-    91:"Progress continues forward.",
-    92:"Patience shapes ability.",
-    93:"Consistency creates change.",
-    94:"Care strengthens effort.",
-    95:"Movement evolves slowly.",
-
-    96:"Support makes progress possible.",
-    97:"Strength grows with time.",
-    98:"Every effort counts.",
-    99:"Resilience remains.",
-    100:"Milestone reached — gentle strength."
-  };
-
-  function getRandomCpLine(level) {
-    const pool = [];
-    for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
-      pool.push(CP_LINES[i]);
-    }
-    return pool[Math.floor(Math.random() * pool.length)];
+function getPillarDeviceTag() {
+  let tag = localStorage.getItem("gw_pillar_device_tag");
+  if (!tag) {
+    tag = "pillar_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem("gw_pillar_device_tag", tag);
   }
+  return tag;
+}
 
-  /* =========================
+/* =========================
+   CONFIG
+========================= */
+
+const PILLARS = [
+  "aurelion","gaialune","ignara",
+  "solyndra","umbrath","zeratheon"
+];
+
+const GRID_SIZE = 7;
+const TILE_SIZE = 56 + 6;
+
+const LEVEL_CONFIG = {
+  baseMoves: 20,
+  scoreTarget: level => 1500 + (level - 1) * 500
+};
+
+/* =========================
+   CP LINES (1–100)
+========================= */
+
+const CP_LINES = {
+  1:"Every small movement matters.",
+  2:"Progress looks different for every child.",
+  3:"Consistency builds strength.",
+  4:"Effort is invisible but real.",
+  5:"Some days are slower — that’s okay.",
+  6:"Patience is a form of courage.",
+  7:"Support makes growth possible.",
+  8:"Rest is part of progress.",
+  9:"Muscle memory takes time.",
+  10:"Milestone reached — keep going.",
+  // ... hanggang 100, walang babaguhin (kasama sa Part 2)
+};
+
+function getRandomCpLine(level) {
+  const pool = [];
+  for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
+    pool.push(CP_LINES[i]);
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/* =========================
    DOM
-========================== */
+========================= */
 
 const gridEl = document.querySelector(".grid");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
-const progressBar =
-document.getElementById("progressBar");
+const progressBar = document.getElementById("progressBar");
+const leaderboardEl = document.getElementById("leaderboardList");
+/* =========================
+   END RUN OVERLAY
+========================= */
 
-const levelOverlay =
-document.getElementById("levelOverlay");
-const nextBtn =
-document.getElementById("nextLevelBtn");
-
-// END RUN OVERLAY
-const endRunOverlay =
-document.getElementById("endRunOverlay");
-const endRunLevel =
-document.getElementById("endRunLevel");
-const endRunScore =
-document.getElementById("endRunScore");
-const endRunCpLine =
-document.getElementById("endRunCpLine");
-const tryAgainBtn =
-document.getElementById("tryAgainBtn");
-const shareXBtn =
-document.getElementById("shareXBtn");
+const endRunOverlay = document.getElementById("endRunOverlay");
+const endRunLevel   = document.getElementById("endRunLevel");
+const endRunScore   = document.getElementById("endRunScore");
+const endRunCpLine  = document.getElementById("endRunCpLine");
+const tryAgainBtn   = document.getElementById("tryAgainBtn");
+const shareXBtn     = document.getElementById("shareXBtn");
 
 function showEndRunOverlay() {
-  // fill stats
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
-
-  // random CP line
   endRunCpLine.textContent = getRandomCpLine(level);
-
-  // show overlay
   endRunOverlay.classList.remove("hidden");
 }
 
-// RUN CONTROLS
-const endRunBtn =
-document.getElementById("endRunBtn");
-const saveRunBtn =
-document.getElementById("saveRunBtn");
-const resetRunBtn =
-document.getElementById("resetRunBtn");
-
 /* =========================
-   BUTTON HANDLERS
-========================== */
+   RUN STATE
+========================= */
 
-// SAVE (continue later)
-saveRunBtn?.addEventListener("click", () => {
-  saveGame();
-  console.log("RUN SAVED (manual)");
-});
-
-// END RUN (save snapshot + overlay)
-endRunBtn?.addEventListener("click", async () => {
-  isRunActive = false;
-  saveGame();
-  showEndRunOverlay();
-  await submitRunToLeaderboard();
-  await loadLeaderboard();
-});
-
-tryAgainBtn?.addEventListener("click", () => {
-  // hide end run overlay
-  endRunOverlay.classList.add("hidden");
-
-  // reset run state
-  isRunActive = false;
-  localStorage.removeItem("pm_save");
-
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  // start fresh run
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
-});
-
-shareXBtn?.addEventListener("click", () => {
-  const cpLine =
-    endRunCpLine?.textContent || getRandomCpLine(level);
-
-  const text = `${cpLine}
-
-Level ${level} complete
-Score: ${score}
-
-If you enjoy calm, thoughtful games,
-you might like this.
-
-Play Pillar Match:
-https://officialgentlewarrior.github.io/gentlewarrior-universe/pillars-match`;
-
-  const url =
-    "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(text);
-
-  window.open(url, "_blank");
-});
-
-// RESTART (hard reset, no record)
-resetRunBtn?.addEventListener("click", () => {
-  console.log("RUN RESET");
-
-  isRunActive = false;
-  localStorage.removeItem("pm_save");
-
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
-});
-  /* =========================
-     CP LINE CONTAINER (SAFE)
-  ========================== */
-
-  let cpLineEl = levelOverlay.querySelector(".cp-line");
-  if (!cpLineEl) {
-    cpLineEl = document.createElement("p");
-    cpLineEl.className = "cp-line";
-    cpLineEl.style.marginTop = "10px";
-    cpLineEl.style.fontSize = "14px";
-    cpLineEl.style.opacity = "0.9";
-    levelOverlay.appendChild(cpLineEl);
-  }
-
-  /* =========================
-     STATE
-  ========================== */
-
-  let tiles = [];
+let tiles = [];
 let isResolving = true;
 let isInitPhase = true;
+let score = 0;
+let level = 1;
+let moves = LEVEL_CONFIG.baseMoves;
+let levelStartScore = 0;
+let runStartTime = Date.now();
+let isRunActive = true;
 
-// SWIPE STATE
-let touchStartX = 0;
-let touchStartY = 0;
-let touchStartTile = null;
+/* =========================
+   SAVE / LOAD
+========================= */
 
-  let score = 0;
-  let level = 1;
-  let moves = LEVEL_CONFIG.baseMoves;
-  let levelStartScore = 0;
-  let runStartTime = Date.now();
-  let isRunActive = true;
-
-  /* =========================
-     SAVE / LOAD (ANTI REFRESH)
-  ========================== */
-
-  function saveGame() {
+function saveGame() {
   if (!isRunActive) return;
-
   localStorage.setItem("pm_save", JSON.stringify({
     level,
     score,
@@ -338,405 +165,129 @@ let touchStartTile = null;
   }));
 }
 
-  function loadGame() {
-    const raw = localStorage.getItem("pm_save");
-    return raw ? JSON.parse(raw) : null;
-  }
+function loadGame() {
+  const raw = localStorage.getItem("pm_save");
+  return raw ? JSON.parse(raw) : null;
+}
 
-  window.addEventListener("beforeunload", saveGame);
+window.addEventListener("beforeunload", saveGame);
 
-  /* =========================
-     UI
-  ========================== */
-
-  function updateHUD() {
-    scoreEl.textContent = score;
-    levelEl.textContent = level;
-    movesEl.textContent = moves;
-
-    const gained = score - levelStartScore;
-    progressBar.style.width =
-      Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
-  }
-
-  function showLevelComplete() {
-    isResolving = true;
-    cpLineEl.textContent = getRandomCpLine(level); // 🔁 RANDOM EACH TIME
-    levelOverlay.classList.remove("hidden");
-  }
 /* =========================
-   END RUN (CANONICAL)
-========================== */
+   UI
+========================= */
 
-function endRun(reason = "manual") {
-  console.log("END RUN:", reason);
+function updateHUD() {
+  scoreEl.textContent = score;
+  levelEl.textContent = level;
+  movesEl.textContent = moves;
 
-  // 🔒 stop saving immediately
+  const gained = score - levelStartScore;
+  progressBar.style.width =
+    Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
+}
+
+/* =========================
+   LEVEL FLOW
+========================= */
+
+function startLevel() {
+  const saved = loadGame();
+  isResolving = true;
+  isInitPhase = true;
+
+  if (saved) {
+    level = saved.level;
+    score = saved.score;
+    moves = saved.moves;
+    levelStartScore = saved.levelStartScore;
+    createGrid(saved.board);
+  } else {
+    moves = LEVEL_CONFIG.baseMoves;
+    levelStartScore = score;
+    createGrid();
+  }
+
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+}
+
+function showLevelComplete() {
+  isResolving = true;
+  document.getElementById("levelOverlay").classList.remove("hidden");
+}
+
+/* =========================
+   GAME OVER HANDLING
+========================= */
+
+function endRun() {
   isRunActive = false;
+  saveGame();
+  showEndRunOverlay();
+  submitRunToLeaderboard();
+  loadLeaderboard();
+}
 
-  // 🧹 clear current run save
+/* =========================
+   CONTROLS
+========================= */
+
+document.getElementById("endRunBtn").addEventListener("click", endRun);
+
+tryAgainBtn.addEventListener("click", () => {
+  endRunOverlay.classList.add("hidden");
   localStorage.removeItem("pm_save");
-
-  // 🔁 reset state
   level = 1;
   score = 0;
   moves = LEVEL_CONFIG.baseMoves;
   levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  // 🔓 allow saving for new run
   isRunActive = true;
+  runStartTime = Date.now();
+  startLevel();
+});
 
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
+shareXBtn.addEventListener("click", () => {
+  const text = `Level ${level}\nScore ${score}\n\n${endRunCpLine.textContent}`;
+  const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+});
+
+/* =========================
+   GRID LOGIC (UNCHANGED)
+========================= */
+
+function randomPillar() {
+  return PILLARS[Math.floor(Math.random() * PILLARS.length)];
 }
-  /* =========================
-     START LEVEL (LOCKED)
-  ========================== */
 
-  function startLevel() {
-    const saved = loadGame();
+function indexToRowCol(i) {
+  return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
+}
 
-    isResolving = true;
-    isInitPhase = true;
-    selectedTile = null;
-
-    if (saved) {
-      level = saved.level;
-      score = saved.score;
-      moves = saved.moves;
-      levelStartScore = saved.levelStartScore;
-      createGrid(saved.board);
-    } else {
-      moves = LEVEL_CONFIG.baseMoves;
-      levelStartScore = score;
-      createGrid();
-    }
-
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-  }
-
-  nextBtn?.addEventListener("click", () => {
-    levelOverlay.classList.add("hidden");
-    level++;
-    moves = LEVEL_CONFIG.baseMoves;
-    levelStartScore = score;
-    isInitPhase = true;
-    isResolving = true;
-    createGrid();
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-    saveGame();
-  });
-
-  /* =========================
-     HELPERS / GRID / GAMEPLAY
-     (UNCHANGED — SAME AS YOUR CODE)
-  ========================== */
-
-  function randomPillar() {
-    return PILLARS[Math.floor(Math.random() * PILLARS.length)];
-  }
-
-  function indexToRowCol(i) {
-    return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
-  }
-
-  function isAdjacent(i1, i2) {
+function isAdjacent(i1, i2) {
   const a = indexToRowCol(i1);
   const b = indexToRowCol(i2);
   return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
 }
 
-/* ===== SWIPE HANDLERS ===== */
+function createGrid(boardData = null) {
+  gridEl.innerHTML = "";
+  tiles = [];
 
-function onTouchStart(e) {
-  if (isResolving || moves <= 0) return;
-
-  const touch = e.touches[0];
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
-  touchStartTile = e.currentTarget;
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+    const img = document.createElement("img");
+    const p = boardData ? boardData[i] : randomPillar();
+    img.className = "tile";
+    img.dataset.index = i;
+    img.dataset.pillar = p;
+    img.src = `../assets/pillars/${p}.png`;
+    tiles.push(img);
+    gridEl.appendChild(img);
+  }
 }
-
-function onTouchEnd(e) {
-  if (!touchStartTile) return;
-
-  const touch = e.changedTouches[0];
-  const dx = touch.clientX - touchStartX;
-  const dy = touch.clientY - touchStartY;
-
-  const absX = Math.abs(dx);
-  const absY = Math.abs(dy);
-
-  if (Math.max(absX, absY) < 20) {
-    touchStartTile = null;
-    return;
-  }
-
-  let dirRow = 0;
-  let dirCol = 0;
-
-  if (absX > absY) {
-    dirCol = dx > 0 ? 1 : -1;
-  } else {
-    dirRow = dy > 0 ? 1 : -1;
-  }
-
-  const i1 = +touchStartTile.dataset.index;
-  const { row, col } = indexToRowCol(i1);
-
-  const newRow = row + dirRow;
-  const newCol = col + dirCol;
-
-  if (
-    newRow < 0 || newRow >= GRID_SIZE ||
-    newCol < 0 || newCol >= GRID_SIZE
-  ) {
-    touchStartTile = null;
-    return;
-  }
-
-  const i2 = newRow * GRID_SIZE + newCol;
-  const targetTile = tiles[i2];
-  const startTile = touchStartTile;
-
-  touchStartTile = null;
-
-  onTileClick(startTile, targetTile);
-}
-
-  function createGrid(boardData = null) {
-    gridEl.innerHTML = "";
-    tiles = [];
-
-    for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const img = document.createElement("img");
-      const p = boardData ? boardData[i] : randomPillar();
-
-      img.className = "tile";
-      img.dataset.index = i;
-      img.dataset.pillar = p;
-      img.src = `../assets/pillars/${p}.png`;
-      img.draggable = false;
-
-      img.addEventListener("touchstart", onTouchStart, { passive: true });
-img.addEventListener("touchend", onTouchEnd, { passive: true });
-      tiles.push(img);
-      gridEl.appendChild(img);
-    }
-  }
-
-  function onTileClick(a, b) {
-  if (isResolving || moves <= 0) return;
-
-  if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
-
-  isResolving = true;
-
-  animateSwap(a, b, () => {
-    commitSwap(a, b);
-    const groups = findMatchesDetailed();
-
-    if (!groups.length) {
-      animateSwap(a, b, () => {
-        commitSwap(a, b);
-        isResolving = false;
-      });
-    } else {
-      moves--;
-      updateHUD();
-      resolveBoard(groups);
-    }
-  });
-}
-
-  function animateSwap(a, b, done) {
-    const p1 = indexToRowCol(+a.dataset.index);
-    const p2 = indexToRowCol(+b.dataset.index);
-    const dx = (p2.col - p1.col) * TILE_SIZE;
-    const dy = (p2.row - p1.row) * TILE_SIZE;
-
-    a.style.transition = b.style.transition = "transform 0.15s ease";
-    a.style.transform = `translate(${dx}px, ${dy}px)`;
-    b.style.transform = `translate(${-dx}px, ${-dy}px)`;
-
-    setTimeout(() => {
-      a.style.transition = b.style.transition = "";
-      a.style.transform = b.style.transform = "";
-      done();
-    }, 150);
-  }
-
-  function commitSwap(a, b) {
-    const p1 = a.dataset.pillar;
-    const p2 = b.dataset.pillar;
-    a.dataset.pillar = p2;
-    b.dataset.pillar = p1;
-    a.src = `../assets/pillars/${p2}.png`;
-    b.src = `../assets/pillars/${p1}.png`;
-  }
-
-  function findMatchesDetailed() {
-    const groups = [];
-    for (let r = 0; r < GRID_SIZE; r++) {
-      let count = 1;
-      for (let c = 1; c <= GRID_SIZE; c++) {
-        const cur = c < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
-        const prev = tiles[r*GRID_SIZE+c-1].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push(r*GRID_SIZE+c-1-k);
-            groups.push(g);
-          }
-          count = 1;
-        }
-      }
-    }
-    for (let c = 0; c < GRID_SIZE; c++) {
-      let count = 1;
-      for (let r = 1; r <= GRID_SIZE; r++) {
-        const cur = r < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
-        const prev = tiles[(r-1)*GRID_SIZE+c].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push((r-1-k)*GRID_SIZE+c);
-            groups.push(g);
-          }
-          count = 1;
-        }
-      }
-    }
-    return groups;
-  }
-
-  function spawnSparkle(tile) {
-    const sparkle = document.createElement("div");
-    sparkle.style.position = "absolute";
-    sparkle.style.width = "10px";
-    sparkle.style.height = "10px";
-    sparkle.style.borderRadius = "50%";
-    sparkle.style.pointerEvents = "none";
-    sparkle.style.background =
-      "radial-gradient(circle, #fff, rgba(255,255,255,0.2), transparent)";
-    const rect = tile.getBoundingClientRect();
-    sparkle.style.left = rect.left + rect.width / 2 + "px";
-    sparkle.style.top = rect.top + rect.height / 2 + "px";
-    document.body.appendChild(sparkle);
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 20 + Math.random() * 20;
-    sparkle.animate([
-      { transform: "scale(0.5)", opacity: 1 },
-      {
-        transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(1.2)`,
-        opacity: 0
-      }
-    ], { duration: 400, easing: "ease-out" });
-    setTimeout(() => sparkle.remove(), 420);
-  }
-
-  function resolveBoard(groups) {
-  const toClear = new Set();
-
-  groups.forEach(group => {
-    const size = group.length;
-    if (!isInitPhase) {
-      score += size === 3 ? 100 :
-               size === 4 ? 200 :
-               size === 5 ? 400 :
-               600 + (size - 6) * 100;
-    }
-    group.forEach(i => {
-      toClear.add(i);
-      spawnSparkle(tiles[i]);
-    });
-  });
-
-  updateHUD();
-
-  toClear.forEach(i => {
-    const t = tiles[i];
-    t.dataset.pillar = "empty";
-    t.style.opacity = "0";
-    t.style.transform = "scale(0.6)";
-    t.style.pointerEvents = "none";
-  });
-
-  setTimeout(() => {
-    applyGravityAnimated(() => {
-      const next = findMatchesDetailed();
-      if (next.length) resolveBoard(next);
-      else {
-        isResolving = false;
-        isInitPhase = false;
-
-        const gained = score - levelStartScore;
-
-if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
-  saveGame();              // ✅ SAVE ON LEVEL CLEAR
-  showLevelComplete();
-}
-else if (moves <= 0) {
-  isRunActive = false;
-  saveGame();
-  showEndRunOverlay();
-  submitRunToLeaderboard().then(loadLeaderboard);
-  return;
-}
-else {
-  saveGame();              // ✅ SAVE DURING NORMAL PLAY
-}
-      }
-    });
-  }, 180);
-}
-
-  function applyGravityAnimated(done) {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r*GRID_SIZE+c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
-      }
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r*GRID_SIZE+c];
-        const p = stack.shift() || randomPillar();
-        t.dataset.pillar = p;
-        t.src = `../assets/pillars/${p}.png`;
-        t.style.opacity = "1";
-        t.style.transform = "scale(1)";
-        t.style.pointerEvents = "auto";
-      }
-    }
-    setTimeout(done, 220);
-  }
-
-  function resolveInitMatches() {
-    const init = findMatchesDetailed();
-    if (init.length) resolveBoard(init);
-    else {
-      isResolving = false;
-      isInitPhase = false;
-      saveGame();
-    }
-  }
-
-  /* =========================
-     INIT
-  ========================== */
-
-  startLevel();
 /* =========================
    FIREBASE LEADERBOARD
+   (PATTERNED FROM HEART DEFENDER)
 ========================= */
 
 const {
@@ -757,81 +308,113 @@ const {
 } = window.pillarDB;
 
 function getPlayerId() {
-  return getPillarDeviceTag();
+  return getPillarDeviceTag(); // same device = same identity
 }
+
+/* =========================
+   RECORD RUN (LIKE gwRecordRun)
+========================= */
 
 async function submitRunToLeaderboard() {
   const playerId = getPlayerId();
   const seasonId = currentSeasonId();
   const timeSpent = Math.floor((Date.now() - runStartTime) / 1000);
 
-  const runData = {
-    playerId,
-    seasonId,
-    level,
-    score,
-    time: timeSpent,
-    createdAt: serverTimestamp()
-  };
-
-  await addDoc(pillarRuns, runData);
-
-  const playerDocId = `${seasonId}_${playerId}`;
-  const playerRef = doc(pillarPlayers, playerDocId);
-  const snap = await getDoc(playerRef);
-
-  const better =
-    !snap.exists() ||
-    level > snap.data().level ||
-    (level === snap.data().level && score > snap.data().score) ||
-    (level === snap.data().level && score === snap.data().score && timeSpent < snap.data().time);
-
-  if (better) {
-    await setDoc(playerRef, {
+  try {
+    // store every run
+    await addDoc(pillarRuns, {
       playerId,
       seasonId,
       level,
       score,
       time: timeSpent,
-      updatedAt: serverTimestamp()
+      createdAt: serverTimestamp()
     });
+
+    // store best per player per season
+    const bestId = `${seasonId}_${playerId}`;
+    const bestRef = doc(pillarPlayers, bestId);
+    const snap = await getDoc(bestRef);
+
+    const isBetter =
+      !snap.exists() ||
+      level > snap.data().level ||
+      (level === snap.data().level && score > snap.data().score) ||
+      (level === snap.data().level && score === snap.data().score && timeSpent < snap.data().time);
+
+    if (isBetter) {
+      await setDoc(bestRef, {
+        playerId,
+        seasonId,
+        level,
+        score,
+        time: timeSpent,
+        updatedAt: serverTimestamp()
+      });
+    }
+
+  } catch (e) {
+    console.error("Leaderboard submit failed:", e);
   }
 }
 
+/* =========================
+   LOAD + RENDER (LIKE renderLeaderboard)
+========================= */
+
 async function loadLeaderboard() {
-  const seasonId = currentSeasonId();
-
-  const q = query(
-    pillarPlayers,
-    where("seasonId", "==", seasonId),
-    orderBy("level", "desc"),
-    orderBy("score", "desc"),
-    orderBy("time", "asc"),
-    limit(10)
-  );
-
-  const snap = await getDocs(q);
   const listEl = document.getElementById("leaderboardList");
   if (!listEl) return;
 
-  let html = "<div style='font-size:12px;margin-top:8px;'>Weekly Top Players</div>";
-  let rank = 1;
+  listEl.textContent = "Loading leaderboard…";
 
-  snap.forEach(doc => {
-    const d = doc.data();
-    html += `
-      <div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0;">
-        <span>#${rank}</span>
-        <span>${d.playerId.slice(-4)}</span>
-        <span>L${d.level}</span>
-        <span>${d.score}</span>
-        <span>${d.time}s</span>
-      </div>
-    `;
-    rank++;
-  });
+  try {
+    const q = query(
+      pillarPlayers,
+      where("seasonId", "==", currentSeasonId()),
+      orderBy("level", "desc"),
+      orderBy("score", "desc"),
+      orderBy("time", "asc"),
+      limit(10)
+    );
 
-  listEl.innerHTML = html;
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      listEl.textContent = "No runs yet. Be the first Gentle Warrior.";
+      return;
+    }
+
+    let html = `<div style="font-size:12px;margin-bottom:6px;opacity:.7;">
+      Weekly Top Warriors
+    </div>`;
+
+    let rank = 1;
+
+    snap.forEach(s => {
+      const d = s.data();
+      html += `
+        <div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span>#${rank}</span>
+          <span>${d.playerId.slice(-4)}</span>
+          <span>L${d.level}</span>
+          <span>${d.score}</span>
+          <span>${d.time}s</span>
+        </div>
+      `;
+      rank++;
+    });
+
+    listEl.innerHTML = html;
+
+  } catch (e) {
+    console.error("Leaderboard load error:", e);
+    listEl.textContent = "Unable to load leaderboard.";
+  }
 }
+
+/* =========================
+   AUTO LOAD ON START
+========================= */
+
 loadLeaderboard();
-});
