@@ -1,69 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================
-   FIREBASE LEADERBOARD CORE
-   (Heart Defender Pattern)
-========================= */
-
-import { initializeApp, getApps, getApp } from
-  "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-
-import {
-  getFirestore,
-  collection,
+const {
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
   addDoc,
+  doc,
+  getDoc,
+  setDoc,
   serverTimestamp,
   query,
+  where,
   orderBy,
   limit,
   getDocs
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
-  authDomain: "gentle-warrior.firebaseapp.com",
-  projectId: "gentle-warrior",
-  storageBucket: "gentle-warrior.firebasestorage.app",
-  messagingSenderId: "206508766648",
-  appId: "1:206508766648:web:3451e7dcd6c9008e9c8b4d"
-};
-
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-const pillarRuns = collection(db, "pillarRuns");
-
-/* =========================
-   WEEKLY SEASON
-========================= */
-
-function isoWeekId(date = new Date()) {
-  const d = new Date(Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate()
-  ));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
-}
-
-function currentSeasonId() {
-  return isoWeekId() + "-pillar";
-}
-
-/* =========================
-   DEVICE ID
-========================= */
-
-function getPillarDeviceTag() {
-  let tag = localStorage.getItem("gw_pillar_device_tag");
-  if (!tag) {
-    tag = "pillar_" + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem("gw_pillar_device_tag", tag);
-  }
-  return tag;
-}
+} = window.pillarDB;
 
 /* =========================
    CONFIG
@@ -97,7 +49,7 @@ const CP_LINES = {
   8:"Rest is part of progress.",
   9:"Muscle memory takes time.",
   10:"Milestone reached — keep going.",
-  // ... hanggang 100, walang babaguhin (kasama sa Part 2)
+  // ... hanggang 100 (ituloy sa Part 2)
 };
 
 function getRandomCpLine(level) {
@@ -107,7 +59,6 @@ function getRandomCpLine(level) {
   }
   return pool[Math.floor(Math.random() * pool.length)];
 }
-
 /* =========================
    DOM
 ========================= */
@@ -118,6 +69,7 @@ const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
 const progressBar = document.getElementById("progressBar");
 const leaderboardEl = document.getElementById("leaderboardList");
+
 /* =========================
    END RUN OVERLAY
 ========================= */
@@ -237,12 +189,14 @@ document.getElementById("endRunBtn").addEventListener("click", endRun);
 tryAgainBtn.addEventListener("click", () => {
   endRunOverlay.classList.add("hidden");
   localStorage.removeItem("pm_save");
+
   level = 1;
   score = 0;
   moves = LEVEL_CONFIG.baseMoves;
   levelStartScore = 0;
   isRunActive = true;
   runStartTime = Date.now();
+
   startLevel();
 });
 
@@ -277,42 +231,27 @@ function createGrid(boardData = null) {
   for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
     const img = document.createElement("img");
     const p = boardData ? boardData[i] : randomPillar();
+
     img.className = "tile";
     img.dataset.index = i;
     img.dataset.pillar = p;
     img.src = `../assets/pillars/${p}.png`;
+
     tiles.push(img);
     gridEl.appendChild(img);
   }
 }
 /* =========================
    FIREBASE LEADERBOARD
-   (PATTERNED FROM HEART DEFENDER)
+   (Heart Defender Pattern)
 ========================= */
-
-const {
-  pillarPlayers,
-  pillarRuns,
-  currentSeasonId,
-  getPillarDeviceTag,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-} = window.pillarDB;
 
 function getPlayerId() {
   return getPillarDeviceTag(); // same device = same identity
 }
 
 /* =========================
-   RECORD RUN (LIKE gwRecordRun)
+   RECORD RUN
 ========================= */
 
 async function submitRunToLeaderboard() {
@@ -331,7 +270,7 @@ async function submitRunToLeaderboard() {
       createdAt: serverTimestamp()
     });
 
-    // store best per player per season
+    // best per player per season
     const bestId = `${seasonId}_${playerId}`;
     const bestRef = doc(pillarPlayers, bestId);
     const snap = await getDoc(bestRef);
@@ -359,7 +298,7 @@ async function submitRunToLeaderboard() {
 }
 
 /* =========================
-   LOAD + RENDER (LIKE renderLeaderboard)
+   LOAD + RENDER LEADERBOARD
 ========================= */
 
 async function loadLeaderboard() {
@@ -414,7 +353,10 @@ async function loadLeaderboard() {
 }
 
 /* =========================
-   AUTO LOAD ON START
+   INIT
 ========================= */
 
+startLevel();
 loadLeaderboard();
+
+}); // END DOMContentLoaded
