@@ -1,10 +1,11 @@
+// ===============================
+// PILLAR MATCH - game.js (PART 1/3)
+// ===============================
+
 document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================
-   FIREBASE / LEADERBOARD
-========================= */
-
 const {
+  db,
   pillarPlayers,
   pillarRuns,
   currentSeasonId,
@@ -20,6 +21,10 @@ const {
   limit,
   getDocs
 } = window.pillarDB;
+
+/* =========================
+   LEADERBOARD HELPERS
+========================= */
 
 function getPlayerId() {
   return getPillarDeviceTag();
@@ -79,7 +84,6 @@ async function loadLeaderboard() {
 
   const snap = await getDocs(q);
   const listEl = document.getElementById("leaderboardList");
-
   if (!listEl) return;
 
   let html = "";
@@ -99,7 +103,7 @@ async function loadLeaderboard() {
     rank++;
   });
 
-  listEl.innerHTML = html || "<div>No runs yet this week.</div>";
+  listEl.innerHTML = html || "<div>No runs yet.</div>";
 }
 
 /* =========================
@@ -253,7 +257,6 @@ const endRunCpLine = document.getElementById("endRunCpLine");
 const tryAgainBtn = document.getElementById("tryAgainBtn");
 const shareXBtn = document.getElementById("shareXBtn");
 
-const endRunBtn = document.getElementById("endRunBtn");
 const saveRunBtn = document.getElementById("saveRunBtn");
 const resetRunBtn = document.getElementById("resetRunBtn");
 
@@ -298,6 +301,7 @@ function showEndRunOverlay() {
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
   endRunCpLine.textContent = getRandomCpLine(level);
+
   endRunOverlay.classList.remove("hidden");
   endRunOverlay.style.display = "flex";
   endRunOverlay.style.zIndex = "9999";
@@ -370,7 +374,7 @@ Play Pillar Match`;
 });
 
 /* =========================
-   FORCE END RUN
+   FORCE END RUN (BUTTON)
 ========================= */
 
 window.forceEndRun = async function () {
@@ -405,30 +409,10 @@ function isAdjacent(i1, i2) {
   return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
 }
 
-function createGrid(boardData = null) {
-  gridEl.innerHTML = "";
-  tiles = [];
-
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-    const img = document.createElement("img");
-    const p = boardData ? boardData[i] : randomPillar();
-
-    img.className = "tile";
-    img.dataset.index = i;
-    img.dataset.pillar = p;
-    img.src = `../assets/pillars/${p}.png`;
-    img.draggable = false;
-
-    img.addEventListener("touchstart", onTouchStart, { passive: true });
-    img.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    tiles.push(img);
-    gridEl.appendChild(img);
-  }
-}
+/* ===== SWIPE HANDLERS ===== */
 
 function onTouchStart(e) {
-  if (isResolving || moves <= 0) return;
+  if (isResolving || moves <= 0 || !isRunActive) return;
   const t = e.touches[0];
   touchStartX = t.clientX;
   touchStartY = t.clientY;
@@ -463,12 +447,34 @@ function onTouchEnd(e) {
   }
 
   const i2 = newRow * GRID_SIZE + newCol;
-  onTileClick(touchStartTile, tiles[i2]);
+  onTileSwap(touchStartTile, tiles[i2]);
   touchStartTile = null;
 }
 
-function onTileClick(a, b) {
-  if (isResolving || moves <= 0) return;
+function createGrid(boardData = null) {
+  gridEl.innerHTML = "";
+  tiles = [];
+
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+    const img = document.createElement("img");
+    const p = boardData ? boardData[i] : randomPillar();
+
+    img.className = "tile";
+    img.dataset.index = i;
+    img.dataset.pillar = p;
+    img.src = `../assets/pillars/${p}.png`;
+    img.draggable = false;
+
+    img.addEventListener("touchstart", onTouchStart, { passive: true });
+    img.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    tiles.push(img);
+    gridEl.appendChild(img);
+  }
+}
+
+function onTileSwap(a, b) {
+  if (!isRunActive || isResolving || moves <= 0) return;
   if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
 
   isResolving = true;
@@ -552,6 +558,7 @@ function findMatchesDetailed() {
       }
     }
   }
+
   return groups;
 }
 
@@ -596,9 +603,16 @@ async function resolveBoard(groups) {
           isRunActive = false;
           saveGame();
 
+          // POPUP FIRST
           showEndRunOverlay();
-          await submitRunToLeaderboard();
-          await loadLeaderboard();
+
+          try {
+            await submitRunToLeaderboard();
+            await loadLeaderboard();
+          } catch (e) {
+            console.log("Leaderboard error", e);
+          }
+
           return;
         }
         else {
@@ -655,4 +669,20 @@ if (saved) {
 updateHUD();
 setTimeout(resolveInitMatches, 0);
 loadLeaderboard();
-});
+
+// MANUAL END RUN BUTTON
+window.forceEndRun = async function () {
+  if (!isRunActive) return;
+
+  isRunActive = false;
+  saveGame();
+
+  showEndRunOverlay();
+
+  try {
+    await submitRunToLeaderboard();
+    await loadLeaderboard();
+  } catch (e) {
+    console.log("Leaderboard error", e);
+  }
+};
