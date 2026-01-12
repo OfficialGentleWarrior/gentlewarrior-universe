@@ -25,6 +25,8 @@ function getPlayerId() {
   return getPillarDeviceTag();
 }
 
+let runStartTime = Date.now();
+
 async function submitRunToLeaderboard() {
   const playerId = getPlayerId();
   const seasonId = currentSeasonId();
@@ -36,13 +38,11 @@ async function submitRunToLeaderboard() {
     level,
     score,
     time: timeSpent,
-    createdAt: Date.now()
+    createdAt: serverTimestamp()
   };
 
-  // Full history
   await addDoc(pillarRuns, runData);
 
-  // Weekly best (rank by level, score, time)
   const playerDocId = `${seasonId}_${playerId}`;
   const playerRef = doc(pillarPlayers, playerDocId);
   const snap = await getDoc(playerRef);
@@ -79,12 +79,8 @@ async function loadLeaderboard() {
 
   const snap = await getDocs(q);
   const listEl = document.getElementById("leaderboardList");
-  if (!listEl) return;
 
-  if (snap.empty) {
-    listEl.innerHTML = "<div>No runs yet this week.</div>";
-    return;
-  }
+  if (!listEl) return;
 
   let html = "";
   let rank = 1;
@@ -103,27 +99,9 @@ async function loadLeaderboard() {
     rank++;
   });
 
-  listEl.innerHTML = html;
+  listEl.innerHTML = html || "<div>No runs yet this week.</div>";
 }
 
-/* =========================
-   FORCE END RUN (BUTTON)
-========================= */
-
-window.forceEndRun = async function () {
-  isRunActive = false;
-  isResolving = true;
-
-  saveGame();
-  showEndRunOverlay();
-
-  try {
-    await submitRunToLeaderboard();
-    await loadLeaderboard();
-  } catch (e) {
-    console.log("Leaderboard error", e);
-  }
-};
 /* =========================
    CONFIG
 ========================= */
@@ -142,116 +120,119 @@ const LEVEL_CONFIG = {
 };
 
 /* =========================
-   CP AWARENESS LINES
+   CP AWARENESS LINES (1–100)
 ========================= */
 
 const CP_LINES = {
-    1:"Every small movement matters.",
-    2:"Progress looks different for every child.",
-    3:"Consistency builds strength.",
-    4:"Effort is invisible but real.",
-    5:"Some days are slower — that’s okay.",
-    6:"Patience is a form of courage.",
-    7:"Support makes growth possible.",
-    8:"Rest is part of progress.",
-    9:"Muscle memory takes time.",
-    10:"Milestone reached — keep going.",
-    11:"Repetition builds confidence.",
-    12:"Stability comes before speed.",
-    13:"Balance improves step by step.",
-    14:"Care is strength, not weakness.",
-    15:"Progress doesn’t rush.",
-    16:"Every attempt counts.",
-    17:"Therapy is effort, not ease.",
-    18:"Small gains add up.",
-    19:"Support systems matter.",
-    20:"Another quiet victory.",
-    21:"Some wins are internal.",
-    22:"Strength grows through patience.",
-    23:"Movement is learned, not forced.",
-    24:"Caregivers are heroes too.",
-    25:"Milestone reached — resilience shown.",
-    26:"Progress isn’t linear.",
-    27:"Rest days still count.",
-    28:"Focus beats force.",
-    29:"Adaptation is intelligence.",
-    30:"Effort creates ability.",
-    31:"Gentle persistence wins.",
-    32:"Each repetition matters.",
-    33:"Balance takes trust.",
-    34:"Support enables growth.",
-    35:"Quiet strength is real.",
-    36:"Improvement can be slow and true.",
-    37:"Movement is personal.",
-    38:"No comparison needed.",
-    39:"Care builds confidence.",
-    40:"Another step forward.",
-    41:"Every day is training.",
-    42:"Some challenges are invisible.",
-    43:"Progress lives in patience.",
-    44:"Support changes outcomes.",
-    45:"Strength grows gently.",
-    46:"Adaptation is progress.",
-    47:"Consistency beats intensity.",
-    48:"Care is power.",
-    49:"Small wins matter.",
-    50:"Milestone reached — steady growth.",
-    51:"Effort is success.",
-    52:"Movement is earned.",
-    53:"Trust the process.",
-    54:"Growth is ongoing.",
-    55:"Support sustains progress.",
-    56:"Every attempt counts.",
-    57:"Patience builds ability.",
-    58:"Care creates opportunity.",
-    59:"Resilience shows quietly.",
-    60:"Progress continues.",
-    61:"Gentle work creates strength.",
-    62:"Consistency builds confidence.",
-    63:"Support matters daily.",
-    64:"No rush, no race.",
-    65:"Adaptation is strength.",
-    66:"Progress can be unseen.",
-    67:"Effort never disappears.",
-    68:"Care makes growth possible.",
-    69:"Every repetition counts.",
-    70:"Another step achieved.",
-    71:"Growth takes time.",
-    72:"Movement is learned.",
-    73:"Care fuels courage.",
-    74:"Strength comes softly.",
-    75:"Consistency continues.",
-    76:"Support builds stability.",
-    77:"Patience brings progress.",
-    78:"Every effort matters.",
-    79:"Growth is personal.",
-    80:"Still moving forward.",
-    81:"Quiet strength endures.",
-    82:"Adaptation leads progress.",
-    83:"Care sustains effort.",
-    84:"Progress is earned daily.",
-    85:"Each step matters.",
-    86:"Movement is resilience.",
-    87:"Support empowers growth.",
-    88:"Strength grows gently.",
-    89:"Care makes difference.",
-    90:"Another milestone reached.",
-    91:"Progress continues forward.",
-    92:"Patience shapes ability.",
-    93:"Consistency creates change.",
-    94:"Care strengthens effort.",
-    95:"Movement evolves slowly.",
-    96:"Support makes progress possible.",
-    97:"Strength grows with time.",
-    98:"Every effort counts.",
-    99:"Resilience remains.",
-    100:"Milestone reached — gentle strength."
-  };
+1:"Every small movement matters.",
+2:"Progress looks different for every child.",
+3:"Consistency builds strength.",
+4:"Effort is invisible but real.",
+5:"Some days are slower — that’s okay.",
+6:"Patience is a form of courage.",
+7:"Support makes growth possible.",
+8:"Rest is part of progress.",
+9:"Muscle memory takes time.",
+10:"Milestone reached — keep going.",
+11:"Repetition builds confidence.",
+12:"Stability comes before speed.",
+13:"Balance improves step by step.",
+14:"Care is strength, not weakness.",
+15:"Progress doesn’t rush.",
+16:"Every attempt counts.",
+17:"Therapy is effort, not ease.",
+18:"Small gains add up.",
+19:"Support systems matter.",
+20:"Another quiet victory.",
+21:"Some wins are internal.",
+22:"Strength grows through patience.",
+23:"Movement is learned, not forced.",
+24:"Caregivers are heroes too.",
+25:"Milestone reached — resilience shown.",
+26:"Progress isn’t linear.",
+27:"Rest days still count.",
+28:"Focus beats force.",
+29:"Adaptation is intelligence.",
+30:"Effort creates ability.",
+31:"Gentle persistence wins.",
+32:"Each repetition matters.",
+33:"Balance takes trust.",
+34:"Support enables growth.",
+35:"Quiet strength is real.",
+36:"Improvement can be slow and true.",
+37:"Movement is personal.",
+38:"No comparison needed.",
+39:"Care builds confidence.",
+40:"Another step forward.",
+41:"Every day is training.",
+42:"Some challenges are invisible.",
+43:"Progress lives in patience.",
+44:"Support changes outcomes.",
+45:"Strength grows gently.",
+46:"Adaptation is progress.",
+47:"Consistency beats intensity.",
+48:"Care is power.",
+49:"Small wins matter.",
+50:"Milestone reached — steady growth.",
+51:"Effort is success.",
+52:"Movement is earned.",
+53:"Trust the process.",
+54:"Growth is ongoing.",
+55:"Support sustains progress.",
+56:"Every attempt counts.",
+57:"Patience builds ability.",
+58:"Care creates opportunity.",
+59:"Resilience shows quietly.",
+60:"Progress continues.",
+61:"Gentle work creates strength.",
+62:"Consistency builds confidence.",
+63:"Support matters daily.",
+64:"No rush, no race.",
+65:"Adaptation is strength.",
+66:"Progress can be unseen.",
+67:"Effort never disappears.",
+68:"Care makes growth possible.",
+69:"Every repetition counts.",
+70:"Another step achieved.",
+71:"Growth takes time.",
+72:"Movement is learned.",
+73:"Care fuels courage.",
+74:"Strength comes softly.",
+75:"Consistency continues.",
+76:"Support builds stability.",
+77:"Patience brings progress.",
+78:"Every effort matters.",
+79:"Growth is personal.",
+80:"Still moving forward.",
+81:"Quiet strength endures.",
+82:"Adaptation leads progress.",
+83:"Care sustains effort.",
+84:"Progress is earned daily.",
+85:"Each step matters.",
+86:"Movement is resilience.",
+87:"Support empowers growth.",
+88:"Strength grows gently.",
+89:"Care makes difference.",
+90:"Another milestone reached.",
+91:"Progress continues forward.",
+92:"Patience shapes ability.",
+93:"Consistency creates change.",
+94:"Care strengthens effort.",
+95:"Movement evolves slowly.",
+96:"Support makes progress possible.",
+97:"Strength grows with time.",
+98:"Every effort counts.",
+99:"Resilience remains.",
+100:"Milestone reached — gentle strength."
+};
 
 function getRandomCpLine(level) {
-  return CP_LINES[Math.min(20, Math.max(1, level))];
+  const pool = [];
+  for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
+    pool.push(CP_LINES[i]);
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
 }
-
 /* =========================
    DOM
 ========================= */
@@ -292,11 +273,10 @@ let score = 0;
 let level = 1;
 let moves = LEVEL_CONFIG.baseMoves;
 let levelStartScore = 0;
-let runStartTime = Date.now();
 let isRunActive = true;
 
 /* =========================
-   UI HELPERS
+   UI
 ========================= */
 
 function updateHUD() {
@@ -318,49 +298,13 @@ function showEndRunOverlay() {
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
   endRunCpLine.textContent = getRandomCpLine(level);
-
   endRunOverlay.classList.remove("hidden");
   endRunOverlay.style.display = "flex";
   endRunOverlay.style.zIndex = "9999";
 }
 
 /* =========================
-   BUTTONS
-========================= */
-
-saveRunBtn?.addEventListener("click", saveGame);
-
-resetRunBtn?.addEventListener("click", () => {
-  localStorage.removeItem("pm_save");
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-  runStartTime = Date.now();
-  createGrid();
-  updateHUD();
-});
-
-tryAgainBtn?.addEventListener("click", () => {
-  endRunOverlay.classList.add("hidden");
-  localStorage.removeItem("pm_save");
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-  runStartTime = Date.now();
-  isRunActive = true;
-  createGrid();
-  updateHUD();
-});
-
-shareXBtn?.addEventListener("click", () => {
-  const text = `Level ${level} | Score ${score}\n\n${endRunCpLine.textContent}\n\nPlay Pillar Match`;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
-});
-
-/* =========================
-   SAVE SYSTEM
+   SAVE / LOAD
 ========================= */
 
 function saveGame() {
@@ -379,104 +323,70 @@ function loadGame() {
   const raw = localStorage.getItem("pm_save");
   return raw ? JSON.parse(raw) : null;
 }
+
 /* =========================
-   LEADERBOARD (LEVEL, SCORE, TIME)
+   BUTTONS
 ========================= */
 
-const {
-  pillarPlayers,
-  pillarRuns,
-  currentSeasonId,
-  getPillarDeviceTag,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-} = window.pillarDB;
+saveRunBtn?.addEventListener("click", saveGame);
 
-function getPlayerId() {
-  return getPillarDeviceTag();
-}
+resetRunBtn?.addEventListener("click", () => {
+  localStorage.removeItem("pm_save");
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  runStartTime = Date.now();
+  isRunActive = true;
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+});
 
-async function submitRunToLeaderboard() {
-  const playerId = getPlayerId();
-  const seasonId = currentSeasonId();
-  const timeUsed = Math.floor((Date.now() - runStartTime) / 1000);
+tryAgainBtn?.addEventListener("click", () => {
+  endRunOverlay.classList.add("hidden");
+  localStorage.removeItem("pm_save");
 
-  const runData = {
-    playerId,
-    seasonId,
-    level,
-    score,
-    time: timeUsed,
-    createdAt: serverTimestamp()
-  };
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  runStartTime = Date.now();
+  isRunActive = true;
 
-  await addDoc(pillarRuns, runData);
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+});
 
-  const playerDocId = `${seasonId}_${playerId}`;
-  const playerRef = doc(pillarPlayers, playerDocId);
-  const snap = await getDoc(playerRef);
+shareXBtn?.addEventListener("click", () => {
+  const text = `${endRunCpLine.textContent}
 
-  const better =
-    !snap.exists() ||
-    snap.data().level < level ||
-    (snap.data().level === level && snap.data().score < score) ||
-    (snap.data().level === level && snap.data().score === score && snap.data().time > timeUsed);
+Level ${level}
+Score ${score}
 
-  if (better) {
-    await setDoc(playerRef, {
-      playerId,
-      seasonId,
-      level,
-      score,
-      time: timeUsed,
-      updatedAt: serverTimestamp()
-    });
+Play Pillar Match`;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
+});
+
+/* =========================
+   FORCE END RUN
+========================= */
+
+window.forceEndRun = async function () {
+  if (!isRunActive) return;
+
+  isRunActive = false;
+  saveGame();
+  showEndRunOverlay();
+
+  try {
+    await submitRunToLeaderboard();
+    await loadLeaderboard();
+  } catch (e) {
+    console.log("Leaderboard error", e);
   }
-}
-
-async function loadLeaderboard() {
-  const seasonId = currentSeasonId();
-
-  const q = query(
-    pillarPlayers,
-    where("seasonId", "==", seasonId),
-    orderBy("level", "desc"),
-    orderBy("score", "desc"),
-    orderBy("time", "asc"),
-    limit(10)
-  );
-
-  const snap = await getDocs(q);
-  const listEl = document.getElementById("leaderboardList");
-
-  let html = "";
-  let rank = 1;
-
-  snap.forEach(doc => {
-    const d = doc.data();
-    html += `
-      <div style="display:flex;justify-content:space-between;padding:3px 0;">
-        <span>#${rank}</span>
-        <span>${d.playerId.slice(-4)}</span>
-        <span>L${d.level}</span>
-        <span>${d.score}</span>
-        <span>${d.time}s</span>
-      </div>
-    `;
-    rank++;
-  });
-
-  listEl.innerHTML = html || "<div>No runs yet.</div>";
-}
-
+};
 /* =========================
    GRID / GAMEPLAY
 ========================= */
@@ -543,6 +453,7 @@ function onTouchEnd(e) {
 
   const i1 = +touchStartTile.dataset.index;
   const { row, col } = indexToRowCol(i1);
+
   const newRow = row + dirRow;
   const newCol = col + dirCol;
 
@@ -557,7 +468,8 @@ function onTouchEnd(e) {
 }
 
 function onTileClick(a, b) {
-  if (isResolving || moves <= 0 || !isAdjacent(+a.dataset.index, +b.dataset.index)) return;
+  if (isResolving || moves <= 0) return;
+  if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
 
   isResolving = true;
 
@@ -606,6 +518,7 @@ function commitSwap(a, b) {
 
 function findMatchesDetailed() {
   const groups = [];
+
   for (let r = 0; r < GRID_SIZE; r++) {
     let count = 1;
     for (let c = 1; c <= GRID_SIZE; c++) {
@@ -622,6 +535,7 @@ function findMatchesDetailed() {
       }
     }
   }
+
   for (let c = 0; c < GRID_SIZE; c++) {
     let count = 1;
     for (let r = 1; r <= GRID_SIZE; r++) {
@@ -741,18 +655,3 @@ if (saved) {
 updateHUD();
 setTimeout(resolveInitMatches, 0);
 loadLeaderboard();
-
-/* =========================
-   MANUAL END RUN (BUTTON)
-========================= */
-
-window.forceEndRun = async function () {
-  if (!isRunActive) return;
-
-  isRunActive = false;
-  saveGame();
-
-  showEndRunOverlay();
-  await submitRunToLeaderboard();
-  await loadLeaderboard();
-};
