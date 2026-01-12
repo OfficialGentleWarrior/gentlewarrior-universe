@@ -211,10 +211,12 @@ saveRunBtn?.addEventListener("click", () => {
 });
 
 // END RUN (save snapshot + overlay)
-endRunBtn?.addEventListener("click", () => {
+endRunBtn?.addEventListener("click", async () => {
   isRunActive = false;
-  saveGame();               // save snapshot
-  showEndRunOverlay();      // show overlay instead of reset
+  saveGame();
+  showEndRunOverlay();
+  await submitRunToLeaderboard();
+  await loadLeaderboard();
 });
 
 tryAgainBtn?.addEventListener("click", () => {
@@ -685,11 +687,10 @@ if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
 }
 else if (moves <= 0) {
   isRunActive = false;
-
-  saveGame();          // ✅ save last progress
-  showEndRunOverlay(); // ✅ show Try Again + Share X
-
-  return;              // ⛔ stop game flow here
+  saveGame();
+  showEndRunOverlay();
+  submitRunToLeaderboard().then(loadLeaderboard);
+  return;
 }
 else {
   saveGame();              // ✅ SAVE DURING NORMAL PLAY
@@ -734,5 +735,103 @@ else {
   ========================== */
 
   startLevel();
+/* =========================
+   FIREBASE LEADERBOARD
+========================= */
 
+const {
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} = window.pillarDB;
+
+function getPlayerId() {
+  return getPillarDeviceTag();
+}
+
+async function submitRunToLeaderboard() {
+  const playerId = getPlayerId();
+  const seasonId = currentSeasonId();
+  const timeSpent = Math.floor((Date.now() - runStartTime) / 1000);
+
+  const runData = {
+    playerId,
+    seasonId,
+    level,
+    score,
+    time: timeSpent,
+    createdAt: serverTimestamp()
+  };
+
+  await addDoc(pillarRuns, runData);
+
+  const playerDocId = `${seasonId}_${playerId}`;
+  const playerRef = doc(pillarPlayers, playerDocId);
+  const snap = await getDoc(playerRef);
+
+  const better =
+    !snap.exists() ||
+    level > snap.data().level ||
+    (level === snap.data().level && score > snap.data().score) ||
+    (level === snap.data().level && score === snap.data().score && timeSpent < snap.data().time);
+
+  if (better) {
+    await setDoc(playerRef, {
+      playerId,
+      seasonId,
+      level,
+      score,
+      time: timeSpent,
+      updatedAt: serverTimestamp()
+    });
+  }
+}
+
+async function loadLeaderboard() {
+  const seasonId = currentSeasonId();
+
+  const q = query(
+    pillarPlayers,
+    where("seasonId", "==", seasonId),
+    orderBy("level", "desc"),
+    orderBy("score", "desc"),
+    orderBy("time", "asc"),
+    limit(10)
+  );
+
+  const snap = await getDocs(q);
+  const listEl = document.getElementById("leaderboardList");
+  if (!listEl) return;
+
+  let html = "<div style='font-size:12px;margin-top:8px;'>Weekly Top Players</div>";
+  let rank = 1;
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    html += `
+      <div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0;">
+        <span>#${rank}</span>
+        <span>${d.playerId.slice(-4)}</span>
+        <span>L${d.level}</span>
+        <span>${d.score}</span>
+        <span>${d.time}s</span>
+      </div>
+    `;
+    rank++;
+  });
+
+  listEl.innerHTML = html;
+}
+loadLeaderboard();
 });
