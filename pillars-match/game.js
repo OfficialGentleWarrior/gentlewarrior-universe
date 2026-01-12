@@ -1,28 +1,151 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     CONFIG
-  ========================== */
+/* =========================
+   FIREBASE / LEADERBOARD
+========================= */
 
-  const PILLARS = [
-    "aurelion","gaialune","ignara",
-    "solyndra","umbrath","zeratheon"
-  ];
+const {
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} = window.pillarDB;
 
-  const GRID_SIZE = 7;
-  const TILE_SIZE = 56 + 6;
+function getPlayerId() {
+  return getPillarDeviceTag();
+}
 
-  const LEVEL_CONFIG = {
-    baseMoves: 20,
-    scoreTarget: level => 1500 + (level - 1) * 500
+async function submitRunToLeaderboard() {
+  const playerId = getPlayerId();
+  const seasonId = currentSeasonId();
+  const timeSpent = Math.floor((Date.now() - runStartTime) / 1000);
+
+  const runData = {
+    playerId,
+    seasonId,
+    level,
+    score,
+    time: timeSpent,
+    createdAt: Date.now()
   };
 
-  /* =========================
-     CP AWARENESS LINES (1–100)
-     🔁 RANDOM PER LEVEL CLEAR
-  ========================== */
+  // Full history
+  await addDoc(pillarRuns, runData);
 
-  const CP_LINES = {
+  // Weekly best (rank by level, score, time)
+  const playerDocId = `${seasonId}_${playerId}`;
+  const playerRef = doc(pillarPlayers, playerDocId);
+  const snap = await getDoc(playerRef);
+
+  const better =
+    !snap.exists() ||
+    level > snap.data().level ||
+    (level === snap.data().level && score > snap.data().score) ||
+    (level === snap.data().level && score === snap.data().score && timeSpent < snap.data().time);
+
+  if (better) {
+    await setDoc(playerRef, {
+      playerId,
+      seasonId,
+      level,
+      score,
+      time: timeSpent,
+      updatedAt: serverTimestamp()
+    });
+  }
+}
+
+async function loadLeaderboard() {
+  const seasonId = currentSeasonId();
+
+  const q = query(
+    pillarPlayers,
+    where("seasonId", "==", seasonId),
+    orderBy("level", "desc"),
+    orderBy("score", "desc"),
+    orderBy("time", "asc"),
+    limit(10)
+  );
+
+  const snap = await getDocs(q);
+  const listEl = document.getElementById("leaderboardList");
+  if (!listEl) return;
+
+  if (snap.empty) {
+    listEl.innerHTML = "<div>No runs yet this week.</div>";
+    return;
+  }
+
+  let html = "";
+  let rank = 1;
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    html += `
+      <div style="display:flex;justify-content:space-between;padding:3px 0;">
+        <span>#${rank}</span>
+        <span>${d.playerId.slice(-4)}</span>
+        <span>L${d.level}</span>
+        <span>${d.score}</span>
+        <span>${d.time}s</span>
+      </div>
+    `;
+    rank++;
+  });
+
+  listEl.innerHTML = html;
+}
+
+/* =========================
+   FORCE END RUN (BUTTON)
+========================= */
+
+window.forceEndRun = async function () {
+  isRunActive = false;
+  isResolving = true;
+
+  saveGame();
+  showEndRunOverlay();
+
+  try {
+    await submitRunToLeaderboard();
+    await loadLeaderboard();
+  } catch (e) {
+    console.log("Leaderboard error", e);
+  }
+};
+/* =========================
+   CONFIG
+========================= */
+
+const PILLARS = [
+  "aurelion","gaialune","ignara",
+  "solyndra","umbrath","zeratheon"
+];
+
+const GRID_SIZE = 7;
+const TILE_SIZE = 56 + 6;
+
+const LEVEL_CONFIG = {
+  baseMoves: 20,
+  scoreTarget: level => 1500 + (level - 1) * 500
+};
+
+/* =========================
+   CP AWARENESS LINES
+========================= */
+
+const CP_LINES = {
     1:"Every small movement matters.",
     2:"Progress looks different for every child.",
     3:"Consistency builds strength.",
@@ -33,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
     8:"Rest is part of progress.",
     9:"Muscle memory takes time.",
     10:"Milestone reached — keep going.",
-
     11:"Repetition builds confidence.",
     12:"Stability comes before speed.",
     13:"Balance improves step by step.",
@@ -44,97 +166,81 @@ document.addEventListener("DOMContentLoaded", () => {
     18:"Small gains add up.",
     19:"Support systems matter.",
     20:"Another quiet victory.",
-
     21:"Some wins are internal.",
     22:"Strength grows through patience.",
     23:"Movement is learned, not forced.",
     24:"Caregivers are heroes too.",
     25:"Milestone reached — resilience shown.",
-
     26:"Progress isn’t linear.",
     27:"Rest days still count.",
     28:"Focus beats force.",
     29:"Adaptation is intelligence.",
     30:"Effort creates ability.",
-
     31:"Gentle persistence wins.",
     32:"Each repetition matters.",
     33:"Balance takes trust.",
     34:"Support enables growth.",
     35:"Quiet strength is real.",
-
     36:"Improvement can be slow and true.",
     37:"Movement is personal.",
     38:"No comparison needed.",
     39:"Care builds confidence.",
     40:"Another step forward.",
-
     41:"Every day is training.",
     42:"Some challenges are invisible.",
     43:"Progress lives in patience.",
     44:"Support changes outcomes.",
     45:"Strength grows gently.",
-
     46:"Adaptation is progress.",
     47:"Consistency beats intensity.",
     48:"Care is power.",
     49:"Small wins matter.",
     50:"Milestone reached — steady growth.",
-
     51:"Effort is success.",
     52:"Movement is earned.",
     53:"Trust the process.",
     54:"Growth is ongoing.",
     55:"Support sustains progress.",
-
     56:"Every attempt counts.",
     57:"Patience builds ability.",
     58:"Care creates opportunity.",
     59:"Resilience shows quietly.",
     60:"Progress continues.",
-
     61:"Gentle work creates strength.",
     62:"Consistency builds confidence.",
     63:"Support matters daily.",
     64:"No rush, no race.",
     65:"Adaptation is strength.",
-
     66:"Progress can be unseen.",
     67:"Effort never disappears.",
     68:"Care makes growth possible.",
     69:"Every repetition counts.",
     70:"Another step achieved.",
-
     71:"Growth takes time.",
     72:"Movement is learned.",
     73:"Care fuels courage.",
     74:"Strength comes softly.",
     75:"Consistency continues.",
-
     76:"Support builds stability.",
     77:"Patience brings progress.",
     78:"Every effort matters.",
     79:"Growth is personal.",
     80:"Still moving forward.",
-
     81:"Quiet strength endures.",
     82:"Adaptation leads progress.",
     83:"Care sustains effort.",
     84:"Progress is earned daily.",
     85:"Each step matters.",
-
     86:"Movement is resilience.",
     87:"Support empowers growth.",
     88:"Strength grows gently.",
     89:"Care makes difference.",
     90:"Another milestone reached.",
-
     91:"Progress continues forward.",
     92:"Patience shapes ability.",
     93:"Consistency creates change.",
     94:"Care strengthens effort.",
     95:"Movement evolves slowly.",
-
     96:"Support makes progress possible.",
     97:"Strength grows with time.",
     98:"Every effort counts.",
@@ -142,189 +248,122 @@ document.addEventListener("DOMContentLoaded", () => {
     100:"Milestone reached — gentle strength."
   };
 
-  function getRandomCpLine(level) {
-    const pool = [];
-    for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
-      pool.push(CP_LINES[i]);
-    }
-    return pool[Math.floor(Math.random() * pool.length)];
-  }
+function getRandomCpLine(level) {
+  return CP_LINES[Math.min(20, Math.max(1, level))];
+}
 
-  /* =========================
+/* =========================
    DOM
-========================== */
+========================= */
 
 const gridEl = document.querySelector(".grid");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
-const progressBar =
-document.getElementById("progressBar");
+const progressBar = document.getElementById("progressBar");
 
-const levelOverlay =
-document.getElementById("levelOverlay");
-const nextBtn =
-document.getElementById("nextLevelBtn");
+const levelOverlay = document.getElementById("levelOverlay");
+const nextBtn = document.getElementById("nextLevelBtn");
 
-// END RUN OVERLAY
-const endRunOverlay =
-document.getElementById("endRunOverlay");
-const endRunLevel =
-document.getElementById("endRunLevel");
-const endRunScore =
-document.getElementById("endRunScore");
-const endRunCpLine =
-document.getElementById("endRunCpLine");
-const tryAgainBtn =
-document.getElementById("tryAgainBtn");
-const shareXBtn =
-document.getElementById("shareXBtn");
+const endRunOverlay = document.getElementById("endRunOverlay");
+const endRunLevel = document.getElementById("endRunLevel");
+const endRunScore = document.getElementById("endRunScore");
+const endRunCpLine = document.getElementById("endRunCpLine");
+const tryAgainBtn = document.getElementById("tryAgainBtn");
+const shareXBtn = document.getElementById("shareXBtn");
 
-function showEndRunOverlay() {
-  // fill stats
-  endRunLevel.textContent = level;
-  endRunScore.textContent = score;
-
-  // random CP line
-  endRunCpLine.textContent = getRandomCpLine(level);
-
-  // show overlay
-  endRunOverlay.classList.remove("hidden");
-}
-
-// RUN CONTROLS
-const endRunBtn =
-document.getElementById("endRunBtn");
-const saveRunBtn =
-document.getElementById("saveRunBtn");
-const resetRunBtn =
-document.getElementById("resetRunBtn");
+const endRunBtn = document.getElementById("endRunBtn");
+const saveRunBtn = document.getElementById("saveRunBtn");
+const resetRunBtn = document.getElementById("resetRunBtn");
 
 /* =========================
-   BUTTON HANDLERS
-========================== */
+   STATE
+========================= */
 
-// SAVE (continue later)
-saveRunBtn?.addEventListener("click", () => {
-  saveGame();
-  console.log("RUN SAVED (manual)");
-});
-
-// END RUN (save snapshot + overlay)
-endRunBtn?.addEventListener("click", () => {
-  isRunActive = false;
-  saveGame();               // save snapshot
-  showEndRunOverlay();      // show overlay instead of reset
-});
-
-tryAgainBtn?.addEventListener("click", () => {
-  // hide end run overlay
-  endRunOverlay.classList.add("hidden");
-
-  // reset run state
-  isRunActive = false;
-  localStorage.removeItem("pm_save");
-
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  // start fresh run
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
-});
-
-shareXBtn?.addEventListener("click", () => {
-  const cpLine =
-    endRunCpLine?.textContent || getRandomCpLine(level);
-
-  const text = `${cpLine}
-
-Level ${level} complete
-Score: ${score}
-
-If you enjoy calm, thoughtful games,
-you might like this.
-
-Play Pillar Match:
-https://officialgentlewarrior.github.io/gentlewarrior-universe/pillars-match`;
-
-  const url =
-    "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(text);
-
-  window.open(url, "_blank");
-});
-
-// RESTART (hard reset, no record)
-resetRunBtn?.addEventListener("click", () => {
-  console.log("RUN RESET");
-
-  isRunActive = false;
-  localStorage.removeItem("pm_save");
-
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
-});
-  /* =========================
-     CP LINE CONTAINER (SAFE)
-  ========================== */
-
-  let cpLineEl = levelOverlay.querySelector(".cp-line");
-  if (!cpLineEl) {
-    cpLineEl = document.createElement("p");
-    cpLineEl.className = "cp-line";
-    cpLineEl.style.marginTop = "10px";
-    cpLineEl.style.fontSize = "14px";
-    cpLineEl.style.opacity = "0.9";
-    levelOverlay.appendChild(cpLineEl);
-  }
-
-  /* =========================
-     STATE
-  ========================== */
-
-  let tiles = [];
+let tiles = [];
 let isResolving = true;
 let isInitPhase = true;
 
-// SWIPE STATE
 let touchStartX = 0;
 let touchStartY = 0;
 let touchStartTile = null;
 
-  let score = 0;
-  let level = 1;
-  let moves = LEVEL_CONFIG.baseMoves;
-  let levelStartScore = 0;
-  let runStartTime = Date.now();
-  let isRunActive = true;
+let score = 0;
+let level = 1;
+let moves = LEVEL_CONFIG.baseMoves;
+let levelStartScore = 0;
+let runStartTime = Date.now();
+let isRunActive = true;
 
-  /* =========================
-     SAVE / LOAD (ANTI REFRESH)
-  ========================== */
+/* =========================
+   UI HELPERS
+========================= */
 
-  function saveGame() {
+function updateHUD() {
+  scoreEl.textContent = score;
+  levelEl.textContent = level;
+  movesEl.textContent = moves;
+
+  const gained = score - levelStartScore;
+  progressBar.style.width =
+    Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
+}
+
+function showLevelComplete() {
+  levelOverlay.querySelector(".cp-line").textContent = getRandomCpLine(level);
+  levelOverlay.classList.remove("hidden");
+}
+
+function showEndRunOverlay() {
+  endRunLevel.textContent = level;
+  endRunScore.textContent = score;
+  endRunCpLine.textContent = getRandomCpLine(level);
+
+  endRunOverlay.classList.remove("hidden");
+  endRunOverlay.style.display = "flex";
+  endRunOverlay.style.zIndex = "9999";
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+saveRunBtn?.addEventListener("click", saveGame);
+
+resetRunBtn?.addEventListener("click", () => {
+  localStorage.removeItem("pm_save");
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  runStartTime = Date.now();
+  createGrid();
+  updateHUD();
+});
+
+tryAgainBtn?.addEventListener("click", () => {
+  endRunOverlay.classList.add("hidden");
+  localStorage.removeItem("pm_save");
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  runStartTime = Date.now();
+  isRunActive = true;
+  createGrid();
+  updateHUD();
+});
+
+shareXBtn?.addEventListener("click", () => {
+  const text = `Level ${level} | Score ${score}\n\n${endRunCpLine.textContent}\n\nPlay Pillar Match`;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
+});
+
+/* =========================
+   SAVE SYSTEM
+========================= */
+
+function saveGame() {
   if (!isRunActive) return;
 
   localStorage.setItem("pm_save", JSON.stringify({
@@ -336,204 +375,189 @@ let touchStartTile = null;
   }));
 }
 
-  function loadGame() {
-    const raw = localStorage.getItem("pm_save");
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  window.addEventListener("beforeunload", saveGame);
-
-  /* =========================
-     UI
-  ========================== */
-
-  function updateHUD() {
-    scoreEl.textContent = score;
-    levelEl.textContent = level;
-    movesEl.textContent = moves;
-
-    const gained = score - levelStartScore;
-    progressBar.style.width =
-      Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
-  }
-
-  function showLevelComplete() {
-    isResolving = true;
-    cpLineEl.textContent = getRandomCpLine(level); // 🔁 RANDOM EACH TIME
-    levelOverlay.classList.remove("hidden");
-  }
-/* =========================
-   END RUN (CANONICAL)
-========================== */
-
-function endRun(reason = "manual") {
-  console.log("END RUN:", reason);
-
-  // 🔒 stop saving immediately
-  isRunActive = false;
-
-  // 🧹 clear current run save
-  localStorage.removeItem("pm_save");
-
-  // 🔁 reset state
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-
-  isInitPhase = true;
-  isResolving = true;
-  selectedTile = null;
-
-  // 🔓 allow saving for new run
-  isRunActive = true;
-
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
+function loadGame() {
+  const raw = localStorage.getItem("pm_save");
+  return raw ? JSON.parse(raw) : null;
 }
-  /* =========================
-     START LEVEL (LOCKED)
-  ========================== */
+/* =========================
+   LEADERBOARD (LEVEL, SCORE, TIME)
+========================= */
 
-  function startLevel() {
-    const saved = loadGame();
+const {
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} = window.pillarDB;
 
-    isResolving = true;
-    isInitPhase = true;
-    selectedTile = null;
+function getPlayerId() {
+  return getPillarDeviceTag();
+}
 
-    if (saved) {
-      level = saved.level;
-      score = saved.score;
-      moves = saved.moves;
-      levelStartScore = saved.levelStartScore;
-      createGrid(saved.board);
-    } else {
-      moves = LEVEL_CONFIG.baseMoves;
-      levelStartScore = score;
-      createGrid();
-    }
+async function submitRunToLeaderboard() {
+  const playerId = getPlayerId();
+  const seasonId = currentSeasonId();
+  const timeUsed = Math.floor((Date.now() - runStartTime) / 1000);
 
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
+  const runData = {
+    playerId,
+    seasonId,
+    level,
+    score,
+    time: timeUsed,
+    createdAt: serverTimestamp()
+  };
+
+  await addDoc(pillarRuns, runData);
+
+  const playerDocId = `${seasonId}_${playerId}`;
+  const playerRef = doc(pillarPlayers, playerDocId);
+  const snap = await getDoc(playerRef);
+
+  const better =
+    !snap.exists() ||
+    snap.data().level < level ||
+    (snap.data().level === level && snap.data().score < score) ||
+    (snap.data().level === level && snap.data().score === score && snap.data().time > timeUsed);
+
+  if (better) {
+    await setDoc(playerRef, {
+      playerId,
+      seasonId,
+      level,
+      score,
+      time: timeUsed,
+      updatedAt: serverTimestamp()
+    });
   }
+}
 
-  nextBtn?.addEventListener("click", () => {
-    levelOverlay.classList.add("hidden");
-    level++;
-    moves = LEVEL_CONFIG.baseMoves;
-    levelStartScore = score;
-    isInitPhase = true;
-    isResolving = true;
-    createGrid();
-    updateHUD();
-    setTimeout(resolveInitMatches, 0);
-    saveGame();
+async function loadLeaderboard() {
+  const seasonId = currentSeasonId();
+
+  const q = query(
+    pillarPlayers,
+    where("seasonId", "==", seasonId),
+    orderBy("level", "desc"),
+    orderBy("score", "desc"),
+    orderBy("time", "asc"),
+    limit(10)
+  );
+
+  const snap = await getDocs(q);
+  const listEl = document.getElementById("leaderboardList");
+
+  let html = "";
+  let rank = 1;
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    html += `
+      <div style="display:flex;justify-content:space-between;padding:3px 0;">
+        <span>#${rank}</span>
+        <span>${d.playerId.slice(-4)}</span>
+        <span>L${d.level}</span>
+        <span>${d.score}</span>
+        <span>${d.time}s</span>
+      </div>
+    `;
+    rank++;
   });
 
-  /* =========================
-     HELPERS / GRID / GAMEPLAY
-     (UNCHANGED — SAME AS YOUR CODE)
-  ========================== */
+  listEl.innerHTML = html || "<div>No runs yet.</div>";
+}
 
-  function randomPillar() {
-    return PILLARS[Math.floor(Math.random() * PILLARS.length)];
-  }
+/* =========================
+   GRID / GAMEPLAY
+========================= */
 
-  function indexToRowCol(i) {
-    return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
-  }
+function randomPillar() {
+  return PILLARS[Math.floor(Math.random() * PILLARS.length)];
+}
 
-  function isAdjacent(i1, i2) {
+function indexToRowCol(i) {
+  return { row: Math.floor(i / GRID_SIZE), col: i % GRID_SIZE };
+}
+
+function isAdjacent(i1, i2) {
   const a = indexToRowCol(i1);
   const b = indexToRowCol(i2);
   return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
 }
 
-/* ===== SWIPE HANDLERS ===== */
+function createGrid(boardData = null) {
+  gridEl.innerHTML = "";
+  tiles = [];
+
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+    const img = document.createElement("img");
+    const p = boardData ? boardData[i] : randomPillar();
+
+    img.className = "tile";
+    img.dataset.index = i;
+    img.dataset.pillar = p;
+    img.src = `../assets/pillars/${p}.png`;
+    img.draggable = false;
+
+    img.addEventListener("touchstart", onTouchStart, { passive: true });
+    img.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    tiles.push(img);
+    gridEl.appendChild(img);
+  }
+}
 
 function onTouchStart(e) {
   if (isResolving || moves <= 0) return;
-
-  const touch = e.touches[0];
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
   touchStartTile = e.currentTarget;
 }
 
 function onTouchEnd(e) {
   if (!touchStartTile) return;
 
-  const touch = e.changedTouches[0];
-  const dx = touch.clientX - touchStartX;
-  const dy = touch.clientY - touchStartY;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
 
-  const absX = Math.abs(dx);
-  const absY = Math.abs(dy);
-
-  if (Math.max(absX, absY) < 20) {
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) {
     touchStartTile = null;
     return;
   }
 
-  let dirRow = 0;
-  let dirCol = 0;
-
-  if (absX > absY) {
-    dirCol = dx > 0 ? 1 : -1;
-  } else {
-    dirRow = dy > 0 ? 1 : -1;
-  }
+  let dirRow = 0, dirCol = 0;
+  if (Math.abs(dx) > Math.abs(dy)) dirCol = dx > 0 ? 1 : -1;
+  else dirRow = dy > 0 ? 1 : -1;
 
   const i1 = +touchStartTile.dataset.index;
   const { row, col } = indexToRowCol(i1);
-
   const newRow = row + dirRow;
   const newCol = col + dirCol;
 
-  if (
-    newRow < 0 || newRow >= GRID_SIZE ||
-    newCol < 0 || newCol >= GRID_SIZE
-  ) {
+  if (newRow < 0 || newRow >= GRID_SIZE || newCol < 0 || newCol >= GRID_SIZE) {
     touchStartTile = null;
     return;
   }
 
   const i2 = newRow * GRID_SIZE + newCol;
-  const targetTile = tiles[i2];
-  const startTile = touchStartTile;
-
+  onTileClick(touchStartTile, tiles[i2]);
   touchStartTile = null;
-
-  onTileClick(startTile, targetTile);
 }
 
-  function createGrid(boardData = null) {
-    gridEl.innerHTML = "";
-    tiles = [];
-
-    for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-      const img = document.createElement("img");
-      const p = boardData ? boardData[i] : randomPillar();
-
-      img.className = "tile";
-      img.dataset.index = i;
-      img.dataset.pillar = p;
-      img.src = `../assets/pillars/${p}.png`;
-      img.draggable = false;
-
-      img.addEventListener("touchstart", onTouchStart, { passive: true });
-img.addEventListener("touchend", onTouchEnd, { passive: true });
-      tiles.push(img);
-      gridEl.appendChild(img);
-    }
-  }
-
-  function onTileClick(a, b) {
-  if (isResolving || moves <= 0) return;
-
-  if (!isAdjacent(+a.dataset.index, +b.dataset.index)) return;
+function onTileClick(a, b) {
+  if (isResolving || moves <= 0 || !isAdjacent(+a.dataset.index, +b.dataset.index)) return;
 
   isResolving = true;
 
@@ -554,95 +578,70 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   });
 }
 
-  function animateSwap(a, b, done) {
-    const p1 = indexToRowCol(+a.dataset.index);
-    const p2 = indexToRowCol(+b.dataset.index);
-    const dx = (p2.col - p1.col) * TILE_SIZE;
-    const dy = (p2.row - p1.row) * TILE_SIZE;
+function animateSwap(a, b, done) {
+  const p1 = indexToRowCol(+a.dataset.index);
+  const p2 = indexToRowCol(+b.dataset.index);
+  const dx = (p2.col - p1.col) * TILE_SIZE;
+  const dy = (p2.row - p1.row) * TILE_SIZE;
 
-    a.style.transition = b.style.transition = "transform 0.15s ease";
-    a.style.transform = `translate(${dx}px, ${dy}px)`;
-    b.style.transform = `translate(${-dx}px, ${-dy}px)`;
+  a.style.transition = b.style.transition = "transform 0.15s ease";
+  a.style.transform = `translate(${dx}px, ${dy}px)`;
+  b.style.transform = `translate(${-dx}px, ${-dy}px)`;
 
-    setTimeout(() => {
-      a.style.transition = b.style.transition = "";
-      a.style.transform = b.style.transform = "";
-      done();
-    }, 150);
-  }
+  setTimeout(() => {
+    a.style.transition = b.style.transition = "";
+    a.style.transform = b.style.transform = "";
+    done();
+  }, 150);
+}
 
-  function commitSwap(a, b) {
-    const p1 = a.dataset.pillar;
-    const p2 = b.dataset.pillar;
-    a.dataset.pillar = p2;
-    b.dataset.pillar = p1;
-    a.src = `../assets/pillars/${p2}.png`;
-    b.src = `../assets/pillars/${p1}.png`;
-  }
+function commitSwap(a, b) {
+  const p1 = a.dataset.pillar;
+  const p2 = b.dataset.pillar;
+  a.dataset.pillar = p2;
+  b.dataset.pillar = p1;
+  a.src = `../assets/pillars/${p2}.png`;
+  b.src = `../assets/pillars/${p1}.png`;
+}
 
-  function findMatchesDetailed() {
-    const groups = [];
-    for (let r = 0; r < GRID_SIZE; r++) {
-      let count = 1;
-      for (let c = 1; c <= GRID_SIZE; c++) {
-        const cur = c < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
-        const prev = tiles[r*GRID_SIZE+c-1].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push(r*GRID_SIZE+c-1-k);
-            groups.push(g);
-          }
-          count = 1;
+function findMatchesDetailed() {
+  const groups = [];
+  for (let r = 0; r < GRID_SIZE; r++) {
+    let count = 1;
+    for (let c = 1; c <= GRID_SIZE; c++) {
+      const cur = c < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
+      const prev = tiles[r*GRID_SIZE+c-1].dataset.pillar;
+      if (cur === prev) count++;
+      else {
+        if (count >= 3) {
+          const g = [];
+          for (let k = 0; k < count; k++) g.push(r*GRID_SIZE+c-1-k);
+          groups.push(g);
         }
+        count = 1;
       }
     }
-    for (let c = 0; c < GRID_SIZE; c++) {
-      let count = 1;
-      for (let r = 1; r <= GRID_SIZE; r++) {
-        const cur = r < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
-        const prev = tiles[(r-1)*GRID_SIZE+c].dataset.pillar;
-        if (cur === prev) count++;
-        else {
-          if (count >= 3) {
-            const g = [];
-            for (let k = 0; k < count; k++) g.push((r-1-k)*GRID_SIZE+c);
-            groups.push(g);
-          }
-          count = 1;
+  }
+  for (let c = 0; c < GRID_SIZE; c++) {
+    let count = 1;
+    for (let r = 1; r <= GRID_SIZE; r++) {
+      const cur = r < GRID_SIZE ? tiles[r*GRID_SIZE+c].dataset.pillar : null;
+      const prev = tiles[(r-1)*GRID_SIZE+c].dataset.pillar;
+      if (cur === prev) count++;
+      else {
+        if (count >= 3) {
+          const g = [];
+          for (let k = 0; k < count; k++) g.push((r-1-k)*GRID_SIZE+c);
+          groups.push(g);
         }
+        count = 1;
       }
     }
-    return groups;
   }
+  return groups;
+}
 
-  function spawnSparkle(tile) {
-    const sparkle = document.createElement("div");
-    sparkle.style.position = "absolute";
-    sparkle.style.width = "10px";
-    sparkle.style.height = "10px";
-    sparkle.style.borderRadius = "50%";
-    sparkle.style.pointerEvents = "none";
-    sparkle.style.background =
-      "radial-gradient(circle, #fff, rgba(255,255,255,0.2), transparent)";
-    const rect = tile.getBoundingClientRect();
-    sparkle.style.left = rect.left + rect.width / 2 + "px";
-    sparkle.style.top = rect.top + rect.height / 2 + "px";
-    document.body.appendChild(sparkle);
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 20 + Math.random() * 20;
-    sparkle.animate([
-      { transform: "scale(0.5)", opacity: 1 },
-      {
-        transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(1.2)`,
-        opacity: 0
-      }
-    ], { duration: 400, easing: "ease-out" });
-    setTimeout(() => sparkle.remove(), 420);
-  }
-
-  function resolveBoard(groups) {
+async function resolveBoard(groups) {
   const toClear = new Set();
 
   groups.forEach(group => {
@@ -653,10 +652,7 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
                size === 5 ? 400 :
                600 + (size - 6) * 100;
     }
-    group.forEach(i => {
-      toClear.add(i);
-      spawnSparkle(tiles[i]);
-    });
+    group.forEach(i => toClear.add(i));
   });
 
   updateHUD();
@@ -665,74 +661,98 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
     const t = tiles[i];
     t.dataset.pillar = "empty";
     t.style.opacity = "0";
-    t.style.transform = "scale(0.6)";
-    t.style.pointerEvents = "none";
   });
 
   setTimeout(() => {
-    applyGravityAnimated(() => {
+    applyGravityAnimated(async () => {
       const next = findMatchesDetailed();
-      if (next.length) resolveBoard(next);
-      else {
+      if (next.length) {
+        resolveBoard(next);
+      } else {
         isResolving = false;
         isInitPhase = false;
 
         const gained = score - levelStartScore;
 
-if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
-  saveGame();              // ✅ SAVE ON LEVEL CLEAR
-  showLevelComplete();
-}
-else if (moves <= 0) {
-  isRunActive = false;
+        if (gained >= LEVEL_CONFIG.scoreTarget(level)) {
+          saveGame();
+          showLevelComplete();
+        }
+        else if (moves <= 0) {
+          isRunActive = false;
+          saveGame();
 
-  saveGame();          // ✅ save last progress
-  showEndRunOverlay(); // ✅ show Try Again + Share X
-
-  return;              // ⛔ stop game flow here
-}
-else {
-  saveGame();              // ✅ SAVE DURING NORMAL PLAY
-}
+          showEndRunOverlay();
+          await submitRunToLeaderboard();
+          await loadLeaderboard();
+          return;
+        }
+        else {
+          saveGame();
+        }
       }
     });
   }, 180);
 }
 
-  function applyGravityAnimated(done) {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const stack = [];
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r*GRID_SIZE+c];
-        if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
-      }
-      for (let r = GRID_SIZE - 1; r >= 0; r--) {
-        const t = tiles[r*GRID_SIZE+c];
-        const p = stack.shift() || randomPillar();
-        t.dataset.pillar = p;
-        t.src = `../assets/pillars/${p}.png`;
-        t.style.opacity = "1";
-        t.style.transform = "scale(1)";
-        t.style.pointerEvents = "auto";
-      }
+function applyGravityAnimated(done) {
+  for (let c = 0; c < GRID_SIZE; c++) {
+    const stack = [];
+    for (let r = GRID_SIZE - 1; r >= 0; r--) {
+      const t = tiles[r*GRID_SIZE+c];
+      if (t.dataset.pillar !== "empty") stack.push(t.dataset.pillar);
     }
-    setTimeout(done, 220);
-  }
-
-  function resolveInitMatches() {
-    const init = findMatchesDetailed();
-    if (init.length) resolveBoard(init);
-    else {
-      isResolving = false;
-      isInitPhase = false;
-      saveGame();
+    for (let r = GRID_SIZE - 1; r >= 0; r--) {
+      const t = tiles[r*GRID_SIZE+c];
+      const p = stack.shift() || randomPillar();
+      t.dataset.pillar = p;
+      t.src = `../assets/pillars/${p}.png`;
+      t.style.opacity = "1";
     }
   }
+  setTimeout(done, 220);
+}
 
-  /* =========================
-     INIT
-  ========================== */
+function resolveInitMatches() {
+  const init = findMatchesDetailed();
+  if (init.length) resolveBoard(init);
+  else {
+    isResolving = false;
+    isInitPhase = false;
+    saveGame();
+  }
+}
 
-  startLevel();
+/* =========================
+   INIT
+========================= */
 
-});
+const saved = loadGame();
+if (saved) {
+  level = saved.level;
+  score = saved.score;
+  moves = saved.moves;
+  levelStartScore = saved.levelStartScore;
+  createGrid(saved.board);
+} else {
+  createGrid();
+}
+
+updateHUD();
+setTimeout(resolveInitMatches, 0);
+loadLeaderboard();
+
+/* =========================
+   MANUAL END RUN (BUTTON)
+========================= */
+
+window.forceEndRun = async function () {
+  if (!isRunActive) return;
+
+  isRunActive = false;
+  saveGame();
+
+  showEndRunOverlay();
+  await submitRunToLeaderboard();
+  await loadLeaderboard();
+};
