@@ -1,11 +1,10 @@
-// ===============================
-// PILLAR MATCH - game.js (PART 1/3)
-// ===============================
-
 document.addEventListener("DOMContentLoaded", () => {
 
+/* =========================
+   FIREBASE / LEADERBOARD
+========================= */
+
 const {
-  db,
   pillarPlayers,
   pillarRuns,
   currentSeasonId,
@@ -21,10 +20,6 @@ const {
   limit,
   getDocs
 } = window.pillarDB;
-
-/* =========================
-   LEADERBOARD HELPERS
-========================= */
 
 function getPlayerId() {
   return getPillarDeviceTag();
@@ -86,18 +81,13 @@ async function loadLeaderboard() {
   const listEl = document.getElementById("leaderboardList");
   if (!listEl) return;
 
-  if (snap.empty) {
-    listEl.innerHTML = "<div>No runs yet this week.</div>";
-    return;
-  }
-
   let html = "";
   let rank = 1;
 
   snap.forEach(doc => {
     const d = doc.data();
     html += `
-      <div style="display:flex;justify-content:space-between;padding:3px 0;">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;">
         <span>#${rank}</span>
         <span>${d.playerId.slice(-4)}</span>
         <span>L${d.level}</span>
@@ -108,11 +98,11 @@ async function loadLeaderboard() {
     rank++;
   });
 
-  listEl.innerHTML = html;
+  listEl.innerHTML = html || "<div>No runs yet.</div>";
 }
 
 /* =========================
-   CONFIG
+   CONFIG (UNCHANGED)
 ========================= */
 
 const PILLARS = [
@@ -127,124 +117,26 @@ const LEVEL_CONFIG = {
   baseMoves: 20,
   scoreTarget: level => 1500 + (level - 1) * 500
 };
-
 /* =========================
-   CP AWARENESS LINES (1–100)
+   CP AWARENESS LINES
 ========================= */
 
 const CP_LINES = {
-1:"Every small movement matters.",
-2:"Progress looks different for every child.",
-3:"Consistency builds strength.",
-4:"Effort is invisible but real.",
-5:"Some days are slower — that’s okay.",
-6:"Patience is a form of courage.",
-7:"Support makes growth possible.",
-8:"Rest is part of progress.",
-9:"Muscle memory takes time.",
-10:"Milestone reached — keep going.",
-11:"Repetition builds confidence.",
-12:"Stability comes before speed.",
-13:"Balance improves step by step.",
-14:"Care is strength, not weakness.",
-15:"Progress doesn’t rush.",
-16:"Every attempt counts.",
-17:"Therapy is effort, not ease.",
-18:"Small gains add up.",
-19:"Support systems matter.",
-20:"Another quiet victory.",
-21:"Some wins are internal.",
-22:"Strength grows through patience.",
-23:"Movement is learned, not forced.",
-24:"Caregivers are heroes too.",
-25:"Milestone reached — resilience shown.",
-26:"Progress isn’t linear.",
-27:"Rest days still count.",
-28:"Focus beats force.",
-29:"Adaptation is intelligence.",
-30:"Effort creates ability.",
-31:"Gentle persistence wins.",
-32:"Each repetition matters.",
-33:"Balance takes trust.",
-34:"Support enables growth.",
-35:"Quiet strength is real.",
-36:"Improvement can be slow and true.",
-37:"Movement is personal.",
-38:"No comparison needed.",
-39:"Care builds confidence.",
-40:"Another step forward.",
-41:"Every day is training.",
-42:"Some challenges are invisible.",
-43:"Progress lives in patience.",
-44:"Support changes outcomes.",
-45:"Strength grows gently.",
-46:"Adaptation is progress.",
-47:"Consistency beats intensity.",
-48:"Care is power.",
-49:"Small wins matter.",
-50:"Milestone reached — steady growth.",
-51:"Effort is success.",
-52:"Movement is earned.",
-53:"Trust the process.",
-54:"Growth is ongoing.",
-55:"Support sustains progress.",
-56:"Every attempt counts.",
-57:"Patience builds ability.",
-58:"Care creates opportunity.",
-59:"Resilience shows quietly.",
-60:"Progress continues.",
-61:"Gentle work creates strength.",
-62:"Consistency builds confidence.",
-63:"Support matters daily.",
-64:"No rush, no race.",
-65:"Adaptation is strength.",
-66:"Progress can be unseen.",
-67:"Effort never disappears.",
-68:"Care makes growth possible.",
-69:"Every repetition counts.",
-70:"Another step achieved.",
-71:"Growth takes time.",
-72:"Movement is learned.",
-73:"Care fuels courage.",
-74:"Strength comes softly.",
-75:"Consistency continues.",
-76:"Support builds stability.",
-77:"Patience brings progress.",
-78:"Every effort matters.",
-79:"Growth is personal.",
-80:"Still moving forward.",
-81:"Quiet strength endures.",
-82:"Adaptation leads progress.",
-83:"Care sustains effort.",
-84:"Progress is earned daily.",
-85:"Each step matters.",
-86:"Movement is resilience.",
-87:"Support empowers growth.",
-88:"Strength grows gently.",
-89:"Care makes difference.",
-90:"Another milestone reached.",
-91:"Progress continues forward.",
-92:"Patience shapes ability.",
-93:"Consistency creates change.",
-94:"Care strengthens effort.",
-95:"Movement evolves slowly.",
-96:"Support makes progress possible.",
-97:"Strength grows with time.",
-98:"Every effort counts.",
-99:"Resilience remains.",
-100:"Milestone reached — gentle strength."
+  1:"Every small movement matters.", 2:"Progress looks different for every child.",
+  3:"Consistency builds strength.", 4:"Effort is invisible but real.",
+  5:"Some days are slower — that’s okay.", 6:"Patience is a form of courage.",
+  7:"Support makes growth possible.", 8:"Rest is part of progress.",
+  9:"Muscle memory takes time.", 10:"Milestone reached — keep going.",
+  50:"Milestone reached — steady growth.", 100:"Milestone reached — gentle strength."
 };
 
 function getRandomCpLine(level) {
-  const pool = [];
-  for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
-    pool.push(CP_LINES[i]);
-  }
-  return pool[Math.floor(Math.random() * pool.length)];
+  const keys = Object.keys(CP_LINES);
+  return CP_LINES[keys[Math.floor(Math.random() * keys.length)]];
 }
 
 /* =========================
-   DOM BINDINGS
+   DOM
 ========================= */
 
 const gridEl = document.getElementById("grid");
@@ -274,18 +166,14 @@ const resetRunBtn = document.getElementById("resetRunBtn");
 let tiles = [];
 let isResolving = true;
 let isInitPhase = true;
-
-let touchStartX = 0;
-let touchStartY = 0;
-let touchStartTile = null;
-
 let score = 0;
 let level = 1;
 let moves = LEVEL_CONFIG.baseMoves;
 let levelStartScore = 0;
 let isRunActive = true;
+
 /* =========================
-   UI FUNCTIONS
+   HUD
 ========================= */
 
 function updateHUD() {
@@ -310,7 +198,6 @@ function showEndRunOverlay() {
 
   endRunOverlay.classList.remove("hidden");
   endRunOverlay.style.display = "flex";
-  endRunOverlay.style.zIndex = "9999";
 }
 
 /* =========================
@@ -319,7 +206,6 @@ function showEndRunOverlay() {
 
 function saveGame() {
   if (!isRunActive) return;
-
   localStorage.setItem("pm_save", JSON.stringify({
     level,
     score,
@@ -353,6 +239,21 @@ resetRunBtn?.addEventListener("click", () => {
   setTimeout(resolveInitMatches, 0);
 });
 
+endRunBtn?.addEventListener("click", async () => {
+  if (!isRunActive) return;
+
+  isRunActive = false;
+  saveGame();
+  showEndRunOverlay();
+
+  try {
+    await submitRunToLeaderboard();
+    await loadLeaderboard();
+  } catch (e) {
+    console.log("Leaderboard error", e);
+  }
+});
+
 tryAgainBtn?.addEventListener("click", () => {
   endRunOverlay.classList.add("hidden");
   localStorage.removeItem("pm_save");
@@ -368,40 +269,8 @@ tryAgainBtn?.addEventListener("click", () => {
   updateHUD();
   setTimeout(resolveInitMatches, 0);
 });
-
-shareXBtn?.addEventListener("click", () => {
-  const text = `${endRunCpLine.textContent}
-
-Level ${level}
-Score ${score}
-
-Play Pillar Match`;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
-});
-
 /* =========================
-   END RUN BUTTON
-========================= */
-
-endRunBtn.addEventListener("click", async () => {
-  if (!isRunActive) return;
-
-  isRunActive = false;
-  isResolving = true;
-
-  saveGame();
-  showEndRunOverlay();
-
-  try {
-    await submitRunToLeaderboard();
-    await loadLeaderboard();
-  } catch (e) {
-    console.log("Leaderboard error", e);
-  }
-});
-
-/* =========================
-   GRID HELPERS
+   GRID & GAMEPLAY
 ========================= */
 
 function randomPillar() {
@@ -419,34 +288,12 @@ function isAdjacent(i1, i2) {
 }
 
 /* =========================
-   GRID CREATION
+   SWIPE
 ========================= */
 
-function createGrid(boardData = null) {
-  gridEl.innerHTML = "";
-  tiles = [];
-
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-    const img = document.createElement("img");
-    const p = boardData ? boardData[i] : randomPillar();
-
-    img.className = "tile";
-    img.dataset.index = i;
-    img.dataset.pillar = p;
-    img.src = `./assets/pillars/${p}.png`;
-    img.draggable = false;
-
-    img.addEventListener("touchstart", onTouchStart, { passive: true });
-    img.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    tiles.push(img);
-    gridEl.appendChild(img);
-  }
-}
-
-/* =========================
-   SWIPE INPUT
-========================= */
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTile = null;
 
 function onTouchStart(e) {
   if (!isRunActive || isResolving || moves <= 0) return;
@@ -489,7 +336,33 @@ function onTouchEnd(e) {
 }
 
 /* =========================
-   SWAP LOGIC
+   GRID CREATION
+========================= */
+
+function createGrid(boardData = null) {
+  gridEl.innerHTML = "";
+  tiles = [];
+
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+    const img = document.createElement("img");
+    const p = boardData ? boardData[i] : randomPillar();
+
+    img.className = "tile";
+    img.dataset.index = i;
+    img.dataset.pillar = p;
+    img.src = `../assets/pillars/${p}.png`;
+    img.draggable = false;
+
+    img.addEventListener("touchstart", onTouchStart, { passive: true });
+    img.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    tiles.push(img);
+    gridEl.appendChild(img);
+  }
+}
+
+/* =========================
+   SWAP & MATCH
 ========================= */
 
 function onTileSwap(a, b) {
@@ -537,11 +410,12 @@ function commitSwap(a, b) {
   const p2 = b.dataset.pillar;
   a.dataset.pillar = p2;
   b.dataset.pillar = p1;
-  a.src = `./assets/pillars/${p2}.png`;
-  b.src = `./assets/pillars/${p1}.png`;
+  a.src = `../assets/pillars/${p2}.png`;
+  b.src = `../assets/pillars/${p1}.png`;
 }
+
 /* =========================
-   MATCH FINDING
+   MATCH FIND
 ========================= */
 
 function findMatchesDetailed() {
@@ -585,7 +459,7 @@ function findMatchesDetailed() {
 }
 
 /* =========================
-   RESOLVE BOARD
+   RESOLVE & GAME OVER
 ========================= */
 
 async function resolveBoard(groups) {
@@ -628,7 +502,6 @@ async function resolveBoard(groups) {
         else if (moves <= 0) {
           isRunActive = false;
           saveGame();
-
           showEndRunOverlay();
 
           try {
@@ -647,10 +520,6 @@ async function resolveBoard(groups) {
   }, 180);
 }
 
-/* =========================
-   GRAVITY
-========================= */
-
 function applyGravityAnimated(done) {
   for (let c = 0; c < GRID_SIZE; c++) {
     const stack = [];
@@ -662,7 +531,7 @@ function applyGravityAnimated(done) {
       const t = tiles[r*GRID_SIZE+c];
       const p = stack.shift() || randomPillar();
       t.dataset.pillar = p;
-      t.src = `./assets/pillars/${p}.png`;
+      t.src = `../assets/pillars/${p}.png`;
       t.style.opacity = "1";
     }
   }
@@ -670,7 +539,7 @@ function applyGravityAnimated(done) {
 }
 
 /* =========================
-   INIT MATCH CLEANUP
+   INIT
 ========================= */
 
 function resolveInitMatches() {
@@ -682,27 +551,6 @@ function resolveInitMatches() {
     saveGame();
   }
 }
-
-/* =========================
-   LEVEL FLOW
-========================= */
-
-nextBtn?.addEventListener("click", () => {
-  levelOverlay.classList.add("hidden");
-  level++;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = score;
-  isInitPhase = true;
-  isResolving = true;
-  createGrid();
-  updateHUD();
-  setTimeout(resolveInitMatches, 0);
-  saveGame();
-});
-
-/* =========================
-   INIT
-========================= */
 
 const saved = loadGame();
 if (saved) {
@@ -719,4 +567,4 @@ updateHUD();
 setTimeout(resolveInitMatches, 0);
 loadLeaderboard();
 
-});
+}); // DOMContentLoaded END
