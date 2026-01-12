@@ -86,6 +86,11 @@ async function loadLeaderboard() {
   const listEl = document.getElementById("leaderboardList");
   if (!listEl) return;
 
+  if (snap.empty) {
+    listEl.innerHTML = "<div>No runs yet this week.</div>";
+    return;
+  }
+
   let html = "";
   let rank = 1;
 
@@ -103,7 +108,7 @@ async function loadLeaderboard() {
     rank++;
   });
 
-  listEl.innerHTML = html || "<div>No runs yet.</div>";
+  listEl.innerHTML = html;
 }
 
 /* =========================
@@ -237,11 +242,12 @@ function getRandomCpLine(level) {
   }
   return pool[Math.floor(Math.random() * pool.length)];
 }
+
 /* =========================
-   DOM
+   DOM BINDINGS
 ========================= */
 
-const gridEl = document.querySelector(".grid");
+const gridEl = document.getElementById("grid");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const movesEl = document.getElementById("moves");
@@ -257,6 +263,7 @@ const endRunCpLine = document.getElementById("endRunCpLine");
 const tryAgainBtn = document.getElementById("tryAgainBtn");
 const shareXBtn = document.getElementById("shareXBtn");
 
+const endRunBtn = document.getElementById("endRunBtn");
 const saveRunBtn = document.getElementById("saveRunBtn");
 const resetRunBtn = document.getElementById("resetRunBtn");
 
@@ -277,9 +284,8 @@ let level = 1;
 let moves = LEVEL_CONFIG.baseMoves;
 let levelStartScore = 0;
 let isRunActive = true;
-
 /* =========================
-   UI
+   UI FUNCTIONS
 ========================= */
 
 function updateHUD() {
@@ -374,13 +380,15 @@ Play Pillar Match`;
 });
 
 /* =========================
-   FORCE END RUN (BUTTON)
+   END RUN BUTTON
 ========================= */
 
-window.forceEndRun = async function () {
+endRunBtn.addEventListener("click", async () => {
   if (!isRunActive) return;
 
   isRunActive = false;
+  isResolving = true;
+
   saveGame();
   showEndRunOverlay();
 
@@ -390,9 +398,10 @@ window.forceEndRun = async function () {
   } catch (e) {
     console.log("Leaderboard error", e);
   }
-};
+});
+
 /* =========================
-   GRID / GAMEPLAY
+   GRID HELPERS
 ========================= */
 
 function randomPillar() {
@@ -409,10 +418,38 @@ function isAdjacent(i1, i2) {
   return Math.abs(a.row - b.row) + Math.abs(a.col - b.col) === 1;
 }
 
-/* ===== SWIPE HANDLERS ===== */
+/* =========================
+   GRID CREATION
+========================= */
+
+function createGrid(boardData = null) {
+  gridEl.innerHTML = "";
+  tiles = [];
+
+  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+    const img = document.createElement("img");
+    const p = boardData ? boardData[i] : randomPillar();
+
+    img.className = "tile";
+    img.dataset.index = i;
+    img.dataset.pillar = p;
+    img.src = `./assets/pillars/${p}.png`;
+    img.draggable = false;
+
+    img.addEventListener("touchstart", onTouchStart, { passive: true });
+    img.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    tiles.push(img);
+    gridEl.appendChild(img);
+  }
+}
+
+/* =========================
+   SWIPE INPUT
+========================= */
 
 function onTouchStart(e) {
-  if (isResolving || moves <= 0 || !isRunActive) return;
+  if (!isRunActive || isResolving || moves <= 0) return;
   const t = e.touches[0];
   touchStartX = t.clientX;
   touchStartY = t.clientY;
@@ -451,27 +488,9 @@ function onTouchEnd(e) {
   touchStartTile = null;
 }
 
-function createGrid(boardData = null) {
-  gridEl.innerHTML = "";
-  tiles = [];
-
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-    const img = document.createElement("img");
-    const p = boardData ? boardData[i] : randomPillar();
-
-    img.className = "tile";
-    img.dataset.index = i;
-    img.dataset.pillar = p;
-    img.src = `../assets/pillars/${p}.png`;
-    img.draggable = false;
-
-    img.addEventListener("touchstart", onTouchStart, { passive: true });
-    img.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    tiles.push(img);
-    gridEl.appendChild(img);
-  }
-}
+/* =========================
+   SWAP LOGIC
+========================= */
 
 function onTileSwap(a, b) {
   if (!isRunActive || isResolving || moves <= 0) return;
@@ -518,9 +537,12 @@ function commitSwap(a, b) {
   const p2 = b.dataset.pillar;
   a.dataset.pillar = p2;
   b.dataset.pillar = p1;
-  a.src = `../assets/pillars/${p2}.png`;
-  b.src = `../assets/pillars/${p1}.png`;
+  a.src = `./assets/pillars/${p2}.png`;
+  b.src = `./assets/pillars/${p1}.png`;
 }
+/* =========================
+   MATCH FINDING
+========================= */
 
 function findMatchesDetailed() {
   const groups = [];
@@ -561,6 +583,10 @@ function findMatchesDetailed() {
 
   return groups;
 }
+
+/* =========================
+   RESOLVE BOARD
+========================= */
 
 async function resolveBoard(groups) {
   const toClear = new Set();
@@ -603,7 +629,6 @@ async function resolveBoard(groups) {
           isRunActive = false;
           saveGame();
 
-          // POPUP FIRST
           showEndRunOverlay();
 
           try {
@@ -612,7 +637,6 @@ async function resolveBoard(groups) {
           } catch (e) {
             console.log("Leaderboard error", e);
           }
-
           return;
         }
         else {
@@ -622,6 +646,10 @@ async function resolveBoard(groups) {
     });
   }, 180);
 }
+
+/* =========================
+   GRAVITY
+========================= */
 
 function applyGravityAnimated(done) {
   for (let c = 0; c < GRID_SIZE; c++) {
@@ -634,12 +662,16 @@ function applyGravityAnimated(done) {
       const t = tiles[r*GRID_SIZE+c];
       const p = stack.shift() || randomPillar();
       t.dataset.pillar = p;
-      t.src = `../assets/pillars/${p}.png`;
+      t.src = `./assets/pillars/${p}.png`;
       t.style.opacity = "1";
     }
   }
   setTimeout(done, 220);
 }
+
+/* =========================
+   INIT MATCH CLEANUP
+========================= */
 
 function resolveInitMatches() {
   const init = findMatchesDetailed();
@@ -650,6 +682,23 @@ function resolveInitMatches() {
     saveGame();
   }
 }
+
+/* =========================
+   LEVEL FLOW
+========================= */
+
+nextBtn?.addEventListener("click", () => {
+  levelOverlay.classList.add("hidden");
+  level++;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = score;
+  isInitPhase = true;
+  isResolving = true;
+  createGrid();
+  updateHUD();
+  setTimeout(resolveInitMatches, 0);
+  saveGame();
+});
 
 /* =========================
    INIT
@@ -670,19 +719,4 @@ updateHUD();
 setTimeout(resolveInitMatches, 0);
 loadLeaderboard();
 
-// MANUAL END RUN BUTTON
-window.forceEndRun = async function () {
-  if (!isRunActive) return;
-
-  isRunActive = false;
-  saveGame();
-
-  showEndRunOverlay();
-
-  try {
-    await submitRunToLeaderboard();
-    await loadLeaderboard();
-  } catch (e) {
-    console.log("Leaderboard error", e);
-  }
-};
+});
