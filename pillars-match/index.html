@@ -129,7 +129,13 @@
   <div>Score <span id="score">0</span></div>
   <div>Moves Left <span id="moves">20</span></div>
 </div>
-<div id="leaderboardList"></div>
+<div id="leaderboardList" style="
+  margin:8px auto;
+  width:90%;
+  max-width:420px;
+  font-size:11px;
+  text-align:left;
+"></div>
 <!-- RUN CONTROLS -->
 <div id="runControls" style="
   display:flex;
@@ -236,20 +242,19 @@
     "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
   import {
-  getFirestore,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  addDoc,
-  updateDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    addDoc,
+    updateDoc,
+    serverTimestamp,
+    query,
+    where,
+    getDocs
+  } from
+    "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
@@ -298,7 +303,7 @@
   currentSeasonId,
   getPillarDeviceTag,
 
-  // expose firestore functions to game.js
+  // expose firestore functions for game.js
   addDoc,
   doc,
   getDoc,
@@ -306,8 +311,6 @@
   serverTimestamp,
   query,
   where,
-  orderBy,
-  limit,
   getDocs
 };
 
