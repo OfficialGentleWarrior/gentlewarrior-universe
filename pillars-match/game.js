@@ -655,3 +655,4 @@ if (saved) {
 updateHUD();
 setTimeout(resolveInitMatches, 0);
 loadLeaderboard();
+});
