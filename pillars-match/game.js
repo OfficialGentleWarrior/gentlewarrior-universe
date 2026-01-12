@@ -116,9 +116,9 @@ const TILE_SIZE = 56 + 6;
 const LEVEL_CONFIG = {
   baseMoves: 20,
   scoreTarget: level => 1500 + (level - 1) * 500
-};
+  };
 /* =========================
-   CP AWARENESS LINES
+   CP AWARENESS LINES (1–100)
 ========================= */
 
 const CP_LINES = {
@@ -195,9 +195,7 @@ function showEndRunOverlay() {
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
   endRunCpLine.textContent = getRandomCpLine(level);
-
   endRunOverlay.classList.remove("hidden");
-  endRunOverlay.style.display = "flex";
 }
 
 /* =========================
@@ -241,7 +239,6 @@ resetRunBtn?.addEventListener("click", () => {
 
 endRunBtn?.addEventListener("click", async () => {
   if (!isRunActive) return;
-
   isRunActive = false;
   saveGame();
   showEndRunOverlay();
