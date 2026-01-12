@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================
    FIREBASE HOOKS (from index)
 ========================= */
-
 const {
   pillarPlayers,
   pillarRuns,
@@ -24,7 +23,6 @@ const {
 /* =========================
    CORE CONFIG
 ========================= */
-
 const PILLARS = [
   "aurelion","gaialune","ignara",
   "solyndra","umbrath","zeratheon"
@@ -38,9 +36,8 @@ const LEVEL_CONFIG = {
 };
 
 /* =========================
-   CP LINES (1–100) PART 1
+   CP LINES (1–100)
 ========================= */
-
 const CP_LINES = {
   1:"Every small movement matters.",
   2:"Progress looks different for every child.",
@@ -91,101 +88,7 @@ const CP_LINES = {
   47:"Patience grows resilience.",
   48:"Each step builds independence.",
   49:"Your work matters.",
-  50:"Halfway there. Keep going."
-};
-
-function getRandomCpLine(level) {
-  const pool = [];
-  for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
-    if (CP_LINES[i]) pool.push(CP_LINES[i]);
-  }
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-/* =========================
-   DOM
-========================= */
-
-const gridEl = document.getElementById("grid");
-const scoreEl = document.getElementById("score");
-const levelEl = document.getElementById("level");
-const movesEl = document.getElementById("moves");
-const progressBar = document.getElementById("progressBar");
-const leaderboardEl = document.getElementById("leaderboardList");
-
-const endRunOverlay = document.getElementById("endRunOverlay");
-const endRunLevel   = document.getElementById("endRunLevel");
-const endRunScore   = document.getElementById("endRunScore");
-const endRunCpLine  = document.getElementById("endRunCpLine");
-const tryAgainBtn   = document.getElementById("tryAgainBtn");
-const shareXBtn     = document.getElementById("shareXBtn");
-
-/* =========================
-   STATE
-========================= */
-
-let tiles = [];
-let selectedTile = null;
-let isResolving = false;
-let isRunActive = true;
-
-let score = 0;
-let level = 1;
-let moves = LEVEL_CONFIG.baseMoves;
-let levelStartScore = 0;
-let runStartTime = Date.now();
-
-/* =========================
-   HUD
-========================= */
-
-function updateHUD() {
-  scoreEl.textContent = score;
-  levelEl.textContent = level;
-  movesEl.textContent = moves;
-
-  const gained = score - levelStartScore;
-  progressBar.style.width =
-    Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
-}
-
-/* =========================
-   END RUN OVERLAY
-========================= */
-
-function showEndRunOverlay() {
-  endRunLevel.textContent = level;
-  endRunScore.textContent = score;
-  endRunCpLine.textContent = getRandomCpLine(level);
-  endRunOverlay.classList.remove("hidden");
-}
-
-document.getElementById("endRunBtn").addEventListener("click", endRun);
-
-tryAgainBtn.addEventListener("click", () => {
-  endRunOverlay.classList.add("hidden");
-  localStorage.removeItem("pm_save");
-
-  level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
-  isRunActive = true;
-  runStartTime = Date.now();
-
-  startLevel();
-});
-
-shareXBtn.addEventListener("click", () => {
-  const text = `Level ${level}\nScore ${score}\n\n${endRunCpLine.textContent}`;
-  const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
-  window.open(url, "_blank");
-});
-/* =========================
-   CP LINES (51–100) PART 2
-========================= */
-
-Object.assign(CP_LINES, {
+  50:"Halfway there. Keep going.",
   51:"Strength is built quietly.",
   52:"Consistency shapes ability.",
   53:"Your courage shows in effort.",
@@ -236,12 +139,50 @@ Object.assign(CP_LINES, {
   98:"You are improving daily.",
   99:"Almost there. Keep going.",
   100:"Every step you took mattered."
-});
+};
+
+function getRandomCpLine(level) {
+  const pool = [];
+  for (let i = Math.max(1, level - 3); i <= Math.min(100, level + 3); i++) {
+    pool.push(CP_LINES[i]);
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 /* =========================
-   GRID & MATCH LOGIC
+   DOM
 ========================= */
+const gridEl = document.getElementById("grid");
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
+const movesEl = document.getElementById("moves");
+const progressBar = document.getElementById("progressBar");
+const leaderboardEl = document.getElementById("leaderboardList");
 
+const endRunOverlay = document.getElementById("endRunOverlay");
+const endRunLevel   = document.getElementById("endRunLevel");
+const endRunScore   = document.getElementById("endRunScore");
+const endRunCpLine  = document.getElementById("endRunCpLine");
+const tryAgainBtn   = document.getElementById("tryAgainBtn");
+const shareXBtn     = document.getElementById("shareXBtn");
+
+/* =========================
+   STATE
+========================= */
+let tiles = [];
+let selectedTile = null;
+let isResolving = false;
+let isRunActive = true;
+
+let score = 0;
+let level = 1;
+let moves = LEVEL_CONFIG.baseMoves;
+let levelStartScore = 0;
+let runStartTime = Date.now();
+
+/* =========================
+   GRID BASICS
+========================= */
 function randomPillar() {
   return PILLARS[Math.floor(Math.random() * PILLARS.length)];
 }
@@ -268,14 +209,28 @@ function createGrid(boardData = null) {
     img.dataset.index = i;
     img.dataset.pillar = p;
     img.src = `../assets/pillars/${p}.png`;
-
     img.addEventListener("click", () => onTileClick(i));
 
     tiles.push(img);
     gridEl.appendChild(img);
   }
 }
+/* =========================
+   HUD
+========================= */
+function updateHUD() {
+  scoreEl.textContent = score;
+  levelEl.textContent = level;
+  movesEl.textContent = moves;
 
+  const gained = score - levelStartScore;
+  progressBar.style.width =
+    Math.min(100, (gained / LEVEL_CONFIG.scoreTarget(level)) * 100) + "%";
+}
+
+/* =========================
+   TILE INTERACTION
+========================= */
 function onTileClick(index) {
   if (isResolving || !isRunActive) return;
 
@@ -317,6 +272,7 @@ function swapTiles(i1, i2) {
   const matches = findMatches();
 
   if (matches.length === 0) {
+    // revert
     setTimeout(() => {
       const temp2 = t1.dataset.pillar;
       t1.dataset.pillar = t2.dataset.pillar;
@@ -333,6 +289,9 @@ function swapTiles(i1, i2) {
   resolveMatches(matches);
 }
 
+/* =========================
+   MATCH FINDING
+========================= */
 function findMatches() {
   const matches = new Set();
 
@@ -379,6 +338,9 @@ function findMatches() {
   return Array.from(matches);
 }
 
+/* =========================
+   RESOLUTION
+========================= */
 function resolveMatches(matchIndexes) {
   isResolving = true;
 
@@ -393,6 +355,7 @@ function resolveMatches(matchIndexes) {
   setTimeout(() => {
     applyGravity();
     refillBoard();
+
     const next = findMatches();
     if (next.length > 0) {
       resolveMatches(next);
@@ -437,7 +400,6 @@ function refillBoard() {
 /* =========================
    LEVEL FLOW
 ========================= */
-
 function checkLevelProgress() {
   if (score - levelStartScore >= LEVEL_CONFIG.scoreTarget(level)) {
     document.getElementById("levelOverlay").classList.remove("hidden");
@@ -454,23 +416,9 @@ document.getElementById("nextLevelBtn").addEventListener("click", () => {
   createGrid();
 });
 
-function startLevel() {
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = score;
-  createGrid();
-  updateHUD();
-}
 /* =========================
-   END RUN OVERLAY + SHARE
+   END RUN OVERLAY
 ========================= */
-
-const endRunOverlay = document.getElementById("endRunOverlay");
-const endRunLevel   = document.getElementById("endRunLevel");
-const endRunScore   = document.getElementById("endRunScore");
-const endRunCpLine  = document.getElementById("endRunCpLine");
-const tryAgainBtn   = document.getElementById("tryAgainBtn");
-const shareXBtn     = document.getElementById("shareXBtn");
-
 function showEndRunOverlay() {
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
@@ -486,8 +434,10 @@ tryAgainBtn.addEventListener("click", () => {
   score = 0;
   moves = LEVEL_CONFIG.baseMoves;
   levelStartScore = 0;
+  isRunActive = true;
+  runStartTime = Date.now();
   updateHUD();
-  startLevel();
+  createGrid();
 });
 
 shareXBtn.addEventListener("click", () => {
@@ -495,28 +445,10 @@ shareXBtn.addEventListener("click", () => {
   const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 });
-
 /* =========================
    FIREBASE LEADERBOARD
    (Heart Defender Pattern)
 ========================= */
-
-const {
-  pillarPlayers,
-  pillarRuns,
-  currentSeasonId,
-  getPillarDeviceTag,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-} = window.pillarDB;
 
 function getPlayerId() {
   return getPillarDeviceTag(); // same device = same identity
@@ -525,13 +457,13 @@ function getPlayerId() {
 /* =========================
    SUBMIT RUN
 ========================= */
-
 async function submitRunToLeaderboard() {
   const playerId = getPlayerId();
   const seasonId = currentSeasonId();
   const timeSpent = Math.floor((Date.now() - runStartTime) / 1000);
 
   try {
+    // save every run
     await addDoc(pillarRuns, {
       playerId,
       seasonId,
@@ -541,6 +473,7 @@ async function submitRunToLeaderboard() {
       createdAt: serverTimestamp()
     });
 
+    // best per player per week
     const bestId = `${seasonId}_${playerId}`;
     const bestRef = doc(pillarPlayers, bestId);
     const snap = await getDoc(bestRef);
@@ -569,7 +502,6 @@ async function submitRunToLeaderboard() {
 /* =========================
    LOAD + RENDER LEADERBOARD
 ========================= */
-
 async function loadLeaderboard() {
   if (!leaderboardEl) return;
 
@@ -620,12 +552,12 @@ async function loadLeaderboard() {
 }
 
 /* =========================
-   END RUN + SAVE
+   END RUN
 ========================= */
-
 function endRun() {
+  if (!isRunActive) return;
   isRunActive = false;
-  saveGame();
+
   showEndRunOverlay();
   submitRunToLeaderboard();
   loadLeaderboard();
@@ -634,8 +566,7 @@ function endRun() {
 /* =========================
    INIT
 ========================= */
-
 startLevel();
 loadLeaderboard();
 
-});
+}); // END DOMContentLoaded
