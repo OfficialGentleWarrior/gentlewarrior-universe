@@ -27,44 +27,48 @@ document.addEventListener("DOMContentLoaded", () => {
 const playerName = window.getPillarPlayerName();
 
   async function submitRun(score, level, movesUsed) {
-    const playerId = getPillarDeviceTag();
-    const seasonId = currentSeasonId();
+  const playerId = getPillarDeviceTag();
+  const seasonId = currentSeasonId();
+  const playerName = window.getPillarPlayerName();
 
-    const runData = {
+  const runData = {
+    playerId,
+    playerName,
+    seasonId,
+    score,
+    level,
+    movesUsed,
+    createdAt: Date.now()
+  };
+
+  await addDoc(pillarRuns, runData);
+
+  const playerDocId = `${seasonId}_${playerId}`;
+  const playerRef = doc(pillarPlayers, playerDocId);
+  const snap = await getDoc(playerRef);
+
+  if (!snap.exists() || snap.data().score < score) {
+    await setDoc(playerRef, {
       playerId,
+      playerName,
       seasonId,
       score,
       level,
       movesUsed,
-      createdAt: Date.now()
-    };
-
-    await addDoc(pillarRuns, runData);
-
-    const playerDocId = `${seasonId}_${playerId}`;
-    const playerRef = doc(pillarPlayers, playerDocId);
-    const snap = await getDoc(playerRef);
-
-    if (!snap.exists() || snap.data().score < score) {
-      await setDoc(playerRef, {
-        playerId,
-        seasonId,
-        score,
-        level,
-        movesUsed,
-        updatedAt: serverTimestamp()
-      });
-    }
+      updatedAt: serverTimestamp()
+    });
   }
+}
 
   async function loadLeaderboard() {
   const seasonId = currentSeasonId();
 
   const q = query(
-    pillarPlayers,
-    orderBy("score", "desc"),
-    limit(20)
-  );
+  pillarPlayers,
+  where("seasonId", "==", seasonId),
+  orderBy("score", "desc"),
+  limit(20)
+);
 
   const snap = await getDocs(q);
   const listEl = document.getElementById("leaderboardList");
@@ -89,7 +93,7 @@ snap.forEach(doc => {
   html += `
   <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
     <div>#${rank}</div>
-    <div>${d.playerName}</div>
+    <div>${d.playerName || "Player"}</div>
     <div>${d.level}</div>
     <div>${d.score}</div>
     <div>${d.movesUsed}</div>
