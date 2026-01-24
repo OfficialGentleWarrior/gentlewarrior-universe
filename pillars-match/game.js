@@ -785,7 +785,12 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   ========================== */
 
   startLevel();
-PillarLeaderboard.loadLeaderboard();
+
+setTimeout(() => {
+  if (window.PillarLeaderboard) {
+    PillarLeaderboard.loadLeaderboard();
+  }
+}, 300);
 
   // 🔥 FORCE END RUN (manual button trigger)
   window.forceEndRun = async function () {
