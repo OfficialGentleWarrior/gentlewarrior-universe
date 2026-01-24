@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
     getDocs
   } = window.pillarDB;
 
+const playerName = window.getPillarPlayerName();
+
   async function submitRun(score, level, movesUsed) {
     const playerId = getPillarDeviceTag();
     const seasonId = currentSeasonId();
@@ -49,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         seasonId,
         score,
         level,
+        movesUsed,
         updatedAt: serverTimestamp()
       });
     }
@@ -72,25 +75,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  let html = "";
-  let rank = 1;
+  let html = `
+<div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;font-weight:600;">
+  <div>Rank</div><div>Name</div><div>Level</div><div>Score</div><div>Moves</div>
+</div>
+`;
 
-  snap.forEach(d => {
-    const data = d.data();
-    if (data.seasonId !== seasonId) return; // manual filter
+let rank = 1;
 
-    html += `
-      <div style="display:flex;justify-content:space-between;padding:2px 0;">
-        <span>#${rank}</span>
-        <span>${data.playerId.slice(-4)}</span>
-        <span>${data.score}</span>
-      </div>
-    `;
-    rank++;
-  });
+snap.forEach(doc => {
+  const d = doc.data();
 
-  listEl.innerHTML = html || "<div>No runs yet this week.</div>";
-}
+  html += `
+  <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
+    <div>#${rank}</div>
+    <div>${d.playerName}</div>
+    <div>${d.level}</div>
+    <div>${d.score}</div>
+    <div>${d.movesUsed}</div>
+  </div>
+  `;
+  rank++;
+});
+
+listEl.innerHTML = html;
 
   window.PillarLeaderboard = {
     submitRun,
