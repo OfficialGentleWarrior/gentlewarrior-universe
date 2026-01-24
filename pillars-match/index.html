@@ -254,19 +254,20 @@
     "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
   import {
-    getFirestore,
-    collection,
-    doc,
-    getDoc,
-    setDoc,
-    addDoc,
-    updateDoc,
-    serverTimestamp,
-    query,
-    where,
-    getDocs
-  } from
-    "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  updateDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
@@ -309,12 +310,22 @@
   }
 
   window.pillarDB = {
-    db,
-    pillarPlayers,
-    pillarRuns,
-    currentSeasonId,
-    getPillarDeviceTag
-  };
+  db,
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+};
 
   console.log("🟢 Pillar Match Firebase ready");
 </script>
