@@ -1,4 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+let playerName = localStorage.getItem("pillar_player_name");
+
+if (!playerName) {
+  playerName = prompt("Enter your name for the leaderboard:");
+  if (!playerName || playerName.trim().length < 2) {
+    playerName = "Player";
+  }
+  localStorage.setItem("pillar_player_name", playerName.trim());
+}
+window.getPillarPlayerName = () => playerName;
 
 const {
   db,
