@@ -129,13 +129,6 @@
   <div>Score <span id="score">0</span></div>
   <div>Moves Left <span id="moves">20</span></div>
 </div>
-<div id="leaderboardList" style="
-  margin:8px auto;
-  width:90%;
-  max-width:420px;
-  font-size:11px;
-  text-align:left;
-"></div>
 <!-- RUN CONTROLS -->
 <div id="runControls" style="
   display:flex;
@@ -297,24 +290,12 @@
   }
 
   window.pillarDB = {
-  db,
-  pillarPlayers,
-  pillarRuns,
-  currentSeasonId,
-  getPillarDeviceTag,
-
-  // firestore helpers
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-};
+    db,
+    pillarPlayers,
+    pillarRuns,
+    currentSeasonId,
+    getPillarDeviceTag
+  };
 
   console.log("🟢 Pillar Match Firebase ready");
 </script>
