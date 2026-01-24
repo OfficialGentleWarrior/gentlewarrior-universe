@@ -3,11 +3,21 @@
 (function () {
 
   const {
-    pillarPlayers,
-    pillarRuns,
-    currentSeasonId,
-    getPillarDeviceTag
-  } = window.pillarDB;
+  pillarPlayers,
+  pillarRuns,
+  currentSeasonId,
+  getPillarDeviceTag,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs
+} = window.pillarDB;
 
   async function submitRun(score, level, movesUsed) {
     const playerId = getPillarDeviceTag();
