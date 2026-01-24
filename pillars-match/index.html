@@ -184,10 +184,29 @@
   <main class="game-wrapper">
     <div class="grid" id="grid"></div>
   </main>
+<!-- LEADERBOARD -->
+<div id="leaderboard" style="
+  max-width:420px;
+  margin:14px auto 6px;
+  background:rgba(0,0,0,0.25);
+  border-radius:12px;
+  padding:10px;
+  font-size:12px;
+">
+
+  <div style="font-weight:600;margin-bottom:4px;">
+    Weekly Top Players
+  </div>
+
+  <div id="leaderboardList">
+    Loading leaderboard...
+  </div>
+
+</div>
 
   <!-- FOOTER -->
   <footer>
-  <div style="margin-bottom:6px;">Every step counts.</div>
+  <div style="margin-bottom:6px;">Every move counts.</div>
 </footer>
 
   <!-- LEVEL COMPLETE OVERLAY (CP LINE ONLY) -->
@@ -301,7 +320,7 @@
 </script>
 
 <!-- GAME SCRIPT LAST -->
+<script src="./leaderboard.js"></script>
 <script src="./game.js?v=8" defer></script>
-
 </body>
 </html>
