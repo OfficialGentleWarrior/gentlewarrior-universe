@@ -1,11 +1,9 @@
 // Pillar Match – Weekly Leaderboard (Isolated)
+// NO DOMContentLoaded WRAPPER (defer already guarantees DOM ready)
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  if (!window.pillarDB) {
-    console.error("pillarDB not ready");
-    return;
-  }
+if (!window.pillarDB) {
+  console.error("pillarDB not ready");
+} else {
 
   const {
     pillarPlayers,
@@ -84,9 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let html = `
-    <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;font-weight:600;">
-      <div>Rank</div><div>Name</div><div>Level</div><div>Score</div><div>Moves</div>
-    </div>
+      <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;font-weight:600;">
+        <div>Rank</div><div>Name</div><div>Level</div><div>Score</div><div>Moves</div>
+      </div>
     `;
 
     let rank = 1;
@@ -94,13 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
     snap.forEach(doc => {
       const d = doc.data();
       html += `
-      <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
-        <div>#${rank}</div>
-        <div>${d.playerName || "Player"}</div>
-        <div>${d.level}</div>
-        <div>${d.score}</div>
-        <div>${d.movesUsed}</div>
-      </div>
+        <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
+          <div>#${rank}</div>
+          <div>${d.playerName || "Player"}</div>
+          <div>${d.level}</div>
+          <div>${d.score}</div>
+          <div>${d.movesUsed}</div>
+        </div>
       `;
       rank++;
     });
@@ -108,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     listEl.innerHTML = html;
   }
 
-  // GLOBAL EXPORT
+  // Global API used by game.js
   window.PillarLeaderboard = {
     submitRun,
     loadLeaderboard
@@ -116,4 +114,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Auto load on open
   loadLeaderboard();
-});
+}
