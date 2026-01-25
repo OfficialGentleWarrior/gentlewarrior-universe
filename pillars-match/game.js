@@ -297,8 +297,10 @@ Score: ${score}
 If you enjoy calm, thoughtful games,
 you might like this.
 
+@GentleWarrior02
+
 Play Pillar Match:
-https://officialgentlewarrior.github.io/gentlewarrior-universe/pillars-match`;
+https://gentlewarrior.world/pillars-match`;
 
   const url =
     "https://twitter.com/intent/tweet?text=" +
