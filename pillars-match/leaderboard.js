@@ -24,10 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
     getDocs
   } = window.pillarDB;
 
+  function getPlayerNameSafe() {
+    return typeof window.getPillarPlayerName === "function"
+      ? window.getPillarPlayerName()
+      : "Player";
+  }
+
   async function submitRun(score, level, movesUsed) {
     const playerId = getPillarDeviceTag();
     const seasonId = currentSeasonId();
-    const playerName = window.getPillarPlayerName();
+    const playerName = getPlayerNameSafe();
 
     const runData = {
       playerId,
@@ -102,12 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
     listEl.innerHTML = html;
   }
 
-  // 🔥 DAPAT NASA LABAS ITO
+  // GLOBAL EXPORT
   window.PillarLeaderboard = {
     submitRun,
     loadLeaderboard
   };
 
-  // Auto load
+  // Auto load on open
   loadLeaderboard();
 });
