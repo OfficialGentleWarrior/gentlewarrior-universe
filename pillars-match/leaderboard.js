@@ -115,7 +115,55 @@ if (!window.pillarDB) {
     });
 
     listEl.innerHTML = html;
+
+    // Show your best run
+    const myId = getPillarDeviceTag();
+    const mine = rows.find(r => r.playerId === myId);
+    const bestEl = document.getElementById("yourBestRun");
+    if (bestEl && mine) {
+      bestEl.textContent =
+        `Your Best This Week: Level ${mine.level}, Score ${mine.score}, Moves ${mine.movesUsed}`;
+    }
   }
+
+  // ===== WEEKLY RESET TIMER (MONDAY UTC) =====
+  function getNextMondayUTC() {
+    const now = new Date();
+    const day = now.getUTCDay(); // 0 = Sun, 1 = Mon
+    const diff = (8 - day) % 7 || 7;
+    const next = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + diff,
+      0, 0, 0
+    ));
+    return next;
+  }
+
+  function updateResetTimer() {
+    const el = document.getElementById("resetTimer");
+    if (!el) return;
+
+    const next = getNextMondayUTC();
+    const now = new Date();
+    const ms = next - now;
+
+    if (ms <= 0) {
+      el.textContent = "Resetting...";
+      return;
+    }
+
+    const totalSec = Math.floor(ms / 1000);
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+
+    el.textContent = `Weekly Reset (UTC): ${d}d ${h}h ${m}m ${s}s`;
+  }
+
+  setInterval(updateResetTimer, 1000);
+  updateResetTimer();
 
   // Expose to game.js
   window.PillarLeaderboard = {
@@ -123,5 +171,6 @@ if (!window.pillarDB) {
     loadLeaderboard
   };
 
+  // Initial load
   loadLeaderboard();
 }
