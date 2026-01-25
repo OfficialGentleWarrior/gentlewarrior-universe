@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gentle Warrior Variant Quiz</title>
+<style>
+body{font-family:Arial;background:#0e1f1a;color:#e8fff4;text-align:center}
+.box{max-width:720px;margin:40px auto}
+button{display:block;width:100%;margin:10px 0;padding:14px;font-size:16px}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Your Gentle Warrior Variant</h1>
+<div id="q"></div>
+<div id="a"></div>
+</div>
+
+<script>
+const variants=[
+"Luminara Core","Royal Verdant Guardian","Auroraforged Paladin","Thunderstrike Vanguard","Lumenforged Sentinel",
+"Shadowstrike Assassin","Aetherborn Warden","Cosmic Ascendant","Oceanborn Tidemender","Frostborn Warden",
+"Dustborne Wanderer","Runestone Guardian","Bloodmoon Acolyte","Ironbound Champion","Eternal Sunfire Knight"
+];
+
+const questions=[
+{q:"When facing hardship, you usually…",a:[
+{t:"Stay hopeful and open",k:0},
+{t:"Protect others",k:1},
+{t:"Endure calmly",k:9},
+{t:"Push forward no matter what",k:3}
+]},
+{q:"What gives you strength?",a:[
+{t:"Discipline and routine",k:13},
+{t:"Compassion",k:8},
+{t:"Balance and calm",k:6},
+{t:"Vision and perspective",k:7}
+]},
+{q:"Your role in a group is usually…",a:[
+{t:"The protector",k:1},
+{t:"The quiet supporter",k:5},
+{t:"The motivator",k:14},
+{t:"The steady worker",k:10}
+]},
+{q:"How do you handle emotions?",a:[
+{t:"Feel deeply",k:12},
+{t:"Stay guarded",k:9},
+{t:"Heal slowly",k:8},
+{t:"Observe and learn",k:11}
+]},
+{q:"Your kind of courage is…",a:[
+{t:"Consistent discipline",k:13},
+{t:"Hopeful light",k:14},
+{t:"Endurance",k:9},
+{t:"Principled strength",k:2}
+]},
+{q:"What describes your pace in life?",a:[
+{t:"Step by step forward",k:3},
+{t:"Slow but steady",k:10},
+{t:"Patient and nurturing",k:1},
+{t:"Vision-driven",k:7}
+]},
+{q:"Where do you find peace?",a:[
+{t:"In silence",k:5},
+{t:"In healing others",k:8},
+{t:"In balance",k:6},
+{t:"In hope",k:14}
+]},
+{q:"Your inner world feels like…",a:[
+{t:"Light waiting to grow",k:0},
+{t:"Stone and memory",k:11},
+{t:"Fire and emotion",k:12},
+{t:"Ocean and cycles",k:8}
+]},
+{q:"What motivates you most?",a:[
+{t:"Doing what is right",k:2},
+{t:"Protecting loved ones",k:1},
+{t:"Understanding life",k:7},
+{t:"Building strength",k:13}
+]},
+{q:"At your core, you are…",a:[
+{t:"Pure potential",k:0},
+{t:"A quiet fighter",k:5},
+{t:"A gentle healer",k:8},
+{t:"A bearer of hope",k:14}
+]}
+];
+
+let step=0;
+let score=new Array(15).fill(0);
+
+function render(){
+const q=questions[step];
+document.getElementById("q").innerText=q.q;
+const aDiv=document.getElementById("a");
+aDiv.innerHTML="";
+q.a.forEach(o=>{
+let b=document.createElement("button");
+b.innerText=o.t;
+b.onclick=()=>choose(o.k);
+aDiv.appendChild(b);
+});
+}
+
+function choose(k){
+score[k]++; step++;
+if(step<questions.length) render();
+else showResult();
+}
+
+function showResult(){
+const max=Math.max(...score);
+const i=score.indexOf(max);
+document.body.innerHTML=`
+<div class="box">
+<h1>Your Gentle Warrior Variant</h1>
+<h2>${variants[i]}</h2>
+<p>I am the ${variants[i]} — Gentle Warrior</p>
+</div>`;
+}
+
+render();
+</script>
+</body>
+</html>
