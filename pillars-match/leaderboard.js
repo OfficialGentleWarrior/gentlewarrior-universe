@@ -1,10 +1,8 @@
-// Pillar Match – Weekly Leaderboard (Safe Boot Loader)
+// Pillar Match – Weekly Leaderboard (FIXED)
 
-(function waitForDB() {
-  if (!window.pillarDB || typeof window.getPillarPlayerName !== "function") {
-    setTimeout(waitForDB, 100);
-    return;
-  }
+if (!window.pillarDB) {
+  console.error("pillarDB not ready");
+} else {
 
   const {
     pillarPlayers,
@@ -18,15 +16,16 @@
     serverTimestamp,
     query,
     where,
-    orderBy,
-    limit,
     getDocs
   } = window.pillarDB;
 
   function getPlayerNameSafe() {
-    return window.getPillarPlayerName() || "Player";
+    return typeof window.getPillarPlayerName === "function"
+      ? window.getPillarPlayerName()
+      : "Player";
   }
 
+  // Save run + update BEST run of the week
   async function submitRun(score, level, movesUsed) {
     const playerId = getPillarDeviceTag();
     const seasonId = currentSeasonId();
@@ -39,46 +38,67 @@
       score,
       level,
       movesUsed,
-      createdAt: Date.now()
+      createdAt: serverTimestamp()
     };
 
+    // log all runs
     await addDoc(pillarRuns, runData);
 
+    // best-per-week doc
     const playerDocId = `${seasonId}_${playerId}`;
     const playerRef = doc(pillarPlayers, playerDocId);
     const snap = await getDoc(playerRef);
 
-    if (!snap.exists() || snap.data().score < score) {
+    let isBetter = false;
+
+    if (!snap.exists()) {
+      isBetter = true;
+    } else {
+      const prev = snap.data();
+      isBetter =
+        level > prev.level ||
+        (level === prev.level && score > prev.score) ||
+        (level === prev.level && score === prev.score && movesUsed < prev.movesUsed);
+    }
+
+    if (isBetter) {
       await setDoc(playerRef, {
         playerId,
         playerName,
         seasonId,
-        score,
         level,
+        score,
         movesUsed,
         updatedAt: serverTimestamp()
       });
     }
   }
 
+  // Load Top 10 Weekly Leaderboard
   async function loadLeaderboard() {
     const seasonId = currentSeasonId();
-
-    const q = query(
-      pillarPlayers,
-      where("seasonId", "==", seasonId),
-      orderBy("score", "desc"),
-      limit(20)
-    );
-
-    const snap = await getDocs(q);
     const listEl = document.getElementById("leaderboardList");
     if (!listEl) return;
+
+    const q = query(pillarPlayers, where("seasonId", "==", seasonId));
+    const snap = await getDocs(q);
 
     if (snap.empty) {
       listEl.innerHTML = "<div>No runs yet this week.</div>";
       return;
     }
+
+    let rows = [];
+    snap.forEach(doc => rows.push(doc.data()));
+
+    // Rank logic
+    rows.sort((a,b)=>
+      b.level - a.level ||
+      b.score - a.score ||
+      a.movesUsed - b.movesUsed
+    );
+
+    rows = rows.slice(0,10);
 
     let html = `
       <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;font-weight:600;">
@@ -86,29 +106,26 @@
       </div>
     `;
 
-    let rank = 1;
-
-    snap.forEach(doc => {
-      const d = doc.data();
+    rows.forEach((d,i)=>{
       html += `
         <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
-          <div>#${rank}</div>
+          <div>#${i+1}</div>
           <div>${d.playerName || "Player"}</div>
           <div>${d.level}</div>
           <div>${d.score}</div>
           <div>${d.movesUsed}</div>
         </div>
       `;
-      rank++;
     });
 
     listEl.innerHTML = html;
   }
 
+  // Expose to game
   window.PillarLeaderboard = {
     submitRun,
     loadLeaderboard
   };
 
   loadLeaderboard();
-})();
+}
