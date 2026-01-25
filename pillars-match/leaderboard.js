@@ -1,9 +1,10 @@
-// Pillar Match – Weekly Leaderboard (Isolated)
-// NO DOMContentLoaded WRAPPER (defer already guarantees DOM ready)
+// Pillar Match – Weekly Leaderboard (Safe Boot Loader)
 
-if (!window.pillarDB) {
-  console.error("pillarDB not ready");
-} else {
+(function waitForDB() {
+  if (!window.pillarDB || typeof window.getPillarPlayerName !== "function") {
+    setTimeout(waitForDB, 100);
+    return;
+  }
 
   const {
     pillarPlayers,
@@ -23,9 +24,7 @@ if (!window.pillarDB) {
   } = window.pillarDB;
 
   function getPlayerNameSafe() {
-    return typeof window.getPillarPlayerName === "function"
-      ? window.getPillarPlayerName()
-      : "Player";
+    return window.getPillarPlayerName() || "Player";
   }
 
   async function submitRun(score, level, movesUsed) {
@@ -106,12 +105,10 @@ if (!window.pillarDB) {
     listEl.innerHTML = html;
   }
 
-  // Global API used by game.js
   window.PillarLeaderboard = {
     submitRun,
     loadLeaderboard
   };
 
-  // Auto load on open
   loadLeaderboard();
-}
+})();
