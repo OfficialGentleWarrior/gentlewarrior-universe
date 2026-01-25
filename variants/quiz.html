@@ -4,26 +4,93 @@
 <meta charset="UTF-8">
 <title>Gentle Warrior Variant Quiz</title>
 <style>
-body{font-family:Arial;background:#0e1f1a;color:#e8fff4;text-align:center}
-.box{max-width:720px;margin:40px auto}
-button{display:block;width:100%;margin:10px 0;padding:14px;font-size:16px}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #0f3b2e, #071914);
+  color: #e8fff4;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.box {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #a8ffcf;
+  letter-spacing: 0.5px;
+}
+
+h2 {
+  color: #eafff3;
+}
+
+#q {
+  font-size: 18px;
+  margin: 20px 0;
+}
+
+button {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 14px;
+  font-size: 16px;
+  background: linear-gradient(180deg, #eafff3, #c9f3e1);
+  border: none;
+  border-radius: 10px;
+  color: #0b2b1f;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.result {
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 30px 20px;
+  box-shadow: 0 0 30px rgba(0,255,180,0.15);
+}
 </style>
 </head>
 <body>
-<div class="box">
-<h1>Your Gentle Warrior Variant</h1>
-<div id="q"></div>
-<div id="a"></div>
+
+<div class="box" id="app">
+  <h1>Your Gentle Warrior Variant</h1>
+  <div id="q"></div>
+  <div id="a"></div>
 </div>
 
 <script>
-const variants=[
-"Luminara Core","Royal Verdant Guardian","Auroraforged Paladin","Thunderstrike Vanguard","Lumenforged Sentinel",
-"Shadowstrike Assassin","Aetherborn Warden","Cosmic Ascendant","Oceanborn Tidemender","Frostborn Warden",
-"Dustborne Wanderer","Runestone Guardian","Bloodmoon Acolyte","Ironbound Champion","Eternal Sunfire Knight"
+const variants = [
+  "Luminara Core",
+  "Royal Verdant Guardian",
+  "Auroraforged Paladin",
+  "Thunderstrike Vanguard",
+  "Lumenforged Sentinel",
+  "Shadowstrike Assassin",
+  "Aetherborn Warden",
+  "Cosmic Ascendant",
+  "Oceanborn Tidemender",
+  "Frostborn Warden",
+  "Dustborne Wanderer",
+  "Runestone Guardian",
+  "Bloodmoon Acolyte",
+  "Ironbound Champion",
+  "Eternal Sunfire Knight"
 ];
 
-const questions=[
+const questions = [
 {q:"When facing hardship, you usually…",a:[
 {t:"Stay hopeful and open",k:0},
 {t:"Protect others",k:1},
@@ -86,37 +153,42 @@ const questions=[
 ]}
 ];
 
-let step=0;
-let score=new Array(15).fill(0);
+let step = 0;
+let score = new Array(15).fill(0);
 
-function render(){
-const q=questions[step];
-document.getElementById("q").innerText=q.q;
-const aDiv=document.getElementById("a");
-aDiv.innerHTML="";
-q.a.forEach(o=>{
-let b=document.createElement("button");
-b.innerText=o.t;
-b.onclick=()=>choose(o.k);
-aDiv.appendChild(b);
-});
+function render() {
+  const q = questions[step];
+  document.getElementById("q").innerText = q.q;
+  const aDiv = document.getElementById("a");
+  aDiv.innerHTML = "";
+  q.a.forEach(o => {
+    const b = document.createElement("button");
+    b.innerText = o.t;
+    b.onclick = () => choose(o.k);
+    aDiv.appendChild(b);
+  });
 }
 
-function choose(k){
-score[k]++; step++;
-if(step<questions.length) render();
-else showResult();
+function choose(k) {
+  score[k]++;
+  step++;
+  if (step < questions.length) {
+    render();
+  } else {
+    showResult();
+  }
 }
 
-function showResult(){
-const max=Math.max(...score);
-const i=score.indexOf(max);
-document.body.innerHTML=`
-<div class="box">
-<h1>Your Gentle Warrior Variant</h1>
-<h2>${variants[i]}</h2>
-<p>I am the ${variants[i]} — Gentle Warrior</p>
-</div>`;
+function showResult() {
+  const max = Math.max(...score);
+  const i = score.indexOf(max);
+  document.getElementById("app").innerHTML = `
+    <div class="result">
+      <h1>Your Gentle Warrior Variant</h1>
+      <h2>${variants[i]}</h2>
+      <p>I am the ${variants[i]} — Gentle Warrior</p>
+    </div>
+  `;
 }
 
 render();
