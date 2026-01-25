@@ -192,8 +192,6 @@
   border-radius:12px;
   padding:10px;
   font-size:12px;
-  max-height: 45vh;
-  overflow-y: auto;
 ">
 
   <div style="font-weight:600;margin-bottom:4px;">
@@ -206,9 +204,13 @@
     <div id="yourBestRun" style="font-size:13px;margin-top:4px;"></div>
   </div>
 
-  <div id="leaderboardList">
-    Loading leaderboard...
-  </div>
+  <div id="leaderboardList" style="
+  max-height: 38vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+">
+  Loading leaderboard...
+</div>
 
 </div>
 
