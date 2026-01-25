@@ -1,4 +1,4 @@
-// Pillar Match – Weekly Leaderboard (FIXED)
+// Pillar Match – Weekly Leaderboard (FINAL, MATCHED)
 
 if (!window.pillarDB) {
   console.error("pillarDB not ready");
@@ -25,13 +25,14 @@ if (!window.pillarDB) {
       : "Player";
   }
 
-  // Save run + update BEST run of the week
+  // Save best run of the week (Level > Score > Lowest Moves)
   async function submitRun(score, level, movesUsed) {
     const playerId = getPillarDeviceTag();
     const seasonId = currentSeasonId();
     const playerName = getPlayerNameSafe();
 
-    const runData = {
+    // log all runs
+    await addDoc(pillarRuns, {
       playerId,
       playerName,
       seasonId,
@@ -39,12 +40,8 @@ if (!window.pillarDB) {
       level,
       movesUsed,
       createdAt: serverTimestamp()
-    };
+    });
 
-    // log all runs
-    await addDoc(pillarRuns, runData);
-
-    // best-per-week doc
     const playerDocId = `${seasonId}_${playerId}`;
     const playerRef = doc(pillarPlayers, playerDocId);
     const snap = await getDoc(playerRef);
@@ -74,7 +71,7 @@ if (!window.pillarDB) {
     }
   }
 
-  // Load Top 10 Weekly Leaderboard
+  // Render Weekly Top 10
   async function loadLeaderboard() {
     const seasonId = currentSeasonId();
     const listEl = document.getElementById("leaderboardList");
@@ -89,9 +86,8 @@ if (!window.pillarDB) {
     }
 
     let rows = [];
-    snap.forEach(doc => rows.push(doc.data()));
+    snap.forEach(d => rows.push(d.data()));
 
-    // Rank logic
     rows.sort((a,b)=>
       b.level - a.level ||
       b.score - a.score ||
@@ -106,14 +102,14 @@ if (!window.pillarDB) {
       </div>
     `;
 
-    rows.forEach((d,i)=>{
+    rows.forEach((p,i)=>{
       html += `
         <div style="display:grid;grid-template-columns:40px 1fr 60px 80px 90px;">
           <div>#${i+1}</div>
-          <div>${d.playerName || "Player"}</div>
-          <div>${d.level}</div>
-          <div>${d.score}</div>
-          <div>${d.movesUsed}</div>
+          <div>${p.playerName || "Player"}</div>
+          <div>${p.level}</div>
+          <div>${p.score}</div>
+          <div>${p.movesUsed}</div>
         </div>
       `;
     });
@@ -121,7 +117,7 @@ if (!window.pillarDB) {
     listEl.innerHTML = html;
   }
 
-  // Expose to game
+  // Expose to game.js
   window.PillarLeaderboard = {
     submitRun,
     loadLeaderboard
