@@ -252,7 +252,7 @@ endRunBtn.addEventListener("click", async () => {
 
   // Isunod ang leaderboard save (kahit mag-fail, ok lang)
   try {
-    await PillarLeaderboard.submitRun(score, level, LEVEL_CONFIG.baseMoves - moves);
+    await PillarLeaderboard.submitRun(score, level, totalMovesUsed);
 await PillarLeaderboard.loadLeaderboard();
   } catch (e) {
     console.error("Leaderboard failed, but run already ended", e);
@@ -268,9 +268,10 @@ tryAgainBtn?.addEventListener("click", () => {
   localStorage.removeItem("pm_save");
 
   level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
+score = 0;
+moves = LEVEL_CONFIG.baseMoves;
+levelStartScore = 0;
+totalMovesUsed = 0;   // <-- idagdag dito
 
   isInitPhase = true;
   isResolving = true;
@@ -314,9 +315,10 @@ resetRunBtn?.addEventListener("click", () => {
   localStorage.removeItem("pm_save");
 
   level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
+score = 0;
+moves = LEVEL_CONFIG.baseMoves;
+levelStartScore = 0;
+totalMovesUsed = 0;   // <-- idagdag dito
 
   isInitPhase = true;
   isResolving = true;
@@ -355,12 +357,13 @@ let touchStartX = 0;
 let touchStartY = 0;
 let touchStartTile = null;
 
-  let score = 0;
-  let level = 1;
-  let moves = LEVEL_CONFIG.baseMoves;
-  let levelStartScore = 0;
-  let runStartTime = Date.now();
-  let isRunActive = true;
+let score = 0;
+let level = 1;
+let moves = LEVEL_CONFIG.baseMoves;
+let levelStartScore = 0;
+let runStartTime = Date.now();
+let isRunActive = true;
+let totalMovesUsed = 0;
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
@@ -419,9 +422,10 @@ function endRun(reason = "manual") {
 
   // 🔁 reset state
   level = 1;
-  score = 0;
-  moves = LEVEL_CONFIG.baseMoves;
-  levelStartScore = 0;
+score = 0;
+moves = LEVEL_CONFIG.baseMoves;
+levelStartScore = 0;
+totalMovesUsed = 0;   // <-- idagdag dito
 
   isInitPhase = true;
   isResolving = true;
@@ -590,10 +594,11 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
         isResolving = false;
       });
     } else {
-      moves--;
-      updateHUD();
-      resolveBoard(groups);
-    }
+  moves--;
+  totalMovesUsed++;   // count 1 move used in the whole run
+  updateHUD();
+  resolveBoard(groups);
+}
   });
 }
 
@@ -734,7 +739,7 @@ img.addEventListener("touchend", onTouchEnd, { passive: true });
   showEndRunOverlay(); // popup muna, para siguradong lalabas
 
   try {
-  await PillarLeaderboard.submitRun(score, level, LEVEL_CONFIG.baseMoves - moves);
+  await PillarLeaderboard.submitRun(score, level, totalMovesUsed);;
   await PillarLeaderboard.loadLeaderboard();
 } catch (e) {
   console.log("Leaderboard error but run ended");
@@ -800,7 +805,7 @@ setTimeout(() => {
   isResolving = true;
 
   saveGame();
-  await PillarLeaderboard.submitRun(score, level, LEVEL_CONFIG.baseMoves - moves);
+  await PillarLeaderboard.submitRun(score, level, totalMovesUsed);
 await PillarLeaderboard.loadLeaderboard();
 
   showEndRunOverlay();
