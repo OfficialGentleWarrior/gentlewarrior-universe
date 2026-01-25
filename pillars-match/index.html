@@ -17,6 +17,8 @@
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   text-align: center;
   overscroll-behavior: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
     header {
@@ -119,7 +121,7 @@
 }
 
 .game-wrapper {
-  touch-action: none;
+  touch-action: manipulation;
 }
   </style>
 </head>
@@ -213,13 +215,7 @@
     <div id="yourBestRun" style="font-size:13px;margin-top:4px;"></div>
   </div>
 
-  <div id="leaderboardList" style="
-  max-height: 38vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
-">
+  <div id="leaderboardList">
   Loading leaderboard...
 </div>
 
