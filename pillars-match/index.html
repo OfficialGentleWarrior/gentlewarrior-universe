@@ -11,12 +11,13 @@
   <!-- INLINE SAFETY CSS -->
   <style>
     body {
-      margin: 0;
-      background: #0b2f22;
-      color: #ffffff;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      text-align: center;
-    }
+  margin: 0;
+  background: #0b2f22;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  text-align: center;
+  overscroll-behavior: none;
+}
 
     header {
       padding: 12px 8px;
@@ -112,6 +113,14 @@
       font-size: 14px;
       cursor: pointer;
     }
+#leaderboardList {
+  position: relative;
+  z-index: 5;
+}
+
+.game-wrapper {
+  touch-action: none;
+}
   </style>
 </head>
 
@@ -208,6 +217,8 @@
   max-height: 38vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
 ">
   Loading leaderboard...
 </div>
