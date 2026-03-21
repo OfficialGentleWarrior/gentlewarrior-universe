@@ -154,7 +154,7 @@ const products = [
 
 {
   name: "Holiday Chicken Siomai",
-  image: "images/chic siomai.jpg",
+  image: "images/chic-siomai.jpg",
   description: "Delicious chicken meat in yellow wrapper",
   category: "Frozen Meat",
   variants: [
@@ -184,7 +184,7 @@ const products = [
 
 {
   name: "CDO Crispy Burger",
-  image: "images/crispy burger.jpg",
+  image: "images/crispy-burger.jpg",
   description: "Beefy patty with crispy coating",
   category: "Frozen Meat",
   variants: [
@@ -194,7 +194,7 @@ const products = [
 
 {
   name: "CDO Crispy Chicken Burger",
-  image: "images/crispy chicken burger.jpg",
+  image: "images/crispy-chicken-burger.jpg",
   description: "Crispy coated chicken burger patty",
   category: "Frozen Meat",
   variants: [
@@ -204,7 +204,7 @@ const products = [
 
 {
   name: "CDO Chicken Nuggets with Cheese Powder",
-  image: "images/chicken nuggets.jpg",
+  image: "images/chicken-nuggets.jpg",
   description: "Bite-sized chicken with cheese flavor",
   category: "Frozen Meat",
   variants: [
@@ -224,7 +224,7 @@ const products = [
 
 {
   name: "Holiday Siopao Asado Mini",
-  image: "images/asado mini.jpg",
+  image: "images/asado-mini.jpg",
   description: "Mini asado buns",
   category: "Bakery",
   variants: [
@@ -234,7 +234,7 @@ const products = [
 
 {
   name: "Holiday Siopao Bola-Bola Mini",
-  image: "images/bola bola.jpg",
+  image: "images/bola-bola.jpg",
   description: "Garlicky bola-bola filling",
   category: "Bakery",
   variants: [
