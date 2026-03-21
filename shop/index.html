@@ -34,8 +34,18 @@ body{
   padding:12px;
   border-radius:10px;
   font-size:13px;
-  color:#333;
   line-height:1.5;
+}
+
+.search{
+  margin:10px;
+}
+
+.search input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 
 .grid{
@@ -60,6 +70,11 @@ body{
 .name{
   font-weight:bold;
   margin-top:5px;
+}
+
+.desc{
+  font-size:12px;
+  color:gray;
 }
 
 .price{
@@ -134,6 +149,12 @@ body{
 4. Once confirmed, kindly send proof of payment to proceed with your order.
 </div>
 
+<!-- SEARCH -->
+<div class="search">
+  <input type="text" placeholder="🔍 Search products..." oninput="searchProducts(this.value)">
+</div>
+
+<!-- PRODUCTS -->
 <div class="grid" id="productGrid"></div>
 
 <div class="bottom-bar">
@@ -144,14 +165,18 @@ body{
 <script src="products.js"></script>
 
 <script>
-function loadProducts(){
-  const grid = document.getElementById("productGrid");
+let allProducts = [];
 
-  products.forEach(p=>{
+function loadProducts(list){
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+
+  list.forEach(p=>{
     grid.innerHTML += `
       <div class="card">
         <img src="${p.image}">
         <div class="name">${p.name}</div>
+        <div class="desc">${p.description || ""}</div>
         <div class="price">₱${p.price}</div>
 
         <div class="qty-box">
@@ -162,6 +187,13 @@ function loadProducts(){
       </div>
     `;
   });
+}
+
+function searchProducts(query){
+  const filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(query.toLowerCase())
+  );
+  loadProducts(filtered);
 }
 
 function changeQty(btn,change){
@@ -214,7 +246,9 @@ function checkout(){
   window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
 }
 
-loadProducts();
+/* INIT */
+allProducts = products;
+loadProducts(products);
 </script>
 
 </body>
