@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gentle Warrior Shop</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f2e1c;
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #9be7a1;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: #1e4d2b;
+  padding: 10px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.qty {
+  width: 60px;
+  margin-top: 8px;
+  padding: 5px;
+  text-align: center;
+}
+
+.total-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #163824;
+  border-radius: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #2ecc71;
+  color: black;
+  font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🛒 CDO Frozen Products</h1>
+
+<div class="grid">
+
+  <div class="card">
+    <img src="https://via.placeholder.com/150">
+    <p>Bacon - ₱120</p>
+    <input type="number" min="0" value="0" class="qty" data-name="Bacon" data-price="120">
+  </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/150">
+    <p>Hotdog - ₱180</p>
+    <input type="number" min="0" value="0" class="qty" data-name="Hotdog" data-price="180">
+  </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/150">
+    <p>Nuggets - ₱150</p>
+    <input type="number" min="0" value="0" class="qty" data-name="Nuggets" data-price="150">
+  </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/150">
+    <p>Burger Patties - ₱140</p>
+    <input type="number" min="0" value="0" class="qty" data-name="Burger Patties" data-price="140">
+  </div>
+
+</div>
+
+<div class="total-box">
+  <p id="total">Total: ₱0</p>
+
+  <button onclick="checkout()">🛒 Checkout via Messenger</button>
+</div>
+
+<script>
+function calculateTotal() {
+  let total = 0;
+  document.querySelectorAll(".qty").forEach(input => {
+    let qty = parseInt(input.value) || 0;
+    let price = parseInt(input.dataset.price);
+    total += qty * price;
+  });
+  document.getElementById("total").innerText = "Total: ₱" + total;
+}
+
+document.querySelectorAll(".qty").forEach(input => {
+  input.addEventListener("input", calculateTotal);
+});
+
+function checkout() {
+  let message = "Hi! I want to order:%0A%0A";
+  let total = 0;
+
+  document.querySelectorAll(".qty").forEach(input => {
+    let qty = parseInt(input.value) || 0;
+    let name = input.dataset.name;
+    let price = parseInt(input.dataset.price);
+
+    if (qty > 0) {
+      message += name + " x" + qty + "%0A";
+      total += qty * price;
+    }
+  });
+
+  message += "%0ATotal: ₱" + total + "%0A%0AName:%0AAddress:";
+
+  window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
+}
+</script>
+
+</body>
+</html>
