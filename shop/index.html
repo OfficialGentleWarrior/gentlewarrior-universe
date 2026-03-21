@@ -9,7 +9,7 @@ body{
   font-family: Arial;
   margin:0;
   background:#f5f5f5;
-  padding-bottom:220px;
+  padding-bottom:120px;
 }
 
 .container{
@@ -17,7 +17,6 @@ body{
   margin:auto;
 }
 
-/* STICKY */
 .sticky-top{
   position:sticky;
   top:0;
@@ -47,10 +46,8 @@ body{
   padding:14px;
   border-radius:12px;
   font-size:13px;
-  line-height:1.6;
 }
 
-/* CATEGORY TABS */
 .tabs{
   display:flex;
   gap:6px;
@@ -70,7 +67,6 @@ body{
   color:white;
 }
 
-/* SEARCH */
 .search{
   margin:10px;
 }
@@ -82,20 +78,16 @@ body{
   border:1px solid #ccc;
 }
 
-/* GRID */
 .grid{
   display:grid;
-  grid-template-columns:1fr;
   gap:12px;
   padding:10px;
 }
 
-/* CARD */
 .card{
   background:white;
   border-radius:12px;
   padding:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
   display:flex;
   gap:10px;
 }
@@ -104,7 +96,6 @@ body{
   width:90px;
   height:90px;
   object-fit:contain;
-  border-radius:8px;
 }
 
 .details{
@@ -113,7 +104,6 @@ body{
 
 .name{
   font-weight:bold;
-  font-size:14px;
 }
 
 .desc{
@@ -124,31 +114,26 @@ body{
 .price{
   color:#27ae60;
   font-weight:bold;
-  margin-top:5px;
 }
 
 .toggle-btn{
   width:100%;
-  padding:8px;
+  margin-top:8px;
+  padding:6px;
   border:none;
   background:#eee;
-  border-radius:8px;
-  margin-top:8px;
-  font-size:12px;
+  border-radius:6px;
 }
 
 .variant-row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   margin:6px 0;
-  font-size:13px;
 }
 
 .qty-box{
   display:flex;
-  align-items:center;
-  gap:6px;
+  gap:5px;
 }
 
 .qty-btn{
@@ -161,25 +146,8 @@ body{
 }
 
 .qty{
-  width:28px;
+  width:25px;
   text-align:center;
-  font-weight:bold;
-}
-
-/* FORM */
-.form{
-  background:white;
-  margin:10px;
-  padding:12px;
-  border-radius:10px;
-}
-
-.form input{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  border-radius:8px;
-  border:1px solid #ccc;
 }
 
 /* BOTTOM */
@@ -189,8 +157,7 @@ body{
   left:0;
   right:0;
   background:white;
-  padding:12px;
-  box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+  padding:10px;
 }
 
 .checkout{
@@ -199,8 +166,36 @@ body{
   background:#27ae60;
   border:none;
   color:white;
-  font-size:16px;
   border-radius:8px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-box{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+  max-width:400px;
+}
+
+.modal input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 </style>
 </head>
@@ -210,48 +205,53 @@ body{
 <div class="container">
 
 <div class="sticky-top">
-
 <div class="header">🛒 CDO Frozen Products</div>
 
 <div class="impact">
-💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
+💚 Every purchase helps support Baby Leam’s therapy
 </div>
 
 <div class="info">
 📦 <b>Order Guidelines</b><br><br>
 1. Delivery fee will be shouldered by the buyer.<br>
-2. Please allow at least 1 day lead time.<br>
+2. 1 day lead time.<br>
 3. Wait for confirmation before payment.<br>
-4. Send proof of payment once confirmed.
+4. Send proof of payment.
 </div>
 
-<!-- CATEGORY -->
 <div class="tabs">
-  <button class="tab active" onclick="filterCategory('All',this)">All</button>
-  <button class="tab" onclick="filterCategory('Frozen Meat',this)">Frozen</button>
-  <button class="tab" onclick="filterCategory('Bakery',this)">Bakery</button>
+<button class="tab active" onclick="filterCategory('All',this)">All</button>
+<button class="tab" onclick="filterCategory('Frozen Meat',this)">Frozen</button>
+<button class="tab" onclick="filterCategory('Bakery',this)">Bakery</button>
 </div>
 
 <div class="search">
 <input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
 </div>
-
 </div>
 
-<div class="grid" id="productGrid"></div>
-
-<!-- FORM FIX -->
-<div class="form">
-  <input type="text" id="name" placeholder="Name">
-  <input type="text" id="contact" placeholder="Contact Number">
-  <input type="text" id="address" placeholder="Address">
-</div>
+<div class="grid" id="grid"></div>
 
 </div>
 
 <div class="bottom-bar">
 <div id="total">Total: ₱0</div>
-<button class="checkout" onclick="checkout()">Checkout via Messenger</button>
+<button class="checkout" onclick="openModal()">Checkout</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<h3>Checkout Details</h3>
+
+<input type="text" id="name" placeholder="Name">
+<input type="text" id="contact" placeholder="Contact Number">
+<input type="text" id="address" placeholder="Address">
+
+<button class="checkout" onclick="submitOrder()">Submit Order</button>
+
+</div>
 </div>
 
 <script src="products.js"></script>
@@ -261,107 +261,112 @@ let allProducts = [];
 let currentCategory = "All";
 
 function loadProducts(list){
-  const grid = document.getElementById("productGrid");
+  let grid = document.getElementById("grid");
   grid.innerHTML = "";
 
   list.forEach(p=>{
     grid.innerHTML += `
-      <div class="card">
-        <img src="${p.image}">
-        <div class="details">
-          <div class="name">${p.name}</div>
-          <div class="desc">${p.description}</div>
-          <div class="price">₱${p.variants[0].price} - ₱${p.variants[p.variants.length-1].price}</div>
+    <div class="card">
+      <img src="${p.image}">
+      <div class="details">
+        <div class="name">${p.name}</div>
+        <div class="desc">${p.description}</div>
+        <div class="price">₱${p.variants[0].price}</div>
 
-          <button class="toggle-btn" onclick="toggleVariants(this)">Select Options ▼</button>
+        <button class="toggle-btn" onclick="toggle(this)">Select Options</button>
 
-          <div class="variants" style="display:none;">
-            ${p.variants.map(v=>`
-              <div class="variant-row">
-                <span>${v.label} - ₱${v.price}</span>
-                <div class="qty-box">
-                  <button class="qty-btn" onclick="changeQty(this,-1)">-</button>
-                  <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
-                  <button class="qty-btn" onclick="changeQty(this,1)">+</button>
-                </div>
-              </div>
-            `).join("")}
+        <div class="variants" style="display:none;">
+        ${p.variants.map(v=>`
+          <div class="variant-row">
+            <span>${v.label} ₱${v.price}</span>
+            <div class="qty-box">
+              <button class="qty-btn" onclick="qty(this,-1)">-</button>
+              <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
+              <button class="qty-btn" onclick="qty(this,1)">+</button>
+            </div>
           </div>
+        `).join("")}
         </div>
       </div>
+    </div>
     `;
   });
 }
 
-function filterCategory(cat,btn){
-  currentCategory = cat;
-
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  btn.classList.add("active");
-
-  if(cat === "All"){
-    loadProducts(allProducts);
-  }else{
-    loadProducts(allProducts.filter(p=>p.category === cat));
-  }
-}
-
-function searchProducts(q){
-  let list = allProducts.filter(p =>
-    p.name.toLowerCase().includes(q.toLowerCase())
-  );
-
-  if(currentCategory !== "All"){
-    list = list.filter(p=>p.category === currentCategory);
-  }
-
-  loadProducts(list);
-}
-
-function toggleVariants(btn){
+function toggle(btn){
   let box = btn.nextElementSibling;
-  box.style.display = box.style.display === "none" ? "block" : "none";
+  box.style.display = box.style.display === "none" ? "block":"none";
 }
 
-function changeQty(btn,change){
+function qty(btn,val){
   let el = btn.parentElement.querySelector(".qty");
-  let qty = parseInt(el.innerText);
-  qty = Math.max(0, qty + change);
-  el.innerText = qty;
+  let q = parseInt(el.innerText);
+  q = Math.max(0,q+val);
+  el.innerText = q;
   updateTotal();
 }
 
 function updateTotal(){
-  let total = 0;
-  document.querySelectorAll(".qty").forEach(el=>{
-    total += el.innerText * el.dataset.price;
+  let total=0;
+  document.querySelectorAll(".qty").forEach(e=>{
+    total += e.innerText * e.dataset.price;
   });
-  document.getElementById("total").innerText = "Total: ₱" + total;
+  document.getElementById("total").innerText = "Total: ₱"+total;
 }
 
-function checkout(){
-  let message = "🛒 ORDER DETAILS:%0A%0A";
-  let total = 0;
+/* CATEGORY */
+function filterCategory(cat,btn){
+  currentCategory=cat;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
 
-  document.querySelectorAll(".qty").forEach(el=>{
-    let qty = parseInt(el.innerText);
-    if(qty > 0){
-      message += `• ${el.dataset.name} (${el.dataset.variant}) x${qty}%0A`;
-      total += qty * el.dataset.price;
+  if(cat==="All"){
+    loadProducts(allProducts);
+  }else{
+    loadProducts(allProducts.filter(p=>p.category===cat));
+  }
+}
+
+/* SEARCH */
+function searchProducts(q){
+  let list = allProducts.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  loadProducts(list);
+}
+
+/* MODAL */
+function openModal(){
+  document.getElementById("modal").style.display="flex";
+}
+
+function submitOrder(){
+
+  let name=document.getElementById("name").value;
+  let contact=document.getElementById("contact").value;
+  let address=document.getElementById("address").value;
+
+  if(!name || !contact || !address){
+    alert("Please complete all fields");
+    return;
+  }
+
+  let message="🛒 ORDER:%0A%0A";
+  let total=0;
+
+  document.querySelectorAll(".qty").forEach(e=>{
+    let q=parseInt(e.innerText);
+    if(q>0){
+      message += `${e.dataset.name} (${e.dataset.variant}) x${q}%0A`;
+      total += q*e.dataset.price;
     }
   });
 
-  let name = document.getElementById("name").value;
-  let contact = document.getElementById("contact").value;
-  let address = document.getElementById("address").value;
-
-  message += `%0A💰 Total: ₱${total}%0A%0A`;
+  message += `%0ATotal: ₱${total}%0A`;
   message += `Name: ${name}%0AContact: ${contact}%0AAddress: ${address}`;
 
-  window.location.href = "https://m.me/BabyLeamOffcial?text=" + message;
+  window.location.href="https://m.me/BabyLeamOffcial?text="+message;
 }
 
-allProducts = products;
+allProducts=products;
 loadProducts(products);
 </script>
 
