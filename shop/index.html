@@ -9,7 +9,7 @@ body{
   font-family: Arial;
   margin:0;
   background:#f5f5f5;
-  padding-bottom:180px;
+  padding-bottom:220px;
 }
 
 .container{
@@ -41,7 +41,6 @@ body{
   color:#27ae60;
 }
 
-/* GUIDELINES FIXED */
 .info{
   background:white;
   margin:10px;
@@ -49,6 +48,26 @@ body{
   border-radius:12px;
   font-size:13px;
   line-height:1.6;
+}
+
+/* CATEGORY TABS */
+.tabs{
+  display:flex;
+  gap:6px;
+  padding:10px;
+}
+
+.tab{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:#ddd;
+}
+
+.tab.active{
+  background:#27ae60;
+  color:white;
 }
 
 /* SEARCH */
@@ -81,16 +100,13 @@ body{
   gap:10px;
 }
 
-/* IMAGE SIZE FIX */
 .card img{
   width:90px;
   height:90px;
   object-fit:contain;
   border-radius:8px;
-  background:#fff;
 }
 
-/* DETAILS */
 .details{
   flex:1;
 }
@@ -111,7 +127,6 @@ body{
   margin-top:5px;
 }
 
-/* TOGGLE */
 .toggle-btn{
   width:100%;
   padding:8px;
@@ -120,11 +135,6 @@ body{
   border-radius:8px;
   margin-top:8px;
   font-size:12px;
-}
-
-/* VARIANTS */
-.variants{
-  margin-top:8px;
 }
 
 .variant-row{
@@ -156,7 +166,23 @@ body{
   font-weight:bold;
 }
 
-/* BOTTOM BAR FIX */
+/* FORM */
+.form{
+  background:white;
+  margin:10px;
+  padding:12px;
+  border-radius:10px;
+}
+
+.form input{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+/* BOTTOM */
 .bottom-bar{
   position:fixed;
   bottom:0;
@@ -165,7 +191,6 @@ body{
   background:white;
   padding:12px;
   box-shadow:0 -2px 10px rgba(0,0,0,0.2);
-  z-index:999;
 }
 
 .checkout{
@@ -186,43 +211,54 @@ body{
 
 <div class="sticky-top">
 
-  <div class="header">🛒 CDO Frozen Products</div>
+<div class="header">🛒 CDO Frozen Products</div>
 
-  <div class="impact">
-    💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
-  </div>
+<div class="impact">
+💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
+</div>
 
-  <!-- ✅ REVISED GUIDELINES -->
-  <div class="info">
-    📦 <b>Order Guidelines</b><br><br>
+<div class="info">
+📦 <b>Order Guidelines</b><br><br>
+1. Delivery fee will be shouldered by the buyer.<br>
+2. Please allow at least 1 day lead time.<br>
+3. Wait for confirmation before payment.<br>
+4. Send proof of payment once confirmed.
+</div>
 
-    1. Delivery fee will be shouldered by the buyer.<br>
-    2. Please allow at least <b>1 day lead time</b> for order preparation.<br>
-    3. Kindly wait for our confirmation before making any payment.<br>
-    4. Once confirmed, please send your <b>proof of payment</b> to proceed with your order.<br><br>
+<!-- CATEGORY -->
+<div class="tabs">
+  <button class="tab active" onclick="filterCategory('All',this)">All</button>
+  <button class="tab" onclick="filterCategory('Frozen Meat',this)">Frozen</button>
+  <button class="tab" onclick="filterCategory('Bakery',this)">Bakery</button>
+</div>
 
-    💚 Thank you for supporting Baby Leam’s journey.
-  </div>
-
-  <div class="search">
-    <input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
-  </div>
+<div class="search">
+<input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
+</div>
 
 </div>
 
 <div class="grid" id="productGrid"></div>
 
+<!-- FORM FIX -->
+<div class="form">
+  <input type="text" id="name" placeholder="Name">
+  <input type="text" id="contact" placeholder="Contact Number">
+  <input type="text" id="address" placeholder="Address">
+</div>
+
 </div>
 
 <div class="bottom-bar">
-  <div id="total">Total: ₱0</div>
-  <button class="checkout" onclick="checkout()">Checkout via Messenger</button>
+<div id="total">Total: ₱0</div>
+<button class="checkout" onclick="checkout()">Checkout via Messenger</button>
 </div>
 
 <script src="products.js"></script>
 
 <script>
 let allProducts = [];
+let currentCategory = "All";
 
 function loadProducts(list){
   const grid = document.getElementById("productGrid");
@@ -231,26 +267,18 @@ function loadProducts(list){
   list.forEach(p=>{
     grid.innerHTML += `
       <div class="card">
-
         <img src="${p.image}">
-
         <div class="details">
           <div class="name">${p.name}</div>
-          <div class="desc">${p.description || ""}</div>
+          <div class="desc">${p.description}</div>
+          <div class="price">₱${p.variants[0].price} - ₱${p.variants[p.variants.length-1].price}</div>
 
-          <div class="price">
-            ₱${p.variants[0].price} - ₱${p.variants[p.variants.length-1].price}
-          </div>
-
-          <button class="toggle-btn" onclick="toggleVariants(this)">
-            Select Options ▼
-          </button>
+          <button class="toggle-btn" onclick="toggleVariants(this)">Select Options ▼</button>
 
           <div class="variants" style="display:none;">
             ${p.variants.map(v=>`
               <div class="variant-row">
                 <span>${v.label} - ₱${v.price}</span>
-
                 <div class="qty-box">
                   <button class="qty-btn" onclick="changeQty(this,-1)">-</button>
                   <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
@@ -259,81 +287,78 @@ function loadProducts(list){
               </div>
             `).join("")}
           </div>
-
         </div>
-
       </div>
     `;
   });
 }
 
-function toggleVariants(btn){
-  let box = btn.nextElementSibling;
+function filterCategory(cat,btn){
+  currentCategory = cat;
 
-  if(box.style.display === "none"){
-    box.style.display = "block";
-    btn.innerText = "Hide Options ▲";
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+
+  if(cat === "All"){
+    loadProducts(allProducts);
   }else{
-    box.style.display = "none";
-    btn.innerText = "Select Options ▼";
+    loadProducts(allProducts.filter(p=>p.category === cat));
   }
 }
 
+function searchProducts(q){
+  let list = allProducts.filter(p =>
+    p.name.toLowerCase().includes(q.toLowerCase())
+  );
+
+  if(currentCategory !== "All"){
+    list = list.filter(p=>p.category === currentCategory);
+  }
+
+  loadProducts(list);
+}
+
+function toggleVariants(btn){
+  let box = btn.nextElementSibling;
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
 function changeQty(btn,change){
-  let qtyEl = btn.parentElement.querySelector(".qty");
-  let qty = parseInt(qtyEl.innerText);
-  qty += change;
-  if(qty < 0) qty = 0;
-  qtyEl.innerText = qty;
+  let el = btn.parentElement.querySelector(".qty");
+  let qty = parseInt(el.innerText);
+  qty = Math.max(0, qty + change);
+  el.innerText = qty;
   updateTotal();
 }
 
 function updateTotal(){
   let total = 0;
-
   document.querySelectorAll(".qty").forEach(el=>{
-    let qty = parseInt(el.innerText);
-    let price = parseInt(el.dataset.price);
-    total += qty * price;
+    total += el.innerText * el.dataset.price;
   });
-
   document.getElementById("total").innerText = "Total: ₱" + total;
 }
 
 function checkout(){
   let message = "🛒 ORDER DETAILS:%0A%0A";
   let total = 0;
-  let hasOrder = false;
 
   document.querySelectorAll(".qty").forEach(el=>{
     let qty = parseInt(el.innerText);
-    let name = el.dataset.name;
-    let variant = el.dataset.variant;
-    let price = parseInt(el.dataset.price);
-
     if(qty > 0){
-      hasOrder = true;
-      message += `• ${name} (${variant}) x${qty}%0A`;
-      total += qty * price;
+      message += `• ${el.dataset.name} (${el.dataset.variant}) x${qty}%0A`;
+      total += qty * el.dataset.price;
     }
   });
 
-  if(!hasOrder){
-    alert("Please select at least 1 product");
-    return;
-  }
+  let name = document.getElementById("name").value;
+  let contact = document.getElementById("contact").value;
+  let address = document.getElementById("address").value;
 
   message += `%0A💰 Total: ₱${total}%0A%0A`;
-  message += "📌 Name:%0AContact Number:%0AAddress:%0A";
+  message += `Name: ${name}%0AContact: ${contact}%0AAddress: ${address}`;
 
-  window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
-}
-
-function searchProducts(query){
-  const filtered = allProducts.filter(p =>
-    p.name.toLowerCase().includes(query.toLowerCase())
-  );
-  loadProducts(filtered);
+  window.location.href = "https://m.me/BabyLeamOffcial?text=" + message;
 }
 
 allProducts = products;
