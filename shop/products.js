@@ -1,7 +1,7 @@
 const products = [
   {
     name: "Young Pork Tocino",
-    image: "tocino.jpg",
+    image: "images/tocino.jpg",
     description: "Sweet and savory tocino",
     category: "Frozen Meat",
 
