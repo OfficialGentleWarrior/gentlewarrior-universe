@@ -36,7 +36,7 @@ const products = [
 
   {
     name: "Young Pork Barbecue",
-    image: "images/bbq.jpg",
+    image: "images/tocino.jpg",
     description: "Sweet and savory barbecue flavor",
     category: "Frozen Meat",
     variants: [
@@ -60,12 +60,206 @@ const products = [
 
   {
     name: "CDO Idol Cheesedog (JUMBO)",
-    image: "images/jumbo.jpg",
+    image: "images/longganisa.jpg",
     description: "Delightfully creamy cheese bits in every bite.",
     category: "Frozen Meat",
     variants: [
       { label: "500g", price: 106 },
       { label: "1kg", price: 175 }
+    ]
+  },
+
+  {
+    name: "CDO Idol Cheesedog (Go Balls)",
+    image: "images/balls.jpg",
+    description: "Delightful cheese-filled goodness in bite-sized pieces for the family.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "1kg", price: 178 }
+    ]
+  },
+
+  {
+    name: "CDO Idol Hotdog (Regular)",
+    image: "images/hotdog.jpg",
+    description: "Savory & meaty flavors",
+    category: "Frozen Meat",
+    variants: [
+      { label: "250g", price: 59 },
+      { label: "1kg", price: 187 }
+    ]
+  },
+
+  {
+    name: "CDO Ulam Burger (Classic)",
+    image: "images/classic.jpg",
+    description: "Mini versions of your favorite breakfast burger with more pieces per pack!",
+    category: "Frozen Meat",
+    variants: [
+      { label: "225g", price: 63 }
+    ]
+  },
+
+  {
+    name: "CDO Ulam Burger (Cheesy)",
+    image: "images/cheesy.jpg",
+    description: "With real cheese bits in every bite!",
+    category: "Frozen Meat",
+    variants: [
+      { label: "228g", price: 59 }
+    ]
+  },
+
+  {
+    name: "Holiday Cheesedog Footlong (Jumbo)",
+    image: "images/footlong.jpg",
+    description: "Mahaba, makeso at masarap.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "500g", price: 99 },
+      { label: "1kg", price: 174 }
+    ]
+  },
+
+  {
+    name: "Holiday Cheesedog Regular",
+    image: "images/cheesedog.jpg",
+    description: "Cheesy and juicy goodness",
+    category: "Frozen Meat",
+    variants: [
+      { label: "250g", price: 55 },
+      { label: "1kg", price: 174 }
+    ]
+  },
+
+  {
+    name: "Holiday Bacon",
+    image: "images/bacon.jpg",
+    description: "Smoky and crispy-sarap!",
+    category: "Frozen Meat",
+    variants: [
+      { label: "200g", price: 100 }
+    ]
+  },
+
+  {
+    name: "Holiday Siomai",
+    image: "images/siomai.jpg",
+    description: "Enjoyable and affordable",
+    category: "Frozen Meat",
+    variants: [
+      { label: "240g", price: 52 }
+    ]
+  },
+
+  {
+    name: "Holiday Chicken Siomai",
+    image: "images/chic-siomai.jpg",
+    description: "Made with delicious chicken meat in yellow wrapper.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "240g", price: 52 }
+    ]
+  },
+
+  {
+    name: "Holiday Squidballs",
+    image: "images/squidballs.jpg",
+    description: "Juicy and flavorful Pinoy snack.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "220g", price: 45 }
+    ]
+  },
+
+  {
+    name: "Holiday Quekiam",
+    image: "images/quekiam.jpg",
+    description: "Juicy and flavorful Pinoy snack.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "220g", price: 45 }
+    ]
+  },
+
+  {
+    name: "CDO Crispy Burger",
+    image: "images/crispy-burger.jpg",
+    description: "Beefy burger patty coated with crispy breadcrumbs.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "228g", price: 64 }
+    ]
+  },
+
+  {
+    name: "CDO Crispy Chicken Burger",
+    image: "images/crispy-chicken-burger.jpg",
+    description: "Crispy chicken burger with exciting crunch.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "228g", price: 65 }
+    ]
+  },
+
+  {
+    name: "CDO Chicken Nuggets with Cheese Powder",
+    image: "images/chicken-nuggets.jpg",
+    description: "Bite-sized chicken cutlet with flavorful coating.",
+    category: "Frozen Meat",
+    variants: [
+      { label: "200g", price: 96 }
+    ]
+  },
+
+  {
+    name: "Holiday Siopao Asado Regular",
+    image: "images/asado.jpg",
+    description: "Soft buns filled with sweet and savory pork asado.",
+    category: "Bakery",
+    variants: [
+      { label: "520g", price: 93 }
+    ]
+  },
+
+  {
+    name: "Holiday Siopao Asado Mini",
+    image: "images/asado-mini.jpg",
+    description: "Savory asado filling in soft buns.",
+    category: "Bakery",
+    variants: [
+      { label: "1kg", price: 187 }
+    ]
+  },
+
+  {
+    name: "Holiday Siopao Bola-Bola Mini",
+    image: "images/bola-bola.jpg",
+    description: "Garlicky longganisa-inspired filling.",
+    category: "Bakery",
+    variants: [
+      { label: "1.32kg", price: 195 }
+    ]
+  },
+
+  {
+    name: "Holiday Siopao Ube Cheese Mini",
+    image: "images/ube.jpg",
+    description: "Sweet ube with creamy cheese filling.",
+    category: "Bakery",
+    variants: [
+      { label: "660g", price: 106 },
+      { label: "1.32kg", price: 236 }
+    ]
+  },
+
+  {
+    name: "Holiday Siopao Chocolate Mini",
+    image: "images/choco.jpg",
+    description: "Oozing chocolate filling.",
+    category: "Bakery",
+    variants: [
+      { label: "600g", price: 135 }
     ]
   }
 
