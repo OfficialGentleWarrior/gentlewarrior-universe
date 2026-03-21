@@ -34,7 +34,6 @@ body{
   position:relative;
 }
 
-/* 🔥 CART BADGE */
 .badge{
   position:absolute;
   right:10px;
@@ -159,7 +158,7 @@ body{
   font-size:11px;
 }
 
-/* 🔥 BOTTOM */
+/* BOTTOM */
 .bottom-bar{
   position:fixed;
   bottom:0;
@@ -180,7 +179,6 @@ body{
   font-size:14px;
 }
 
-/* 🔥 CLEAR BUTTON */
 .clear{
   margin-top:5px;
   width:100%;
@@ -192,7 +190,6 @@ body{
   font-size:12px;
 }
 
-/* 🔥 SUMMARY */
 .summary{
   font-size:11px;
   max-height:60px;
@@ -258,8 +255,7 @@ body{
 2. Please allow 1 day lead time for order preparation.<br>
 3. Wait for our confirmation before making payment.<br>
 4. Send proof of payment once confirmed.<br><br>
- 📍 We are located in Novaliches, Quezon City.<br>
-Please be mindful of Lalamove delivery coverage before placing your order.
+📍 Novaliches, Quezon City
 </div>
 
 <div class="tabs">
@@ -285,7 +281,6 @@ Please be mindful of Lalamove delivery coverage before placing your order.
 <button class="clear" onclick="clearCart()">Clear Cart</button>
 </div>
 
-<!-- FORM -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <button class="close-btn" onclick="closeModal()">✖</button>
@@ -323,7 +318,7 @@ function loadProducts(list){
   list.forEach(p=>{
     grid.innerHTML += `
     <div class="card">
-      <img src="images/${p.image}">
+      <img src="${p.image}">
       <div class="details">
         <div class="name">${p.name}</div>
         <div class="desc">${p.description}</div>
@@ -358,11 +353,8 @@ function loadProducts(list){
 
 function updateQty(name,variant,price,val){
   let key=getKey(name,variant);
-
   cart[key]=(cart[key]||0)+val;
-
   if(cart[key]<=0) delete cart[key];
-
   saveCart();
   loadProducts(filterList());
 }
@@ -404,20 +396,16 @@ function clearCart(){
 
 function filterList(){
   let list=allProducts;
-
   if(currentCategory!=="All"){
     list=list.filter(p=>p.category===currentCategory);
   }
-
   return list;
 }
 
 function filterCategory(cat,btn){
   currentCategory=cat;
-
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
-
   loadProducts(filterList());
 }
 
@@ -431,7 +419,6 @@ function toggle(btn){
   box.style.display=box.style.display==="none"?"block":"none";
 }
 
-/* FORM */
 function openModal(){
   document.getElementById("modal").style.display="flex";
 }
