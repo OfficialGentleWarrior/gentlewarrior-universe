@@ -9,7 +9,7 @@ body{
   font-family: Arial;
   margin:0;
   background:#f5f5f5;
-  padding-bottom:120px;
+  padding-bottom:140px;
 }
 
 .container{
@@ -17,7 +17,6 @@ body{
   margin:auto;
 }
 
-/* ✅ STICKY (same content, smaller spacing only) */
 .sticky-top{
   position:sticky;
   top:0;
@@ -32,6 +31,19 @@ body{
   text-align:center;
   font-size:16px;
   font-weight:bold;
+  position:relative;
+}
+
+/* 🔥 CART BADGE */
+.badge{
+  position:absolute;
+  right:10px;
+  top:8px;
+  background:red;
+  color:white;
+  font-size:11px;
+  padding:3px 6px;
+  border-radius:50%;
 }
 
 .impact{
@@ -82,7 +94,6 @@ body{
   font-size:12px;
 }
 
-/* PRODUCTS */
 .grid{
   display:grid;
   gap:10px;
@@ -103,25 +114,13 @@ body{
   object-fit:contain;
 }
 
-.details{
-  flex:1;
-}
+.details{ flex:1; }
 
-.name{
-  font-weight:bold;
-  font-size:13px;
-}
+.name{ font-weight:bold; font-size:13px; }
 
-.desc{
-  font-size:11px;
-  color:gray;
-}
+.desc{ font-size:11px; color:gray; }
 
-.price{
-  color:#27ae60;
-  font-weight:bold;
-  font-size:12px;
-}
+.price{ color:#27ae60; font-weight:bold; font-size:12px; }
 
 .toggle-btn{
   width:100%;
@@ -160,7 +159,7 @@ body{
   font-size:11px;
 }
 
-/* BOTTOM */
+/* 🔥 BOTTOM */
 .bottom-bar{
   position:fixed;
   bottom:0;
@@ -181,7 +180,26 @@ body{
   font-size:14px;
 }
 
-/* ✅ FIXED FORM (REAL FIX) */
+/* 🔥 CLEAR BUTTON */
+.clear{
+  margin-top:5px;
+  width:100%;
+  padding:8px;
+  background:#e74c3c;
+  border:none;
+  color:white;
+  border-radius:8px;
+  font-size:12px;
+}
+
+/* 🔥 SUMMARY */
+.summary{
+  font-size:11px;
+  max-height:60px;
+  overflow:auto;
+  margin-bottom:5px;
+}
+
 .modal{
   position:fixed;
   inset:0;
@@ -225,7 +243,10 @@ body{
 
 <div class="sticky-top">
 
-<div class="header">🛒 CDO Frozen Products</div>
+<div class="header">
+🛒 CDO Frozen Products
+<div class="badge" id="badge">0</div>
+</div>
 
 <div class="impact">
 💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
@@ -237,7 +258,7 @@ body{
 2. Please allow 1 day lead time for order preparation.<br>
 3. Wait for our confirmation before making payment.<br>
 4. Send proof of payment once confirmed.<br><br>
-📍 We are located in Novaliches, Quezon City.<br>
+ 📍 We are located in Novaliches, Quezon City.<br>
 Please be mindful of Lalamove delivery coverage before placing your order.
 </div>
 
@@ -258,24 +279,23 @@ Please be mindful of Lalamove delivery coverage before placing your order.
 </div>
 
 <div class="bottom-bar">
+<div class="summary" id="summary"></div>
 <div id="total">Total: ₱0</div>
 <button class="checkout" onclick="openModal()">Checkout</button>
+<button class="clear" onclick="clearCart()">Clear Cart</button>
 </div>
 
-<!-- ✅ FORM -->
+<!-- FORM -->
 <div class="modal" id="modal">
   <div class="modal-box">
-
     <button class="close-btn" onclick="closeModal()">✖</button>
-
     <h3>Checkout Details</h3>
 
-    <input type="text" id="name" placeholder="Name">
-    <input type="text" id="contact" placeholder="Contact Number">
-    <input type="text" id="address" placeholder="Address">
+    <input id="name" placeholder="Name">
+    <input id="contact" placeholder="Contact Number">
+    <input id="address" placeholder="Address">
 
     <button class="checkout" onclick="submitOrder()">Submit Order</button>
-
   </div>
 </div>
 
@@ -285,6 +305,17 @@ Please be mindful of Lalamove delivery coverage before placing your order.
 let allProducts = [];
 let currentCategory = "All";
 
+/* 🔥 CART */
+let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+function saveCart(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function getKey(name,variant){
+  return name+"|"+variant;
+}
+
 function loadProducts(list){
   let grid = document.getElementById("grid");
   grid.innerHTML = "";
@@ -292,7 +323,7 @@ function loadProducts(list){
   list.forEach(p=>{
     grid.innerHTML += `
     <div class="card">
-      <img src="${p.image}">
+      <img src="images/${p.image}">
       <div class="details">
         <div class="name">${p.name}</div>
         <div class="desc">${p.description}</div>
@@ -301,61 +332,106 @@ function loadProducts(list){
         <button class="toggle-btn" onclick="toggle(this)">Select Options</button>
 
         <div style="display:none;">
-        ${p.variants.map(v=>`
+        ${p.variants.map(v=>{
+          let key=getKey(p.name,v.label);
+          let qty=cart[key]||0;
+
+          return `
           <div class="variant-row">
             <span>${v.label} ₱${v.price}</span>
             <div class="qty-box">
-              <button class="qty-btn" onclick="qty(this,-1)">-</button>
-              <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
-              <button class="qty-btn" onclick="qty(this,1)">+</button>
+              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},-1)">-</button>
+              <div class="qty">${qty}</div>
+              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},1)">+</button>
             </div>
           </div>
-        `).join("")}
+          `;
+        }).join("")}
         </div>
       </div>
     </div>
     `;
   });
+
+  updateUI();
 }
 
-function toggle(btn){
-  let box = btn.nextElementSibling;
-  box.style.display = box.style.display === "none" ? "block":"none";
+function updateQty(name,variant,price,val){
+  let key=getKey(name,variant);
+
+  cart[key]=(cart[key]||0)+val;
+
+  if(cart[key]<=0) delete cart[key];
+
+  saveCart();
+  loadProducts(filterList());
 }
 
-function qty(btn,val){
-  let el = btn.parentElement.querySelector(".qty");
-  let q = parseInt(el.innerText);
-  q = Math.max(0,q+val);
-  el.innerText = q;
-  updateTotal();
-}
-
-function updateTotal(){
+function updateUI(){
   let total=0;
-  document.querySelectorAll(".qty").forEach(e=>{
-    total += e.innerText * e.dataset.price;
-  });
-  document.getElementById("total").innerText = "Total: ₱"+total;
+  let count=0;
+  let summary="";
+
+  for(let key in cart){
+    let [name,variant]=key.split("|");
+    let qty=cart[key];
+
+    let price=0;
+    allProducts.forEach(p=>{
+      if(p.name===name){
+        p.variants.forEach(v=>{
+          if(v.label===variant) price=v.price;
+        });
+      }
+    });
+
+    total+=price*qty;
+    count+=qty;
+
+    summary+=`${name} (${variant}) x${qty}<br>`;
+  }
+
+  document.getElementById("total").innerText="Total: ₱"+total;
+  document.getElementById("badge").innerText=count;
+  document.getElementById("summary").innerHTML=summary;
+}
+
+function clearCart(){
+  cart={};
+  saveCart();
+  loadProducts(filterList());
+}
+
+function filterList(){
+  let list=allProducts;
+
+  if(currentCategory!=="All"){
+    list=list.filter(p=>p.category===currentCategory);
+  }
+
+  return list;
 }
 
 function filterCategory(cat,btn){
   currentCategory=cat;
+
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
 
-  if(cat==="All"){
-    loadProducts(allProducts);
-  }else{
-    loadProducts(allProducts.filter(p=>p.category===cat));
-  }
+  loadProducts(filterList());
 }
 
 function searchProducts(q){
-  let list = allProducts.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  let list=filterList().filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
   loadProducts(list);
 }
 
+function toggle(btn){
+  let box=btn.nextElementSibling;
+  box.style.display=box.style.display==="none"?"block":"none";
+}
+
+/* FORM */
 function openModal(){
   document.getElementById("modal").style.display="flex";
 }
@@ -364,36 +440,39 @@ function closeModal(){
   document.getElementById("modal").style.display="none";
 }
 
-window.onclick = function(e){
-  if(e.target.id==="modal"){
-    closeModal();
-  }
-}
-
 function submitOrder(){
 
   let name=document.getElementById("name").value;
   let contact=document.getElementById("contact").value;
   let address=document.getElementById("address").value;
 
-  if(!name || !contact || !address){
-    alert("Please complete all fields");
+  if(!name||!contact||!address){
+    alert("Complete all fields");
     return;
   }
 
   let message="🛒 ORDER:%0A%0A";
   let total=0;
 
-  document.querySelectorAll(".qty").forEach(e=>{
-    let q=parseInt(e.innerText);
-    if(q>0){
-      message += `${e.dataset.name} (${e.dataset.variant}) x${q}%0A`;
-      total += q*e.dataset.price;
-    }
-  });
+  for(let key in cart){
+    let [n,v]=key.split("|");
+    let qty=cart[key];
 
-  message += `%0ATotal: ₱${total}%0A`;
-  message += `Name: ${name}%0AContact: ${contact}%0AAddress: ${address}`;
+    let price=0;
+    allProducts.forEach(p=>{
+      if(p.name===n){
+        p.variants.forEach(x=>{
+          if(x.label===v) price=x.price;
+        });
+      }
+    });
+
+    message+=`${n} (${v}) x${qty}%0A`;
+    total+=price*qty;
+  }
+
+  message+=`%0ATotal: ₱${total}%0A`;
+  message+=`Name: ${name}%0AContact: ${contact}%0AAddress: ${address}`;
 
   window.location.href="https://m.me/BabyLeamOfficial?text="+message;
 }
