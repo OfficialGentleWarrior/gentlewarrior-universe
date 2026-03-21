@@ -9,7 +9,7 @@ body{
   font-family: Arial;
   margin:0;
   background:#f5f5f5;
-  padding-bottom:120px;
+  padding-bottom:180px;
 }
 
 .container{
@@ -30,41 +30,25 @@ body{
   color:white;
   padding:15px;
   text-align:center;
+  font-size:20px;
   font-weight:bold;
 }
 
 .impact{
   text-align:center;
   padding:10px;
+  font-size:14px;
   color:#27ae60;
 }
 
+/* GUIDELINES FIXED */
 .info{
   background:white;
   margin:10px;
-  padding:12px;
-  border-radius:10px;
+  padding:14px;
+  border-radius:12px;
   font-size:13px;
-}
-
-/* TABS */
-.tabs{
-  display:flex;
-  gap:5px;
-  padding:10px;
-}
-
-.tab{
-  flex:1;
-  padding:8px;
-  border:none;
-  border-radius:8px;
-  background:#ddd;
-}
-
-.tab.active{
-  background:#27ae60;
-  color:white;
+  line-height:1.6;
 }
 
 /* SEARCH */
@@ -79,108 +63,119 @@ body{
   border:1px solid #ccc;
 }
 
-/* PRODUCTS */
+/* GRID */
 .grid{
   display:grid;
+  grid-template-columns:1fr;
   gap:12px;
   padding:10px;
 }
 
+/* CARD */
 .card{
   background:white;
-  padding:12px;
   border-radius:12px;
+  padding:10px;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  cursor:pointer;
+  display:flex;
+  gap:10px;
 }
 
+/* IMAGE SIZE FIX */
 .card img{
-  width:100%;
-  border-radius:10px;
+  width:90px;
+  height:90px;
+  object-fit:contain;
+  border-radius:8px;
+  background:#fff;
 }
 
-.name{font-weight:bold;}
-.desc{font-size:12px;color:gray;}
-.price{color:#27ae60;font-weight:bold;}
+/* DETAILS */
+.details{
+  flex:1;
+}
 
+.name{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.desc{
+  font-size:12px;
+  color:gray;
+}
+
+.price{
+  color:#27ae60;
+  font-weight:bold;
+  margin-top:5px;
+}
+
+/* TOGGLE */
 .toggle-btn{
   width:100%;
-  margin-top:8px;
   padding:8px;
   border:none;
-  border-radius:8px;
   background:#eee;
+  border-radius:8px;
+  margin-top:8px;
+  font-size:12px;
+}
+
+/* VARIANTS */
+.variants{
+  margin-top:8px;
 }
 
 .variant-row{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin:6px 0;
+  font-size:13px;
 }
 
 .qty-box{
   display:flex;
-  gap:5px;
+  align-items:center;
+  gap:6px;
 }
 
 .qty-btn{
   background:#27ae60;
   color:white;
   border:none;
-  width:25px;
-  height:25px;
+  width:26px;
+  height:26px;
+  border-radius:6px;
 }
 
 .qty{
-  width:25px;
+  width:28px;
   text-align:center;
+  font-weight:bold;
 }
 
-/* CART */
+/* BOTTOM BAR FIX */
 .bottom-bar{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
   background:white;
-  padding:10px;
+  padding:12px;
   box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+  z-index:999;
 }
 
 .checkout{
   width:100%;
-  padding:10px;
+  padding:12px;
   background:#27ae60;
-  color:white;
   border:none;
+  color:white;
+  font-size:16px;
   border-radius:8px;
-}
-
-/* POPUP */
-.popup{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.popup-content{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  width:90%;
-}
-
-/* FORM */
-input,textarea{
-  width:100%;
-  padding:8px;
-  margin:5px 0;
 }
 </style>
 </head>
@@ -191,60 +186,37 @@ input,textarea{
 
 <div class="sticky-top">
 
-<div class="header">🛒 CDO Frozen Products</div>
+  <div class="header">🛒 CDO Frozen Products</div>
 
-<div class="impact">
-💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
-</div>
+  <div class="impact">
+    💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
+  </div>
 
-<div class="info">
-📦 <b>Order Guidelines:</b><br><br>
-• Delivery fee is shouldered by the buyer<br>
-• Please allow 1 day lead time<br>
-• Wait for confirmation before payment<br>
-• Send proof of payment once confirmed
-</div>
+  <!-- ✅ REVISED GUIDELINES -->
+  <div class="info">
+    📦 <b>Order Guidelines</b><br><br>
 
-<div class="tabs">
-<button class="tab active" onclick="filterCategory('all',this)">All</button>
-<button class="tab" onclick="filterCategory('frozen',this)">Frozen</button>
-<button class="tab" onclick="filterCategory('bakery',this)">Bakery</button>
-</div>
+    1. Delivery fee will be shouldered by the buyer.<br>
+    2. Please allow at least <b>1 day lead time</b> for order preparation.<br>
+    3. Kindly wait for our confirmation before making any payment.<br>
+    4. Once confirmed, please send your <b>proof of payment</b> to proceed with your order.<br><br>
 
-<div class="search">
-<input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
-</div>
+    💚 Thank you for supporting Baby Leam’s journey.
+  </div>
+
+  <div class="search">
+    <input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
+  </div>
 
 </div>
 
-<div id="productGrid" class="grid"></div>
+<div class="grid" id="productGrid"></div>
 
 </div>
 
 <div class="bottom-bar">
-<div id="total">Total: ₱0</div>
-<button class="checkout" onclick="openCheckoutForm()">Checkout via Messenger</button>
-</div>
-
-<!-- PRODUCT POPUP -->
-<div class="popup" id="popup">
-<div class="popup-content" id="popupContent"></div>
-</div>
-
-<!-- CHECKOUT FORM -->
-<div class="popup" id="checkoutPopup">
-<div class="popup-content">
-
-<h3>Checkout Details</h3>
-
-<input id="name" placeholder="Full Name">
-<input id="contact" placeholder="Contact Number">
-<textarea id="address" placeholder="Address"></textarea>
-
-<button onclick="sendOrder()" class="checkout">Submit Order</button>
-<button onclick="closeCheckout()">Cancel</button>
-
-</div>
+  <div id="total">Total: ₱0</div>
+  <button class="checkout" onclick="checkout()">Checkout via Messenger</button>
 </div>
 
 <script src="products.js"></script>
@@ -253,122 +225,118 @@ input,textarea{
 let allProducts = [];
 
 function loadProducts(list){
-  const grid=document.getElementById("productGrid");
-  grid.innerHTML="";
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
 
   list.forEach(p=>{
-    grid.innerHTML+=`
-    <div class="card" onclick="openPopup('${p.name}')">
-      <img src="${p.image}">
-      <div class="name">${p.name}</div>
-      <div class="desc">${p.description}</div>
-      <div class="price">₱${p.variants[0].price} - ₱${p.variants[p.variants.length-1].price}</div>
+    grid.innerHTML += `
+      <div class="card">
 
-      <button class="toggle-btn" onclick="event.stopPropagation();toggleVariants(this)">Select Options ▼</button>
+        <img src="${p.image}">
 
-      <div style="display:none;">
-      ${p.variants.map(v=>`
-        <div class="variant-row">
-          ${v.label} - ₱${v.price}
-          <div class="qty-box">
-            <button class="qty-btn" onclick="event.stopPropagation();changeQty(this,-1)">-</button>
-            <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
-            <button class="qty-btn" onclick="event.stopPropagation();changeQty(this,1)">+</button>
+        <div class="details">
+          <div class="name">${p.name}</div>
+          <div class="desc">${p.description || ""}</div>
+
+          <div class="price">
+            ₱${p.variants[0].price} - ₱${p.variants[p.variants.length-1].price}
           </div>
+
+          <button class="toggle-btn" onclick="toggleVariants(this)">
+            Select Options ▼
+          </button>
+
+          <div class="variants" style="display:none;">
+            ${p.variants.map(v=>`
+              <div class="variant-row">
+                <span>${v.label} - ₱${v.price}</span>
+
+                <div class="qty-box">
+                  <button class="qty-btn" onclick="changeQty(this,-1)">-</button>
+                  <div class="qty" data-name="${p.name}" data-variant="${v.label}" data-price="${v.price}">0</div>
+                  <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+
         </div>
-      `).join("")}
+
       </div>
-    </div>`;
+    `;
   });
 }
 
 function toggleVariants(btn){
-  let box=btn.nextElementSibling;
-  box.style.display=box.style.display==="none"?"block":"none";
+  let box = btn.nextElementSibling;
+
+  if(box.style.display === "none"){
+    box.style.display = "block";
+    btn.innerText = "Hide Options ▲";
+  }else{
+    box.style.display = "none";
+    btn.innerText = "Select Options ▼";
+  }
 }
 
-function changeQty(btn,val){
-  let el=btn.parentElement.querySelector(".qty");
-  let q=parseInt(el.innerText)+val;
-  if(q<0)q=0;
-  el.innerText=q;
+function changeQty(btn,change){
+  let qtyEl = btn.parentElement.querySelector(".qty");
+  let qty = parseInt(qtyEl.innerText);
+  qty += change;
+  if(qty < 0) qty = 0;
+  qtyEl.innerText = qty;
   updateTotal();
 }
 
 function updateTotal(){
-  let total=0;
+  let total = 0;
+
   document.querySelectorAll(".qty").forEach(el=>{
-    total+=el.innerText*el.dataset.price;
+    let qty = parseInt(el.innerText);
+    let price = parseInt(el.dataset.price);
+    total += qty * price;
   });
-  document.getElementById("total").innerText="Total: ₱"+total;
+
+  document.getElementById("total").innerText = "Total: ₱" + total;
 }
 
-function openCheckoutForm(){
-  document.getElementById("checkoutPopup").style.display="flex";
-}
-
-function closeCheckout(){
-  document.getElementById("checkoutPopup").style.display="none";
-}
-
-function sendOrder(){
-  let name=document.getElementById("name").value.trim();
-  let contact=document.getElementById("contact").value.trim();
-  let address=document.getElementById("address").value.trim();
-
-  if(!name||!contact||!address){
-    alert("Please complete all fields");
-    return;
-  }
-
-  let msg="🛒 ORDER DETAILS:%0A%0A";
-  let total=0;
+function checkout(){
+  let message = "🛒 ORDER DETAILS:%0A%0A";
+  let total = 0;
+  let hasOrder = false;
 
   document.querySelectorAll(".qty").forEach(el=>{
-    let q=parseInt(el.innerText);
-    if(q>0){
-      msg+=`• ${el.dataset.name} (${el.dataset.variant}) x${q}%0A`;
-      total+=q*el.dataset.price;
+    let qty = parseInt(el.innerText);
+    let name = el.dataset.name;
+    let variant = el.dataset.variant;
+    let price = parseInt(el.dataset.price);
+
+    if(qty > 0){
+      hasOrder = true;
+      message += `• ${name} (${variant}) x${qty}%0A`;
+      total += qty * price;
     }
   });
 
-  msg+=`%0ATotal: ₱${total}%0A%0A`;
-  msg+=`Name: ${name}%0AContact: ${contact}%0AAddress: ${address}`;
-
-  window.location.href="https://m.me/BabyLeamOfficial?text="+msg;
-}
-
-function searchProducts(q){
-  loadProducts(allProducts.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())));
-}
-
-function filterCategory(cat,btn){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  btn.classList.add("active");
-
-  if(cat==="all"){
-    loadProducts(allProducts);
-  }else{
-    loadProducts(allProducts.filter(p=>p.category===cat));
+  if(!hasOrder){
+    alert("Please select at least 1 product");
+    return;
   }
+
+  message += `%0A💰 Total: ₱${total}%0A%0A`;
+  message += "📌 Name:%0AContact Number:%0AAddress:%0A";
+
+  window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
 }
 
-function openPopup(name){
-  let p=allProducts.find(x=>x.name===name);
-  document.getElementById("popupContent").innerHTML=`
-    <h3>${p.name}</h3>
-    <img src="${p.image}" style="width:100%">
-    <p>${p.description}</p>
-    <button onclick="closePopup()">Close</button>
-  `;
-  document.getElementById("popup").style.display="flex";
+function searchProducts(query){
+  const filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(query.toLowerCase())
+  );
+  loadProducts(filtered);
 }
 
-function closePopup(){
-  document.getElementById("popup").style.display="none";
-}
-
-allProducts=products;
+allProducts = products;
 loadProducts(products);
 </script>
 
