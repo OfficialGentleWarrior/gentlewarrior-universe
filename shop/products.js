@@ -36,7 +36,7 @@ const products = [
 
   {
     name: "Young Pork Barbecue",
-    image: "images/tocino.jpg",
+    image: "images/bbq.jpg",
     description: "Sweet and savory barbecue flavor",
     category: "Frozen Meat",
     variants: [
@@ -60,7 +60,7 @@ const products = [
 
   {
     name: "CDO Idol Cheesedog (JUMBO)",
-    image: "images/longganisa.jpg",
+    image: "images/jumbo.jpg",
     description: "Delightfully creamy cheese bits in every bite.",
     category: "Frozen Meat",
     variants: [
