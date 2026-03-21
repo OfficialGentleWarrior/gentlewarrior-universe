@@ -136,6 +136,13 @@ body{
   justify-content:space-between;
   margin:4px 0;
   font-size:11px;
+  padding:4px;
+  border-radius:6px;
+}
+
+.variant-active{
+  background:#e8f8f0;
+  border:1px solid #27ae60;
 }
 
 .qty-box{
@@ -158,7 +165,6 @@ body{
   font-size:11px;
 }
 
-/* BOTTOM */
 .bottom-bar{
   position:fixed;
   bottom:0;
@@ -255,7 +261,7 @@ body{
 2. Please allow 1 day lead time for order preparation.<br>
 3. Wait for our confirmation before making payment.<br>
 4. Send proof of payment once confirmed.<br><br>
-📍  We are located in Novaliches, Quezon City.<br>
+📍 We are located in Novaliches, Quezon City.<br>
 Please be mindful of Lalamove delivery coverage before placing your order.
 </div>
 
@@ -301,7 +307,6 @@ Please be mindful of Lalamove delivery coverage before placing your order.
 let allProducts = [];
 let currentCategory = "All";
 
-/* 🔥 CART */
 let cart = JSON.parse(localStorage.getItem("cart")) || {};
 
 function saveCart(){
@@ -317,6 +322,8 @@ function loadProducts(list){
   grid.innerHTML = "";
 
   list.forEach(p=>{
+    let hasItem = p.variants.some(v => cart[getKey(p.name,v.label)]);
+
     grid.innerHTML += `
     <div class="card">
       <img src="${p.image}">
@@ -325,20 +332,22 @@ function loadProducts(list){
         <div class="desc">${p.description}</div>
         <div class="price">₱${p.variants[0].price}</div>
 
-        <button class="toggle-btn" onclick="toggle(this)">Select Options</button>
+        <button class="toggle-btn" onclick="toggle(this)">
+          ${hasItem ? "Edit Selection" : "Select Options"}
+        </button>
 
-        <div style="display:none;">
+        <div style="display:${hasItem ? "block":"none"};">
         ${p.variants.map(v=>{
           let key=getKey(p.name,v.label);
           let qty=cart[key]||0;
 
           return `
-          <div class="variant-row">
+          <div class="variant-row ${qty>0?'variant-active':''}">
             <span>${v.label} ₱${v.price}</span>
             <div class="qty-box">
-              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},-1)">-</button>
+              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},-1,this)">-</button>
               <div class="qty">${qty}</div>
-              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},1)">+</button>
+              <button class="qty-btn" onclick="updateQty('${p.name}','${v.label}',${v.price},1,this)">+</button>
             </div>
           </div>
           `;
@@ -352,12 +361,25 @@ function loadProducts(list){
   updateUI();
 }
 
-function updateQty(name,variant,price,val){
+function updateQty(name,variant,price,val,btn){
   let key=getKey(name,variant);
+
   cart[key]=(cart[key]||0)+val;
   if(cart[key]<=0) delete cart[key];
+
   saveCart();
-  loadProducts(filterList());
+
+  let qtyEl = btn.parentElement.querySelector(".qty");
+  qtyEl.innerText = cart[key] || 0;
+
+  let row = btn.closest(".variant-row");
+  if(cart[key]>0){
+    row.classList.add("variant-active");
+  }else{
+    row.classList.remove("variant-active");
+  }
+
+  updateUI();
 }
 
 function updateUI(){
