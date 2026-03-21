@@ -2,22 +2,15 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gentle Warrior Shop</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  margin: 0;
-}
+body { font-family: Arial; margin:0; background:#f5f5f5; }
 
-/* STICKY TOP */
 .sticky-top{
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  background: #f5f5f5;
-  padding-bottom: 10px;
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:#f5f5f5;
 }
 
 .header{
@@ -26,187 +19,151 @@ body {
   text-align:center;
   padding:15px;
   font-weight:bold;
-  font-size:18px;
 }
 
 .impact{
   text-align:center;
   padding:10px;
   color:#2ecc71;
-  font-size:14px;
 }
 
 .info{
-  background:#fff;
+  background:white;
   margin:10px;
-  padding:15px;
+  padding:10px;
   border-radius:10px;
   font-size:13px;
 }
 
-.search{
-  padding:10px;
-}
-
+.search{ padding:10px; }
 .search input{
   width:100%;
-  padding:12px;
+  padding:10px;
   border-radius:10px;
   border:1px solid #ccc;
 }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns: repeat(2,1fr);
-  gap:10px;
-  padding:10px;
-}
-
 .card{
   background:white;
-  border-radius:12px;
+  margin:10px;
   padding:10px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  border-radius:12px;
 }
 
 .card img{
   width:100%;
-  border-radius:10px;
+  height:140px;
+  object-fit:contain;
 }
 
-.name{
-  font-weight:bold;
-  margin-top:5px;
-}
+.name{ font-weight:bold; }
+.desc{ font-size:12px; color:#666; }
 
-.desc{
-  font-size:12px;
-  color:#666;
-}
-
-.price{
-  color:#2ecc71;
-  font-weight:bold;
-}
-
-/* VARIANT */
-.variant{
-  width:100%;
-  margin-top:5px;
-  padding:8px;
-  border-radius:8px;
-}
-
-/* QTY */
-.qty-box{
+.variant-row{
   display:flex;
-  justify-content:center;
+  justify-content:space-between;
   align-items:center;
   margin-top:8px;
+  font-size:14px;
+}
+
+.qty-box{
+  display:flex;
+  align-items:center;
 }
 
 .qty-btn{
   background:#27ae60;
   color:white;
   border:none;
-  width:35px;
-  height:35px;
-  border-radius:8px;
+  width:30px;
+  height:30px;
+  border-radius:6px;
 }
 
-.qty{
-  margin:0 10px;
-}
+.qty{ margin:0 8px; }
 
-/* FOOTER */
 .footer{
   position:fixed;
   bottom:0;
   width:100%;
   background:white;
   padding:10px;
-  box-shadow:0 -2px 5px rgba(0,0,0,0.1);
 }
 
 button{
   width:100%;
   padding:15px;
-  border:none;
-  border-radius:10px;
   background:#2ecc71;
   color:white;
-  font-size:16px;
+  border:none;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- STICKY -->
 <div class="sticky-top">
   <div class="header">🛒 CDO Frozen Products</div>
 
   <div class="impact">
-    💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
+    💚 Every purchase helps support Baby Leam’s therapy
   </div>
 
   <div class="info">
-    📦 <b>Order Guidelines:</b><br><br>
+    📦 Order Guidelines:<br><br>
     1. Delivery fee will be shouldered by the buyer.<br>
-    2. Please allow 1 day lead time for order preparation.<br>
-    3. Wait for our confirmation before making payment.<br>
-    4. Send proof of payment once confirmed.<br>
+    2. 1 day lead time.<br>
+    3. Wait for confirmation before payment.<br>
+    4. Send proof of payment.
   </div>
 
   <div class="search">
-    <input type="text" placeholder="🔍 Search products..." oninput="searchProducts(this.value)">
+    <input placeholder="Search..." oninput="searchProducts(this.value)">
   </div>
 </div>
 
-<!-- PRODUCTS -->
-<div class="grid" id="grid"></div>
+<div id="products"></div>
 
-<!-- FOOTER -->
 <div class="footer">
   <div id="total">Total: ₱0</div>
   <button onclick="checkout()">Checkout via Messenger</button>
 </div>
 
-<!-- PRODUCTS DATA -->
 <script src="products.js"></script>
 
 <script>
 let allProducts = [];
 
 function loadProducts(list){
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+  const container = document.getElementById("products");
+  container.innerHTML = "";
 
   list.forEach(p=>{
-    grid.innerHTML += `
+    let html = `
       <div class="card">
         <img src="${p.image}">
         <div class="name">${p.name}</div>
-        <div class="desc">${p.description || ""}</div>
-
-        <div class="price">₱${p.variants[0].price}</div>
-
-        <select class="variant" onchange="updateTotal()">
-          ${p.variants.map(v =>
-            `<option value="${v.price}">
-              ${v.label} - ₱${v.price}
-            </option>`
-          ).join("")}
-        </select>
-
-        <div class="qty-box">
-          <button class="qty-btn" onclick="changeQty(this,-1)">-</button>
-          <div class="qty" data-name="${p.name}">0</div>
-          <button class="qty-btn" onclick="changeQty(this,1)">+</button>
-        </div>
-      </div>
+        <div class="desc">${p.description}</div>
     `;
+
+    p.variants.forEach(v=>{
+      html += `
+        <div class="variant-row">
+          <div>${v.label} - ₱${v.price}</div>
+
+          <div class="qty-box">
+            <button class="qty-btn" onclick="changeQty(this,-1,${v.price},'${p.name}','${v.label}')">-</button>
+            <div class="qty" data-price="${v.price}" data-name="${p.name}" data-variant="${v.label}">0</div>
+            <button class="qty-btn" onclick="changeQty(this,1,${v.price},'${p.name}','${v.label}')">+</button>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    container.innerHTML += html;
   });
 }
 
@@ -224,9 +181,9 @@ function changeQty(btn, change){
 function updateTotal(){
   let total = 0;
 
-  document.querySelectorAll(".card").forEach(card=>{
-    let qty = parseInt(card.querySelector(".qty").innerText);
-    let price = parseInt(card.querySelector(".variant").value);
+  document.querySelectorAll(".qty").forEach(el=>{
+    let qty = parseInt(el.innerText);
+    let price = parseInt(el.dataset.price);
 
     total += qty * price;
   });
@@ -237,28 +194,26 @@ function updateTotal(){
 function checkout(){
   let message = "🛒 ORDER DETAILS:%0A%0A";
   let total = 0;
-  let hasOrder = false;
 
-  document.querySelectorAll(".card").forEach(card=>{
-    let qty = parseInt(card.querySelector(".qty").innerText);
-    let name = card.querySelector(".qty").dataset.name;
-    let variantText = card.querySelector(".variant").selectedOptions[0].text;
-    let price = parseInt(card.querySelector(".variant").value);
+  document.querySelectorAll(".qty").forEach(el=>{
+    let qty = parseInt(el.innerText);
+    let name = el.dataset.name;
+    let variant = el.dataset.variant;
+    let price = parseInt(el.dataset.price);
 
     if(qty > 0){
-      hasOrder = true;
-      message += `• ${name} (${variantText}) x${qty}%0A`;
+      message += `${name} (${variant}) x${qty}%0A`;
       total += qty * price;
     }
   });
 
-  if(!hasOrder){
-    alert("Please select at least 1 product");
+  if(total === 0){
+    alert("Select at least 1 product");
     return;
   }
 
-  message += "%0A💰 Total: ₱" + total + "%0A%0A";
-  message += "📌 Name:%0AContact:%0AAddress:%0A";
+  message += "%0ATotal: ₱" + total;
+  message += "%0A%0AName:%0AAddress:%0A";
 
   window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
 }
@@ -270,7 +225,6 @@ function searchProducts(q){
   loadProducts(filtered);
 }
 
-/* INIT */
 allProducts = products;
 loadProducts(products);
 </script>
