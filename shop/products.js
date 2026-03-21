@@ -1,26 +1,16 @@
 const products = [
   {
-    name: "Bacon",
-    price: 120,
-    image: "bacon.jpg",
-    description: "Premium breakfast bacon"
-  },
-  {
-    name: "Hotdog",
-    price: 180,
-    image: "hotdog.jpg",
-    description: "Juicy hotdog, perfect for kids"
-  },
-  {
-    name: "Nuggets",
-    price: 150,
-    image: "nuggets.jpg",
-    description: "Crispy chicken nuggets"
-  },
-  {
-    name: "Burger Patties",
-    price: 140,
-    image: "burger.jpg",
-    description: "Ready-to-cook burger patties"
+    name: "Young Pork Tocino",
+    image: "tocino.jpg",
+    description: "Sweet and savory tocino",
+    category: "Frozen Meat",
+
+    variants: [
+      { label: "150g", price: 64 },
+      { label: "225g", price: 76 },
+      { label: "450g", price: 149 },
+      { label: "1kg", price: 324 },
+      { label: "5kg", price: 1600 }
+    ]
   }
 ];
