@@ -5,65 +5,60 @@
 <title>Gentle Warrior Shop</title>
 
 <style>
-body{
-  font-family: Arial;
-  margin:0;
-  background:#f5f5f5;
-  padding-bottom:120px;
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
 }
 
-/* ✅ STICKY CONTAINER */
+/* STICKY TOP */
 .sticky-top{
   position: sticky;
   top: 0;
   z-index: 999;
-  background:#f5f5f5;
+  background: #f5f5f5;
+  padding-bottom: 10px;
 }
 
-/* HEADER */
 .header{
-  background:#1e4d2b;
+  background:#1e5631;
   color:white;
-  padding:15px;
   text-align:center;
-  font-size:20px;
+  padding:15px;
   font-weight:bold;
+  font-size:18px;
 }
 
-/* IMPACT */
 .impact{
   text-align:center;
   padding:10px;
+  color:#2ecc71;
   font-size:14px;
-  color:#27ae60;
 }
 
-/* GUIDELINES */
 .info{
-  background:white;
+  background:#fff;
   margin:10px;
-  padding:12px;
+  padding:15px;
   border-radius:10px;
   font-size:13px;
-  line-height:1.5;
 }
 
-/* SEARCH */
 .search{
-  margin:10px;
+  padding:10px;
 }
 
 .search input{
   width:100%;
-  padding:10px;
-  border-radius:8px;
+  padding:12px;
+  border-radius:10px;
   border:1px solid #ccc;
 }
 
-/* PRODUCTS */
+/* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns: repeat(2,1fr);
   gap:10px;
   padding:10px;
 }
@@ -72,7 +67,7 @@ body{
   background:white;
   border-radius:12px;
   padding:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
 .card img{
@@ -87,19 +82,27 @@ body{
 
 .desc{
   font-size:12px;
-  color:gray;
+  color:#666;
 }
 
 .price{
-  color:#27ae60;
+  color:#2ecc71;
   font-weight:bold;
 }
 
+/* VARIANT */
+.variant{
+  width:100%;
+  margin-top:5px;
+  padding:8px;
+  border-radius:8px;
+}
+
+/* QTY */
 .qty-box{
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:10px;
   margin-top:8px;
 }
 
@@ -107,86 +110,77 @@ body{
   background:#27ae60;
   color:white;
   border:none;
-  width:30px;
-  height:30px;
-  border-radius:6px;
-  font-size:18px;
+  width:35px;
+  height:35px;
+  border-radius:8px;
 }
 
 .qty{
-  width:40px;
-  text-align:center;
-  font-weight:bold;
+  margin:0 10px;
 }
 
-/* BOTTOM BAR */
-.bottom-bar{
+/* FOOTER */
+.footer{
   position:fixed;
   bottom:0;
-  left:0;
-  right:0;
+  width:100%;
   background:white;
   padding:10px;
-  box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+  box-shadow:0 -2px 5px rgba(0,0,0,0.1);
 }
 
-.total{
-  font-weight:bold;
-}
-
-.checkout{
+button{
   width:100%;
-  padding:12px;
-  background:#27ae60;
+  padding:15px;
   border:none;
+  border-radius:10px;
+  background:#2ecc71;
   color:white;
   font-size:16px;
-  border-radius:8px;
-  margin-top:8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ✅ FULL STICKY -->
+<!-- STICKY -->
 <div class="sticky-top">
-
   <div class="header">🛒 CDO Frozen Products</div>
 
   <div class="impact">
-  💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
+    💚 Every purchase helps support Baby Leam’s therapy and assistive devices.
   </div>
 
   <div class="info">
-  📦 <b>Order Guidelines:</b><br><br>
-  1. Delivery fee will be shouldered by the buyer.<br>
-  2. Please allow 1 day lead time for order preparation. We will inform you if any item is out of stock.<br>
-  3. Wait for our confirmation before making any payment.<br>
-  4. Once confirmed, kindly send proof of payment to proceed with your order.
+    📦 <b>Order Guidelines:</b><br><br>
+    1. Delivery fee will be shouldered by the buyer.<br>
+    2. Please allow 1 day lead time for order preparation.<br>
+    3. Wait for our confirmation before making payment.<br>
+    4. Send proof of payment once confirmed.<br>
   </div>
 
   <div class="search">
     <input type="text" placeholder="🔍 Search products..." oninput="searchProducts(this.value)">
   </div>
-
 </div>
 
 <!-- PRODUCTS -->
-<div class="grid" id="productGrid"></div>
+<div class="grid" id="grid"></div>
 
-<div class="bottom-bar">
-  <div class="total" id="total">Total: ₱0</div>
-  <button class="checkout" onclick="checkout()">Checkout via Messenger</button>
+<!-- FOOTER -->
+<div class="footer">
+  <div id="total">Total: ₱0</div>
+  <button onclick="checkout()">Checkout via Messenger</button>
 </div>
 
+<!-- PRODUCTS DATA -->
 <script src="products.js"></script>
 
 <script>
 let allProducts = [];
 
 function loadProducts(list){
-  const grid = document.getElementById("productGrid");
+  const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
   list.forEach(p=>{
@@ -195,11 +189,20 @@ function loadProducts(list){
         <img src="${p.image}">
         <div class="name">${p.name}</div>
         <div class="desc">${p.description || ""}</div>
-        <div class="price">₱${p.price}</div>
+
+        <div class="price">₱${p.variants[0].price}</div>
+
+        <select class="variant" onchange="updateTotal()">
+          ${p.variants.map(v =>
+            `<option value="${v.price}">
+              ${v.label} - ₱${v.price}
+            </option>`
+          ).join("")}
+        </select>
 
         <div class="qty-box">
           <button class="qty-btn" onclick="changeQty(this,-1)">-</button>
-          <div class="qty" data-name="${p.name}" data-price="${p.price}">0</div>
+          <div class="qty" data-name="${p.name}">0</div>
           <button class="qty-btn" onclick="changeQty(this,1)">+</button>
         </div>
       </div>
@@ -207,29 +210,27 @@ function loadProducts(list){
   });
 }
 
-function searchProducts(query){
-  const filtered = allProducts.filter(p =>
-    p.name.toLowerCase().includes(query.toLowerCase())
-  );
-  loadProducts(filtered);
-}
-
-function changeQty(btn,change){
+function changeQty(btn, change){
   let qtyEl = btn.parentElement.querySelector(".qty");
   let qty = parseInt(qtyEl.innerText);
+
   qty += change;
   if(qty < 0) qty = 0;
+
   qtyEl.innerText = qty;
   updateTotal();
 }
 
 function updateTotal(){
   let total = 0;
-  document.querySelectorAll(".qty").forEach(el=>{
-    let qty = parseInt(el.innerText);
-    let price = parseInt(el.dataset.price);
+
+  document.querySelectorAll(".card").forEach(card=>{
+    let qty = parseInt(card.querySelector(".qty").innerText);
+    let price = parseInt(card.querySelector(".variant").value);
+
     total += qty * price;
   });
+
   document.getElementById("total").innerText = "Total: ₱" + total;
 }
 
@@ -238,14 +239,15 @@ function checkout(){
   let total = 0;
   let hasOrder = false;
 
-  document.querySelectorAll(".qty").forEach(el=>{
-    let qty = parseInt(el.innerText);
-    let name = el.dataset.name;
-    let price = el.dataset.price;
+  document.querySelectorAll(".card").forEach(card=>{
+    let qty = parseInt(card.querySelector(".qty").innerText);
+    let name = card.querySelector(".qty").dataset.name;
+    let variantText = card.querySelector(".variant").selectedOptions[0].text;
+    let price = parseInt(card.querySelector(".variant").value);
 
     if(qty > 0){
       hasOrder = true;
-      message += "• " + name + " x" + qty + "%0A";
+      message += `• ${name} (${variantText}) x${qty}%0A`;
       total += qty * price;
     }
   });
@@ -256,14 +258,19 @@ function checkout(){
   }
 
   message += "%0A💰 Total: ₱" + total + "%0A%0A";
-  message += "📌 Customer Details:%0A";
-  message += "Name:%0A";
-  message += "Contact Number:%0A";
-  message += "Address:%0A";
+  message += "📌 Name:%0AContact:%0AAddress:%0A";
 
   window.location.href = "https://m.me/BabyLeamOfficial?text=" + message;
 }
 
+function searchProducts(q){
+  let filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(q.toLowerCase())
+  );
+  loadProducts(filtered);
+}
+
+/* INIT */
 allProducts = products;
 loadProducts(products);
 </script>
