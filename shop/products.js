@@ -111,13 +111,12 @@ const products = [
 },
 
 {
-  name: "Holiday Cheesedog Footlong (Jumbo)",
+  name: "Holiday Cheesedog Footlong (regular 14 pcs)",
   image: "images/footlong.jpg",
   description: "Mahaba, makeso at masarap",
   category: "Frozen Meat",
   variants: [
-    { label: "500g", price: 99 },
-    { label: "1kg", price: 174 }
+    { label: "1kg", price: 168 }
   ]
 },
 
