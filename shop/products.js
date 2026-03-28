@@ -52,9 +52,7 @@ const products = [
   description: "Deliciously tender, seasoned with special spices",
   category: "Frozen Meat",
   variants: [
-    { label: "240g", price: 87 },
-    { label: "440g", price: 153 },
-    { label: "1kg", price: 336 }
+    { label: "250g", price: 81 },
   ]
 },
 
