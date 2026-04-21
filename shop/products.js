@@ -62,8 +62,8 @@ const products = [
   description: "Creamy cheese bits in every bite",
   category: "Frozen Meat",
   variants: [
-    { label: "500g", price: 106 },
-    { label: "1kg", price: 175 }
+    { label: "500g", price: 112 },
+    { label: "1kg", price: 182 }
   ]
 },
 
@@ -73,7 +73,7 @@ const products = [
   description: "Cheese-filled goodness in bite-sized pieces",
   category: "Frozen Meat",
   variants: [
-    { label: "1kg", price: 178 }
+    { label: "1kg", price: 183 }
   ]
 },
 
@@ -135,7 +135,7 @@ const products = [
   description: "Smoky and crispy-sarap",
   category: "Frozen Meat",
   variants: [
-    { label: "200g", price: 100 }
+    { label: "200g", price: 108 }
   ]
 },
 
