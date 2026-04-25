@@ -40,8 +40,8 @@ const products = [
   description: "Sweet and savory barbecue flavor",
   category: "Frozen Meat",
   variants: [
-    { label: "225g", price: 85 },
-    { label: "450g", price: 167 },
+    { label: "225g", price: 86 },
+    { label: "450g", price: 168 },
     { label: "1kg", price: 361 }
   ]
 },
@@ -125,7 +125,7 @@ const products = [
   category: "Frozen Meat",
   variants: [
     { label: "250g", price: 55 },
-    { label: "1kg", price: 174 }
+    { label: "1kg", price: 180 }
   ]
 },
 
