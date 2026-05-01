@@ -200,6 +200,36 @@ const products = [
 },
 
 {
+  name: "CDO Premium Tonkatsu",
+  image: "images/tonkatsu.jpg",
+  description: "Japanese style pork cutlet ",
+  category: "Frozen Meat",
+  variants: [
+    { label: "420g", price: 178 }
+  ]
+},
+
+{
+  name: "CDO Cheesy Tonkatsu",
+  image: "images/cheesytonkatsu.jpg",
+  description: "Japanese style pork cutlet with mozzarela and cheddar cheese bits ",
+  category: "Frozen Meat",
+  variants: [
+    { label: "420g", price: 178 }
+  ]
+},
+
+{
+  name: "CDO Premium Torikatsu",
+  image: "images/torikatsu.jpg",
+  description: "Japanese style chicken cutlet ",
+  category: "Frozen Meat",
+  variants: [
+    { label: "420g", price: 178 }
+  ]
+},
+
+{
   name: "CDO Chicken Nuggets with Cheese Powder",
   image: "images/chicken-nuggets.jpg",
   description: "Bite-sized chicken with cheese flavor",
@@ -226,16 +256,6 @@ const products = [
   category: "Bakery",
   variants: [
     { label: "1kg", price: 187 }
-  ]
-},
-
-{
-  name: "Holiday Siopao Bola-Bola Mini",
-  image: "images/bola-bola.jpg",
-  description: "Garlicky bola-bola filling",
-  category: "Bakery",
-  variants: [
-    { label: "1.32kg", price: 195 }
   ]
 },
 
