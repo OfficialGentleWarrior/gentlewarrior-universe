@@ -240,6 +240,16 @@ const products = [
 },
 
 {
+  name: "Holiday Lumpiang Shanghai",
+  image: "images/shanghai.jpg",
+  description: "Indulge in the delicious and traditional Filipino flavors of Holiday Lumpia.",
+  category: "Frozen Meat",
+  variants: [
+    { label: "850g", price: 150 }
+  ]
+},
+
+{
   name: "Holiday Siopao Asado Regular",
   image: "images/asado.jpg",
   description: "Soft buns with savory pork asado filling",
