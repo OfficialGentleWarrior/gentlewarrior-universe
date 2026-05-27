@@ -8,7 +8,7 @@ const products = [
   variants: [
     { label: "150g", price: 64 },
     { label: "225g", price: 76 },
-    { label: "450g", price: 149 },
+    { label: "450g", price: 153 },
     { label: "1kg", price: 324 },
     { label: "5kg", price: 1600 }
   ]
@@ -40,7 +40,7 @@ const products = [
   description: "Sweet and savory barbecue flavor",
   category: "Frozen Meat",
   variants: [
-    { label: "225g", price: 86 },
+    { label: "225g", price: 88 },
     { label: "450g", price: 168 },
     { label: "1kg", price: 361 }
   ]
@@ -62,7 +62,7 @@ const products = [
   description: "Creamy cheese bits in every bite",
   category: "Frozen Meat",
   variants: [
-    { label: "500g", price: 112 },
+    { label: "500g", price: 113 },
     { label: "1kg", price: 182 }
   ]
 },
@@ -94,7 +94,7 @@ const products = [
   description: "Mini breakfast burgers with more pieces per pack",
   category: "Frozen Meat",
   variants: [
-    { label: "225g", price: 63 }
+    { label: "225g", price: 65 }
   ]
 },
 
@@ -104,7 +104,7 @@ const products = [
   description: "With real cheese bits in every bite",
   category: "Frozen Meat",
   variants: [
-    { label: "228g", price: 59 }
+    { label: "228g", price: 60 }
   ]
 },
 
@@ -114,7 +114,7 @@ const products = [
   description: "Mahaba, makeso at masarap",
   category: "Frozen Meat",
   variants: [
-    { label: "1kg", price: 168 }
+    { label: "1kg", price: 170 }
   ]
 },
 
@@ -124,8 +124,8 @@ const products = [
   description: "Cheesy and juicy goodness",
   category: "Frozen Meat",
   variants: [
-    { label: "250g", price: 55 },
-    { label: "1kg", price: 180 }
+    { label: "250g", price: 56 },
+    { label: "1kg", price: 181 }
   ]
 },
 
@@ -135,7 +135,7 @@ const products = [
   description: "Smoky and crispy-sarap",
   category: "Frozen Meat",
   variants: [
-    { label: "200g", price: 108 }
+    { label: "200g", price: 112 }
   ]
 },
 
@@ -145,7 +145,7 @@ const products = [
   description: "Enjoyable and affordable",
   category: "Frozen Meat",
   variants: [
-    { label: "240g", price: 52 }
+    { label: "240g", price: 53 }
   ]
 },
 
@@ -155,7 +155,7 @@ const products = [
   description: "Delicious chicken meat in yellow wrapper",
   category: "Frozen Meat",
   variants: [
-    { label: "240g", price: 52 }
+    { label: "240g", price: 53 }
   ]
 },
 
@@ -165,7 +165,7 @@ const products = [
   description: "Juicy and flavorful Pinoy snack",
   category: "Frozen Meat",
   variants: [
-    { label: "220g", price: 45 }
+    { label: "220g", price: 46 }
   ]
 },
 
@@ -205,7 +205,7 @@ const products = [
   description: "Japanese style pork cutlet ",
   category: "Frozen Meat",
   variants: [
-    { label: "420g", price: 178 }
+    { label: "420g", price: 181 }
   ]
 },
 
@@ -215,7 +215,7 @@ const products = [
   description: "Japanese style pork cutlet with mozzarela and cheddar cheese bits ",
   category: "Frozen Meat",
   variants: [
-    { label: "420g", price: 178 }
+    { label: "420g", price: 181 }
   ]
 },
 
@@ -225,7 +225,7 @@ const products = [
   description: "Japanese style chicken cutlet ",
   category: "Frozen Meat",
   variants: [
-    { label: "420g", price: 178 }
+    { label: "420g", price: 181 }
   ]
 },
 
@@ -235,7 +235,7 @@ const products = [
   description: "Bite-sized chicken with cheese flavor",
   category: "Frozen Meat",
   variants: [
-    { label: "200g", price: 96 }
+    { label: "200g", price: 97 }
   ]
 },
 
@@ -245,7 +245,7 @@ const products = [
   description: "Indulge in the delicious and traditional Filipino flavors of Holiday Lumpia.",
   category: "Frozen Meat",
   variants: [
-    { label: "850g", price: 150 }
+    { label: "850g", price: 152 }
   ]
 },
 
@@ -275,8 +275,7 @@ const products = [
   description: "Sweet ube with creamy cheese",
   category: "Bakery",
   variants: [
-    { label: "660g", price: 106 },
-    { label: "1.32kg", price: 236 }
+    { label: "660g", price: 108 },
   ]
 },
 
