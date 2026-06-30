@@ -1,149 +1,101 @@
-/* ==========================================
-   GENTLE WARRIOR DEALS
-   SCRIPT.JS
-========================================== */
+function loadCategory(category) {
 
-// ==========================================
-// BACK TO TOP BUTTON
-// ==========================================
+    const grid = document.getElementById("brandGrid");
 
-const backToTop = document.getElementById("backToTop");
+    if (!grid) return;
 
-window.addEventListener("scroll", () => {
+    const list = brands[category] || [];
 
-    if (window.scrollY > 300) {
+    renderBrands(list);
 
-        backToTop.style.opacity = "1";
-        backToTop.style.visibility = "visible";
+}
 
-    } else {
+function renderBrands(list) {
 
-        backToTop.style.opacity = "0";
-        backToTop.style.visibility = "hidden";
+    const grid = document.getElementById("brandGrid");
 
+    grid.innerHTML = "";
+
+    if (list.length === 0) {
+
+        grid.innerHTML = `
+            <div class="empty">
+                No brands available.
+            </div>
+        `;
+
+        return;
     }
 
-});
+    list.forEach(item => {
 
-backToTop.addEventListener("click", () => {
+        grid.innerHTML += `
 
-    window.scrollTo({
+        <div class="card">
 
-        top: 0,
-        behavior: "smooth"
+            <img src="${item.image}" alt="${item.name}">
 
-    });
+            <div class="details">
 
-});
+                <div class="name">
+                    ${item.name}
+                </div>
 
-// Hide button on page load
-backToTop.style.opacity = "0";
-backToTop.style.visibility = "hidden";
+                <div class="desc">
+                    ${item.description}
+                </div>
 
+                <a
+                    class="visit-btn"
+                    href="${item.link}"
+                    target="_blank"
+                    rel="noopener noreferrer">
 
-// ==========================================
-// SMOOTH SCROLL FOR INTERNAL LINKS
-// ==========================================
+                    Visit Store →
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                </a>
 
-    anchor.addEventListener("click", function (e) {
+            </div>
 
-        e.preventDefault();
+        </div>
 
-        const target = document.querySelector(this.getAttribute("href"));
-
-        if (target) {
-
-            target.scrollIntoView({
-
-                behavior: "smooth"
-
-            });
-
-        }
+        `;
 
     });
 
-});
+}
 
+function searchBrands() {
 
-// ==========================================
-// SIMPLE FADE-IN ANIMATION
-// ==========================================
+    const input = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
 
-const cards = document.querySelectorAll(".brand-card");
+    const page = window.location.pathname;
 
-const observer = new IntersectionObserver((entries) => {
+    let category = "";
 
-    entries.forEach(entry => {
+    if (page.includes("shopping"))
+        category = "shopping";
 
-        if (entry.isIntersecting) {
+    else if (page.includes("fashion"))
+        category = "fashion";
 
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
+    else if (page.includes("travel"))
+        category = "travel";
 
-        }
+    else if (page.includes("finance"))
+        category = "finance";
 
-    });
+    const filtered = brands[category].filter(item =>
 
-}, {
-    threshold: 0.15
-});
+        item.name.toLowerCase().includes(input) ||
 
-cards.forEach(card => {
+        item.description.toLowerCase().includes(input)
 
-    card.style.opacity = "0";
-    card.style.transform = "translateY(30px)";
-    card.style.transition = "all .6s ease";
+    );
 
-    observer.observe(card);
+    renderBrands(filtered);
 
-});
-
-
-// ==========================================
-// BUTTON CLICK EFFECT
-// ==========================================
-
-document.querySelectorAll(".visit-btn").forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        this.style.transform = "scale(.96)";
-
-        setTimeout(() => {
-
-            this.style.transform = "";
-
-        }, 120);
-
-    });
-
-});
-
-
-// ==========================================
-// CURRENT YEAR (Future use)
-// ==========================================
-
-const year = new Date().getFullYear();
-
-document.querySelectorAll(".currentYear").forEach(el => {
-
-    el.textContent = year;
-
-});
-
-
-// ==========================================
-// PAGE LOADED
-// ==========================================
-
-window.addEventListener("load", () => {
-
-    document.body.classList.add("loaded");
-
-    console.log("Gentle Warrior Deals loaded successfully.");
-
-});
+}
