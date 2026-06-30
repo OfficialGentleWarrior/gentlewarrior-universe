@@ -309,3 +309,19 @@ body{
 .category:hover .arrow{
     transform:translateX(4px);
 }
+.icon{
+    width:56px;
+    height:56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f4f7f5;
+    border-radius:14px;
+    color:#1e7a46;
+    margin-bottom:14px;
+}
+
+.icon svg{
+    width:30px;
+    height:30px;
+}
