@@ -290,3 +290,22 @@ body{
 .brand-icons img:hover{
     transform:scale(1.08);
 }
+.category-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:16px;
+    padding-top:12px;
+    border-top:1px solid #eee;
+    font-weight:600;
+    color:#27ae60;
+}
+
+.arrow{
+    font-size:18px;
+    transition:.2s;
+}
+
+.category:hover .arrow{
+    transform:translateX(4px);
+}
