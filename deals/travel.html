@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Travel</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<a href="index.html" class="back-btn">← Back</a>
+
+<h1>✈️ Travel</h1>
+
+<p>Travel bookings & experiences.</p>
+
+</div>
+
+<div class="info-box">
+
+💚 Every eligible purchase through our affiliate links helps support Baby Leam's therapy at no extra cost to you.
+
+</div>
+
+<div class="search-box">
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search brand..."
+onkeyup="searchBrands()">
+
+</div>
+
+<div class="brand-grid" id="brandGrid">
+
+</div>
+
+</div>
+
+<script src="brands.js"></script>
+<script src="script.js"></script>
+
+<script>
+
+loadCategory("travel");
+
+</script>
+
+</body>
+
+</html>
