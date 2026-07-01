@@ -24,7 +24,9 @@
 
 <div class="header-content">
 
-<img src="assets/brands/maribank.jpeg" class="profile-photo" alt="MariBank">
+<img src="assets/brands/maribank.jpeg"
+class="profile-photo"
+alt="MariBank">
 
 <div class="header-text">
 
@@ -41,17 +43,33 @@ Sign up using our referral code and receive
 
 </header>
 
+<!-- Referral Code -->
+
 <div class="info-card">
 
 <h2>🎁 Referral Code</h2>
 
-<div class="referral-code">
-YV646636
+<div class="referral-code"
+onclick="copyCode()"
+title="Tap to copy">
+
+<span id="code">YV646636</span>
+
 </div>
 
-<p style="text-align:center;">
-Use this referral code when creating your MariBank account.
+<div id="copyMessage" class="copy-message">
+
+✅ Referral code copied!
+
+</div>
+
+<p style="text-align:center;margin:18px 0 25px;">
+
+Tap the referral code above to copy it instantly.
+
 </p>
+
+<div style="text-align:center;">
 
 <a class="checkout"
 href="https://maribank.ph/c/earnfreemoney?referralCode=YV646636"
@@ -63,36 +81,61 @@ Sign Up with MariBank →
 
 </div>
 
+</div>
+
+<!-- Step by Step -->
+
 <div class="info-card">
 
 <h2>📋 Step-by-Step Guide</h2>
 
 <div class="step">
+
 <strong>① Create your account</strong><br>
-Tap the button above and register using the referral code <strong>YV646636</strong>.
+
+Tap the Sign Up button above and register using the referral code
+<strong>YV646636</strong>.
+
 </div>
 
 <div class="step">
+
 <strong>② Complete verification</strong><br>
-Finish the account verification process inside the MariBank app.
+
+Finish your account verification inside the MariBank app.
+
 </div>
 
 <div class="step">
-<strong>③ Deposit ₱1,000</strong><br>
-Make your first one-time deposit of at least <strong>PHP 1,000</strong>.
-</div>
 
+<strong>③ Deposit at least PHP 1,000</strong><br>
+
+Make your first one-time deposit of at least
+<strong>PHP 1,000</strong>.
+
+</div>
 <div class="step">
+
 <strong>④ Keep your balance</strong><br>
-Leave the PHP 1,000 in your account for at least <strong>3 days</strong>.
+
+Leave the PHP 1,000 in your account for at least
+<strong>3 days</strong>.
+
 </div>
 
 <div class="step">
+
 <strong>⑤ Receive your reward</strong><br>
-You'll receive <strong>PHP 150</strong> once the promo requirements are completed.
+
+You'll receive your
+<strong>PHP 150 Welcome Reward</strong>
+once the promo requirements are completed.
+
 </div>
 
 </div>
+
+<!-- Quick Summary -->
 
 <div class="info-card">
 
@@ -115,6 +158,7 @@ You'll receive <strong>PHP 150</strong> once the promo requirements are complete
 <div class="footer-box">
 
 Promo mechanics may change without prior notice.
+
 Please refer to the latest MariBank Terms & Conditions.
 
 <br><br>
@@ -124,6 +168,28 @@ Please refer to the latest MariBank Terms & Conditions.
 </div>
 
 </div>
+
+<script>
+
+function copyCode(){
+
+navigator.clipboard.writeText("YV646636").then(function(){
+
+const msg=document.getElementById("copyMessage");
+
+msg.style.display="block";
+
+setTimeout(function(){
+
+msg.style.display="none";
+
+},2000);
+
+});
+
+}
+
+</script>
 
 </body>
 
