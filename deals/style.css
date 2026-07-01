@@ -389,7 +389,47 @@ body{
     letter-spacing:2px;
     margin:15px 0;
 }
+.summary-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+margin-top:18px;
+}
 
+.summary-item{
+background:#f8f8f8;
+padding:16px;
+border-radius:12px;
+text-align:center;
+border:1px solid #e8e8e8;
+}
+
+.summary-item .label{
+display:block;
+font-size:13px;
+color:#666;
+margin-bottom:6px;
+}
+
+.summary-item strong{
+font-size:20px;
+color:#1f2937;
+}
+
+.tap-hint{
+text-align:center;
+color:#666;
+font-size:14px;
+margin-top:12px;
+}
+
+.copy-message{
+text-align:center;
+color:#16a34a;
+font-weight:600;
+margin-top:12px;
+transition:.3s;
+}
 .step{
     margin-bottom:18px;
     line-height:1.7;
@@ -399,3 +439,4 @@ body{
     padding-left:20px;
     line-height:1.8;
 }
+
