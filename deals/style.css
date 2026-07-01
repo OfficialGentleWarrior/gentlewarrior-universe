@@ -370,3 +370,32 @@ body{
 }
 
 }
+.info-card{
+    background:#fff;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.referral-code{
+    background:#f5f5f5;
+    border:2px dashed #27ae60;
+    border-radius:10px;
+    padding:16px;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+    letter-spacing:2px;
+    margin:15px 0;
+}
+
+.step{
+    margin-bottom:18px;
+    line-height:1.7;
+}
+
+.info-card ul{
+    padding-left:20px;
+    line-height:1.8;
+}
