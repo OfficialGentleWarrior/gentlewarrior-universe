@@ -18,7 +18,9 @@
 
 <header class="header">
 
-<a href="javascript:history.back()" class="back-btn">← Back</a>
+<a href="javascript:history.back()" class="back-btn">
+← Back
+</a>
 
 <div class="header-content">
 
@@ -31,7 +33,7 @@ alt="MariBank">
 <h1>MariBank Referral</h1>
 
 <p>
-Get <strong>PHP 150</strong> when you sign up using our referral code and complete the promo requirements.
+Earn <strong>PHP 150</strong> by signing up with MariBank using our referral code and completing the promo requirements.
 </p>
 
 </div>
@@ -46,16 +48,15 @@ Get <strong>PHP 150</strong> when you sign up using our referral code and comple
 
 <h2>🎁 Referral Code</h2>
 
-<div class="referral-code"
-onclick="copyCode()">
+<div class="referral-code" onclick="copyCode()">
 
 <span id="code">YV646636</span>
 
+<span class="copy-icon">📋</span>
+
 </div>
 
-<div id="copyMessage"
-class="copy-message"
-style="display:none;">
+<div id="copyMessage" class="copy-message" style="display:none;">
 
 ✅ Referral code copied!
 
@@ -63,11 +64,11 @@ style="display:none;">
 
 <p class="tap-hint">
 
-📋 Tap the referral code above to copy it.
+Tap the referral code above to copy it instantly.
 
 </p>
 
-<div style="text-align:center; margin-top:20px;">
+<div class="cta-wrap">
 
 <a class="checkout"
 href="https://maribank.ph/c/earnfreemoney?referralCode=YV646636"
@@ -81,7 +82,7 @@ Sign Up with MariBank →
 
 </div>
 
-<!-- STEP BY STEP -->
+<!-- Step-by-Step Guide -->
 
 <div class="info-card">
 
@@ -89,17 +90,17 @@ Sign Up with MariBank →
 
 <div class="step">
 
-<strong>① Sign up</strong><br>
+<strong>① Create your MariBank account</strong><br>
 
-Tap the button above and register your MariBank account.
+Tap <strong>Sign Up with MariBank</strong> above.
 
 </div>
 
 <div class="step">
 
-<strong>② Use Referral Code</strong><br>
+<strong>② Enter the referral code</strong><br>
 
-Enter the referral code:
+Use this code:
 
 <strong>YV646636</strong>
 
@@ -107,18 +108,17 @@ Enter the referral code:
 
 <div class="step">
 
-<strong>③ Complete Verification</strong><br>
+<strong>③ Complete account verification</strong><br>
 
-Finish the account verification process.
+Finish the verification process inside the MariBank app.
 
 </div>
 
 <div class="step">
 
-<strong>④ Deposit PHP 1,000</strong><br>
+<strong>④ Deposit at least PHP 1,000</strong><br>
 
-Make your first deposit of at least
-
+Make your first one-time deposit of at least
 <strong>PHP 1,000</strong>.
 
 </div>
@@ -134,13 +134,13 @@ Keep the <strong>PHP 1,000</strong> in your MariBank account for at least <stron
 
 <strong>⑥ Receive your reward</strong><br>
 
-Once the promo requirements are met, you'll receive <strong>PHP 150</strong>.
+Once all promo requirements are completed, you'll receive your <strong>PHP 150</strong> reward.
 
 </div>
 
 </div>
 
-<!-- QUICK SUMMARY -->
+<!-- Quick Summary -->
 
 <div class="info-card">
 
@@ -158,7 +158,7 @@ Once the promo requirements are met, you'll receive <strong>PHP 150</strong>.
 
 <div class="summary-item">
 
-<span class="label">Minimum Deposit</span>
+<span class="label">Deposit</span>
 
 <strong>PHP 1,000</strong>
 
@@ -172,7 +172,7 @@ Once the promo requirements are met, you'll receive <strong>PHP 150</strong>.
 
 </div>
 
-<div class="summary-item">
+<div class="summary-item reward">
 
 <span class="label">Reward</span>
 
@@ -190,7 +190,7 @@ Promo mechanics may change without prior notice.
 
 <br><br>
 
-Please refer to the latest MariBank Terms & Conditions.
+Please refer to the latest MariBank Terms & Conditions for the most updated mechanics.
 
 <br><br>
 
@@ -209,17 +209,10 @@ navigator.clipboard.writeText("YV646636").then(function(){
 const msg=document.getElementById("copyMessage");
 
 msg.style.display="block";
-msg.style.opacity="1";
-
-setTimeout(function(){
-
-msg.style.opacity="0";
 
 setTimeout(function(){
 
 msg.style.display="none";
-
-},300);
 
 },1800);
 
