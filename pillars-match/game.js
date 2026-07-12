@@ -920,16 +920,16 @@ saveResultBtn?.addEventListener("click", () => {
     resultWatermark.style.display = "block";
 
     alert(
-`📸 Capture Your Result
+`📸 Screenshot Your Result
 
-1. Take a screenshot of this result screen.
+1. Take a screenshot of this result.
 
-2. Open the official Weekly Competition post.
+2. Comment your screenshot on the official Weekly Competition post.
 
-3. Comment your screenshot to submit your entry.
+⚠️ Only screenshots posted in the official competition post will be counted.
 
 Good luck! 🍀`
-    );
+);
 
 });
 });
