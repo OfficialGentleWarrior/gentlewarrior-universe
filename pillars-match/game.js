@@ -229,6 +229,9 @@ document.getElementById("resultMoves");
 const resultIdLabel =
 document.getElementById("resultId");;
 
+const resultWatermark =
+document.getElementById("resultWatermark");
+
 const saveResultBtn =
 document.getElementById("saveResultBtn");
 
@@ -908,5 +911,27 @@ await PillarLeaderboard.loadLeaderboard();
 
   showEndRunOverlay();
 };
+
+});
+
+window.forceEndRun = async function () {
+    ...
+    showEndRunOverlay();
+};
+
+});
+
+saveResultBtn?.addEventListener("click", async () => {
+
+    resultWatermark.style.display = "block";
+
+    const canvas = await html2canvas(endRunPopup);
+
+    resultWatermark.style.display = "none";
+
+    const link = document.createElement("a");
+    link.download = `PillarMatch-${generateResultId()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
 
 });
