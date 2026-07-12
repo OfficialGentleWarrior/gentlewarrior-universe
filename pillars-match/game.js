@@ -211,6 +211,24 @@ document.getElementById("endRunPopup");
 const competitionInstruction =
 document.getElementById("competitionInstruction");
 
+const competitionStatus =
+document.getElementById("competitionStatus");
+
+const resultPlayer =
+document.getElementById("resultPlayer");
+
+const resultStartTime =
+document.getElementById("resultStartTime");
+
+const resultFinishTime =
+document.getElementById("resultFinishTime");
+
+const resultMoves =
+document.getElementById("resultMoves");
+
+const resultId =
+document.getElementById("resultId");
+
 const saveResultBtn =
 document.getElementById("saveResultBtn");
 
@@ -222,6 +240,22 @@ function showEndRunOverlay() {
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
   endRunCpLine.textContent = getRandomCpLine(level);
+
+// Result Details
+resultPlayer.textContent =
+  "👤 Player: " + window.getPillarPlayerName();
+
+resultStartTime.textContent =
+  "🕒 Started: " + new Date(runStartTime).toLocaleString();
+
+resultFinishTime.textContent =
+  "🕒 Finished: " + new Date().toLocaleString();
+
+resultMoves.textContent =
+  "🎯 Moves Used: " + totalMovesUsed;
+
+resultId.textContent =
+  "🆔 Result ID: Coming Soon";
 
 // Competition Information
 if (window.COMPETITION_CONFIG) {
@@ -323,11 +357,12 @@ tryAgainBtn?.addEventListener("click", () => {
   isRunActive = false;
   localStorage.removeItem("pm_save");
 
-  level = 1;
+level = 1;
 score = 0;
 moves = LEVEL_CONFIG.baseMoves;
 levelStartScore = 0;
-totalMovesUsed = 0;   // <-- idagdag dito
+totalMovesUsed = 0;
+runStartTime = Date.now();
 
   isInitPhase = true;
   isResolving = true;
