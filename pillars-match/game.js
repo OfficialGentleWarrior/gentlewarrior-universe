@@ -379,8 +379,12 @@ await PillarLeaderboard.loadLeaderboard();
 });
 
 tryAgainBtn?.addEventListener("click", () => {
-  // hide end run overlay
+
+  resultWatermark.style.display = "none";
+
   endRunOverlay.classList.add("hidden");
+
+});
 
   // reset run state
   isRunActive = false;
@@ -912,17 +916,21 @@ await PillarLeaderboard.loadLeaderboard();
   showEndRunOverlay();
 };
 
-saveResultBtn?.addEventListener("click", async () => {
+saveResultBtn?.addEventListener("click", () => {
 
     resultWatermark.style.display = "block";
 
-    const canvas = await html2canvas(endRunPopup);
+    alert(
+`📸 Capture Your Result
 
-    resultWatermark.style.display = "none";
+1. Take a screenshot of this result screen.
 
-    const image = canvas.toDataURL("image/png");
+2. Open the official Weekly Competition post.
 
-    window.open(image, "_blank");
+3. Comment your screenshot to submit your entry.
+
+Good luck! 🍀`
+    );
 
 });
 });
