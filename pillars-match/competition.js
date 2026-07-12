@@ -32,11 +32,10 @@ window.COMPETITION_CONFIG = {
 
     // Facebook competition post
     // Leave blank until the official competition post is published.
-    facebookPost: "",
+    postUrl: "https://www.facebook.com/share/r/18khZBQtUG/",
 
-    // Instruction shown on the Run Complete popup
-    instructions:
-        "📸 Please save your result before joining the competition.",
+    /instructions:
+    "📸 Screenshot your result before joining the competition.",
 
     // Competition mechanics
     mechanics: [
