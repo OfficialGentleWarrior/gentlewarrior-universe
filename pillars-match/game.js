@@ -914,9 +914,15 @@ await PillarLeaderboard.loadLeaderboard();
 
 saveResultBtn?.addEventListener("click", async () => {
 
+    resultWatermark.style.display = "block";
+
     const canvas = await html2canvas(endRunPopup);
 
-    alert(canvas.width + " x " + canvas.height);
+    resultWatermark.style.display = "none";
+
+    const image = canvas.toDataURL("image/png");
+
+    window.open(image, "_blank");
 
 });
 });
