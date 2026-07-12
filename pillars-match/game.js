@@ -912,10 +912,13 @@ await PillarLeaderboard.loadLeaderboard();
   showEndRunOverlay();
 };
 
-saveResultBtn?.addEventListener("click", () => {
+saveResultBtn?.addEventListener("click", async () => {
 
-    alert(typeof html2canvas);
+    alert("before");
+
+    const canvas = await html2canvas(endRunPopup);
+
+    alert("after");
 
 });
-
 });
