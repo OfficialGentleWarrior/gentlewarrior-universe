@@ -205,8 +205,20 @@ const endRunCpLine =
 document.getElementById("endRunCpLine");
 const tryAgainBtn =
 document.getElementById("tryAgainBtn");
-const shareXBtn =
-document.getElementById("shareXBtn");
+const endRunPopup =
+document.getElementById("endRunPopup");
+
+const competitionInstruction =
+document.getElementById("competitionInstruction");
+
+const competitionStatus =
+document.getElementById("competitionStatus");
+
+const saveResultBtn =
+document.getElementById("saveResultBtn");
+
+const joinCompetitionBtn =
+document.getElementById("joinCompetitionBtn");
 
 function showEndRunOverlay() {
   // fill stats
@@ -285,29 +297,6 @@ totalMovesUsed = 0;   // <-- idagdag dito
   setTimeout(resolveInitMatches, 0);
 });
 
-shareXBtn?.addEventListener("click", () => {
-  const cpLine =
-    endRunCpLine?.textContent || getRandomCpLine(level);
-
-  const text = `${cpLine}
-
-Level ${level} complete
-Score: ${score}
-
-If you enjoy calm, thoughtful games,
-you might like this.
-
-@GentleWarrior02
-
-Play Pillar Match:
-https://gentlewarrior.world/pillars-match`;
-
-  const url =
-    "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(text);
-
-  window.open(url, "_blank");
-});
 
 // RESTART (hard reset, no record)
 resetRunBtn?.addEventListener("click", () => {
