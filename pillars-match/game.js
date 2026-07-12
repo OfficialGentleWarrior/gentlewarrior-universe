@@ -914,11 +914,9 @@ await PillarLeaderboard.loadLeaderboard();
 
 saveResultBtn?.addEventListener("click", async () => {
 
-    alert("before");
-
     const canvas = await html2canvas(endRunPopup);
 
-    alert("after");
+    alert(canvas.width + " x " + canvas.height);
 
 });
 });
