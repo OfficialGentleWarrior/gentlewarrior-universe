@@ -226,8 +226,8 @@ document.getElementById("resultFinishTime");
 const resultMoves =
 document.getElementById("resultMoves");
 
-const resultId =
-document.getElementById("resultId");
+const resultIdLabel =
+document.getElementById("resultId");;
 
 const saveResultBtn =
 document.getElementById("saveResultBtn");
@@ -235,7 +235,19 @@ document.getElementById("saveResultBtn");
 const joinCompetitionBtn =
 document.getElementById("joinCompetitionBtn");
 
+function generateResultId() {
+  const random =
+    Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  return "PM-" + random;
+}
+
 function showEndRunOverlay() {
+
+if (!resultId) {
+  resultId = generateResultId();
+}
+
   // fill stats
   endRunLevel.textContent = level;
   endRunScore.textContent = score;
@@ -254,8 +266,7 @@ resultFinishTime.textContent =
 resultMoves.textContent =
   "🎯 Moves Used: " + totalMovesUsed;
 
-resultId.textContent =
-  "🆔 Result ID: Coming Soon";
+resultIdLabel.textContent = "🆔 Result ID: " + resultId;
 
 // Competition Information
 if (window.COMPETITION_CONFIG) {
@@ -363,6 +374,7 @@ moves = LEVEL_CONFIG.baseMoves;
 levelStartScore = 0;
 totalMovesUsed = 0;
 runStartTime = Date.now();
+resultId = "";
 
   isInitPhase = true;
   isResolving = true;
@@ -434,6 +446,7 @@ let levelStartScore = 0;
 let runStartTime = Date.now();
 let isRunActive = true;
 let totalMovesUsed = 0;
+let resultId = "";
 
   /* =========================
      SAVE / LOAD (ANTI REFRESH)
