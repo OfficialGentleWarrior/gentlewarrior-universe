@@ -932,4 +932,60 @@ Good luck! 🍀`
 );
 
 });
+joinCompetitionBtn?.addEventListener("click", () => {
+
+    if (!window.COMPETITION_CONFIG?.postUrl) {
+        alert("Competition link is not available.");
+        return;
+    }
+
+    const proceed = confirm(
+`🏆 Join Weekly Competition?
+
+You will be redirected to the official competition post.
+
+Comment your screenshot there to submit your entry.`
+    );
+
+    if (!proceed) return;
+
+    window.open(
+        window.COMPETITION_CONFIG.postUrl,
+        "_blank"
+    );
+
+});
+joinCompetitionBtn?.addEventListener("click", () => {
+
+    if (!window.COMPETITION_CONFIG?.postUrl) {
+
+        alert(
+`🏆 Competition Not Ready
+
+The official competition post has not been published yet.
+
+Please check back later.`
+        );
+
+        return;
+    }
+
+    const proceed = confirm(
+`🏆 Join Weekly Competition
+
+You will be redirected to the official competition post.
+
+Comment your screenshot there to submit your entry.
+
+Continue?`
+    );
+
+    if (!proceed) return;
+
+    window.open(
+        window.COMPETITION_CONFIG.postUrl,
+        "_blank"
+    );
+
+});
 });
