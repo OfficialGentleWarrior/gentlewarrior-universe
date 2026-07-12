@@ -257,23 +257,31 @@ if (!resultId) {
 const finishTime = Date.now();
 const durationSec = Math.floor((finishTime - runStartTime) / 1000);
 
-resultPlayer.textContent =
-  "👤 " + window.getPillarPlayerName();
+resultPlayer.innerHTML =
+  '👤 <strong>' +
+  window.getPillarPlayerName() +
+  '</strong>';
 
-resultStartTime.textContent =
-  "🕒 " +
+resultStartTime.innerHTML =
+  '🕒 <strong>' +
   new Date(runStartTime).toLocaleTimeString() +
-  " → " +
-  new Date(finishTime).toLocaleTimeString();
+  ' → ' +
+  new Date(finishTime).toLocaleTimeString() +
+  '</strong>';
 
-resultFinishTime.textContent =
-  "⏱ " + durationSec + " sec";
+resultFinishTime.innerHTML =
+  '⏱ <strong>' + durationSec + ' sec</strong>';
 
-resultMoves.textContent =
-  "🎯 " + totalMovesUsed + (totalMovesUsed === 1 ? " move" : " moves");
+resultMoves.innerHTML =
+  '🎯 <strong>' +
+  totalMovesUsed +
+  (totalMovesUsed === 1 ? ' move' : ' moves') +
+  '</strong>';
 
-resultIdLabel.textContent =
-  "🆔 " + resultId;
+resultIdLabel.innerHTML =
+  '🆔 <span style="color:#FFD54A;font-weight:bold;">' +
+  resultId +
+  '</span>';
 
 // Competition Information
 if (window.COMPETITION_CONFIG) {
