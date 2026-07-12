@@ -34,7 +34,7 @@ window.COMPETITION_CONFIG = {
     // Leave blank until the official competition post is published.
     postUrl: "https://www.facebook.com/share/r/18khZBQtUG/",
 
-    /instructions:
+    instructions:
     "📸 Screenshot your result before joining the competition.",
 
     // Competition mechanics
