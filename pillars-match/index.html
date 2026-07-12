@@ -237,7 +237,7 @@
 
 <!-- END RUN OVERLAY -->
 <div id="endRunOverlay" class="overlay hidden">
-  <div class="overlay-box">
+  <div id="endRunPopup" class="overlay-box">
     <h2>Run Complete</h2>
 
     <p>
@@ -247,6 +247,11 @@
 
     <p id="endRunCpLine" style="opacity:.9;margin-top:8px;"></p>
 
+    <div id="competitionInfo">
+      <p id="competitionInstruction" style="margin-top:10px;opacity:.9;"></p>
+      <p id="competitionStatus" style="margin-top:4px;opacity:.8;"></p>
+    </div>
+
     <div style="
       display:flex;
       justify-content:center;
@@ -254,13 +259,11 @@
       margin-top:14px;
       flex-wrap:wrap;
     ">
-      <button id="tryAgainBtn">
-        Try Again
-      </button>
+      <button id="saveResultBtn">💾 Save Result</button>
 
-      <button id="shareXBtn" style="background:#111;">
-        Share to X
-      </button>
+      <button id="joinCompetitionBtn">🏆 Join Competition</button>
+
+      <button id="tryAgainBtn">🔄 Try Again</button>
     </div>
   </div>
 </div>
@@ -348,6 +351,8 @@
 </script>
 
 <!-- GAME SCRIPT LAST -->
+<script src="./competition.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="./game.js?v=8" defer></script>
 <script src="./leaderboard.js" defer></script>
 </body>
