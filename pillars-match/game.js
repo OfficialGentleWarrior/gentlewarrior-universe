@@ -913,7 +913,9 @@ await PillarLeaderboard.loadLeaderboard();
 };
 
 saveResultBtn?.addEventListener("click", () => {
-    alert("Save Result clicked");
+
+    alert(typeof html2canvas);
+
 });
 
 });
