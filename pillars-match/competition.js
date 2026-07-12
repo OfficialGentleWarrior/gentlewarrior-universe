@@ -21,13 +21,13 @@ window.COMPETITION_CONFIG = {
     enabled: true,
 
     // Configuration version
-    configVersion: "1.0.0",
+    configVersion: "1.0.1",
 
     // Competition name
     eventName: "Weekly Competition",
 
     // Competition schedule (Philippine Time)
-    eventStart: "2026-07-12T08:00:00+08:00",
+    eventStart: "2026-07-10T08:00:00+08:00",
     eventEnd: "2026-07-20T08:00:00+08:00",
 
     // Facebook competition post
