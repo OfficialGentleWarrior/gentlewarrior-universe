@@ -254,19 +254,26 @@ if (!resultId) {
   endRunCpLine.textContent = getRandomCpLine(level);
 
 // Result Details
+const finishTime = Date.now();
+const durationSec = Math.floor((finishTime - runStartTime) / 1000);
+
 resultPlayer.textContent =
-  "👤 Player: " + window.getPillarPlayerName();
+  "👤 " + window.getPillarPlayerName();
 
 resultStartTime.textContent =
-  "🕒 Started: " + new Date(runStartTime).toLocaleString();
+  "🕒 " +
+  new Date(runStartTime).toLocaleTimeString() +
+  " → " +
+  new Date(finishTime).toLocaleTimeString();
 
 resultFinishTime.textContent =
-  "🕒 Finished: " + new Date().toLocaleString();
+  "⏱ " + durationSec + " sec";
 
 resultMoves.textContent =
-  "🎯 Moves Used: " + totalMovesUsed;
+  "🎯 " + totalMovesUsed + (totalMovesUsed === 1 ? " move" : " moves");
 
-resultIdLabel.textContent = "🆔 Result ID: " + resultId;
+resultIdLabel.textContent =
+  "🆔 " + resultId;
 
 // Competition Information
 if (window.COMPETITION_CONFIG) {
