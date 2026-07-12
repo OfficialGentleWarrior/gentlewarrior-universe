@@ -912,23 +912,8 @@ await PillarLeaderboard.loadLeaderboard();
   showEndRunOverlay();
 };
 
-/*
-
-saveResultBtn?.addEventListener("click", async () => {
-
-    resultWatermark.style.display = "block";
-
-    const canvas = await html2canvas(endRunPopup);
-
-    resultWatermark.style.display = "none";
-
-    const link = document.createElement("a");
-    link.download = `PillarMatch-${generateResultId()}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-
+saveResultBtn?.addEventListener("click", () => {
+    alert("Save Result clicked");
 });
-
-*/
 
 });
