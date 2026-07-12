@@ -384,19 +384,17 @@ tryAgainBtn?.addEventListener("click", () => {
 
   endRunOverlay.classList.add("hidden");
 
-});
-
   // reset run state
   isRunActive = false;
   localStorage.removeItem("pm_save");
 
-level = 1;
-score = 0;
-moves = LEVEL_CONFIG.baseMoves;
-levelStartScore = 0;
-totalMovesUsed = 0;
-runStartTime = Date.now();
-resultId = "";
+  level = 1;
+  score = 0;
+  moves = LEVEL_CONFIG.baseMoves;
+  levelStartScore = 0;
+  totalMovesUsed = 0;
+  runStartTime = Date.now();
+  resultId = "";
 
   isInitPhase = true;
   isResolving = true;
@@ -408,6 +406,7 @@ resultId = "";
   createGrid();
   updateHUD();
   setTimeout(resolveInitMatches, 0);
+
 });
 
 
