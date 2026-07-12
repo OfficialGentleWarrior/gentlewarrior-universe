@@ -226,6 +226,39 @@ function showEndRunOverlay() {
   endRunScore.textContent = score;
   endRunCpLine.textContent = getRandomCpLine(level);
 
+// Competition Information
+if (window.COMPETITION_CONFIG) {
+
+  competitionInstruction.textContent =
+    COMPETITION_CONFIG.instructions || "";
+
+  const now = new Date();
+  const start = new Date(COMPETITION_CONFIG.eventStart);
+  const end = new Date(COMPETITION_CONFIG.eventEnd);
+
+  if (!COMPETITION_CONFIG.enabled) {
+
+    competitionStatus.textContent = "";
+
+  } else if (now < start) {
+
+    competitionStatus.textContent =
+      COMPETITION_CONFIG.notStartedMessage;
+
+  } else if (now > end) {
+
+    competitionStatus.textContent =
+      COMPETITION_CONFIG.endedMessage;
+
+  } else {
+
+    competitionStatus.textContent =
+      `🏆 ${COMPETITION_CONFIG.eventName}`;
+
+  }
+
+}
+
   // force show (kahit anong CSS state)
   endRunOverlay.classList.remove("hidden");
   endRunOverlay.style.display = "flex";
