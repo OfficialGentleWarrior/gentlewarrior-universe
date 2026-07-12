@@ -912,15 +912,6 @@ await PillarLeaderboard.loadLeaderboard();
   showEndRunOverlay();
 };
 
-});
-
-window.forceEndRun = async function () {
-    ...
-    showEndRunOverlay();
-};
-
-});
-
 saveResultBtn?.addEventListener("click", async () => {
 
     resultWatermark.style.display = "block";
