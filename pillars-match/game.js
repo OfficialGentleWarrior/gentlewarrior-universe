@@ -211,23 +211,6 @@ document.getElementById("endRunPopup");
 const competitionInstruction =
 document.getElementById("competitionInstruction");
 
-const startText = new Date(COMPETITION_CONFIG.eventStart)
-  .toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric"
-  });
-
-const endText = new Date(COMPETITION_CONFIG.eventEnd)
-  .toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
-
-competitionStatus.innerHTML =
-  `🏆 ${COMPETITION_CONFIG.eventName}<br>` +
-  `🗓 ${startText} – ${endText}`;
-
 const saveResultBtn =
 document.getElementById("saveResultBtn");
 
@@ -266,8 +249,22 @@ if (window.COMPETITION_CONFIG) {
 
   } else {
 
-    competitionStatus.textContent =
-      `🏆 ${COMPETITION_CONFIG.eventName}`;
+    const startText = new Date(COMPETITION_CONFIG.eventStart)
+  .toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric"
+  });
+
+const endText = new Date(COMPETITION_CONFIG.eventEnd)
+  .toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+
+competitionStatus.innerHTML =
+  `🏆 ${COMPETITION_CONFIG.eventName}<br>` +
+  `🗓 ${startText} – ${endText}`;
 
   }
 
