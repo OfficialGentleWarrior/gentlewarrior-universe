@@ -1,1 +1,284 @@
+/* ==========================
+   Little Wins
+   Global Styles
+========================== */
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+
+    --primary: #22C55E;
+    --primary-light: #DCFCE7;
+
+    --background: #F8FAFC;
+
+    --surface: #FFFFFF;
+
+    --text: #1F2937;
+    --text-light: #6B7280;
+
+    --border: #E5E7EB;
+
+    --shadow: 0 4px 12px rgba(0,0,0,.06);
+
+    --radius: 20px;
+
+}
+
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+body {
+
+    background: var(--background);
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+    max-width: 480px;
+
+    margin: auto;
+
+    padding: 20px;
+
+}
+
+
+/* ==========================
+   Typography
+========================== */
+
+h1 {
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+}
+
+h2 {
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+}
+
+h3 {
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+}
+
+p {
+
+    line-height: 1.6;
+
+    color: var(--text-light);
+
+}
+
+
+/* ==========================
+   Header
+========================== */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 24px;
+
+}
+
+.app-title {
+
+    color: var(--primary);
+
+}
+
+.app-tagline {
+
+    margin-top: 6px;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================
+   Avatar
+========================== */
+
+.avatar {
+
+    width: 56px;
+
+    height: 56px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 3px solid var(--primary-light);
+
+}
+
+
+/* ==========================
+   Cards
+========================== */
+
+.card,
+.welcome-card {
+
+    background: var(--surface);
+
+    border-radius: var(--radius);
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    box-shadow: var(--shadow);
+
+}
+
+.card h3 {
+
+    margin-bottom: 12px;
+
+}
+
+
+/* ==========================
+   Journey Summary
+========================== */
+
+.stats {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    text-align: center;
+
+    margin-top: 16px;
+
+}
+
+.stat h2 {
+
+    color: var(--primary);
+
+}
+
+.stat p {
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================
+   Buttons
+========================== */
+
+button {
+
+    width: 100%;
+
+    padding: 16px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+}
+
+button:active {
+
+    transform: scale(.98);
+
+}
+
+
+/* ==========================
+   Bottom Navigation
+========================== */
+
+.bottom-nav {
+
+    position: sticky;
+
+    bottom: 0;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-top: 30px;
+
+    padding-top: 12px;
+
+    background: var(--background);
+
+}
+
+.bottom-nav button {
+
+    background: white;
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    padding: 12px 6px;
+
+    border: 1px solid var(--border);
+
+    box-shadow: none;
+
+}
+
+
+/* ==========================
+   Utility
+========================== */
+
+.hidden {
+
+    display: none;
+
+}
