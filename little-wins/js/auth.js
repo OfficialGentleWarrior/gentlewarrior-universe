@@ -1,6 +1,7 @@
 // auth.js
 
 import { auth, db } from "./firebase.js";
+import { hasJourney } from "./journey.js";
 
 import {
   GoogleAuthProvider,
@@ -43,7 +44,14 @@ export async function signInWithGoogle() {
 
     }
 
-    window.location.href = "app.html";
+    // Check if the user already has a journey
+    const journeyExists = await hasJourney();
+
+    if (journeyExists) {
+      window.location.href = "app.html";
+    } else {
+      window.location.href = "setup.html";
+    }
 
   } catch (error) {
 
