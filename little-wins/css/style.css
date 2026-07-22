@@ -50,7 +50,28 @@ body {
 
     margin: auto;
 
-    padding: 20px;
+    padding: 24px;
+
+}
+
+
+/* ==========================
+   Layout
+========================== */
+
+.container {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
 
 }
 
@@ -91,6 +112,43 @@ p {
 
 }
 
+.subtitle {
+
+    font-size: 16px;
+
+    color: var(--text-light);
+
+    margin-bottom: 32px;
+
+}
+
+
+/* ==========================
+   Branding
+========================== */
+
+.logo {
+
+    width: 100%;
+
+    max-width: 320px;
+
+    height: auto;
+
+    margin-bottom: 32px;
+
+}
+
+.header-logo {
+
+    height: 52px;
+
+    width: auto;
+
+    display: block;
+
+}
+
 
 /* ==========================
    Header
@@ -105,20 +163,6 @@ p {
     align-items: center;
 
     margin-bottom: 24px;
-
-}
-
-.app-title {
-
-    color: var(--primary);
-
-}
-
-.app-tagline {
-
-    margin-top: 6px;
-
-    font-size: 14px;
 
 }
 
@@ -205,6 +249,8 @@ button {
 
     width: 100%;
 
+    max-width: 320px;
+
     padding: 16px;
 
     border: none;
@@ -257,6 +303,8 @@ button:active {
 }
 
 .bottom-nav button {
+
+    max-width: none;
 
     background: white;
 
