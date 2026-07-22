@@ -122,32 +122,10 @@
     </div>
 
 
-    <script type="module">
-
-        const welcomeScreen =
-            document.getElementById("welcomeScreen");
-
-        const step1 =
-            document.getElementById("step1");
-
-        document
-            .getElementById("continueSetup")
-            .addEventListener("click", () => {
-
-                welcomeScreen.classList.add("hidden");
-                step1.classList.remove("hidden");
-
-            });
-
-        document
-            .getElementById("step1Continue")
-            .addEventListener("click", () => {
-
-                console.log("Next: Step 2");
-
-            });
-
-    </script>
+    <script
+    type="module"
+    src="js/setup.js">
+</script>
 
 </body>
 
