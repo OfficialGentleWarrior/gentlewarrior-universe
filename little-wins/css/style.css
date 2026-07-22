@@ -63,6 +63,8 @@ body {
 
     min-height: 100vh;
 
+    width: 100%;
+
     display: flex;
 
     flex-direction: column;
@@ -74,7 +76,6 @@ body {
     text-align: center;
 
 }
-
 
 /* ==========================
    Typography
@@ -322,6 +323,55 @@ button:active {
 
 }
 
+/* ==========================
+   Setup Wizard
+========================== */
+
+.option-button {
+
+    width: 100%;
+
+    max-width: 360px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    border: 2px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    margin-bottom: 16px;
+
+    text-align: left;
+
+    padding: 18px 20px;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    transition: .25s;
+
+}
+
+.option-button:hover {
+
+    border-color: var(--primary);
+
+}
+
+.option-button.selected {
+
+    background: var(--primary-light);
+
+    border-color: var(--primary);
+
+    color: var(--primary);
+
+}
 
 /* ==========================
    Utility
