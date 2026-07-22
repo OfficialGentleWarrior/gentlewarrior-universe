@@ -131,17 +131,19 @@ p {
 
     width: 100%;
 
-    max-width: 320px;
+    max-width: 360px;
 
     height: auto;
 
-    margin-bottom: 32px;
+    display: block;
+
+    margin: 0 auto 40px;
 
 }
 
 .header-logo {
 
-    height: 52px;
+    height: 56px;
 
     width: auto;
 
