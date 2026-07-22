@@ -46,7 +46,7 @@ optionButtons.forEach(button => {
         button.classList.add("selected");
 
         journeyData.journeyFor =
-            button.innerText.trim();
+    button.dataset.value;
 
         step1Continue.disabled = false;
 
