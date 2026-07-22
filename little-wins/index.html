@@ -16,7 +16,7 @@
 
 <div class="container">
 
-    <img src="assets/logo.png" class="logo">
+    <img src="assets/logo.png" class="logo" alt="Little Wins Logo">
 
     <h1>Little Wins</h1>
 
@@ -30,11 +30,11 @@
 
 <script type="module">
 
-import { signInWithGoogle } from "./auth.js";
+import { signInWithGoogle } from "./js/auth.js";
 
 document
-.getElementById("googleLogin")
-.addEventListener("click", signInWithGoogle);
+  .getElementById("googleLogin")
+  .addEventListener("click", signInWithGoogle);
 
 </script>
 
