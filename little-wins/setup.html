@@ -18,7 +18,11 @@
 
 <body>
 
-    <div class="container">
+    <!-- Welcome Screen -->
+
+    <div
+        id="welcomeScreen"
+        class="container">
 
         <img
             src="assets/logo/little-wins-logo-full.png"
@@ -31,9 +35,7 @@
 
         <p class="subtitle">
             Every journey begins with a single step.
-        </p>
-
-        <p class="subtitle">
+            <br>
             Let's create your journey.
         </p>
 
@@ -43,14 +45,66 @@
 
     </div>
 
+
+    <!-- Step 1 -->
+
+    <div
+        id="step1"
+        class="container hidden">
+
+        <h2>
+            Who is this journey for?
+        </h2>
+
+        <p class="subtitle">
+            Choose who this journey is for.
+        </p>
+
+        <button class="option-button">
+            👤 Myself
+        </button>
+
+        <button class="option-button">
+            👶 My Child
+        </button>
+
+        <button class="option-button">
+            👨‍👩‍👧 Family Member
+        </button>
+
+        <button class="option-button">
+            ❤️ Someone I Care For
+        </button>
+
+        <button id="step1Continue">
+            Continue
+        </button>
+
+    </div>
+
+
     <script type="module">
+
+        const welcomeScreen =
+            document.getElementById("welcomeScreen");
+
+        const step1 =
+            document.getElementById("step1");
 
         document
             .getElementById("continueSetup")
             .addEventListener("click", () => {
 
-                // Next: Step 1 - Who is this journey for?
-                console.log("Continue");
+                welcomeScreen.classList.add("hidden");
+                step1.classList.remove("hidden");
+
+            });
+
+        document
+            .getElementById("step1Continue")
+            .addEventListener("click", () => {
+
+                console.log("Next: Step 2");
 
             });
 
