@@ -3,40 +3,43 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Little Wins</title>
+    <title>Little Wins</title>
 
-<link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+          type="image/png"
+          href="assets/logo/little-wins-icon.png">
+
+    <link rel="stylesheet" href="css/style.css">
 
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <img src="assets/logo.png" class="logo" alt="Little Wins Logo">
+        <img
+            src="assets/logo/little-wins-logo-full.png"
+            class="logo"
+            alt="Little Wins">
 
-    <h1>Little Wins</h1>
+        <button id="googleLogin">
+            Continue with Google
+        </button>
 
-    <p>Celebrate every little win, no matter how small.</p>
+    </div>
 
-    <button id="googleLogin">
-        Continue with Google
-    </button>
+    <script type="module">
 
-</div>
+        import { signInWithGoogle } from "./js/auth.js";
 
-<script type="module">
+        document
+            .getElementById("googleLogin")
+            .addEventListener("click", signInWithGoogle);
 
-import { signInWithGoogle } from "./js/auth.js";
-
-document
-  .getElementById("googleLogin")
-  .addEventListener("click", signInWithGoogle);
-
-</script>
+    </script>
 
 </body>
 
