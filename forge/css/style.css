@@ -10,102 +10,156 @@ html{
 }
 
 body{
-    background:#fff;
+    background:#ffffff;
     color:#222;
 }
 
 /* ==========================
-   TOP LOGO
+   TOP BANNER
 ========================== */
 
 .top-banner{
-    background:#fff;
+
+    width:100%;
+
+    background:linear-gradient(180deg,#0d0d0d,#181818);
+
+    padding:40px 20px;
+
     text-align:center;
-    padding:20px 20px 10px;
+
 }
 
 .top-banner img{
-    height:90px;
-    max-width:100%;
+
+    width:100%;
+    max-width:520px;
+    height:auto;
+
 }
 
 /* ==========================
-   NAVIGATION
+   NAVBAR
 ========================== */
 
-nav{
+.navbar{
+
     display:flex;
-    justify-content:space-between;
+
+    justify-content:center;
+
     align-items:center;
 
-    padding:18px 80px;
+    gap:28px;
+
+    padding:18px 20px;
 
     background:#fff;
+
     border-bottom:1px solid #ececec;
 
     position:sticky;
+
     top:0;
-    z-index:1000;
+
+    z-index:999;
+
 }
 
-.menu-left,
-.menu-right{
-    display:flex;
-    align-items:center;
-    gap:28px;
-}
+.navbar a{
 
-.menu-left a{
     text-decoration:none;
+
     color:#444;
-    font-size:16px;
+
     font-weight:600;
+
+    font-size:16px;
+
     transition:.25s;
+
 }
 
-.menu-left a:hover{
-    color:#18a957;
+.navbar a:hover{
+
+    color:#20b356;
+
 }
 
 button{
+
     cursor:pointer;
+
     border:none;
+
     border-radius:12px;
+
     padding:12px 28px;
+
     font-size:15px;
+
     font-weight:700;
+
     transition:.25s;
+
 }
 
 .login-btn{
+
     background:#fff;
-    border:1px solid #d8d8d8;
+
+    border:1px solid #ccc;
+
 }
 
 .login-btn:hover{
-    background:#f7f7f7;
+
+    background:#20b356;
+
+    color:#fff;
+
+    border-color:#20b356;
+
 }
 
 .start-btn,
 .primary{
-    background:#1fb255;
+
+    background:#20b356;
+
     color:#fff;
+
 }
 
 .start-btn:hover,
 .primary:hover{
-    background:#189648;
+
+    background:#169348;
+
 }
 
 .secondary{
+
     background:#fff;
-    color:#1fb255;
-    border:1px solid #1fb255;
+
+    border:1px solid #20b356;
+
+    color:#20b356;
+
 }
 
 .secondary:hover{
-    background:#1fb255;
+
+    background:#20b356;
+
     color:#fff;
+
+}
+
+button:active{
+
+    transform:scale(.97);
+
 }
 
 /* ==========================
@@ -113,139 +167,35 @@ button{
 ========================== */
 
 .hero{
+
+    max-width:1280px;
+
+    margin:auto;
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     gap:80px;
 
-    max-width:1280px;
-    margin:auto;
+    padding:100px 80px;
 
-    padding:110px 80px;
 }
 
 .hero-left{
+
     flex:1;
-    max-width:560px;
+
 }
 
 .hero h1{
-    font-size:68px;
+
+    font-size:72px;
+
     line-height:1.05;
+
     letter-spacing:-2px;
-    margin-bottom:25px;
-}
 
-.hero p{
-    font-size:22px;
-    color:#666;
-    line-height:1.7;
-    margin-bottom:40px;
-}
-
-.hero-buttons{
-    display:flex;
-    gap:20px;
-}
-
-.hero-right{
-    flex:1;
-    display:flex;
-    justify-content:center;
-}
-
-.mockup{
-    width:560px;
-    height:340px;
-
-    background:#f5f5f5;
-
-    border-radius:24px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    color:#999;
-    font-size:24px;
-
-    box-shadow:0 20px 50px rgba(0,0,0,.08);
-}
-
-/* ==========================
-   MOBILE
-========================== */
-
-@media(max-width:992px){
-
-    .top-banner{
-        padding:16px 10px 8px;
-    }
-
-    .top-banner img{
-        height:72px;
-    }
-
-    nav{
-        flex-direction:column;
-        gap:18px;
-        padding:18px;
-    }
-
-    .menu-left,
-    .menu-right{
-        justify-content:center;
-        flex-wrap:wrap;
-        gap:18px;
-    }
-
-    .hero{
-        flex-direction:column;
-        text-align:center;
-        padding:70px 24px;
-    }
-
-    .hero-left{
-        max-width:100%;
-    }
-
-    .hero h1{
-        font-size:52px;
-        letter-spacing:-1px;
-    }
-
-    .hero p{
-        font-size:20px;
-    }
-
-    .hero-buttons{
-        justify-content:center;
-        flex-wrap:wrap;
-    }
-
-    .mockup{
-        width:100%;
-        max-width:520px;
-        height:300px;
-    }
-}
-
-@media(max-width:480px){
-
-    .hero h1{
-        font-size:42px;
-    }
-
-    .hero p{
-        font-size:18px;
-    }
-
-    button{
-        width:100%;
-    }
-
-    .hero-buttons{
-        flex-direction:column;
-    }
-}
+    margin-bottom
