@@ -1,5 +1,5 @@
 /* ==========================================
-   FORGE LANDING PAGE v2
+   FORGE Landing Page
 ========================================== */
 
 *{
@@ -14,9 +14,10 @@ html{
 }
 
 body{
-    background:#fff;
-    color:#1f2937;
+    background:#ffffff;
+    color:#222;
     overflow-x:hidden;
+    line-height:1.6;
 }
 
 /* ==========================================
@@ -25,18 +26,15 @@ body{
 
 header{
     width:100%;
-    background:#fff;
 }
 
 /* ==========================================
-   LOGO BANNER
+   TOP BANNER
 ========================================== */
 
 .top-banner{
 
-    width:100%;
-
-    background:#fff;
+    background:#111;
 
     display:flex;
 
@@ -44,22 +42,22 @@ header{
 
     align-items:center;
 
-    padding:28px 20px;
-
-    border-bottom:1px solid #ececec;
+    padding:24px 20px;
 
 }
 
 .top-banner img{
 
     width:100%;
-    max-width:360px;
+
+    max-width:340px;
+
     height:auto;
 
 }
 
 /* ==========================================
-   NAVIGATION
+   NAVBAR
 ========================================== */
 
 .navbar{
@@ -68,9 +66,11 @@ header{
 
     top:0;
 
-    z-index:999;
+    z-index:1000;
 
     background:#fff;
+
+    border-bottom:1px solid #ececec;
 
     display:flex;
 
@@ -79,8 +79,6 @@ header{
     align-items:center;
 
     padding:18px 60px;
-
-    border-bottom:1px solid #ececec;
 
 }
 
@@ -91,18 +89,15 @@ header{
 
     align-items:center;
 
-    gap:30px;
+    gap:28px;
 
 }
 
-.nav-left a,
-.login-link{
+.nav-left a{
 
     text-decoration:none;
 
-    color:#444;
-
-    font-size:16px;
+    color:#555;
 
     font-weight:600;
 
@@ -110,20 +105,19 @@ header{
 
 }
 
-.nav-left a:hover,
-.login-link:hover{
+.nav-left a:hover{
 
-    color:#20b356;
+    color:#22b455;
 
 }
 
 .start-btn{
 
-    text-decoration:none;
-
-    background:#20b356;
+    background:#22b455;
 
     color:#fff;
+
+    text-decoration:none;
 
     padding:12px 24px;
 
@@ -137,7 +131,7 @@ header{
 
 .start-btn:hover{
 
-    background:#179148;
+    background:#18984b;
 
 }
 
@@ -159,7 +153,7 @@ header{
 
     align-items:center;
 
-    padding:90px 60px;
+    padding:80px 50px;
 
 }
 
@@ -169,7 +163,7 @@ header{
 
     background:#eaf8ef;
 
-    color:#20b356;
+    color:#22b455;
 
     padding:8px 18px;
 
@@ -185,4 +179,298 @@ header{
 
 .hero h1{
 
-    font-size:64
+    font-size:64px;
+
+    line-height:1.05;
+
+    margin-bottom:24px;
+
+}
+
+.hero p{
+
+    font-size:20px;
+
+    color:#666;
+
+    margin-bottom:36px;
+
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+
+}
+
+.primary,
+.secondary{
+
+    text-decoration:none;
+
+    padding:14px 28px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    transition:.25s;
+
+}
+
+.primary{
+
+    background:#22b455;
+
+    color:#fff;
+
+}
+
+.primary:hover{
+
+    background:#18984b;
+
+}
+
+.secondary{
+
+    border:2px solid #22b455;
+
+    color:#22b455;
+
+}
+
+.secondary:hover{
+
+    background:#22b455;
+
+    color:#fff;
+
+}
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+.dashboard-card{
+
+    background:#fff;
+
+    border:1px solid #ececec;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 15px 45px rgba(0,0,0,.08);
+
+}
+
+.dashboard-header{
+
+    background:#f8f8f8;
+
+    padding:18px;
+
+    font-weight:bold;
+
+    border-bottom:1px solid #ececec;
+
+}
+
+.dashboard-body{
+
+    height:360px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#999;
+
+    text-align:center;
+
+    padding:30px;
+
+}
+
+/* ==========================================
+   CONTENT SECTIONS
+========================================== */
+
+.section{
+
+    max-width:1100px;
+
+    margin:auto;
+
+    padding:90px 30px;
+
+    text-align:center;
+
+}
+
+.section h2{
+
+    font-size:42px;
+
+    margin-bottom:18px;
+
+}
+
+.section p{
+
+    color:#666;
+
+    font-size:18px;
+
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer{
+
+    border-top:1px solid #ececec;
+
+    padding:40px;
+
+    text-align:center;
+
+    color:#888;
+
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media(max-width:900px){
+
+    .navbar{
+
+        flex-direction:column;
+
+        gap:18px;
+
+        padding:18px;
+
+    }
+
+    .nav-left{
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+        gap:18px;
+
+    }
+
+    .hero{
+
+        grid-template-columns:1fr;
+
+        text-align:center;
+
+        padding:60px 24px;
+
+    }
+
+    .hero h1{
+
+        font-size:46px;
+
+    }
+
+    .hero p{
+
+        font-size:18px;
+
+    }
+
+    .hero-buttons{
+
+        justify-content:center;
+
+    }
+
+    .dashboard-body{
+
+        height:280px;
+
+    }
+
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:480px){
+
+    .top-banner{
+
+        padding:20px;
+
+    }
+
+    .top-banner img{
+
+        max-width:240px;
+
+    }
+
+    .navbar{
+
+        padding:16px;
+
+    }
+
+    .nav-left{
+
+        gap:16px;
+
+        font-size:15px;
+
+    }
+
+    .hero{
+
+        padding:50px 20px;
+
+    }
+
+    .hero h1{
+
+        font-size:38px;
+
+    }
+
+    .hero-buttons{
+
+        flex-direction:column;
+
+    }
+
+    .primary,
+    .secondary{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+}
