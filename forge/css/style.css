@@ -1,150 +1,209 @@
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial, Helvetica, sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-background:#ffffff;
-color:#222;
+    background:#fff;
+    color:#222;
 }
+
+/* ==========================
+   TOP BANNER
+========================== */
+
+.top-banner{
+    background:#111;
+    text-align:center;
+    padding:18px 20px;
+    border-bottom:1px solid #222;
+}
+
+.top-banner img{
+    height:70px;
+    max-width:100%;
+}
+
+/* ==========================
+   NAVIGATION
+========================== */
 
 nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-display:flex;
-justify-content:space-between;
-align-items:center;
+    padding:18px 80px;
 
-padding:20px 80px;
-
-border-bottom:1px solid #eee;
-
+    border-bottom:1px solid #eee;
+    background:#fff;
 }
 
-.logo{
-
-height:48px;
-
+.menu-left,
+.menu-right{
+    display:flex;
+    align-items:center;
+    gap:28px;
 }
 
-.menu{
-
-display:flex;
-align-items:center;
-gap:25px;
-
+.menu-left a{
+    text-decoration:none;
+    color:#444;
+    font-weight:600;
+    transition:.25s;
 }
 
-.menu a{
-
-text-decoration:none;
-color:#444;
-font-weight:600;
-
+.menu-left a:hover{
+    color:#18a957;
 }
 
 button{
-
-cursor:pointer;
-border:none;
-padding:12px 24px;
-border-radius:12px;
-font-weight:bold;
-
+    cursor:pointer;
+    border:none;
+    border-radius:12px;
+    padding:12px 24px;
+    font-size:15px;
+    font-weight:bold;
+    transition:.25s;
 }
 
 .login-btn{
+    background:#fff;
+    border:1px solid #ccc;
+}
 
-background:white;
-border:1px solid #ccc;
-
+.login-btn:hover{
+    background:#f7f7f7;
 }
 
 .start-btn,
 .primary{
+    background:#18a957;
+    color:#fff;
+}
 
-background:#18a957;
-color:white;
-
+.start-btn:hover,
+.primary:hover{
+    background:#15924b;
 }
 
 .secondary{
-
-background:white;
-border:1px solid #18a957;
-color:#18a957;
-
+    background:#fff;
+    border:1px solid #18a957;
+    color:#18a957;
 }
 
+.secondary:hover{
+    background:#18a957;
+    color:#fff;
+}
+
+/* ==========================
+   HERO
+========================== */
+
 .hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-display:flex;
+    gap:80px;
 
-align-items:center;
-
-justify-content:space-between;
-
-padding:90px 80px;
-
-gap:80px;
-
+    padding:90px 80px;
 }
 
 .hero-left{
-
-max-width:520px;
-
+    max-width:520px;
 }
 
 .hero h1{
-
-font-size:56px;
-
-line-height:1.1;
-
-margin-bottom:20px;
-
+    font-size:64px;
+    line-height:1.08;
+    margin-bottom:24px;
 }
 
 .hero p{
-
-font-size:20px;
-
-color:#666;
-
-margin-bottom:35px;
-
+    font-size:22px;
+    color:#666;
+    line-height:1.6;
+    margin-bottom:40px;
 }
 
 .hero-buttons{
+    display:flex;
+    gap:20px;
+}
 
-display:flex;
-
-gap:20px;
-
+.hero-right{
+    flex:1;
+    display:flex;
+    justify-content:center;
 }
 
 .mockup{
+    width:560px;
+    height:340px;
 
-width:500px;
+    background:#f5f5f5;
 
-height:320px;
+    border-radius:24px;
 
-border-radius:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-background:#f3f3f3;
+    color:#999;
+    font-size:26px;
 
-display:flex;
+    box-shadow:0 18px 45px rgba(0,0,0,.08);
+}
 
-justify-content:center;
+/* ==========================
+   RESPONSIVE
+========================== */
 
-align-items:center;
+@media(max-width:992px){
 
-font-size:24px;
+    nav{
+        flex-direction:column;
+        gap:20px;
+        padding:20px;
+    }
 
-color:#999;
+    .menu-left,
+    .menu-right{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
 
-box-shadow:0 15px 40px rgba(0,0,0,.08);
+    .hero{
+        flex-direction:column;
+        text-align:center;
+        padding:60px 25px;
+    }
 
+    .hero-buttons{
+        justify-content:center;
+        flex-wrap:wrap;
+    }
+
+    .hero h1{
+        font-size:48px;
+    }
+
+    .hero p{
+        font-size:18px;
+    }
+
+    .mockup{
+        width:100%;
+        max-width:520px;
+        height:280px;
+    }
+
+    .top-banner img{
+        height:55px;
+    }
 }
