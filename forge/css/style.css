@@ -1,6 +1,6 @@
-/* ==========================
-   RESET
-========================== */
+/* ==========================================
+   FORGE LANDING PAGE v2
+========================================== */
 
 *{
     margin:0;
@@ -14,30 +14,29 @@ html{
 }
 
 body{
-    background:#ffffff;
+    background:#fff;
     color:#1f2937;
     overflow-x:hidden;
 }
 
-/* ==========================
+/* ==========================================
    HEADER
-========================== */
+========================================== */
 
 header{
     width:100%;
+    background:#fff;
 }
 
-/* ==========================
-   TOP BANNER
-========================== */
+/* ==========================================
+   LOGO BANNER
+========================================== */
 
 .top-banner{
 
     width:100%;
 
-    height:150px;
-
-    background:#101010;
+    background:#fff;
 
     display:flex;
 
@@ -45,21 +44,23 @@ header{
 
     align-items:center;
 
+    padding:28px 20px;
+
+    border-bottom:1px solid #ececec;
+
 }
 
 .top-banner img{
 
-    max-width:420px;
-
-    width:90%;
-
+    width:100%;
+    max-width:360px;
     height:auto;
 
 }
 
-/* ==========================
-   NAVBAR
-========================== */
+/* ==========================================
+   NAVIGATION
+========================================== */
 
 .navbar{
 
@@ -67,11 +68,9 @@ header{
 
     top:0;
 
-    z-index:1000;
+    z-index:999;
 
-    background:#ffffff;
-
-    height:72px;
+    background:#fff;
 
     display:flex;
 
@@ -79,7 +78,7 @@ header{
 
     align-items:center;
 
-    padding:0 60px;
+    padding:18px 60px;
 
     border-bottom:1px solid #ececec;
 
@@ -96,53 +95,39 @@ header{
 
 }
 
-.nav-left a{
-
-    text-decoration:none;
-
-    color:#444;
-
-    font-weight:600;
-
-    transition:.25s;
-
-}
-
-.nav-left a:hover{
-
-    color:#21b45c;
-
-}
-
+.nav-left a,
 .login-link{
 
     text-decoration:none;
 
     color:#444;
 
+    font-size:16px;
+
     font-weight:600;
 
     transition:.25s;
 
 }
 
+.nav-left a:hover,
 .login-link:hover{
 
-    color:#21b45c;
+    color:#20b356;
 
 }
 
 .start-btn{
 
-    background:#21b45c;
+    text-decoration:none;
+
+    background:#20b356;
 
     color:#fff;
 
-    text-decoration:none;
+    padding:12px 24px;
 
-    padding:13px 26px;
-
-    border-radius:12px;
+    border-radius:10px;
 
     font-weight:bold;
 
@@ -152,17 +137,17 @@ header{
 
 .start-btn:hover{
 
-    background:#179149;
+    background:#179148;
 
 }
 
-/* ==========================
+/* ==========================================
    HERO
-========================== */
+========================================== */
 
 .hero{
 
-    max-width:1280px;
+    max-width:1200px;
 
     margin:auto;
 
@@ -170,7 +155,7 @@ header{
 
     grid-template-columns:1fr 1fr;
 
-    gap:80px;
+    gap:70px;
 
     align-items:center;
 
@@ -184,7 +169,7 @@ header{
 
     background:#eaf8ef;
 
-    color:#21b45c;
+    color:#20b356;
 
     padding:8px 18px;
 
@@ -194,167 +179,10 @@ header{
 
     font-weight:bold;
 
-    margin-bottom:20px;
+    margin-bottom:24px;
 
 }
 
 .hero h1{
 
-    font-size:72px;
-
-    line-height:1.05;
-
-    letter-spacing:-2px;
-
-    margin-bottom:24px;
-
-}
-
-.hero p{
-
-    font-size:22px;
-
-    line-height:1.7;
-
-    color:#666;
-
-    margin-bottom:40px;
-
-}
-
-.hero-buttons{
-
-    display:flex;
-
-    gap:18px;
-
-}
-
-.primary,
-.secondary{
-
-    text-decoration:none;
-
-    padding:16px 32px;
-
-    border-radius:14px;
-
-    font-weight:bold;
-
-    transition:.25s;
-
-}
-
-.primary{
-
-    background:#21b45c;
-
-    color:white;
-
-}
-
-.primary:hover{
-
-    background:#179149;
-
-}
-
-.secondary{
-
-    border:2px solid #21b45c;
-
-    color:#21b45c;
-
-}
-
-.secondary:hover{
-
-    background:#21b45c;
-
-    color:white;
-
-}
-
-/* ==========================
-   DASHBOARD
-========================== */
-
-.dashboard-card{
-
-    width:100%;
-
-    background:white;
-
-    border-radius:24px;
-
-    overflow:hidden;
-
-    box-shadow:0 20px 60px rgba(0,0,0,.08);
-
-}
-
-.dashboard-header{
-
-    background:#f6f6f6;
-
-    padding:18px;
-
-    font-weight:bold;
-
-    border-bottom:1px solid #eee;
-
-}
-
-.dashboard-body{
-
-    height:420px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-    color:#999;
-
-    font-size:22px;
-
-}
-
-/* ==========================
-   SECTIONS
-========================== */
-
-.section{
-
-    max-width:1200px;
-
-    margin:auto;
-
-    padding:100px 60px;
-
-    text-align:center;
-
-}
-
-.section h2{
-
-    font-size:42px;
-
-    margin-bottom:20px;
-
-}
-
-.section p{
-
-    color:#666;
-
-    font-size:20px;
-
-}
-
-/* ==========================
-   FOOTER
-==========================
+    font-size:64
