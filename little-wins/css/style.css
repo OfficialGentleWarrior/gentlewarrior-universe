@@ -357,7 +357,10 @@ button:active {
 
     font-weight: 600;
 
-    transition: .25s;
+    transition:
+    background .25s,
+    border-color .25s,
+    transform .15s;
 
 }
 .option-button:hover {
@@ -371,6 +374,8 @@ button:active {
     background: var(--primary-light);
 
     border-color: var(--primary);
+
+    transform: scale(1.01);
 
 }
 
