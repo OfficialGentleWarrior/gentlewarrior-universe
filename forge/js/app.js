@@ -1,1 +1,1 @@
-
+console.log("FORGE Loaded");
