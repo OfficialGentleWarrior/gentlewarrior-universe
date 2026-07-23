@@ -5,24 +5,27 @@
     font-family:Arial, Helvetica, sans-serif;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     background:#fff;
     color:#222;
 }
 
 /* ==========================
-   TOP BANNER
+   TOP LOGO
 ========================== */
 
 .top-banner{
-    background:#111;
+    background:#fff;
     text-align:center;
-    padding:18px 20px;
-    border-bottom:1px solid #222;
+    padding:20px 20px 10px;
 }
 
 .top-banner img{
-    height:70px;
+    height:90px;
     max-width:100%;
 }
 
@@ -37,8 +40,12 @@ nav{
 
     padding:18px 80px;
 
-    border-bottom:1px solid #eee;
     background:#fff;
+    border-bottom:1px solid #ececec;
+
+    position:sticky;
+    top:0;
+    z-index:1000;
 }
 
 .menu-left,
@@ -51,6 +58,7 @@ nav{
 .menu-left a{
     text-decoration:none;
     color:#444;
+    font-size:16px;
     font-weight:600;
     transition:.25s;
 }
@@ -63,15 +71,15 @@ button{
     cursor:pointer;
     border:none;
     border-radius:12px;
-    padding:12px 24px;
+    padding:12px 28px;
     font-size:15px;
-    font-weight:bold;
+    font-weight:700;
     transition:.25s;
 }
 
 .login-btn{
     background:#fff;
-    border:1px solid #ccc;
+    border:1px solid #d8d8d8;
 }
 
 .login-btn:hover{
@@ -80,23 +88,23 @@ button{
 
 .start-btn,
 .primary{
-    background:#18a957;
+    background:#1fb255;
     color:#fff;
 }
 
 .start-btn:hover,
 .primary:hover{
-    background:#15924b;
+    background:#189648;
 }
 
 .secondary{
     background:#fff;
-    border:1px solid #18a957;
-    color:#18a957;
+    color:#1fb255;
+    border:1px solid #1fb255;
 }
 
 .secondary:hover{
-    background:#18a957;
+    background:#1fb255;
     color:#fff;
 }
 
@@ -111,23 +119,28 @@ button{
 
     gap:80px;
 
-    padding:90px 80px;
+    max-width:1280px;
+    margin:auto;
+
+    padding:110px 80px;
 }
 
 .hero-left{
-    max-width:520px;
+    flex:1;
+    max-width:560px;
 }
 
 .hero h1{
-    font-size:64px;
-    line-height:1.08;
-    margin-bottom:24px;
+    font-size:68px;
+    line-height:1.05;
+    letter-spacing:-2px;
+    margin-bottom:25px;
 }
 
 .hero p{
     font-size:22px;
     color:#666;
-    line-height:1.6;
+    line-height:1.7;
     margin-bottom:40px;
 }
 
@@ -155,33 +168,55 @@ button{
     align-items:center;
 
     color:#999;
-    font-size:26px;
+    font-size:24px;
 
-    box-shadow:0 18px 45px rgba(0,0,0,.08);
+    box-shadow:0 20px 50px rgba(0,0,0,.08);
 }
 
 /* ==========================
-   RESPONSIVE
+   MOBILE
 ========================== */
 
 @media(max-width:992px){
 
+    .top-banner{
+        padding:16px 10px 8px;
+    }
+
+    .top-banner img{
+        height:72px;
+    }
+
     nav{
         flex-direction:column;
-        gap:20px;
-        padding:20px;
+        gap:18px;
+        padding:18px;
     }
 
     .menu-left,
     .menu-right{
-        flex-wrap:wrap;
         justify-content:center;
+        flex-wrap:wrap;
+        gap:18px;
     }
 
     .hero{
         flex-direction:column;
         text-align:center;
-        padding:60px 25px;
+        padding:70px 24px;
+    }
+
+    .hero-left{
+        max-width:100%;
+    }
+
+    .hero h1{
+        font-size:52px;
+        letter-spacing:-1px;
+    }
+
+    .hero p{
+        font-size:20px;
     }
 
     .hero-buttons{
@@ -189,21 +224,28 @@ button{
         flex-wrap:wrap;
     }
 
+    .mockup{
+        width:100%;
+        max-width:520px;
+        height:300px;
+    }
+}
+
+@media(max-width:480px){
+
     .hero h1{
-        font-size:48px;
+        font-size:42px;
     }
 
     .hero p{
         font-size:18px;
     }
 
-    .mockup{
+    button{
         width:100%;
-        max-width:520px;
-        height:280px;
     }
 
-    .top-banner img{
-        height:55px;
+    .hero-buttons{
+        flex-direction:column;
     }
 }
