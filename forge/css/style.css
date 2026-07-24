@@ -170,7 +170,7 @@ header{
 
     text-align:center;
 
-    padding:80px 20px;
+    padding:40px 20px;
 
 }
 
@@ -201,13 +201,9 @@ header{
 }
 
 .hero h1{
-
-    font-size:64px;
-
-    line-height:1.05;
-
-    margin-bottom:24px;
-
+    font-size:52px;
+    line-height:1.1;
+    margin:20px 0;
 }
 
 .hero p{
@@ -216,9 +212,9 @@ header{
 
     color:#666;
 
-    margin-bottom:36px;
+    max-width:600px;
 
-    max-width:520px;
+    margin:0 auto 30px;
 
 }
 
@@ -229,6 +225,8 @@ header{
 .hero-buttons{
 
     display:flex;
+
+    justify-content:center;
 
     align-items:center;
 
@@ -271,9 +269,9 @@ header{
 
 footer{
 
-    margin-top:70px;
+    margin-top:40px;
 
-    padding:35px 20px;
+    padding:24px 20px;
 
     border-top:1px solid #ececec;
 
@@ -341,7 +339,7 @@ footer{
 
         text-align:center;
 
-        padding:60px 24px;
+        padding:40px 20px;
 
         gap:50px;
 
@@ -349,7 +347,7 @@ footer{
 
     .hero h1{
 
-        font-size:48px;
+        font-size:44px;
 
     }
 
@@ -435,7 +433,7 @@ footer{
 
     .hero{
 
-        padding:50px 20px;
+        padding:30px 20px;
 
         gap:40px;
 
@@ -443,17 +441,21 @@ footer{
 
     .hero h1{
 
-        font-size:40px;
+    font-size:38px;
 
-        line-height:1.1;
+    line-height:1.1;
 
-    }
+    margin:16px 0;
+
+}
 
     .hero p{
 
-        font-size:18px;
+    font-size:17px;
 
-    }
+    margin:0 auto 24px;
+
+}
 
     .hero-buttons{
 
@@ -463,18 +465,12 @@ footer{
 
     .primary{
 
-        width:100%;
+    width:220px;
 
-        max-width:260px;
+    text-align:center;
 
-        text-align:center;
+    padding:15px 0;
 
-    }
-
-    .dashboard-card{
-
-        border-radius:14px;
-
-    }
+}
 
 }
