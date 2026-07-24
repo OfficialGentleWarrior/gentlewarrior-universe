@@ -42,15 +42,19 @@ header{
 
     align-items:center;
 
-    padding:18px 20px;
+    padding:4px 16px;
+
+    border-bottom:1px solid #1f1f1f;
 
 }
 
 .top-banner img{
 
+    display:block;
+
     width:100%;
 
-    max-width:380px;
+    max-width:520px;
 
     height:auto;
 
@@ -86,9 +90,9 @@ header{
 
     display:flex;
 
-    gap:30px;
-
     align-items:center;
+
+    gap:32px;
 
 }
 
@@ -97,6 +101,8 @@ header{
     text-decoration:none;
 
     color:#555;
+
+    font-size:16px;
 
     font-weight:600;
 
@@ -107,6 +113,14 @@ header{
 .nav-left a:hover{
 
     color:#22b455;
+
+}
+
+.nav-right{
+
+    display:flex;
+
+    align-items:center;
 
 }
 
@@ -126,11 +140,15 @@ header{
 
     transition:.25s;
 
+    box-shadow:0 8px 20px rgba(34,180,85,.25);
+
 }
 
 .start-btn:hover{
 
     background:#18984b;
+
+    transform:translateY(-1px);
 
 }
 
@@ -152,7 +170,7 @@ header{
 
     align-items:center;
 
-    padding:80px 50px;
+    padding:70px 50px;
 
 }
 
@@ -194,19 +212,25 @@ header{
 
     margin-bottom:36px;
 
+    max-width:520px;
+
 }
 
 /* ==========================================
-   BUTTON
+   HERO BUTTON
 ========================================== */
 
 .hero-buttons{
 
     display:flex;
 
+    align-items:center;
+
 }
 
 .primary{
+
+    display:inline-block;
 
     text-decoration:none;
 
@@ -222,11 +246,15 @@ header{
 
     transition:.25s;
 
+    box-shadow:0 8px 20px rgba(34,180,85,.25);
+
 }
 
 .primary:hover{
 
     background:#18984b;
+
+    transform:translateY(-1px);
 
 }
 
@@ -238,13 +266,13 @@ header{
 
     background:#fff;
 
+    border:1px solid #ececec;
+
     border-radius:18px;
 
     overflow:hidden;
 
-    border:1px solid #ececec;
-
-    box-shadow:0 18px 45px rgba(0,0,0,.08);
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
 
 }
 
@@ -276,6 +304,8 @@ header{
 
     border-radius:10px;
 
+    object-fit:cover;
+
 }
 
 /* ==========================================
@@ -302,17 +332,17 @@ footer{
    TABLET
 ========================================== */
 
-@media(max-width:900px){
+@media (max-width:900px){
 
     .top-banner{
 
-        padding:16px;
+        padding:4px 12px;
 
     }
 
     .top-banner img{
 
-        max-width:320px;
+        max-width:420px;
 
     }
 
@@ -328,11 +358,23 @@ footer{
 
     .nav-left{
 
+        width:100%;
+
         justify-content:center;
 
         flex-wrap:wrap;
 
-        gap:22px;
+        gap:24px;
+
+    }
+
+    .nav-right{
+
+        width:100%;
+
+        display:flex;
+
+        justify-content:center;
 
     }
 
@@ -344,6 +386,8 @@ footer{
 
         padding:60px 24px;
 
+        gap:50px;
+
     }
 
     .hero h1{
@@ -353,6 +397,8 @@ footer{
     }
 
     .hero p{
+
+        max-width:100%;
 
         font-size:18px;
 
@@ -370,23 +416,27 @@ footer{
    MOBILE
 ========================================== */
 
-@media(max-width:480px){
+@media (max-width:480px){
 
     .top-banner{
 
-        padding:14px;
+        padding:2px 10px;
 
     }
 
     .top-banner img{
 
-        max-width:260px;
+        width:100%;
+
+        max-width:420px;
 
     }
 
     .navbar{
 
         padding:16px;
+
+        gap:16px;
 
     }
 
@@ -396,7 +446,15 @@ footer{
 
         justify-content:center;
 
-        gap:24px;
+        flex-wrap:wrap;
+
+        gap:20px;
+
+    }
+
+    .nav-left a{
+
+        font-size:15px;
 
     }
 
@@ -412,7 +470,7 @@ footer{
 
     .start-btn{
 
-        width:170px;
+        width:180px;
 
         text-align:center;
 
@@ -420,13 +478,17 @@ footer{
 
     .hero{
 
-        padding:50px 22px;
+        padding:50px 20px;
+
+        gap:40px;
 
     }
 
     .hero h1{
 
-        font-size:38px;
+        font-size:40px;
+
+        line-height:1.1;
 
     }
 
@@ -446,7 +508,15 @@ footer{
 
         width:100%;
 
+        max-width:260px;
+
         text-align:center;
+
+    }
+
+    .dashboard-card{
+
+        border-radius:14px;
 
     }
 
