@@ -19,6 +19,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
 
+const togglePassword = document.getElementById("togglePassword");
+
+togglePassword.addEventListener("click", () => {
+
+    const isHidden = passwordInput.type === "password";
+
+    passwordInput.type = isHidden ? "text" : "password";
+
+    togglePassword.innerHTML = isHidden
+        ? '<i class="fa-regular fa-eye-slash"></i>'
+        : '<i class="fa-regular fa-eye"></i>';
+
+});
+
     const loginBtn = document.querySelector(".login-btn");
     const facebookBtn = document.querySelector(".facebook-btn");
     const googleBtn = document.querySelector(".google-btn");
