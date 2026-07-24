@@ -152,7 +152,7 @@ body{
    Form
 ========================== */
 
-form input{
+form input:not([type="checkbox"]){
 
     width:100%;
 
@@ -172,7 +172,7 @@ form input{
 
 }
 
-form input:focus{
+form input:not([type="checkbox"]):focus{
 
     border-color:#22B455;
 
@@ -274,7 +274,9 @@ form input:focus{
 
 .required{
 
-    color:#ef4444;
+    color:#dc2626;
+
+    font-weight:700;
 
 }
 
