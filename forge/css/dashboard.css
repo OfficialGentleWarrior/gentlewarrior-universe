@@ -39,34 +39,11 @@ body{
 
 }
 
-.brand{
+.dashboard-logo{
 
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-}
-
-.brand img{
-
-    width:52px;
-    height:52px;
-
-}
-
-.brand h1{
-
-    font-size:2rem;
-    font-weight:700;
-    line-height:1;
-
-}
-
-.brand p{
-
-    color:#6b7280;
-    font-size:.95rem;
-    margin-top:4px;
+    width:240px;
+    height:auto;
+    display:block;
 
 }
 
@@ -404,4 +381,4 @@ body{
 
 }
 
-   }
+}
