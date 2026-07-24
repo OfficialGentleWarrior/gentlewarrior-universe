@@ -141,7 +141,10 @@ form.addEventListener("submit", async function(e){
 
     }catch(error){
 
-        let message = "Something went wrong. Please try again.";
+    alert(error.code);
+    alert(error.message);
+
+    let message = "Something went wrong. Please try again.";
 
 
         switch(error.code){
