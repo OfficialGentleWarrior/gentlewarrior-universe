@@ -20,25 +20,26 @@ import {
 // ======================================
 
 const userName = document.getElementById("userName");
-
 const userEmail = document.getElementById("userEmail");
-
 const credits = document.getElementById("credits");
-
 const role = document.getElementById("role");
-
 const memberSince = document.getElementById("memberSince");
-
 const logoutBtn = document.getElementById("logoutBtn");
+
+console.log("Dashboard JS Loaded");
 
 
 // ======================================
-// Check Authentication
+// Authentication
 // ======================================
 
 onAuthStateChanged(auth, async (user) => {
 
+    console.log("Auth State:", user);
+
     if (!user) {
+
+        console.log("No authenticated user.");
 
         window.location.href = "login.html";
 
@@ -48,17 +49,17 @@ onAuthStateChanged(auth, async (user) => {
 
     try {
 
+        console.log("Fetching Firestore document...");
+
         const userRef = doc(db, "users", user.uid);
 
         const userSnap = await getDoc(userRef);
 
+        console.log("Document exists:", userSnap.exists());
+
         if (!userSnap.exists()) {
 
             alert("User profile not found.");
-
-            await signOut(auth);
-
-            window.location.href = "login.html";
 
             return;
 
@@ -66,20 +67,20 @@ onAuthStateChanged(auth, async (user) => {
 
         const data = userSnap.data();
 
-        userName.textContent = data.fullName || "User";
+        console.log(data);
 
-        userEmail.textContent = data.email || user.email;
+        userName.textContent = data.fullName ?? "User";
+
+        userEmail.textContent = data.email ?? user.email;
 
         credits.textContent = data.credits ?? 0;
 
-        role.textContent = data.role || "User";
+        role.textContent = data.role ?? "User";
 
         if (data.createdAt) {
 
             memberSince.textContent =
-                data.createdAt
-                    .toDate()
-                    .toLocaleDateString();
+                data.createdAt.toDate().toLocaleDateString();
 
         } else {
 
@@ -90,6 +91,8 @@ onAuthStateChanged(auth, async (user) => {
     } catch (error) {
 
         console.error(error);
+
+        alert(error.code);
 
         alert(error.message);
 
@@ -114,7 +117,9 @@ logoutBtn.addEventListener("click", async () => {
 
         console.error(error);
 
-        alert("Unable to logout.");
+        alert(error.code);
+
+        alert(error.message);
 
     }
 
