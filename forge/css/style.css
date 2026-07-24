@@ -162,15 +162,21 @@ header{
 
     margin:auto;
 
-    display:grid;
+    display:flex;
 
-    grid-template-columns:1fr 1fr;
-
-    gap:70px;
+    justify-content:center;
 
     align-items:center;
 
-    padding:70px 50px;
+    text-align:center;
+
+    padding:80px 20px;
+
+}
+
+.hero-left{
+
+    max-width:700px;
 
 }
 
@@ -258,55 +264,6 @@ header{
 
 }
 
-/* ==========================================
-   DASHBOARD
-========================================== */
-
-.dashboard-card{
-
-    background:#fff;
-
-    border:1px solid #ececec;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    box-shadow:0 12px 35px rgba(0,0,0,.08);
-
-}
-
-.dashboard-header{
-
-    background:#fafafa;
-
-    padding:18px;
-
-    text-align:center;
-
-    font-weight:bold;
-
-    border-bottom:1px solid #ececec;
-
-}
-
-.dashboard-body{
-
-    padding:18px;
-
-}
-
-.dashboard-preview{
-
-    width:100%;
-
-    display:block;
-
-    border-radius:10px;
-
-    object-fit:cover;
-
-}
 
 /* ==========================================
    FOOTER
