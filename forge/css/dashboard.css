@@ -35,13 +35,22 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
+
+    background:#111111;
+
+    padding:18px 20px;
+
+    margin:-16px -16px 24px -16px;
+
+    border-radius:0 0 22px 22px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.18);
 
 }
 
 .dashboard-logo{
 
-    width:240px;
+    width:220px;
     height:auto;
     display:block;
 
@@ -291,33 +300,42 @@ body{
 
 .topbar{
 
+    display:flex;
+
     flex-direction:column;
 
-    align-items:stretch;
+    align-items:center;
+
+    justify-content:center;
+
+    background:#111;
+
+    padding:18px;
+
+    margin:-16px -16px 20px -16px;
+
+    border-radius:0 0 22px 22px;
 
     gap:16px;
 
 }
 
-.brand{
+.dashboard-logo{
 
-    justify-content:flex-start;
+    width:190px;
 
-}
-
-.brand img{
-
-    width:48px;
-
-    height:48px;
+    height:auto;
 
 }
 
-.brand h1{
+.logout-btn{
 
-    font-size:1.8rem;
+    width:100%;
+
+    max-width:280px;
 
 }
+
 
 .logout-btn{
 
