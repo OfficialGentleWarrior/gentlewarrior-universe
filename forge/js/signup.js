@@ -5,7 +5,8 @@
 import { auth, db } from "./firebase.js";
 
 import {
-    createUserWithEmailAndPassword
+    createUserWithEmailAndPassword,
+    sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
@@ -110,6 +111,10 @@ form.addEventListener("submit", async function(e){
 
         const user = userCredential.user;
 
+// Send verification email
+
+await sendEmailVerification(user);
+
         // ======================================
         // Save User to Firestore
         // ======================================
@@ -122,9 +127,11 @@ form.addEventListener("submit", async function(e){
 
             role: "user",
 
-            credits: 2,
+            credits: 0,
 
-            isActive: true,
+welcomeClaimed: false,
+
+isActive: true,
 
             createdAt: serverTimestamp(),
 
@@ -137,7 +144,20 @@ form.addEventListener("submit", async function(e){
         // Redirect
         // ======================================
 
-        window.location.href = "dashboard.html";
+        alert(
+`Account created successfully!
+
+A verification email has been sent to:
+
+${user.email}
+
+Please verify your email before logging in.`
+);
+
+// Sign out after signup
+await auth.signOut();
+
+window.location.href = "login.html";
 
     }catch(error){
 
