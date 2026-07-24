@@ -294,6 +294,22 @@ form input:not([type="checkbox"]):focus{
 
 }
 
+.error-message{
+
+    display:none;
+
+    margin-top:-8px;
+
+    margin-bottom:14px;
+
+    font-size:13px;
+
+    color:#dc2626;
+
+    font-weight:500;
+
+}
+
 /* ==========================
    Agreement
 ========================== */
