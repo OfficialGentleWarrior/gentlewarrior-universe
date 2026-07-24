@@ -357,6 +357,41 @@ form input:not([type="checkbox"]):focus{
     color:#22B455;
 
 }
+.password-group{
+
+    position:relative;
+
+}
+
+.password-group input{
+
+    width:100%;
+
+    padding-right:55px;
+
+}
+
+.toggle-password{
+
+    position:absolute;
+
+    top:50%;
+
+    right:18px;
+
+    transform:translateY(-50%);
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    color:#888;
+
+    font-size:18px;
+
+}
 
 /* ==========================
    Agreement
