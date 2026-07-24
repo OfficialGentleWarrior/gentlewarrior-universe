@@ -43,7 +43,8 @@
 
         <!-- Facebook -->
 
-        <button class="facebook-btn">
+        <button class="facebook-btn"
+                type="button">
 
             <i class="fa-brands fa-facebook-f"></i>
 
@@ -53,7 +54,8 @@
 
         <!-- Google -->
 
-        <button class="google-btn">
+        <button class="google-btn"
+                type="button">
 
             <i class="fa-brands fa-google"></i>
 
@@ -73,46 +75,71 @@
 
         <form id="signupForm">
 
+            <!-- Full Name -->
+
             <div class="form-group">
 
-                <label>Full Name</label>
+                <label for="fullname">
+                    Full Name <span class="required">*</span>
+                </label>
 
                 <input type="text"
                        id="fullname"
-                       placeholder="Enter your full name"
+                       placeholder="Juan Dela Cruz"
+                       autocomplete="name"
+                       autofocus
                        required>
 
             </div>
 
+            <!-- Email -->
+
             <div class="form-group">
 
-                <label>Email Address</label>
+                <label for="email">
+                    Email Address <span class="required">*</span>
+                </label>
 
                 <input type="email"
                        id="email"
-                       placeholder="Enter your email"
+                       placeholder="name@example.com"
+                       autocomplete="email"
                        required>
 
             </div>
 
+            <!-- Password -->
+
             <div class="form-group">
 
-                <label>Password</label>
+                <label for="password">
+                    Password <span class="required">*</span>
+                </label>
 
                 <input type="password"
                        id="password"
                        placeholder="Create a password"
+                       autocomplete="new-password"
                        required>
+
+                <small class="helper-text">
+                    At least 8 characters
+                </small>
 
             </div>
 
+            <!-- Confirm Password -->
+
             <div class="form-group">
 
-                <label>Confirm Password</label>
+                <label for="confirmPassword">
+                    Confirm Password <span class="required">*</span>
+                </label>
 
                 <input type="password"
                        id="confirmPassword"
-                       placeholder="Confirm your password"
+                       placeholder="Re-enter your password"
+                       autocomplete="new-password"
                        required>
 
             </div>
@@ -133,7 +160,7 @@
                     <a href="terms.html"
                        target="_blank">
 
-                        Terms & Conditions
+                        Terms &amp; Conditions
 
                     </a>
 
@@ -147,11 +174,14 @@
                     </a>,
 
                     and I consent to the collection and processing of my personal data in accordance with the
+
                     <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong>.
 
                 </label>
 
             </div>
+
+            <!-- Submit -->
 
             <button type="submit"
                     class="login-btn">
