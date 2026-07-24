@@ -6,7 +6,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 html{
@@ -16,8 +16,8 @@ html{
 body{
     background:#fff;
     color:#222;
-    overflow-x:hidden;
     line-height:1.6;
+    overflow-x:hidden;
 }
 
 /* ==========================================
@@ -29,7 +29,7 @@ header{
 }
 
 /* ==========================================
-   LOGO BANNER
+   TOP BANNER
 ========================================== */
 
 .top-banner{
@@ -42,7 +42,7 @@ header{
 
     align-items:center;
 
-    padding:40px 20px;
+    padding:18px 20px;
 
 }
 
@@ -50,7 +50,7 @@ header{
 
     width:100%;
 
-    max-width:430px;
+    max-width:380px;
 
     height:auto;
 
@@ -66,11 +66,9 @@ header{
 
     top:0;
 
-    z-index:1000;
+    z-index:999;
 
     background:#fff;
-
-    border-bottom:1px solid #ececec;
 
     display:flex;
 
@@ -80,15 +78,17 @@ header{
 
     padding:18px 60px;
 
+    border-bottom:1px solid #ececec;
+
 }
 
 .nav-left{
 
     display:flex;
 
-    align-items:center;
+    gap:30px;
 
-    gap:32px;
+    align-items:center;
 
 }
 
@@ -118,7 +118,7 @@ header{
 
     color:#fff;
 
-    padding:12px 26px;
+    padding:12px 28px;
 
     border-radius:10px;
 
@@ -130,7 +130,7 @@ header{
 
 .start-btn:hover{
 
-    background:#179148;
+    background:#18984b;
 
 }
 
@@ -160,7 +160,7 @@ header{
 
     display:inline-block;
 
-    background:#e9f8ef;
+    background:#eaf8ef;
 
     color:#22b455;
 
@@ -172,7 +172,7 @@ header{
 
     font-weight:bold;
 
-    margin-bottom:24px;
+    margin-bottom:22px;
 
 }
 
@@ -196,20 +196,25 @@ header{
 
 }
 
+/* ==========================================
+   BUTTON
+========================================== */
+
 .hero-buttons{
 
     display:flex;
 
-    gap:18px;
-
 }
 
-.primary,
-.secondary{
+.primary{
 
     text-decoration:none;
 
-    padding:15px 30px;
+    background:#22b455;
+
+    color:#fff;
+
+    padding:16px 34px;
 
     border-radius:10px;
 
@@ -219,33 +224,9 @@ header{
 
 }
 
-.primary{
-
-    background:#22b455;
-
-    color:#fff;
-
-}
-
 .primary:hover{
 
-    background:#179148;
-
-}
-
-.secondary{
-
-    border:2px solid #22b455;
-
-    color:#22b455;
-
-}
-
-.secondary:hover{
-
-    background:#22b455;
-
-    color:#fff;
+    background:#18984b;
 
 }
 
@@ -257,25 +238,25 @@ header{
 
     background:#fff;
 
-    border:1px solid #ececec;
-
     border-radius:18px;
 
     overflow:hidden;
 
-    box-shadow:0 15px 40px rgba(0,0,0,.08);
+    border:1px solid #ececec;
+
+    box-shadow:0 18px 45px rgba(0,0,0,.08);
 
 }
 
 .dashboard-header{
 
-    background:#f8f8f8;
+    background:#fafafa;
 
     padding:18px;
 
-    font-weight:bold;
-
     text-align:center;
+
+    font-weight:bold;
 
     border-bottom:1px solid #ececec;
 
@@ -283,19 +264,17 @@ header{
 
 .dashboard-body{
 
-    height:380px;
+    padding:18px;
 
-    display:flex;
+}
 
-    justify-content:center;
+.dashboard-preview{
 
-    align-items:center;
+    width:100%;
 
-    color:#aaa;
+    display:block;
 
-    text-align:center;
-
-    padding:30px;
+    border-radius:10px;
 
 }
 
@@ -305,11 +284,11 @@ header{
 
 footer{
 
-    margin-top:60px;
-
-    border-top:1px solid #ececec;
+    margin-top:70px;
 
     padding:35px 20px;
+
+    border-top:1px solid #ececec;
 
     text-align:center;
 
@@ -327,13 +306,13 @@ footer{
 
     .top-banner{
 
-        padding:34px 20px;
+        padding:16px;
 
     }
 
     .top-banner img{
 
-        max-width:340px;
+        max-width:320px;
 
     }
 
@@ -349,11 +328,11 @@ footer{
 
     .nav-left{
 
-        gap:24px;
-
         justify-content:center;
 
         flex-wrap:wrap;
+
+        gap:22px;
 
     }
 
@@ -383,14 +362,6 @@ footer{
 
         justify-content:center;
 
-        flex-wrap:wrap;
-
-    }
-
-    .dashboard-body{
-
-        height:300px;
-
     }
 
 }
@@ -403,19 +374,19 @@ footer{
 
     .top-banner{
 
-        padding:38px 20px;
+        padding:14px;
 
     }
 
     .top-banner img{
 
-        max-width:280px;
+        max-width:260px;
 
     }
 
     .navbar{
 
-        padding:18px;
+        padding:16px;
 
     }
 
@@ -425,9 +396,7 @@ footer{
 
         justify-content:center;
 
-        gap:22px;
-
-        margin-bottom:8px;
+        gap:24px;
 
     }
 
@@ -443,7 +412,7 @@ footer{
 
     .start-btn{
 
-        width:180px;
+        width:170px;
 
         text-align:center;
 
@@ -451,7 +420,7 @@ footer{
 
     .hero{
 
-        padding:55px 22px;
+        padding:50px 22px;
 
     }
 
@@ -469,12 +438,11 @@ footer{
 
     .hero-buttons{
 
-        flex-direction:column;
+        justify-content:center;
 
     }
 
-    .primary,
-    .secondary{
+    .primary{
 
         width:100%;
 
