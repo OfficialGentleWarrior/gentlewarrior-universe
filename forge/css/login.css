@@ -311,6 +311,50 @@ form input:not([type="checkbox"]):focus{
 }
 
 /* ==========================
+   Password Toggle
+========================== */
+
+.password-wrapper{
+
+    position:relative;
+
+}
+
+.password-wrapper input{
+
+    padding-right:48px;
+
+    margin-bottom:0 !important;
+
+}
+
+.password-wrapper i{
+
+    position:absolute;
+
+    top:50%;
+
+    right:16px;
+
+    transform:translateY(-50%);
+
+    color:#888;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    transition:.2s;
+
+}
+
+.password-wrapper i:hover{
+
+    color:#22B455;
+
+}
+
+/* ==========================
    Agreement
 ========================== */
 
