@@ -111,13 +111,9 @@ form.addEventListener("submit", async function(e){
 
         const user = userCredential.user;
 
-// Send verification email
-
-await sendEmailVerification(user);
-
-        // ======================================
-        // Save User to Firestore
-        // ======================================
+// ======================================
+// Save User to Firestore
+// ======================================
 
         await setDoc(doc(db, "users", user.uid), {
 
@@ -138,7 +134,9 @@ isActive: true,
             updatedAt: serverTimestamp()
 
         });
+// Send verification email
 
+await sendEmailVerification(user);
 
         // ======================================
         // Redirect
