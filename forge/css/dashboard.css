@@ -332,7 +332,9 @@ box-shadow:none;
 
     align-items:center;
 
-    border-radius:0 0 22px 22px;
+    border-radius:0;
+
+    box-shadow:none;
 
 }
 
