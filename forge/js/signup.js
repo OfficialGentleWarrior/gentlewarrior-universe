@@ -1,12 +1,46 @@
+// ======================================
+// FORGE Signup
+// ======================================
+
+import { auth, db } from "./firebase.js";
+
+import {
+    createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+    doc,
+    setDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+// ======================================
+// Elements
+// ======================================
+
 const form = document.getElementById("signupForm");
 
+const fullName = document.getElementById("fullname");
+
+const email = document.getElementById("email");
+
 const password = document.getElementById("password");
+
 const confirmPassword = document.getElementById("confirmPassword");
+
+const signupBtn = document.getElementById("signupBtn");
 
 const errorMessage = document.getElementById("errorMessage");
 
 const passwordToggle = document.getElementById("passwordToggle");
+
 const confirmPasswordToggle = document.getElementById("confirmPasswordToggle");
+
+
+// ======================================
+// Error Messages
+// ======================================
 
 function showError(message){
 
@@ -24,13 +58,18 @@ function hideError(){
 
 }
 
-form.addEventListener("submit", function(e){
+
+// ======================================
+// Validation
+// ======================================
+
+form.addEventListener("submit", async function(e){
+
+    e.preventDefault();
 
     hideError();
 
     if(password.value.length < 8){
-
-        e.preventDefault();
 
         showError("Password must be at least 8 characters.");
 
@@ -42,8 +81,6 @@ form.addEventListener("submit", function(e){
 
     if(password.value !== confirmPassword.value){
 
-        e.preventDefault();
-
         showError("Passwords do not match.");
 
         confirmPassword.focus();
@@ -52,11 +89,116 @@ form.addEventListener("submit", function(e){
 
     }
 
+    signupBtn.disabled = true;
+
+    signupBtn.textContent = "Creating Account...";
+
+    try{
+
+        // Firebase Authentication
+
+        const userCredential =
+            await createUserWithEmailAndPassword(
+
+                auth,
+
+                email.value,
+
+                password.value
+
+            );
+
+        const user = userCredential.user;
+
+        // ======================================
+        // Save User to Firestore
+        // ======================================
+
+        await setDoc(doc(db, "users", user.uid), {
+
+            fullName: fullName.value.trim(),
+
+            email: email.value.trim().toLowerCase(),
+
+            role: "user",
+
+            credits: 2,
+
+            isActive: true,
+
+            createdAt: serverTimestamp(),
+
+            updatedAt: serverTimestamp()
+
+        });
+
+
+        // ======================================
+        // Redirect
+        // ======================================
+
+        window.location.href = "dashboard.html";
+
+    }catch(error){
+
+        let message = "Something went wrong. Please try again.";
+
+
+        switch(error.code){
+
+            case "auth/email-already-in-use":
+
+                message = "This email is already registered.";
+
+                break;
+
+
+            case "auth/invalid-email":
+
+                message = "Please enter a valid email address.";
+
+                break;
+
+
+            case "auth/weak-password":
+
+                message = "Password is too weak.";
+
+                break;
+
+
+            case "auth/network-request-failed":
+
+                message = "No internet connection.";
+
+                break;
+
+        }
+
+        showError(message);
+
+    }finally{
+
+        signupBtn.disabled = false;
+
+        signupBtn.textContent = "Create Account";
+
+    }
+
 });
+
+
+// =====================================
+// Hide Error While Typing
+// =====================================
 
 password.addEventListener("input", hideError);
 
 confirmPassword.addEventListener("input", hideError);
+
+email.addEventListener("input", hideError);
+
+fullName.addEventListener("input", hideError);
 
 
 // =====================================
@@ -71,17 +213,13 @@ if(passwordToggle){
 
             password.type = "text";
 
-            passwordToggle.classList.remove("fa-eye");
-
-            passwordToggle.classList.add("fa-eye-slash");
+            passwordToggle.classList.replace("fa-eye","fa-eye-slash");
 
         }else{
 
             password.type = "password";
 
-            passwordToggle.classList.remove("fa-eye-slash");
-
-            passwordToggle.classList.add("fa-eye");
+            passwordToggle.classList.replace("fa-eye-slash","fa-eye");
 
         }
 
@@ -97,17 +235,13 @@ if(confirmPasswordToggle){
 
             confirmPassword.type = "text";
 
-            confirmPasswordToggle.classList.remove("fa-eye");
-
-            confirmPasswordToggle.classList.add("fa-eye-slash");
+            confirmPasswordToggle.classList.replace("fa-eye","fa-eye-slash");
 
         }else{
 
             confirmPassword.type = "password";
 
-            confirmPasswordToggle.classList.remove("fa-eye-slash");
-
-            confirmPasswordToggle.classList.add("fa-eye");
+            confirmPasswordToggle.classList.replace("fa-eye-slash","fa-eye");
 
         }
 
