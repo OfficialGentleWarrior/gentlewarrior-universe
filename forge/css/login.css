@@ -284,9 +284,9 @@ form input:not([type="checkbox"]):focus{
 
     display:block;
 
-    margin-top:-6px;
+    margin-top:8px;
 
-    margin-bottom:12px;
+    margin-bottom:0;
 
     font-size:12px;
 
@@ -318,11 +318,15 @@ form input:not([type="checkbox"]):focus{
 
     position:relative;
 
+    margin-bottom:14px;
+
 }
 
 .password-wrapper input{
 
-    padding-right:48px;
+    width:100%;
+
+    padding:16px 48px 16px 16px;
 
     margin-bottom:0 !important;
 
