@@ -11,7 +11,10 @@ import {
 
 import {
     doc,
-    getDoc
+    getDoc,
+    updateDoc,
+    increment,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
@@ -68,6 +71,23 @@ onAuthStateChanged(auth, async (user) => {
         const data = userSnap.data();
 
         console.log(data);
+// ======================================
+// Welcome Spark
+// ======================================
+
+if (data.welcomeClaimed !== true) {
+
+    await updateDoc(userRef, {
+        credits: increment(1),
+        welcomeClaimed: true,
+        updatedAt: serverTimestamp()
+    });
+
+    data.credits = (data.credits ?? 0) + 1;
+
+    alert("🎉 Welcome!\n\nYou've received 1 Welcome Spark.");
+
+}
 
         userName.textContent = data.fullName ?? "User";
 
