@@ -10,7 +10,8 @@ import {
 import {
     signInWithEmailAndPassword,
     signInWithPopup,
-    signOut
+    signOut,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,6 +38,7 @@ togglePassword.addEventListener("click", () => {
     const loginBtn = document.querySelector(".login-btn");
     const facebookBtn = document.querySelector(".facebook-btn");
     const googleBtn = document.querySelector(".google-btn");
+const forgotPassword = document.getElementById("forgotPassword");
 
 
     /* ==========================
@@ -156,5 +158,43 @@ window.location.href = "dashboard.html";
         alert("Facebook Login coming soon.");
 
     });
+
+/* ==========================
+   Forgot Password
+========================== */
+
+forgotPassword.addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    const email = emailInput.value.trim();
+
+    if (!email) {
+
+        alert("Please enter your email address first.");
+
+        return;
+
+    }
+
+    try {
+
+        await sendPasswordResetEmail(auth, email);
+
+        alert(
+`Password reset email sent.
+
+Please check your inbox.`
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
+
+});
 
 });
