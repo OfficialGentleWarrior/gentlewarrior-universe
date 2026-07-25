@@ -142,13 +142,17 @@ box-shadow:none;
 }
 
 .stat-card{
-
     background:#fff;
     border-radius:22px;
     padding:20px 16px;
     text-align:center;
     box-shadow:0 12px 30px rgba(0,0,0,.06);
 
+    text-decoration:none;
+    color:inherit;
+    display:block;
+    cursor:pointer;
+    transition:.2s;
 }
 
 .stat-card i{
@@ -172,6 +176,15 @@ box-shadow:none;
     font-size:.95rem;
 
 }
+
+.stat-card:hover{
+    transform:translateY(-3px);
+}
+
+.stat-card:active{
+    transform:scale(.98);
+}
+
 /* ======================================
    Actions
 ====================================== */
