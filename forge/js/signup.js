@@ -145,11 +145,13 @@ await sendEmailVerification(user);
         alert(
 `Account created successfully!
 
-A verification email has been sent to:
+A verification email has been sent for your FORGE account.
+
+Email Address:
 
 ${user.email}
 
-Please verify your email before logging in.`
+Please check your inbox and click the verification link before logging in.`
 );
 
 // Sign out after signup
