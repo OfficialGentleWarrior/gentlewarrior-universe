@@ -9,7 +9,8 @@ import {
 
 import {
     signInWithEmailAndPassword,
-    signInWithPopup
+    signInWithPopup,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -51,13 +52,32 @@ togglePassword.addEventListener("click", () => {
 
         try {
 
-            await signInWithEmailAndPassword(
-                auth,
-                emailInput.value.trim(),
-                passwordInput.value
-            );
+            const userCredential = await signInWithEmailAndPassword(
+    auth,
+    emailInput.value.trim(),
+    passwordInput.value
+);
 
-            window.location.href = "dashboard.html";
+const user = userCredential.user;
+
+// Refresh latest user info
+await user.reload();
+
+if (!user.emailVerified) {
+
+    await signOut(auth);
+
+    alert(
+`Your email address has not been verified.
+
+Please check your inbox and click the verification link before signing in.`
+    );
+
+    return;
+
+}
+
+window.location.href = "dashboard.html";
 
         } catch (error) {
 
