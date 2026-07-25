@@ -2,15 +2,21 @@
 // FORGE Signup
 // ======================================
 
-import { auth, db } from "./firebase.js";
+import {
+    auth,
+    db,
+    googleProvider
+} from "./firebase.js";
 
 import {
     createUserWithEmailAndPassword,
-    sendEmailVerification
+    sendEmailVerification,
+    signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
     doc,
+    getDoc,
     setDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
@@ -37,6 +43,8 @@ const errorMessage = document.getElementById("errorMessage");
 const passwordToggle = document.getElementById("passwordToggle");
 
 const confirmPasswordToggle = document.getElementById("confirmPasswordToggle");
+
+const googleBtn = document.querySelector(".google-btn");
 
 
 // ======================================
@@ -268,6 +276,59 @@ if(confirmPasswordToggle){
 
         }
 
+
+
     });
 
 }
+
+// =====================================
+// Google Signup
+// =====================================
+
+googleBtn.addEventListener("click", async () => {
+
+    googleBtn.disabled = true;
+    googleBtn.textContent = "Connecting...";
+
+    try {
+
+        // Google Authentication
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        // Check if Firestore user already exists
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        // Create only if first login
+        if (!userSnap.exists()) {
+
+            await setDoc(userRef, {
+                fullName: user.displayName || user.email?.split("@")[0] || "",
+                email: (user.email || "").toLowerCase(),
+                role: "user",
+                credits: 0,
+                welcomeClaimed: false,
+                isActive: true,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+
+        }
+
+        window.location.href = "dashboard.html";
+
+    } catch (error) {
+
+        console.error(error);
+        showError(error.message);
+
+    } finally {
+
+        googleBtn.disabled = false;
+        googleBtn.textContent = "Continue with Google";
+
+    }
+
+});
