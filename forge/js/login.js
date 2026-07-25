@@ -20,6 +20,8 @@ import {
 import {
     signInWithEmailAndPassword,
     signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
     signOut,
     sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
@@ -204,7 +206,7 @@ facebookBtn.addEventListener("click", async () => {
 
     try {
 
-        const result = await signInWithPopup(auth, facebookProvider);
+        await signInWithRedirect(auth, facebookProvider);
         const user = result.user;
 
         const userRef = doc(db, "users", user.uid);
