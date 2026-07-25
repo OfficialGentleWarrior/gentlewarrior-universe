@@ -49,6 +49,23 @@ onAuthStateChanged(auth, async (user) => {
         return;
 
     }
+// ======================================
+// Dashboard Protection
+// ======================================
+
+await user.reload();
+
+if (!auth.currentUser?.emailVerified) {
+
+    await signOut(auth);
+
+    alert("Please verify your email before accessing your dashboard.");
+
+    window.location.href = "login.html";
+
+    return;
+
+}
 
     try {
 
