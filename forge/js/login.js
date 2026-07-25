@@ -182,10 +182,8 @@ forgotPassword.addEventListener("click", async (e) => {
         await sendPasswordResetEmail(auth, email);
 
         alert(
-`Password reset email sent.
-
-Please check your inbox.`
-        );
+"A password reset email has been sent for your FORGE account.\n\nPlease check your inbox and follow the instructions to reset your password."
+);
 
     } catch (error) {
 
