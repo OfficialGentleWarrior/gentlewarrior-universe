@@ -4,8 +4,17 @@
 
 import {
     auth,
+    db,
     googleProvider
 } from "./firebase.js";
+
+import {
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
 
 import {
     signInWithEmailAndPassword,
@@ -128,29 +137,57 @@ window.location.href = "dashboard.html";
 
     googleBtn.addEventListener("click", async () => {
 
-        googleBtn.disabled = true;
-        googleBtn.textContent = "Connecting...";
+    googleBtn.disabled = true;
+    googleBtn.textContent = "Connecting...";
 
-        try {
+    try {
 
-            await signInWithPopup(auth, googleProvider);
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
 
-            window.location.href = "dashboard.html";
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
 
-        } catch (error) {
+        if (!userSnap.exists()) {
 
-            console.error(error);
+            await setDoc(userRef, {
 
-            alert(error.message);
+                fullName: user.displayName || user.email?.split("@")[0] || "",
 
-        } finally {
+                email: (user.email || "").toLowerCase(),
 
-            googleBtn.disabled = false;
-            googleBtn.textContent = "Continue with Google";
+                role: "user",
+
+                credits: 0,
+
+                welcomeClaimed: false,
+
+                isActive: true,
+
+                createdAt: serverTimestamp(),
+
+                updatedAt: serverTimestamp()
+
+            });
 
         }
 
-    });
+        window.location.href = "dashboard.html";
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    } finally {
+
+        googleBtn.disabled = false;
+        googleBtn.textContent = "Continue with Google";
+
+    }
+
+});
 
 
     /* ==========================
