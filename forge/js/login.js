@@ -16,7 +16,6 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
 import {
     signInWithEmailAndPassword,
     signInWithPopup,
@@ -26,32 +25,76 @@ import {
     sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+    try {
+
+        const result = await getRedirectResult(auth);
+
+        if (result) {
+
+            const user = result.user;
+
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+
+                await setDoc(userRef, {
+
+                    fullName: user.displayName || user.email?.split("@")[0] || "",
+
+                    email: (user.email || "").toLowerCase(),
+
+                    role: "user",
+
+                    credits: 0,
+
+                    welcomeClaimed: false,
+
+                    isActive: true,
+
+                    createdAt: serverTimestamp(),
+
+                    updatedAt: serverTimestamp()
+
+                });
+
+            }
+
+            window.location.href = "dashboard.html";
+            return;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
 
     const form = document.querySelector("form");
 
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
 
-const togglePassword = document.getElementById("togglePassword");
+    const togglePassword = document.getElementById("togglePassword");
 
-togglePassword.addEventListener("click", () => {
+    togglePassword.addEventListener("click", () => {
 
-    const isHidden = passwordInput.type === "password";
+        const isHidden = passwordInput.type === "password";
 
-    passwordInput.type = isHidden ? "text" : "password";
+        passwordInput.type = isHidden ? "text" : "password";
 
-    togglePassword.innerHTML = isHidden
-        ? '<i class="fa-regular fa-eye-slash"></i>'
-        : '<i class="fa-regular fa-eye"></i>';
+        togglePassword.innerHTML = isHidden
+            ? '<i class="fa-regular fa-eye-slash"></i>'
+            : '<i class="fa-regular fa-eye"></i>';
 
-});
-
+    });
     const loginBtn = document.querySelector(".login-btn");
     const facebookBtn = document.querySelector(".facebook-btn");
     const googleBtn = document.querySelector(".google-btn");
-const forgotPassword = document.getElementById("forgotPassword");
-
+    const forgotPassword = document.getElementById("forgotPassword");
 
     /* ==========================
        Email Login
@@ -67,22 +110,20 @@ const forgotPassword = document.getElementById("forgotPassword");
         try {
 
             const userCredential = await signInWithEmailAndPassword(
-    auth,
-    emailInput.value.trim(),
-    passwordInput.value
-);
+                auth,
+                emailInput.value.trim(),
+                passwordInput.value
+            );
 
-const user = userCredential.user;
+            const user = userCredential.user;
 
-// Refresh latest user info
-await user.reload();
+            await user.reload();
 
-if (!user.emailVerified) {
+            if (!user.emailVerified) {
 
-    await signOut(auth);
+                await signOut(auth);
 
-    alert(
-`Please verify your email address before logging in.
+                alert(`Please verify your email address before logging in.
 
 Email Address:
 
@@ -90,14 +131,13 @@ ${user.email}
 
 A verification email was sent when you created your FORGE account.
 
-Please check your inbox (or Spam folder) and click the verification link before signing in.`
-    );
+Please check your inbox (or Spam folder) and click the verification link before signing in.`);
 
-    return;
+                return;
 
-}
+            }
 
-window.location.href = "dashboard.html";
+            window.location.href = "dashboard.html";
 
         } catch (error) {
 
@@ -135,157 +175,111 @@ window.location.href = "dashboard.html";
 
     });
 
-
     /* ==========================
        Google Login
     ========================== */
 
     googleBtn.addEventListener("click", async () => {
 
-    googleBtn.disabled = true;
-    googleBtn.textContent = "Connecting...";
+        googleBtn.disabled = true;
+        googleBtn.textContent = "Connecting...";
 
-    try {
+        try {
 
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
 
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef);
 
-        if (!userSnap.exists()) {
+            if (!userSnap.exists()) {
 
-            await setDoc(userRef, {
+                await setDoc(userRef, {
 
-                fullName: user.displayName || user.email?.split("@")[0] || "",
+                    fullName: user.displayName || user.email?.split("@")[0] || "",
+                    email: (user.email || "").toLowerCase(),
+                    role: "user",
+                    credits: 0,
+                    welcomeClaimed: false,
+                    isActive: true,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
 
-                email: (user.email || "").toLowerCase(),
+                });
 
-                role: "user",
+            }
 
-                credits: 0,
+            window.location.href = "dashboard.html";
 
-                welcomeClaimed: false,
+        } catch (error) {
 
-                isActive: true,
+            console.error(error);
+            alert(error.message);
 
-                createdAt: serverTimestamp(),
+        } finally {
 
-                updatedAt: serverTimestamp()
-
-            });
+            googleBtn.disabled = false;
+            googleBtn.textContent = "Continue with Google";
 
         }
 
-        window.location.href = "dashboard.html";
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(error.message);
-
-    } finally {
-
-        googleBtn.disabled = false;
-        googleBtn.textContent = "Continue with Google";
-
-    }
-
-});
-
+    });
 
     /* ==========================
-   Facebook Login
-========================== */
+       Facebook Login
+    ========================== */
 
-facebookBtn.addEventListener("click", async () => {
+    facebookBtn.addEventListener("click", async () => {
 
-    facebookBtn.disabled = true;
-    facebookBtn.textContent = "Connecting...";
+        facebookBtn.disabled = true;
+        facebookBtn.textContent = "Connecting...";
 
-    try {
+        try {
 
-        await signInWithRedirect(auth, facebookProvider);
-        const user = result.user;
+            await signInWithRedirect(auth, facebookProvider);
 
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
+        } catch (error) {
 
-        if (!userSnap.exists()) {
+            console.error(error);
+            alert(error.message);
 
-            await setDoc(userRef, {
-
-                fullName: user.displayName || user.email?.split("@")[0] || "",
-
-                email: (user.email || "").toLowerCase(),
-
-                role: "user",
-
-                credits: 0,
-
-                welcomeClaimed: false,
-
-                isActive: true,
-
-                createdAt: serverTimestamp(),
-
-                updatedAt: serverTimestamp()
-
-            });
+            facebookBtn.disabled = false;
+            facebookBtn.textContent = "Continue with Facebook";
 
         }
 
-        window.location.href = "dashboard.html";
+    });
 
-    } catch (error) {
+    /* ==========================
+       Forgot Password
+    ========================== */
 
-        console.error(error);
-        alert(error.message);
+    forgotPassword.addEventListener("click", async (e) => {
 
-    } finally {
+        e.preventDefault();
 
-        facebookBtn.disabled = false;
-        facebookBtn.textContent = "Continue with Facebook";
+        const email = emailInput.value.trim();
 
-    }
+        if (!email) {
 
-});
+            alert("Please enter your email address first.");
+            return;
 
-/* ==========================
-   Forgot Password
-========================== */
+        }
 
-forgotPassword.addEventListener("click", async (e) => {
+        try {
 
-    e.preventDefault();
+            await sendPasswordResetEmail(auth, email);
 
-    const email = emailInput.value.trim();
+            alert("A password reset email has been sent for your FORGE account.\n\nPlease check your inbox and follow the instructions to reset your password.");
 
-    if (!email) {
+        } catch (error) {
 
-        alert("Please enter your email address first.");
+            console.error(error);
+            alert(error.message);
 
-        return;
+        }
 
-    }
-
-    try {
-
-        await sendPasswordResetEmail(auth, email);
-
-        alert(
-"A password reset email has been sent for your FORGE account.\n\nPlease check your inbox and follow the instructions to reset your password."
-);
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(error.message);
-
-    }
-
-});
+    });
 
 });
