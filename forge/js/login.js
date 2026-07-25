@@ -5,7 +5,8 @@
 import {
     auth,
     db,
-    googleProvider
+    googleProvider,
+    facebookProvider
 } from "./firebase.js";
 
 import {
@@ -79,14 +80,16 @@ if (!user.emailVerified) {
     await signOut(auth);
 
     alert(
-`A password reset email has been sent for your FORGE account.
+`Please verify your email address before logging in.
 
 Email Address:
 
-${email}
+${user.email}
 
-Please check your inbox and follow the instructions to reset your password.`
-);
+A verification email was sent when you created your FORGE account.
+
+Please check your inbox (or Spam folder) and click the verification link before signing in.`
+    );
 
     return;
 
@@ -191,14 +194,61 @@ window.location.href = "dashboard.html";
 
 
     /* ==========================
-       Facebook Login
-    ========================== */
+   Facebook Login
+========================== */
 
-    facebookBtn.addEventListener("click", () => {
+facebookBtn.addEventListener("click", async () => {
 
-        alert("Facebook Login coming soon.");
+    facebookBtn.disabled = true;
+    facebookBtn.textContent = "Connecting...";
 
-    });
+    try {
+
+        const result = await signInWithPopup(auth, facebookProvider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+
+            await setDoc(userRef, {
+
+                fullName: user.displayName || user.email?.split("@")[0] || "",
+
+                email: (user.email || "").toLowerCase(),
+
+                role: "user",
+
+                credits: 0,
+
+                welcomeClaimed: false,
+
+                isActive: true,
+
+                createdAt: serverTimestamp(),
+
+                updatedAt: serverTimestamp()
+
+            });
+
+        }
+
+        window.location.href = "dashboard.html";
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    } finally {
+
+        facebookBtn.disabled = false;
+        facebookBtn.textContent = "Continue with Facebook";
+
+    }
+
+});
 
 /* ==========================
    Forgot Password
