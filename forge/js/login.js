@@ -70,10 +70,14 @@ if (!user.emailVerified) {
     await signOut(auth);
 
     alert(
-`Your email address has not been verified.
+`A password reset email has been sent for your FORGE account.
 
-Please check your inbox and click the verification link before signing in.`
-    );
+Email Address:
+
+${email}
+
+Please check your inbox and follow the instructions to reset your password.`
+);
 
     return;
 
