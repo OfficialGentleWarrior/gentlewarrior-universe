@@ -85,7 +85,7 @@ if (data.welcomeClaimed !== true) {
 
     data.credits = (data.credits ?? 0) + 1;
 
-    alert("🎉 Welcome!\n\nYou've received 1 Welcome Spark.");
+    alert("🎉 Welcome to FORGE!\n\n1 Spark has been added to your account.");
 
 }
 
