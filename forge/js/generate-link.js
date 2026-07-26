@@ -1,14 +1,12 @@
 // ======================================
 // FORGE Generate Link
-// Version 2
 // ======================================
 
 // Elements
-
 const uploadBox = document.getElementById("uploadBox");
 const imageInput = document.getElementById("previewImage");
-const imagePreview = document.getElementById("imagePreview");
 
+const imagePreview = document.getElementById("imagePreview");
 const previewCardImage = document.getElementById("previewCardImage");
 const previewPlaceholder = document.getElementById("previewPlaceholder");
 
@@ -16,7 +14,6 @@ const urlInput = document.getElementById("destinationUrl");
 const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
-const imageStatus = document.getElementById("imageStatus");
 
 // ======================================
 // Upload Image
@@ -32,102 +29,51 @@ imageInput.addEventListener("change", (e) => {
 
     if (!file) return;
 
+    // Maximum file size: 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be 5 MB or smaller.");
+        imageInput.value = "";
+        return;
+    }
+
     const reader = new FileReader();
 
-    reader.onload = function(event){
+    reader.onload = (event) => {
 
-        imagePreview.src = event.target.result;
+        const imageUrl = event.target.result;
+
+        // Upload preview
+        imagePreview.src = imageUrl;
         imagePreview.style.display = "block";
 
-        previewCardImage.src = event.target.result;
+        // Link preview
+        previewCardImage.src = imageUrl;
         previewCardImage.style.display = "block";
 
         previewPlaceholder.style.display = "none";
 
-        checkImageRatio(event.target.result);
-
+        validateForm();
     };
 
     reader.readAsDataURL(file);
 
-    validateForm();
-
 });
 
 // ======================================
-// Image Ratio Checker
-// ======================================
-
-function checkImageRatio(src){
-
-    const img = new Image();
-
-    img.onload = function(){
-
-        const ratio = img.width / img.height;
-        const ideal = 1200 / 630;
-
-        const diff = Math.abs(ratio - ideal);
-
-        imageStatus.className = "image-status";
-
-        if(diff <= 0.05){
-
-            imageStatus.classList.add("good");
-            imageStatus.innerHTML =
-                "✅ Optimized for social media previews.";
-
-        }else if(diff <= 0.20){
-
-            imageStatus.classList.add("warning");
-            imageStatus.innerHTML =
-                "⚠️ This image may be slightly cropped in social media previews.";
-
-        }else{
-
-            imageStatus.classList.add("error");
-            imageStatus.innerHTML =
-                "⚠️ This image may be heavily cropped.<br>Recommended aspect ratio: <strong>1200 × 630</strong>.";
-
-        }
-
-    };
-
-    img.src = src;
-
-}
-
-// ======================================
-// URL Preview
+// Destination URL
 // ======================================
 
 urlInput.addEventListener("input", () => {
 
-    const value = urlInput.value.trim();
+    try {
 
-    if(value){
+        const url = new URL(urlInput.value.trim());
 
-        try{
+        previewDomain.textContent = url.hostname;
 
-            const domain = new URL(value);
+    } catch {
 
-            previewDomain.textContent = domain.hostname;
-
-        }
-
-        catch{
-
-            previewDomain.textContent =
-                "gentlewarrior.world";
-
-        }
-
-    }
-
-    else{
-
-        previewDomain.textContent =
-            "gentlewarrior.world";
+        previewDomain.textContent = "gentlewarrior.world";
 
     }
 
@@ -136,75 +82,27 @@ urlInput.addEventListener("input", () => {
 });
 
 // ======================================
-// URL Validation
+// Form Validation
 // ======================================
 
-function isValidURL(url){
+function validateForm() {
 
-    try{
+    const hasImage = imageInput.files.length > 0;
 
-        const parsed = new URL(url);
+    let validUrl = false;
 
-        return parsed.protocol === "http:" ||
-               parsed.protocol === "https:";
+    try {
+
+        const url = new URL(urlInput.value.trim());
+
+        validUrl = url.protocol === "http:" || url.protocol === "https:";
+
+    } catch {
+
+        validUrl = false;
 
     }
 
-    catch{
-
-        return false;
-
-    }
+    generateBtn.disabled = !(hasImage && validUrl);
 
 }
-
-// ======================================
-// Enable Generate Button
-// ======================================
-
-function validateForm(){
-
-    const hasImage =
-        imageInput.files.length > 0;
-
-    const hasURL =
-        isValidURL(urlInput.value.trim());
-
-    if(hasURL){
-
-        urlInput.classList.remove("input-error");
-
-    }else if(urlInput.value.trim() !== ""){
-
-        urlInput.classList.add("input-error");
-
-    }else{
-
-        urlInput.classList.remove("input-error");
-
-    }
-
-    generateBtn.disabled =
-        !(hasImage && hasURL);
-
-}
-
-// ======================================
-// Generate Button (Temporary)
-// ======================================
-
-generateBtn.addEventListener("click", () => {
-
-    generateBtn.disabled = true;
-
-    generateBtn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-
-    setTimeout(() => {
-
-        generateBtn.innerHTML =
-            '<i class="fa-solid fa-check"></i> Ready for Firebase';
-
-    },1500);
-
-});
