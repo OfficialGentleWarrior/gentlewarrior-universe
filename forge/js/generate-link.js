@@ -2,8 +2,6 @@ import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { generateLink } from "./generate/generate.js";
 
-console.log("generate-link.js loaded");
-
 // ======================================
 // Authentication Guard
 // ======================================
@@ -33,8 +31,6 @@ const urlInput = document.getElementById("destinationUrl");
 const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
-
-console.log("Button:", generateBtn);
 
 // ======================================
 // Upload Image
@@ -136,14 +132,7 @@ function validateForm() {
 }
 
 // ======================================
-// Debug Click Test
+// Generate Button
 // ======================================
 
-generateBtn.addEventListener("click", () => {
-
-    alert("CLICK WORKING");
-
-    // Uncomment pagkatapos ng test
-    // generateLink();
-
-});
+generateBtn.addEventListener("click", generateLink);
