@@ -43,14 +43,33 @@ export async function uploadImage(imageFile) {
         `previews/${user.uid}/${fileName}`
     );
 
-    await uploadBytes(storageRef, imageFile);
+    try {
 
-    const downloadURL =
-        await getDownloadURL(storageRef);
+        alert("Uploading to Firebase Storage...");
 
-    return {
-        downloadURL,
-        storagePath: storageRef.fullPath
-    };
+        await uploadBytes(storageRef, imageFile);
+
+        alert("Upload Complete");
+
+        const downloadURL =
+            await getDownloadURL(storageRef);
+
+        return {
+            downloadURL,
+            storagePath: storageRef.fullPath
+        };
+
+    } catch (error) {
+
+        console.error("Firebase Storage Error:", error);
+
+        alert(
+            "Code: " + error.code +
+            "\n\nMessage: " + error.message
+        );
+
+        throw error;
+
+    }
 
 }
