@@ -1,6 +1,6 @@
 // ======================================
 // FORGE Generate Link
-// Version 1
+// Version 2
 // ======================================
 
 // Elements
@@ -16,7 +16,7 @@ const urlInput = document.getElementById("destinationUrl");
 const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
-
+const imageStatus = document.getElementById("imageStatus");
 
 // ======================================
 // Upload Image
@@ -44,6 +44,8 @@ imageInput.addEventListener("change", (e) => {
 
         previewPlaceholder.style.display = "none";
 
+        checkImageRatio(event.target.result);
+
     };
 
     reader.readAsDataURL(file);
@@ -52,6 +54,48 @@ imageInput.addEventListener("change", (e) => {
 
 });
 
+// ======================================
+// Image Ratio Checker
+// ======================================
+
+function checkImageRatio(src){
+
+    const img = new Image();
+
+    img.onload = function(){
+
+        const ratio = img.width / img.height;
+        const ideal = 1200 / 630;
+
+        const diff = Math.abs(ratio - ideal);
+
+        imageStatus.className = "image-status";
+
+        if(diff <= 0.05){
+
+            imageStatus.classList.add("good");
+            imageStatus.innerHTML =
+                "✅ Optimized for social media previews.";
+
+        }else if(diff <= 0.20){
+
+            imageStatus.classList.add("warning");
+            imageStatus.innerHTML =
+                "⚠️ This image may be slightly cropped in social media previews.";
+
+        }else{
+
+            imageStatus.classList.add("error");
+            imageStatus.innerHTML =
+                "⚠️ This image may be heavily cropped.<br>Recommended aspect ratio: <strong>1200 × 630</strong>.";
+
+        }
+
+    };
+
+    img.src = src;
+
+}
 
 // ======================================
 // URL Preview
@@ -91,7 +135,6 @@ urlInput.addEventListener("input", () => {
 
 });
 
-
 // ======================================
 // URL Validation
 // ======================================
@@ -115,7 +158,6 @@ function isValidURL(url){
 
 }
 
-
 // ======================================
 // Enable Generate Button
 // ======================================
@@ -129,18 +171,23 @@ function validateForm(){
         isValidURL(urlInput.value.trim());
 
     if(hasURL){
+
         urlInput.classList.remove("input-error");
+
     }else if(urlInput.value.trim() !== ""){
+
         urlInput.classList.add("input-error");
+
     }else{
+
         urlInput.classList.remove("input-error");
+
     }
 
     generateBtn.disabled =
         !(hasImage && hasURL);
 
 }
-
 
 // ======================================
 // Generate Button (Temporary)
