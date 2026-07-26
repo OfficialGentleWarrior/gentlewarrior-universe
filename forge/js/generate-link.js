@@ -1,6 +1,8 @@
 import { auth } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { generateLink } from "./generate/generate.js";
+
+console.log("generate-link.js loaded");
 
 // ======================================
 // Authentication Guard
@@ -32,6 +34,8 @@ const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
 
+console.log("Button:", generateBtn);
+
 // ======================================
 // Upload Image
 // ======================================
@@ -46,7 +50,6 @@ imageInput.addEventListener("change", (e) => {
 
     if (!file) return;
 
-    // Maximum file size: 5 MB
     if (file.size > 5 * 1024 * 1024) {
         alert("Image must be 5 MB or smaller.");
         imageInput.value = "";
@@ -60,11 +63,9 @@ imageInput.addEventListener("change", (e) => {
 
         const imageUrl = event.target.result;
 
-        // Upload preview
         imagePreview.src = imageUrl;
         imagePreview.style.display = "block";
 
-        // Link preview
         previewCardImage.src = imageUrl;
         previewCardImage.style.display = "block";
 
@@ -124,7 +125,6 @@ function validateForm() {
 
     }
 
-    // Show red border only if user typed something invalid
     if (urlInput.value.trim() !== "" && !validUrl) {
         urlInput.classList.add("input-error");
     } else {
@@ -136,7 +136,14 @@ function validateForm() {
 }
 
 // ======================================
-// Generate Button
+// Debug Click Test
 // ======================================
 
-generateBtn.addEventListener("click", generateLink);
+generateBtn.addEventListener("click", () => {
+
+    alert("CLICK WORKING");
+
+    // Uncomment pagkatapos ng test
+    // generateLink();
+
+});
