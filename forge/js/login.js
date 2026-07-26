@@ -6,7 +6,6 @@ import {
     auth,
     db,
     googleProvider,
-    facebookProvider
 } from "./firebase.js";
 
 import {
@@ -19,7 +18,6 @@ import {
 import {
     signInWithEmailAndPassword,
     signInWithPopup,
-    signInWithRedirect,
     getRedirectResult,
     signOut,
     sendPasswordResetEmail
@@ -92,7 +90,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     });
     const loginBtn = document.querySelector(".login-btn");
-    const facebookBtn = document.querySelector(".facebook-btn");
     const googleBtn = document.querySelector(".google-btn");
     const forgotPassword = document.getElementById("forgotPassword");
 
@@ -220,31 +217,6 @@ Please check your inbox (or Spam folder) and click the verification link before 
 
             googleBtn.disabled = false;
             googleBtn.textContent = "Continue with Google";
-
-        }
-
-    });
-
-    /* ==========================
-       Facebook Login
-    ========================== */
-
-    facebookBtn.addEventListener("click", async () => {
-
-        facebookBtn.disabled = true;
-        facebookBtn.textContent = "Connecting...";
-
-        try {
-
-            await signInWithRedirect(auth, facebookProvider);
-
-        } catch (error) {
-
-            console.error(error);
-            alert(error.message);
-
-            facebookBtn.disabled = false;
-            facebookBtn.textContent = "Continue with Facebook";
 
         }
 
