@@ -95,12 +95,21 @@ function validateForm() {
 
         const url = new URL(urlInput.value.trim());
 
-        validUrl = url.protocol === "http:" || url.protocol === "https:";
+        validUrl =
+            url.protocol === "http:" ||
+            url.protocol === "https:";
 
     } catch {
 
         validUrl = false;
 
+    }
+
+    // Show red border only if user typed something invalid
+    if (urlInput.value.trim() !== "" && !validUrl) {
+        urlInput.classList.add("input-error");
+    } else {
+        urlInput.classList.remove("input-error");
     }
 
     generateBtn.disabled = !(hasImage && validUrl);
