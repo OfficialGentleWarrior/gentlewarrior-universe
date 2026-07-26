@@ -6,7 +6,6 @@ import {
     auth,
     db,
     googleProvider,
-    facebookProvider
 } from "./firebase.js";
 
 import {
@@ -47,7 +46,6 @@ const confirmPasswordToggle = document.getElementById("confirmPasswordToggle");
 
 const googleBtn = document.querySelector(".google-btn");
 
-const facebookBtn = document.querySelector(".facebook-btn");
 
 
 // ======================================
@@ -331,63 +329,6 @@ googleBtn.addEventListener("click", async () => {
 
         googleBtn.disabled = false;
         googleBtn.textContent = "Continue with Google";
-
-    }
-
-});
-
-// =====================================
-// Facebook Signup
-// =====================================
-
-facebookBtn.addEventListener("click", async () => {
-
-    facebookBtn.disabled = true;
-    facebookBtn.textContent = "Connecting...";
-
-    try {
-
-        const result = await signInWithPopup(auth, facebookProvider);
-        const user = result.user;
-
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-
-            await setDoc(userRef, {
-
-                fullName: user.displayName || user.email?.split("@")[0] || "",
-
-                email: (user.email || "").toLowerCase(),
-
-                role: "user",
-
-                credits: 0,
-
-                welcomeClaimed: false,
-
-                isActive: true,
-
-                createdAt: serverTimestamp(),
-
-                updatedAt: serverTimestamp()
-
-            });
-
-        }
-
-        window.location.href = "dashboard.html";
-
-    } catch (error) {
-
-        console.error(error);
-        showError(error.message);
-
-    } finally {
-
-        facebookBtn.disabled = false;
-        facebookBtn.textContent = "Continue with Facebook";
 
     }
 
