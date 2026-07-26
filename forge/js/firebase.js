@@ -7,7 +7,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebas
 import {
     getAuth,
     GoogleAuthProvider,
-    FacebookAuthProvider
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
@@ -23,7 +22,7 @@ const firebaseConfig = {
 
     apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
 
-    authDomain: "gentlewarrior.world",
+    authDomain: "gentle-warrior.firebaseapp.com",
 
     projectId: "gentle-warrior",
 
@@ -60,21 +59,8 @@ const db = getFirestore(app);
 
 const googleProvider = new GoogleAuthProvider();
 
-const facebookProvider = new FacebookAuthProvider();
-
-
-// ======================================
-// Export
-// ======================================
-
 export {
-
     auth,
-
     db,
-
-    googleProvider,
-
-    facebookProvider
-
+    googleProvider
 };
