@@ -49,10 +49,14 @@ export async function uploadImage(imageFile) {
 
         await uploadBytes(storageRef, imageFile);
 
-        alert("Upload Complete");
+alert("Upload Complete");
 
-        const downloadURL =
-            await getDownloadURL(storageRef);
+alert("Before getDownloadURL");
+
+const downloadURL =
+    await getDownloadURL(storageRef);
+
+alert("After getDownloadURL");
 
         return {
             downloadURL,
