@@ -1,0 +1,143 @@
+/* ======================================
+   FORGE Generate Link
+====================================== */
+
+/* Header Banner */
+
+.topbar{
+    background:#111;
+    margin:-16px -16px 24px -16px;
+    padding:0;
+    overflow:hidden;
+}
+
+.banner{
+    width:100%;
+}
+
+.banner img{
+    width:100%;
+    display:block;
+}
+
+/* Page Header */
+
+.page-header{
+    margin-bottom:24px;
+}
+
+.page-header h1{
+    font-size:2.2rem;
+    margin-bottom:10px;
+}
+
+.page-header p{
+    color:#6b7280;
+    font-size:1rem;
+}
+
+/* Card */
+
+.generate-card{
+    background:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
+}
+
+/* Form */
+
+.form-group{
+    margin-bottom:22px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:700;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+    padding:16px;
+    border:1px solid #d1d5db;
+    border-radius:16px;
+    font-size:16px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+    outline:none;
+    border-color:#22c55e;
+}
+
+/* Upload */
+
+.upload-box{
+    border:2px dashed #22c55e;
+    border-radius:18px;
+    padding:30px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.upload-box:hover{
+    background:#f0fdf4;
+}
+
+/* Preview */
+
+.preview-section{
+    margin-top:30px;
+}
+
+.link-preview{
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    overflow:hidden;
+    background:#fff;
+}
+
+.preview-content{
+    padding:18px;
+}
+
+.preview-content h4{
+    margin-bottom:8px;
+}
+
+.preview-content p{
+    color:#6b7280;
+}
+
+/* Spark */
+
+.spark-cost{
+    margin:24px 0;
+    padding:16px;
+    background:#f0fdf4;
+    border-radius:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:700;
+}
+
+/* Button */
+
+.primary-btn{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:16px;
+    background:#22c55e;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+}
+
+.primary-btn:disabled{
+    background:#cbd5e1;
+}
