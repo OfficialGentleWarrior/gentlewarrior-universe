@@ -13,15 +13,7 @@ const previewCardImage = document.getElementById("previewCardImage");
 const previewPlaceholder = document.getElementById("previewPlaceholder");
 
 const urlInput = document.getElementById("destinationUrl");
-const titleInput = document.getElementById("title");
-const descriptionInput = document.getElementById("description");
-
-const previewTitle = document.getElementById("previewTitle");
-const previewDescription = document.getElementById("previewDescription");
 const previewDomain = document.getElementById("previewDomain");
-
-const titleCount = document.getElementById("titleCount");
-const descriptionCount = document.getElementById("descriptionCount");
 
 const generateBtn = document.getElementById("generateBtn");
 
@@ -52,43 +44,11 @@ imageInput.addEventListener("change", (e) => {
 
         previewPlaceholder.style.display = "none";
 
-    }
+    };
 
     reader.readAsDataURL(file);
 
     validateForm();
-
-});
-
-
-// ======================================
-// Live Title
-// ======================================
-
-titleInput.addEventListener("input", () => {
-
-    previewTitle.textContent =
-        titleInput.value || "Your Title";
-
-    titleCount.textContent =
-        titleInput.value.length;
-
-    validateForm();
-
-});
-
-
-// ======================================
-// Live Description
-// ======================================
-
-descriptionInput.addEventListener("input", () => {
-
-    previewDescription.textContent =
-        descriptionInput.value || "Your description will appear here.";
-
-    descriptionCount.textContent =
-        descriptionInput.value.length;
 
 });
 
@@ -99,7 +59,7 @@ descriptionInput.addEventListener("input", () => {
 
 urlInput.addEventListener("input", () => {
 
-    let value = urlInput.value.trim();
+    const value = urlInput.value.trim();
 
     if(value){
 
@@ -114,7 +74,7 @@ urlInput.addEventListener("input", () => {
         catch{
 
             previewDomain.textContent =
-                "forge.link/example";
+                "gentlewarrior.world";
 
         }
 
@@ -123,7 +83,7 @@ urlInput.addEventListener("input", () => {
     else{
 
         previewDomain.textContent =
-            "forge.link/example";
+            "gentlewarrior.world";
 
     }
 
@@ -140,9 +100,10 @@ function isValidURL(url){
 
     try{
 
-        new URL(url);
+        const parsed = new URL(url);
 
-        return true;
+        return parsed.protocol === "http:" ||
+               parsed.protocol === "https:";
 
     }
 
@@ -164,14 +125,19 @@ function validateForm(){
     const hasImage =
         imageInput.files.length > 0;
 
-    const hasTitle =
-        titleInput.value.trim() !== "";
-
     const hasURL =
-        isValidURL(urlInput.value);
+        isValidURL(urlInput.value.trim());
+
+    if(hasURL){
+        urlInput.classList.remove("input-error");
+    }else if(urlInput.value.trim() !== ""){
+        urlInput.classList.add("input-error");
+    }else{
+        urlInput.classList.remove("input-error");
+    }
 
     generateBtn.disabled =
-        !(hasImage && hasTitle && hasURL);
+        !(hasImage && hasURL);
 
 }
 
