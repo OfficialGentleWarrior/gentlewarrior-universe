@@ -10,22 +10,14 @@
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="dashboard-header">
-        <div class="logo">
-            <img src="assets/logo/forge-logo.png" alt="FORGE Logo">
-            <h2>FORGE</h2>
-        </div>
-
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="my-links.html">My Links</a>
-            <a href="profile.html">Profile</a>
-        </nav>
+    <!-- Top Bar -->
+    <header class="topbar">
+        <img src="assets/logo/forge-header.png"
+             alt="FORGE Logo"
+             class="dashboard-logo">
     </header>
 
-    <!-- Main Content -->
-    <main class="container">
+    <main class="dashboard-container">
 
         <section class="page-header">
             <h1>Generate Link</h1>
@@ -34,55 +26,79 @@
 
         <section class="generate-card">
 
-            <!-- Upload -->
+            <!-- Preview Image -->
             <div class="form-group">
-                <label>Preview Image</label>
+
+                <label for="previewImage">
+                    Preview Image
+                </label>
 
                 <div class="upload-box" id="uploadBox">
-                    <img id="imagePreview" src="assets/images/placeholder.png" alt="Preview">
-                    <p>Click to upload image</p>
+
+                    <img
+                        id="imagePreview"
+                        src=""
+                        alt="Preview"
+                        style="display:none;">
+
+                    <p>📷 Click to upload image</p>
 
                     <input
                         type="file"
                         id="previewImage"
                         accept="image/*"
                         hidden>
+
                 </div>
+
             </div>
 
-            <!-- URL -->
+            <!-- Destination URL -->
             <div class="form-group">
-                <label>Destination URL</label>
+
+                <label for="destinationUrl">
+                    Destination URL
+                </label>
 
                 <input
                     type="url"
                     id="destinationUrl"
                     placeholder="https://example.com">
+
             </div>
 
             <!-- Title -->
             <div class="form-group">
-                <label>Title</label>
+
+                <label for="title">
+                    Title
+                </label>
 
                 <input
                     type="text"
                     id="title"
                     maxlength="60"
                     placeholder="Enter your title">
+
             </div>
 
             <!-- Description -->
             <div class="form-group">
-                <label>Description <span>(Optional)</span></label>
+
+                <label for="description">
+                    Description (Optional)
+                </label>
 
                 <textarea
                     id="description"
-                    maxlength="160"
                     rows="4"
+                    maxlength="160"
                     placeholder="Write a short description..."></textarea>
+
             </div>
 
             <!-- Live Preview -->
+
             <section class="preview-section">
 
                 <h3>Live Preview</h3>
@@ -91,8 +107,9 @@
 
                     <img
                         id="previewCardImage"
-                        src="assets/images/placeholder.png"
-                        alt="Preview">
+                        src=""
+                        alt=""
+                        style="display:none;">
 
                     <div class="preview-content">
 
@@ -110,16 +127,16 @@
 
             </section>
 
-            <!-- Cost -->
+            <!-- Spark Cost -->
+
             <div class="spark-cost">
 
-                <span>⭐ Cost:</span>
+                <span>⭐ Cost</span>
 
                 <strong>1 Spark</strong>
 
             </div>
 
-            <!-- Button -->
             <button
                 id="generateBtn"
                 class="primary-btn"
