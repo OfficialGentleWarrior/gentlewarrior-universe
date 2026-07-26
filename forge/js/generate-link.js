@@ -1,3 +1,5 @@
+import { generateLink } from "./generate/generate.js";
+
 // ======================================
 // FORGE Generate Link
 // ======================================
@@ -33,6 +35,7 @@ imageInput.addEventListener("change", (e) => {
     if (file.size > 5 * 1024 * 1024) {
         alert("Image must be 5 MB or smaller.");
         imageInput.value = "";
+        validateForm();
         return;
     }
 
@@ -115,3 +118,9 @@ function validateForm() {
     generateBtn.disabled = !(hasImage && validUrl);
 
 }
+
+// ======================================
+// Generate Button
+// ======================================
+
+generateBtn.addEventListener("click", generateLink);
