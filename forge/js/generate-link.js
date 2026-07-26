@@ -1,4 +1,19 @@
+import { auth } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { generateLink } from "./generate/generate.js";
+
+// ======================================
+// Authentication Guard
+// ======================================
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+});
 
 // ======================================
 // FORGE Generate Link
@@ -56,6 +71,7 @@ imageInput.addEventListener("change", (e) => {
         previewPlaceholder.style.display = "none";
 
         validateForm();
+
     };
 
     reader.readAsDataURL(file);
