@@ -23,7 +23,7 @@ const firebaseConfig = {
 
     apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
 
-    authDomain: "gentle-warrior.firebaseapp.com",
+    authDomain: "gentlewarrior.world",
 
     projectId: "gentle-warrior",
 
