@@ -2,45 +2,42 @@
    FORGE Generate Link
 ====================================== */
 
-/* Header Banner */
+/* Banner */
 
 .topbar{
-    background:#111;
-    margin:-16px -16px 24px -16px;
+    margin:0;
     padding:0;
+    background:#111;
     overflow:hidden;
+    line-height:0;
 }
 
-.banner{
-    width:100%;
-}
-
-.banner img{
+.banner-image{
     width:100%;
     display:block;
+    height:auto;
 }
 
 /* Page Header */
 
 .page-header{
-    margin-bottom:24px;
+    margin:24px 0;
 }
 
 .page-header h1{
-    font-size:2.2rem;
-    margin-bottom:10px;
+    font-size:2rem;
+    margin-bottom:8px;
 }
 
 .page-header p{
     color:#6b7280;
-    font-size:1rem;
 }
 
-/* Card */
+/* Main Card */
 
 .generate-card{
     background:#fff;
-    border-radius:24px;
+    border-radius:22px;
     padding:24px;
     box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
@@ -48,36 +45,36 @@
 /* Form */
 
 .form-group{
-    margin-bottom:22px;
+    margin-bottom:20px;
 }
 
 .form-group label{
     display:block;
     margin-bottom:8px;
-    font-weight:700;
+    font-weight:600;
 }
 
 .form-group input,
 .form-group textarea{
     width:100%;
-    padding:16px;
+    padding:14px;
     border:1px solid #d1d5db;
-    border-radius:16px;
-    font-size:16px;
+    border-radius:14px;
+    font-size:15px;
+    outline:none;
 }
 
 .form-group input:focus,
 .form-group textarea:focus{
-    outline:none;
     border-color:#22c55e;
 }
 
-/* Upload */
+/* Upload Box */
 
 .upload-box{
     border:2px dashed #22c55e;
-    border-radius:18px;
-    padding:30px;
+    border-radius:16px;
+    padding:28px;
     text-align:center;
     cursor:pointer;
     transition:.2s;
@@ -87,7 +84,15 @@
     background:#f0fdf4;
 }
 
-/* Preview */
+.upload-box img{
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+/* Live Preview */
 
 .preview-section{
     margin-top:30px;
@@ -95,13 +100,19 @@
 
 .link-preview{
     border:1px solid #e5e7eb;
-    border-radius:18px;
+    border-radius:16px;
     overflow:hidden;
     background:#fff;
 }
 
+.link-preview img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
 .preview-content{
-    padding:18px;
+    padding:16px;
 }
 
 .preview-content h4{
@@ -112,32 +123,39 @@
     color:#6b7280;
 }
 
-/* Spark */
+/* Spark Cost */
 
 .spark-cost{
     margin:24px 0;
     padding:16px;
+    border-radius:14px;
     background:#f0fdf4;
-    border-radius:16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-weight:700;
+    font-weight:600;
 }
 
 /* Button */
 
 .primary-btn{
     width:100%;
-    padding:18px;
+    padding:16px;
     border:none;
-    border-radius:16px;
+    border-radius:14px;
     background:#22c55e;
     color:#fff;
     font-size:16px;
     font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.primary-btn:hover{
+    background:#16a34a;
 }
 
 .primary-btn:disabled{
     background:#cbd5e1;
+    cursor:not-allowed;
 }
