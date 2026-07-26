@@ -3,18 +3,23 @@ import { validateGenerateRequest } from "./validate.js";
 
 export async function generateLink() {
 
+    alert("Step 1");
+
     try {
 
         const imageFile = document.getElementById("previewImage").files[0];
         const destinationUrl = document.getElementById("destinationUrl").value.trim();
 
-        // Step 1 - Validate
+        alert("Step 2");
+
         const validation = await validateGenerateRequest({
             auth,
             db,
             imageFile,
             destinationUrl
         });
+
+        alert("Step 3");
 
         console.log("Validation Passed:", validation);
 
@@ -36,6 +41,7 @@ export async function generateLink() {
     } catch (error) {
 
         console.error(error);
+
         alert(error.message);
 
     }
