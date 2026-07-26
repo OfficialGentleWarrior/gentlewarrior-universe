@@ -4,6 +4,8 @@ import { uploadImage } from "./uploadImage.js";
 
 export async function generateLink() {
 
+    alert("Generate Clicked");
+
     try {
 
         const imageFile =
@@ -11,6 +13,8 @@ export async function generateLink() {
 
         const destinationUrl =
             document.getElementById("destinationUrl").value.trim();
+
+        alert("Before Validation");
 
         // ======================================
         // Step 1 - Validate
@@ -23,16 +27,20 @@ export async function generateLink() {
             destinationUrl
         });
 
+        alert("After Validation");
+
         console.log("Validation Passed:", validation);
 
         // ======================================
         // Step 2 - Upload Image
         // ======================================
 
-        console.log("Uploading image...");
+        alert("Before Upload");
 
         const uploadResult =
             await uploadImage(imageFile);
+
+        alert("After Upload");
 
         console.log("Upload Success");
 
@@ -57,6 +65,7 @@ export async function generateLink() {
     } catch (error) {
 
         console.error(error);
+
         alert(error.message);
 
     }
