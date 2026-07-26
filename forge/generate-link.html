@@ -10,135 +10,134 @@
     <link rel="stylesheet" href="css/generate-link.css">
 
     <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 
 <body>
 
-    <!-- Header -->
-    <header class="topbar">
-        <img src="assets/logo/forge-header.png"
-             alt="FORGE"
-             class="banner-image">
-    </header>
+<header class="topbar">
+    <img src="assets/logo/forge-header.png"
+         alt="FORGE"
+         class="banner-image">
+</header>
 
-    <main class="dashboard-container">
+<main class="dashboard-container">
 
-        <!-- Page Header -->
-<section class="page-header">
-    <h1>Generate Link</h1>
-    <p>Upload an image, paste your destination URL, and generate your shareable link.</p>
-</section>
+    <section class="page-header">
+        <h1>Generate Link</h1>
+        <p>Upload an image, paste your destination URL, and generate your shareable link.</p>
+    </section>
 
-        <!-- Main Card -->
-        <section class="generate-card">
+    <section class="generate-card">
 
-            <!-- Preview Image -->
-            <div class="form-group">
+        <!-- Preview Image -->
+        <div class="form-group">
 
-                <label>Preview Image</label>
+            <label for="previewImage">
+                Preview Image
+            </label>
 
-                <div class="upload-box" id="uploadBox">
-<div id="imageStatus" class="image-status"></div>
+            <div class="upload-box" id="uploadBox">
 
-                    <img id="imagePreview"
-                         src=""
-                         alt="Preview"
-                         style="display:none;">
+                <img id="imagePreview"
+                     src=""
+                     alt="Preview"
+                     style="display:none;">
 
-                    <i class="fa-solid fa-camera"></i>
+                <i class="fa-solid fa-camera"></i>
 
-                    <p>Upload your preview image</p>
+                <p>Upload your preview image</p>
 
-                    <small>PNG, JPG • Max 5 MB</small>
-                    <small>Recommended aspect ratio 1200 × 630 px</small>
-
-                    <input
-                        type="file"
-                        id="previewImage"
-                        accept="image/*"
-                        hidden>
-
-                </div>
-
-            </div>
-
-            <!-- Destination URL -->
-            <div class="form-group">
-
-                <label for="destinationUrl">
-                    Destination URL
-                </label>
+                <small>PNG, JPG • Max 5 MB</small>
 
                 <input
-                    type="url"
-                    id="destinationUrl"
-                    placeholder="https://example.com">
+                    type="file"
+                    id="previewImage"
+                    accept="image/*"
+                    hidden>
 
             </div>
 
-            <!-- Link Preview -->
-            <section class="preview-section">
+        </div>
 
-                <h3>Link Preview</h3>
+        <!-- Destination URL -->
+        <div class="form-group">
 
-                <div class="link-preview">
+            <label for="destinationUrl">
+                Destination URL
+            </label>
 
-                    <div class="preview-image">
+            <input
+                type="url"
+                id="destinationUrl"
+                placeholder="https://example.com">
 
-                        <img
-                            id="previewCardImage"
-                            src=""
-                            alt=""
-                            style="display:none;">
+        </div>
 
-                        <i id="previewPlaceholder"
-                           class="fa-regular fa-image"></i>
+        <!-- Link Preview -->
+        <section class="preview-section">
 
-                    </div>
+            <h3>Link Preview</h3>
 
-                    <div class="preview-content">
+            <div class="link-preview">
 
-                        <small id="previewDomain">
-                            gentlewarrior.world
-                        </small>
+                <div class="preview-image">
 
-                    </div>
+                    <img
+                        id="previewCardImage"
+                        src=""
+                        alt=""
+                        style="display:none;">
+
+                    <i
+                        id="previewPlaceholder"
+                        class="fa-regular fa-image">
+                    </i>
 
                 </div>
 
-            </section>
+                <div class="preview-content">
 
-            <!-- Spark Cost -->
-            <div class="spark-cost">
+                    <small id="previewDomain">
+                        gentlewarrior.world
+                    </small>
 
-                <span>
-                    ⭐ Generation Cost
-                </span>
-
-                <strong>
-                    1 Spark
-                </strong>
+                </div>
 
             </div>
-
-            <!-- Generate -->
-            <button
-                id="generateBtn"
-                class="primary-btn"
-                disabled>
-
-                <i class="fa-solid fa-link"></i>
-                Generate Link
-
-            </button>
 
         </section>
 
-    </main>
+        <!-- Spark Cost -->
+        <div class="spark-cost">
 
-    <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/generate-link.js"></script>
+            <span>
+                ⭐ Generation Cost
+            </span>
+
+            <strong>
+                1 Spark
+            </strong>
+
+        </div>
+
+        <!-- Generate -->
+        <button
+            id="generateBtn"
+            class="primary-btn"
+            disabled>
+
+            <i class="fa-solid fa-link"></i>
+            Generate Link
+
+        </button>
+
+    </section>
+
+</main>
+
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/generate-link.js"></script>
 
 </body>
 </html>
