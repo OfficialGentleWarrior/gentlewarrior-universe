@@ -12,6 +12,7 @@ export async function generateLink() {
 
         alert("Step 2");
 
+        // Step 1 - Validate
         const validation = await validateGenerateRequest({
             auth,
             db,
