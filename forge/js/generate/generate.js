@@ -2,10 +2,11 @@ import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
 
 export async function generateLink() {
+
     try {
 
-        const imageFile = document.getElementById("imageUpload").files[0];
-        const destinationUrl = document.getElementById("destinationUrl").value;
+        const imageFile = document.getElementById("previewImage").files[0];
+        const destinationUrl = document.getElementById("destinationUrl").value.trim();
 
         // Step 1 - Validate
         const validation = await validateGenerateRequest({
@@ -33,7 +34,10 @@ export async function generateLink() {
         // Return Link
 
     } catch (error) {
+
         console.error(error);
         alert(error.message);
+
     }
+
 }
