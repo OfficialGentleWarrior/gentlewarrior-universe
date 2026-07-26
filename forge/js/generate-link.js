@@ -31,6 +31,7 @@ const urlInput = document.getElementById("destinationUrl");
 const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
+const clearImageBtn = document.getElementById("clearImageBtn");
 
 // ======================================
 // Upload Image
@@ -74,6 +75,28 @@ imageInput.addEventListener("change", (e) => {
     reader.readAsDataURL(file);
 
 });
+
+// ======================================
+// Clear Image
+// ======================================
+
+function clearImage() {
+
+    imageInput.value = "";
+
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+
+    previewCardImage.src = "";
+    previewCardImage.style.display = "none";
+
+    previewPlaceholder.style.display = "block";
+
+    validateForm();
+
+}
+
+clearImageBtn.addEventListener("click", clearImage);
 
 // ======================================
 // Destination URL
