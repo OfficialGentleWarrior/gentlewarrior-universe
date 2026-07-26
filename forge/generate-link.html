@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Link | FORGE</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="logo">
+            <img src="assets/logo/forge-logo.png" alt="FORGE Logo">
+            <h2>FORGE</h2>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="my-links.html">My Links</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <section class="page-header">
+            <h1>Generate Link</h1>
+            <p>Create beautiful shareable links in seconds.</p>
+        </section>
+
+        <section class="generate-card">
+
+            <!-- Upload -->
+            <div class="form-group">
+                <label>Preview Image</label>
+
+                <div class="upload-box" id="uploadBox">
+                    <img id="imagePreview" src="assets/images/placeholder.png" alt="Preview">
+                    <p>Click to upload image</p>
+
+                    <input
+                        type="file"
+                        id="previewImage"
+                        accept="image/*"
+                        hidden>
+                </div>
+            </div>
+
+            <!-- URL -->
+            <div class="form-group">
+                <label>Destination URL</label>
+
+                <input
+                    type="url"
+                    id="destinationUrl"
+                    placeholder="https://example.com">
+            </div>
+
+            <!-- Title -->
+            <div class="form-group">
+                <label>Title</label>
+
+                <input
+                    type="text"
+                    id="title"
+                    maxlength="60"
+                    placeholder="Enter your title">
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label>Description <span>(Optional)</span></label>
+
+                <textarea
+                    id="description"
+                    maxlength="160"
+                    rows="4"
+                    placeholder="Write a short description..."></textarea>
+            </div>
+
+            <!-- Live Preview -->
+            <section class="preview-section">
+
+                <h3>Live Preview</h3>
+
+                <div class="link-preview">
+
+                    <img
+                        id="previewCardImage"
+                        src="assets/images/placeholder.png"
+                        alt="Preview">
+
+                    <div class="preview-content">
+
+                        <h4 id="previewTitle">
+                            Your Title
+                        </h4>
+
+                        <p id="previewDescription">
+                            Your description will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Cost -->
+            <div class="spark-cost">
+
+                <span>⭐ Cost:</span>
+
+                <strong>1 Spark</strong>
+
+            </div>
+
+            <!-- Button -->
+            <button
+                id="generateBtn"
+                class="primary-btn"
+                disabled>
+
+                Generate Link
+
+            </button>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/generate-link.js"></script>
+
+</body>
+</html>
