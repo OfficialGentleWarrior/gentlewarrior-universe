@@ -21,19 +21,20 @@
 /* Page Header */
 
 .page-header{
-    margin:30px 0 26px;
+    margin:18px 0 18px;
 }
 
 .page-header h1{
-    font-size:2.25rem;
+    font-size:2rem;
     font-weight:800;
     color:#111827;
-    margin-bottom:10px;
-    letter-spacing:-1px;
+    margin:0 0 6px;
+    letter-spacing:-0.8px;
 }
 
 .page-header p{
-    font-size:1.05rem;
+    margin:0;
+    font-size:1rem;
     color:#6b7280;
     line-height:1.5;
 }
@@ -42,34 +43,36 @@
 
 .generate-card{
     background:#fff;
-    border-radius:28px;
-    padding:28px;
-    box-shadow:0 10px 30px rgba(15,23,42,.08);
+    border-radius:24px;
+    padding:24px;
+    box-shadow:
+        0 8px 24px rgba(0,0,0,.05),
+        0 2px 8px rgba(0,0,0,.03);
 }
 
 /* Form */
 
 .form-group{
-    margin-bottom:24px;
+    margin-bottom:18px;
 }
 
 .form-group label{
     display:block;
-    font-size:1.05rem;
+    margin-bottom:8px;
+    font-size:1rem;
     font-weight:700;
     color:#111827;
-    margin-bottom:10px;
 }
 
 .form-group input,
 .form-group textarea{
     width:100%;
-    padding:16px 18px;
-    border:1.5px solid #d1d5db;
-    border-radius:18px;
+    padding:15px 16px;
+    border:1.5px solid #d8dce3;
+    border-radius:16px;
     font-size:16px;
-    transition:.25s;
     background:#fff;
+    transition:.2s ease;
 }
 
 .form-group textarea{
@@ -81,15 +84,15 @@
 .form-group textarea:focus{
     outline:none;
     border-color:#22c55e;
-    box-shadow:0 0 0 4px rgba(34,197,94,.12);
+    box-shadow:0 0 0 3px rgba(34,197,94,.12);
 }
 
 /* Character Counter */
 
 .char-count{
-    margin-top:8px;
+    margin-top:6px;
     text-align:right;
-    font-size:.85rem;
+    font-size:.82rem;
     color:#9ca3af;
 }
 
@@ -97,12 +100,12 @@
 
 .upload-box{
     border:2px dashed #22c55e;
-    border-radius:20px;
-    padding:34px 20px;
+    border-radius:18px;
+    padding:30px 20px;
     text-align:center;
-    cursor:pointer;
-    transition:.25s;
     background:#fcfffd;
+    cursor:pointer;
+    transition:.25s ease;
 }
 
 .upload-box:hover{
@@ -110,49 +113,73 @@
     border-color:#16a34a;
 }
 
+.upload-box img{
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:14px;
+}
+
 .upload-box i{
-    font-size:2rem;
+    font-size:34px;
     color:#22c55e;
     margin-bottom:12px;
 }
 
 .upload-box p{
+    margin:0 0 6px;
     font-size:1.1rem;
-    font-weight:600;
-    margin-bottom:6px;
+    font-weight:700;
+    color:#111827;
 }
 
 .upload-box small{
     color:#6b7280;
+    font-size:.9rem;
 }
 
-/* Preview */
+/* Live Preview */
 
 .preview-section{
-    margin-top:30px;
+    margin-top:28px;
+}
+
+.preview-section h3{
+    margin-bottom:14px;
 }
 
 .link-preview{
     display:flex;
-    gap:16px;
     align-items:center;
+    gap:14px;
     border:1px solid #e5e7eb;
-    border-radius:20px;
+    border-radius:18px;
     padding:16px;
     background:#fff;
 }
 
 .preview-image{
-    width:88px;
-    height:88px;
+    width:86px;
+    height:86px;
     border-radius:14px;
     background:#f3f4f6;
     display:flex;
     align-items:center;
     justify-content:center;
-    color:#9ca3af;
-    font-size:1.8rem;
     flex-shrink:0;
+}
+
+.preview-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:14px;
+}
+
+.preview-image i{
+    font-size:32px;
+    color:#9ca3af;
 }
 
 .preview-content{
@@ -160,7 +187,7 @@
 }
 
 .preview-content h4{
-    margin:0 0 6px;
+    margin:0 0 4px;
     font-size:1.15rem;
     color:#111827;
 }
@@ -173,28 +200,32 @@
 
 .preview-content small{
     color:#16a34a;
-    font-weight:600;
-}
-
-/* Spark */
-
-.spark-cost{
-    margin:28px 0;
-    padding:16px 18px;
-    border-radius:18px;
-    background:#f0fdf4;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:1.05rem;
     font-weight:700;
 }
 
-/* Button */
+/* Spark Cost */
+
+.spark-cost{
+    margin:24px 0;
+    padding:16px 18px;
+    background:#f0fdf4;
+    border-radius:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:700;
+}
+
+.spark-cost strong{
+    color:#16a34a;
+    font-size:1.1rem;
+}
+
+/* Generate Button */
 
 .primary-btn{
     width:100%;
-    padding:18px;
+    padding:17px;
     border:none;
     border-radius:18px;
     background:linear-gradient(135deg,#22c55e,#16a34a);
@@ -202,16 +233,17 @@
     font-size:17px;
     font-weight:700;
     cursor:pointer;
-    transition:.25s;
+    transition:.25s ease;
 }
 
 .primary-btn:hover:not(:disabled){
-    transform:translateY(-2px);
-    box-shadow:0 10px 24px rgba(34,197,94,.28);
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(34,197,94,.25);
 }
 
 .primary-btn:disabled{
     background:#cbd5e1;
+    color:#fff;
     cursor:not-allowed;
     box-shadow:none;
     transform:none;
