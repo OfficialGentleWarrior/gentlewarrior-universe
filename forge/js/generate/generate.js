@@ -1,12 +1,20 @@
 import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
+import { uploadImage } from "./uploadImage.js";
 
 export async function generateLink() {
 
     try {
 
-        const imageFile = document.getElementById("previewImage").files[0];
-        const destinationUrl = document.getElementById("destinationUrl").value.trim();
+        const imageFile =
+            document.getElementById("previewImage").files[0];
+
+        const destinationUrl =
+            document.getElementById("destinationUrl").value.trim();
+
+        // ======================================
+        // Step 1 - Validate
+        // ======================================
 
         const validation = await validateGenerateRequest({
             auth,
@@ -17,11 +25,25 @@ export async function generateLink() {
 
         console.log("Validation Passed:", validation);
 
-        // Step 2
-        // Upload Image
+        // ======================================
+        // Step 2 - Upload Image
+        // ======================================
 
+        console.log("Uploading image...");
+
+        const uploadResult =
+            await uploadImage(imageFile);
+
+        console.log("Upload Success");
+
+        console.log("Download URL:", uploadResult.downloadURL);
+
+        console.log("Storage Path:", uploadResult.storagePath);
+
+        // ======================================
         // Step 3
         // Generate Short Code
+        // ======================================
 
         // Step 4
         // Create Firestore Document
