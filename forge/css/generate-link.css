@@ -13,149 +13,206 @@
 }
 
 .banner-image{
-    width:100%;
     display:block;
+    width:100%;
     height:auto;
 }
 
 /* Page Header */
 
 .page-header{
-    margin:24px 0;
+    margin:30px 0 26px;
 }
 
 .page-header h1{
-    font-size:2rem;
-    margin-bottom:8px;
+    font-size:2.25rem;
+    font-weight:800;
+    color:#111827;
+    margin-bottom:10px;
+    letter-spacing:-1px;
 }
 
 .page-header p{
+    font-size:1.05rem;
     color:#6b7280;
+    line-height:1.5;
 }
 
 /* Main Card */
 
 .generate-card{
     background:#fff;
-    border-radius:22px;
-    padding:24px;
-    box-shadow:0 12px 30px rgba(0,0,0,.06);
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(15,23,42,.08);
 }
 
 /* Form */
 
 .form-group{
-    margin-bottom:20px;
+    margin-bottom:24px;
 }
 
 .form-group label{
     display:block;
-    margin-bottom:8px;
-    font-weight:600;
+    font-size:1.05rem;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:10px;
 }
 
 .form-group input,
 .form-group textarea{
     width:100%;
-    padding:14px;
-    border:1px solid #d1d5db;
-    border-radius:14px;
-    font-size:15px;
-    outline:none;
+    padding:16px 18px;
+    border:1.5px solid #d1d5db;
+    border-radius:18px;
+    font-size:16px;
+    transition:.25s;
+    background:#fff;
+}
+
+.form-group textarea{
+    min-height:140px;
+    resize:vertical;
 }
 
 .form-group input:focus,
 .form-group textarea:focus{
+    outline:none;
     border-color:#22c55e;
+    box-shadow:0 0 0 4px rgba(34,197,94,.12);
 }
 
-/* Upload Box */
+/* Character Counter */
+
+.char-count{
+    margin-top:8px;
+    text-align:right;
+    font-size:.85rem;
+    color:#9ca3af;
+}
+
+/* Upload */
 
 .upload-box{
     border:2px dashed #22c55e;
-    border-radius:16px;
-    padding:28px;
+    border-radius:20px;
+    padding:34px 20px;
     text-align:center;
     cursor:pointer;
-    transition:.2s;
+    transition:.25s;
+    background:#fcfffd;
 }
 
 .upload-box:hover{
     background:#f0fdf4;
+    border-color:#16a34a;
 }
 
-.upload-box img{
-    width:100%;
-    max-height:220px;
-    object-fit:cover;
-    border-radius:12px;
-    margin-bottom:10px;
+.upload-box i{
+    font-size:2rem;
+    color:#22c55e;
+    margin-bottom:12px;
 }
 
-/* Live Preview */
+.upload-box p{
+    font-size:1.1rem;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.upload-box small{
+    color:#6b7280;
+}
+
+/* Preview */
 
 .preview-section{
     margin-top:30px;
 }
 
 .link-preview{
+    display:flex;
+    gap:16px;
+    align-items:center;
     border:1px solid #e5e7eb;
-    border-radius:16px;
-    overflow:hidden;
+    border-radius:20px;
+    padding:16px;
     background:#fff;
 }
 
-.link-preview img{
-    width:100%;
-    height:220px;
-    object-fit:cover;
+.preview-image{
+    width:88px;
+    height:88px;
+    border-radius:14px;
+    background:#f3f4f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#9ca3af;
+    font-size:1.8rem;
+    flex-shrink:0;
 }
 
 .preview-content{
-    padding:16px;
+    flex:1;
 }
 
 .preview-content h4{
-    margin-bottom:8px;
+    margin:0 0 6px;
+    font-size:1.15rem;
+    color:#111827;
 }
 
 .preview-content p{
+    margin:0 0 6px;
     color:#6b7280;
+    line-height:1.4;
 }
 
-/* Spark Cost */
+.preview-content small{
+    color:#16a34a;
+    font-weight:600;
+}
+
+/* Spark */
 
 .spark-cost{
-    margin:24px 0;
-    padding:16px;
-    border-radius:14px;
+    margin:28px 0;
+    padding:16px 18px;
+    border-radius:18px;
     background:#f0fdf4;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-weight:600;
+    font-size:1.05rem;
+    font-weight:700;
 }
 
 /* Button */
 
 .primary-btn{
     width:100%;
-    padding:16px;
+    padding:18px;
     border:none;
-    border-radius:14px;
-    background:#22c55e;
+    border-radius:18px;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
     color:#fff;
-    font-size:16px;
+    font-size:17px;
     font-weight:700;
     cursor:pointer;
-    transition:.2s;
+    transition:.25s;
 }
 
-.primary-btn:hover{
-    background:#16a34a;
+.primary-btn:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px rgba(34,197,94,.28);
 }
 
 .primary-btn:disabled{
     background:#cbd5e1;
     cursor:not-allowed;
+    box-shadow:none;
+    transform:none;
 }
