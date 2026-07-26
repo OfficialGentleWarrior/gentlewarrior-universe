@@ -6,43 +6,50 @@
     <title>Generate Link | FORGE</title>
 
     <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/dashboard.css">
-<link rel="stylesheet" href="css/generate-link.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/generate-link.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
+
 <body>
 
-    <!-- Top Bar -->
+    <!-- Header -->
     <header class="topbar">
         <img src="assets/logo/forge-header.png"
-             alt="FORGE Logo"
-             class="dashboard-logo">
+             alt="FORGE"
+             class="banner-image">
     </header>
 
     <main class="dashboard-container">
 
+        <!-- Page Header -->
         <section class="page-header">
             <h1>Generate Link</h1>
             <p>Create beautiful shareable links in seconds.</p>
         </section>
 
+        <!-- Main Card -->
         <section class="generate-card">
 
             <!-- Preview Image -->
             <div class="form-group">
 
-                <label for="previewImage">
-                    Preview Image
-                </label>
+                <label>Preview Image</label>
 
                 <div class="upload-box" id="uploadBox">
 
-                    <img
-                        id="imagePreview"
-                        src=""
-                        alt="Preview"
-                        style="display:none;">
+                    <img id="imagePreview"
+                         src=""
+                         alt="Preview"
+                         style="display:none;">
 
-                    <p>📷 Click to upload image</p>
+                    <i class="fa-solid fa-camera"></i>
+
+                    <p>Click to upload image</p>
+
+                    <small>PNG, JPG • Max 5 MB</small>
 
                     <input
                         type="file"
@@ -81,6 +88,10 @@
                     maxlength="60"
                     placeholder="Enter your title">
 
+                <div class="char-count">
+                    <span id="titleCount">0</span> / 60
+                </div>
+
             </div>
 
             <!-- Description -->
@@ -92,25 +103,34 @@
 
                 <textarea
                     id="description"
-                    rows="4"
                     maxlength="160"
                     placeholder="Write a short description..."></textarea>
+
+                <div class="char-count">
+                    <span id="descriptionCount">0</span> / 160
+                </div>
 
             </div>
 
             <!-- Live Preview -->
-
             <section class="preview-section">
 
                 <h3>Live Preview</h3>
 
                 <div class="link-preview">
 
-                    <img
-                        id="previewCardImage"
-                        src=""
-                        alt=""
-                        style="display:none;">
+                    <div class="preview-image">
+
+                        <img
+                            id="previewCardImage"
+                            src=""
+                            alt=""
+                            style="display:none;">
+
+                        <i id="previewPlaceholder"
+                           class="fa-regular fa-image"></i>
+
+                    </div>
 
                     <div class="preview-content">
 
@@ -122,6 +142,10 @@
                             Your description will appear here.
                         </p>
 
+                        <small id="previewDomain">
+                            forge.link/example
+                        </small>
+
                     </div>
 
                 </div>
@@ -129,20 +153,25 @@
             </section>
 
             <!-- Spark Cost -->
-
             <div class="spark-cost">
 
-                <span>⭐ Cost</span>
+                <span>
+                    ⭐ Cost
+                </span>
 
-                <strong>1 Spark</strong>
+                <strong>
+                    1 Spark
+                </strong>
 
             </div>
 
+            <!-- Generate -->
             <button
                 id="generateBtn"
                 class="primary-btn"
                 disabled>
 
+                <i class="fa-solid fa-link"></i>
                 Generate Link
 
             </button>
