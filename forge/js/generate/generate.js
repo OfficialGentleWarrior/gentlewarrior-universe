@@ -1,7 +1,7 @@
 import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
 import { uploadImage } from "./uploadImage.js";
-import { generateShortCode } from "./utils.js";
+import { generateUniqueShortCode } from "./utils.js";
 
 export async function generateLink() {
 
@@ -53,11 +53,12 @@ export async function generateLink() {
 
         alert("Generating Short Code");
 
-        const shortCode = generateShortCode();
+const shortCode =
+    await generateUniqueShortCode();
 
-        console.log("Short Code:", shortCode);
+console.log("Short Code:", shortCode);
 
-        alert("Short Code Generated");
+alert("Short Code Generated");
 
         // ======================================
         // Step 4
