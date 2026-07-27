@@ -1,13 +1,34 @@
-// Generate random short code
-export function generateShortCode(length = 6) {
-  const chars =
-    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { db } from "../firebase.js";
 
-  let code = "";
+// Generate unique short code
+export async function generateUniqueShortCode(length = 6) {
 
-  for (let i = 0; i < length; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+    const chars =
+        "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
-  return code;
+    while (true) {
+
+        let code = "";
+
+        for (let i = 0; i < length; i++) {
+
+            code += chars.charAt(
+                Math.floor(Math.random() * chars.length)
+            );
+
+        }
+
+        const docRef = doc(db, "links", code);
+
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+
+            return code;
+
+        }
+
+    }
+
 }
