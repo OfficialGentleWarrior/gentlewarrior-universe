@@ -4,7 +4,7 @@ import { uploadImage } from "./uploadImage.js";
 import { generateUniqueShortCode } from "./utils.js";
 import {
     doc,
-    setDoc,
+    runTransaction,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -65,16 +65,34 @@ console.log("Short Code:", shortCode);
 
 alert("Short Code Generated");
 
-        // ======================================
+        /// ======================================
 // Step 4
-// Create Firestore Document
+// Transaction
+// Create Link + Deduct Spark
 // ======================================
 
-alert("Saving Link");
+alert("Starting Transaction");
 
-await setDoc(
-    doc(db, "links", shortCode),
-    {
+await runTransaction(db, async (transaction) => {
+
+    const userRef = doc(db, "users", auth.currentUser.uid);
+
+    const linkRef = doc(db, "links", shortCode);
+
+    const userSnap = await transaction.get(userRef);
+
+    if (!userSnap.exists()) {
+        throw new Error("User not found.");
+    }
+
+    const userData = userSnap.data();
+
+    if (userData.credits < 1) {
+        throw new Error("Not enough Sparks.");
+    }
+
+    // Create Link
+    transaction.set(linkRef, {
 
         shortCode: shortCode,
 
@@ -92,10 +110,18 @@ await setDoc(
 
         createdAt: serverTimestamp()
 
-    }
-);
+    });
 
-alert("Link Saved");
+    // Deduct 1 Spark
+    transaction.update(userRef, {
+
+        credits: userData.credits - 1
+
+    });
+
+});
+
+alert("Transaction Complete");
 
 return;
 
