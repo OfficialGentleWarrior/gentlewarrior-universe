@@ -2,6 +2,11 @@ import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
 import { uploadImage } from "./uploadImage.js";
 import { generateUniqueShortCode } from "./utils.js";
+import {
+    doc,
+    setDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 export async function generateLink() {
 
@@ -61,9 +66,38 @@ console.log("Short Code:", shortCode);
 alert("Short Code Generated");
 
         // ======================================
-        // Step 4
-        // Create Firestore Document
-        // ======================================
+// Step 4
+// Create Firestore Document
+// ======================================
+
+alert("Saving Link");
+
+await setDoc(
+    doc(db, "links", shortCode),
+    {
+
+        shortCode: shortCode,
+
+        uid: auth.currentUser.uid,
+
+        destinationUrl: destinationUrl,
+
+        previewImage: uploadResult.downloadURL,
+
+        storagePath: uploadResult.storagePath,
+
+        clicks: 0,
+
+        isActive: true,
+
+        createdAt: serverTimestamp()
+
+    }
+);
+
+alert("Link Saved");
+
+return;
 
         // Step 5
         // Deduct Spark
