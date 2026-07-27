@@ -1,6 +1,7 @@
 import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
 import { uploadImage } from "./uploadImage.js";
+import { generateShortCode } from "./utils.js";
 
 export async function generateLink() {
 
@@ -43,24 +44,34 @@ export async function generateLink() {
         alert("After Upload");
 
         console.log("Upload Success");
-
         console.log("Download URL:", uploadResult.downloadURL);
-
         console.log("Storage Path:", uploadResult.storagePath);
 
         // ======================================
-        // Step 3
-        // Generate Short Code
+        // Step 3 - Generate Short Code
         // ======================================
 
+        alert("Generating Short Code");
+
+        const shortCode = generateShortCode();
+
+        console.log("Short Code:", shortCode);
+
+        alert("Short Code Generated");
+
+        // ======================================
         // Step 4
         // Create Firestore Document
+        // ======================================
 
         // Step 5
         // Deduct Spark
 
         // Step 6
-        // Return Link
+        // Create creditHistory Record
+
+        // Step 7
+        // Return Generated Link
 
     } catch (error) {
 
