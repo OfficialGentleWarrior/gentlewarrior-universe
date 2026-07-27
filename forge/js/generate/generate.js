@@ -4,6 +4,8 @@ import { uploadImage } from "./uploadImage.js";
 import { generateUniqueShortCode } from "./utils.js";
 import {
     doc,
+    collection,
+    setDoc,
     runTransaction,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
@@ -123,13 +125,45 @@ await runTransaction(db, async (transaction) => {
 
 alert("Transaction Complete");
 
-return;
+// ======================================
+// Step 5 - Create Credit History
+// ======================================
 
-        // Step 5
-        // Deduct Spark
+alert("Saving Credit History");
 
-        // Step 6
-        // Create creditHistory Record
+const historyRef =
+    doc(collection(db, "creditHistory"));
+
+await setDoc(historyRef, {
+
+    uid: auth.currentUser.uid,
+
+    type: "debit",
+
+    amount: -1,
+
+    reason: "Generate Link",
+
+    shortCode: shortCode,
+
+    createdAt: serverTimestamp()
+
+});
+
+alert("Credit History Saved");
+
+// ======================================
+// Step 6 - Return Generated Link
+// ======================================
+
+const generatedLink =
+    `https://gentlewarrior.world/l/${shortCode}`;
+
+console.log("Generated Link:", generatedLink);
+
+alert(`Link Generated!\n\n${generatedLink}`);
+
+return generatedLink;
 
         // Step 7
         // Return Generated Link
