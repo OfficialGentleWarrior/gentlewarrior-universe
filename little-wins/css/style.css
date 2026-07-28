@@ -51,6 +51,12 @@ body{
    Landing Layout
 ========================== */
 
+header{
+
+    background:#F5F7FA;
+
+}
+
 .top-banner{
 
     width:100%;
@@ -81,7 +87,6 @@ body{
 
 }
 
-
 /* ==========================
    Navigation
 ========================== */
@@ -98,11 +103,12 @@ body{
 
     padding:12px 20px;
 
-    background:#F5F7FA;
+    background:transparent;
 
     border-bottom:1px solid var(--border);
 
 }
+
 .nav-left{
 
     display:flex;
@@ -133,11 +139,13 @@ body{
 
 .start-btn{
 
-    width:auto;
+    width:180px;
 
-    min-width:220px;
+    min-width:180px;
 
-    padding:14px 28px;
+    max-width:180px;
+
+    padding:14px 20px;
 
 }
 
@@ -781,4 +789,4 @@ button:disabled{
 
     display:none;
 
-}
+   }
