@@ -4,6 +4,7 @@
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
@@ -16,8 +17,13 @@
           type="image/png"
           href="assets/logo/little-wins-icon.png">
 
+    <!-- Global Styles -->
     <link rel="stylesheet"
           href="css/style.css">
+
+    <!-- Landing Page Styles -->
+    <link rel="stylesheet"
+          href="css/landing.css">
 
 </head>
 
@@ -132,6 +138,12 @@
                 class="logo"
                 alt="Little Wins">
 
+            <p class="login-subtitle">
+
+                Continue with Google to start your journey.
+
+            </p>
+
             <button id="googleLogin">
 
                 Continue with Google
@@ -166,21 +178,19 @@
 
         const modal = document.getElementById("loginModal");
 
+        const openModal = () => {
+
+            modal.classList.remove("hidden");
+
+        };
+
         document
             .getElementById("startJourney")
-            .addEventListener("click", () => {
-
-                modal.classList.remove("hidden");
-
-            });
+            .addEventListener("click", openModal);
 
         document
             .getElementById("heroStartButton")
-            .addEventListener("click", () => {
-
-                modal.classList.remove("hidden");
-
-            });
+            .addEventListener("click", openModal);
 
         document
             .getElementById("googleLogin")
