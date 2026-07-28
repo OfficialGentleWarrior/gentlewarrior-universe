@@ -1,18 +1,61 @@
 /* ==========================
-   Landing Layout
+   Little Wins
+   Global Styles
 ========================== */
 
-header{
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    background:#F3F6F9;
+:root{
+
+    --primary:#22C55E;
+    --primary-light:#DCFCE7;
+
+    --background:#F8FAFC;
+    --surface:#FFFFFF;
+
+    --text:#1F2937;
+    --text-light:#6B7280;
+
+    --border:#E5E7EB;
+
+    --shadow:0 10px 25px rgba(34,197,94,.12);
+
+    --radius:20px;
 
 }
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:Inter,Arial,sans-serif;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    line-height:1.6;
+
+}
+
+
+/* ==========================
+   Landing Layout
+========================== */
 
 .top-banner{
 
     width:100%;
 
-    background:transparent;
+    background:#F5F7FA;
 
     display:flex;
 
@@ -55,12 +98,11 @@ header{
 
     padding:12px 20px;
 
-    background:transparent;
+    background:#F5F7FA;
 
     border-bottom:1px solid var(--border);
 
 }
-
 .nav-left{
 
     display:flex;
@@ -91,15 +133,14 @@ header{
 
 .start-btn{
 
-    width:200px;
+    width:auto;
 
-    min-width:200px;
+    min-width:220px;
 
-    max-width:200px;
-
-    padding:14px 24px;
+    padding:14px 28px;
 
 }
+
 
 /* ==========================
    Hero
@@ -161,19 +202,17 @@ header{
 
     display:flex;
 
-    justify-content:center;
-
 }
 
 .hero-buttons button{
 
-    width:240px;
+    width:auto;
 
-    min-width:240px;
+    min-width:260px;
 
-    max-width:240px;
+    max-width:none;
 
-    padding:16px 24px;
+    padding:16px 32px;
 
     font-size:18px;
 
@@ -190,6 +229,7 @@ footer{
     border-top:1px solid var(--border);
 
 }
+
 
 /* ==========================
    Responsive
@@ -233,10 +273,6 @@ footer{
 
         width:100%;
 
-        max-width:320px;
-
-        min-width:0;
-
         padding:14px;
 
     }
@@ -279,11 +315,7 @@ footer{
 
     .hero-buttons button{
 
-        width:100%;
-
-        max-width:320px;
-
-        min-width:0;
+        max-width:100%;
 
         padding:16px;
 
@@ -300,57 +332,453 @@ footer{
 }
 
 /* ==========================
-   Landing Button Overrides
+   Setup Header
 ========================== */
 
-.navbar .start-btn{
-
-    width:200px;
-
-    max-width:200px;
-
-    min-width:200px;
-
-}
-
-.hero-buttons{
+.setup-header{
 
     display:flex;
 
     justify-content:center;
 
-}
+    align-items:center;
 
-.hero-buttons button{
-
-    width:240px;
-
-    max-width:240px;
-
-    min-width:240px;
+    padding:20px 0 12px;
 
 }
 
-@media (max-width:768px){
+.header-logo{
 
-    .navbar .start-btn{
+    display:block;
 
-        width:100%;
+    width:100%;
 
-        max-width:320px;
+    max-width:320px;
 
-        min-width:0;
+    height:auto;
 
-    }
+}
 
-    .hero-buttons button{
 
-        width:100%;
+/* ==========================
+   Layout
+========================== */
 
-        max-width:320px;
+.container{
 
-        min-width:0;
+    width:100%;
 
-    }
+    max-width:480px;
+
+    margin:0 auto;
+
+    min-height:calc(100vh - 88px);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    padding:24px;
+
+}
+
+
+/* ==========================
+   Typography
+========================== */
+
+h2{
+
+    font-size:36px;
+
+    line-height:1.2;
+
+    font-weight:700;
+
+    margin-bottom:16px;
+
+}
+
+h3{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    margin-bottom:14px;
+
+}
+
+p{
+
+    color:var(--text-light);
+
+    line-height:1.7;
+
+}
+
+.subtitle{
+
+    max-width:360px;
+
+    margin:0 auto 32px;
+
+    font-size:17px;
+
+}
+
+
+/* ==========================
+   Branding
+========================== */
+
+.logo{
+
+    width:100%;
+
+    max-width:340px;
+
+    margin:0 auto 40px;
+
+    display:block;
+
+}
+
+
+/* ==========================
+   Header (App)
+========================== */
+
+.header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:24px;
+
+}
+
+.header-content{
+
+    flex:1;
+
+}
+
+.avatar{
+
+    width:56px;
+
+    height:56px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid var(--primary-light);
+
+}
+
+
+/* ==========================
+   Cards
+========================== */
+
+.card,
+.welcome-card{
+
+    width:100%;
+
+    background:var(--surface);
+
+    border-radius:var(--radius);
+
+    padding:24px;
+
+    margin-bottom:20px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.card h3{
+
+    margin-bottom:12px;
+
+}
+
+.welcome-text{
+
+    margin-bottom:6px;
+
+}
+
+
+/* ==========================
+   Journey Summary
+========================== */
+
+.stats{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:20px;
+
+    text-align:center;
+
+}
+
+.stat{
+
+    flex:1;
+
+}
+
+.stat h2{
+
+    color:var(--primary);
+
+    font-size:30px;
+
+    margin-bottom:4px;
+
+}
+
+.stat p{
+
+    font-size:13px;
+
+}
+
+/* ==========================
+   Buttons
+========================== */
+
+button{
+
+    width:100%;
+
+    max-width:360px;
+
+    padding:18px 24px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:var(--primary);
+
+    color:#fff;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:0 10px 24px rgba(34,197,94,.20);
+
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+button:active{
+
+    transform:scale(.98);
+
+}
+
+button:disabled{
+
+    background:#D1D5DB;
+
+    color:#6B7280;
+
+    box-shadow:none;
+
+    cursor:not-allowed;
+
+}
+
+
+/* ==========================
+   Bottom Navigation
+========================== */
+
+.bottom-nav{
+
+    position:sticky;
+
+    bottom:0;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:8px;
+
+    margin-top:32px;
+
+    padding:16px 0;
+
+    background:var(--background);
+
+}
+
+.bottom-nav button{
+
+    max-width:none;
+
+    background:#fff;
+
+    color:var(--text);
+
+    font-size:13px;
+
+    font-weight:600;
+
+    padding:12px 8px;
+
+    border:1px solid var(--border);
+
+    box-shadow:none;
+
+}
+
+
+/* ==========================
+   Setup Wizard
+========================== */
+
+.option-button{
+
+    width:100%;
+
+    max-width:360px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#fff;
+
+    color:var(--text);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:18px 20px;
+
+    margin-bottom:16px;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    box-shadow:var(--shadow);
+
+    transition:
+        background .25s,
+        border-color .25s,
+        transform .15s;
+
+}
+
+.option-button:hover{
+
+    border-color:var(--primary);
+
+}
+
+.option-button.selected{
+
+    background:var(--primary-light);
+
+    border-color:var(--primary);
+
+    transform:scale(1.01);
+
+}
+
+.checkmark{
+
+    opacity:0;
+
+    color:var(--primary);
+
+    font-size:20px;
+
+    font-weight:700;
+
+    transition:.25s;
+
+}
+
+.option-button.selected .checkmark{
+
+    opacity:1;
+
+}
+
+
+/* ==========================
+   Progress
+========================== */
+
+.progress{
+
+    width:100%;
+
+    max-width:360px;
+
+    height:8px;
+
+    background:var(--border);
+
+    border-radius:999px;
+
+    margin-bottom:28px;
+
+}
+
+.progress-fill{
+
+    width:25%;
+
+    height:100%;
+
+    background:var(--primary);
+
+    border-radius:999px;
+
+}
+
+
+/* ==========================
+   Utility
+========================== */
+
+.hidden{
+
+    display:none;
 
 }
