@@ -4,36 +4,183 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>Little Wins</title>
+    <title>Little Wins | Every Little Win Matters.</title>
+
+    <meta name="description"
+          content="Capture every milestone, celebrate every step, and keep your journey alive—one little win at a time.">
 
     <link rel="icon"
           type="image/png"
           href="assets/logo/little-wins-icon.png">
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+          href="css/style.css">
 
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
 
-        <img
-            src="assets/logo/little-wins-logo-full.png"
-            class="logo"
-            alt="Little Wins">
+    <header>
 
-        <button id="googleLogin">
-            Continue with Google
-        </button>
+        <!-- Logo Banner -->
+        <div class="top-banner">
+
+            <img
+                src="assets/logo/little-wins-header.png"
+                alt="Little Wins Logo">
+
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navbar">
+
+            <div class="nav-left">
+
+                <a href="#">Features</a>
+
+                <a href="#">Community</a>
+
+                <a href="#">FAQ</a>
+
+            </div>
+
+            <div class="nav-right">
+
+                <button
+                    id="startJourney"
+                    class="start-btn">
+
+                    Start Your Journey
+
+                </button>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <!-- ==========================================
+         HERO
+    =========================================== -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-left">
+
+                <span class="hero-badge">
+
+                    A Journey of Hope
+
+                </span>
+
+                <h1>
+
+                    Every Little Win
+                    Matters.
+
+                </h1>
+
+                <p>
+
+                    Capture every milestone,
+                    celebrate every step,
+                    and keep your journey alive—
+                    one little win at a time.
+
+                </p>
+
+                <div class="hero-buttons">
+
+                    <button
+                        id="heroStartButton"
+                        class="primary">
+
+                        Start Your Journey
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         LOGIN MODAL
+    =========================================== -->
+
+    <div
+        id="loginModal"
+        class="login-modal hidden">
+
+        <div class="login-card">
+
+            <img
+                src="assets/logo/little-wins-logo-full.png"
+                class="logo"
+                alt="Little Wins">
+
+            <button id="googleLogin">
+
+                Continue with Google
+
+            </button>
+
+        </div>
 
     </div>
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <footer>
+
+        <p>
+
+            © 2026 Little Wins by Gentle Warrior
+
+        </p>
+
+    </footer>
+
+    <!-- ==========================================
+         SCRIPT
+    =========================================== -->
 
     <script type="module">
 
         import { signInWithGoogle } from "./js/auth.js";
+
+        const modal = document.getElementById("loginModal");
+
+        document
+            .getElementById("startJourney")
+            .addEventListener("click", () => {
+
+                modal.classList.remove("hidden");
+
+            });
+
+        document
+            .getElementById("heroStartButton")
+            .addEventListener("click", () => {
+
+                modal.classList.remove("hidden");
+
+            });
 
         document
             .getElementById("googleLogin")
