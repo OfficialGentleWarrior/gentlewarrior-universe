@@ -63,7 +63,7 @@ body{
 
     align-items:center;
 
-    padding:28px 20px;
+    padding:20px 20px;
 
     border-bottom:1px solid var(--border);
 
@@ -96,7 +96,7 @@ body{
 
     gap:20px;
 
-    padding:22px 24px;
+    padding:16px 24px;
 
     background:#fff;
 
@@ -153,7 +153,7 @@ body{
 
     margin:auto;
 
-    padding:72px 24px 96px;
+    padding:42px 24px 56px;
 
 }
 
@@ -171,17 +171,17 @@ body{
 
     font-weight:700;
 
-    margin-bottom:28px;
+    margin-bottom:20px;
 
 }
 
 .hero h1{
 
-    font-size:64px;
+    font-size:52px;
 
     line-height:1.08;
 
-    margin-bottom:28px;
+    margin-bottom:18px;
 
     color:var(--text);
 
@@ -191,11 +191,11 @@ body{
 
     max-width:620px;
 
-    font-size:28px;
+    font-size:20px;
 
     color:var(--text-light);
 
-    margin-bottom:48px;
+    margin-bottom:34px;
 
 }
 
@@ -209,9 +209,9 @@ body{
 
     max-width:420px;
 
-    font-size:24px;
+    font-size:20px;
 
-    padding:22px;
+    padding:18px;
 
 }
 
@@ -221,7 +221,7 @@ footer{
 
     color:#6B7280;
 
-    padding:48px 24px;
+    padding:28px 24px;
 
     border-top:1px solid var(--border);
 
@@ -278,9 +278,10 @@ footer{
 
     .hero p{
 
-        font-size:22px;
+    font-size:20px;
 
-    }
+
+}
 
     .hero-buttons{
 
@@ -746,4 +747,4 @@ button:disabled{
 
     display:none;
 
-       }
+}
