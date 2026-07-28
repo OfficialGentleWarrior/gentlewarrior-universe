@@ -54,6 +54,33 @@ body {
 
 }
 
+/* ==========================
+   Setup Header
+========================== */
+
+.setup-header {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px 0 12px;
+
+}
+
+.header-logo {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 320px;
+
+    height: auto;
+
+}
 
 /* ==========================
    Layout
@@ -61,7 +88,7 @@ body {
 
 .container {
 
-    min-height: 100vh;
+    min-height: calc(100vh - 88px);
 
     width: 100%;
 
@@ -123,7 +150,6 @@ p {
 
 }
 
-
 /* ==========================
    Branding
 ========================== */
@@ -142,17 +168,6 @@ p {
 
 }
 
-.header-logo {
-
-    height: 56px;
-
-    width: auto;
-
-    display: block;
-
-}
-
-
 /* ==========================
    Header
 ========================== */
@@ -168,7 +183,6 @@ p {
     margin-bottom: 24px;
 
 }
-
 
 /* ==========================
    Avatar
@@ -187,7 +201,6 @@ p {
     border: 3px solid var(--primary-light);
 
 }
-
 
 /* ==========================
    Cards
@@ -213,7 +226,6 @@ p {
     margin-bottom: 12px;
 
 }
-
 
 /* ==========================
    Journey Summary
@@ -242,7 +254,6 @@ p {
     font-size: 13px;
 
 }
-
 
 /* ==========================
    Buttons
@@ -279,7 +290,6 @@ button:active {
     transform: scale(.98);
 
 }
-
 
 /* ==========================
    Bottom Navigation
@@ -358,11 +368,12 @@ button:active {
     font-weight: 600;
 
     transition:
-    background .25s,
-    border-color .25s,
-    transform .15s;
+        background .25s,
+        border-color .25s,
+        transform .15s;
 
 }
+
 .option-button:hover {
 
     border-color: var(--primary);
@@ -399,7 +410,6 @@ button:active {
 
 }
 
-
 /* ==========================
    Progress
 ========================== */
@@ -431,7 +441,6 @@ button:active {
     border-radius: 999px;
 
 }
-
 
 /* ==========================
    Disabled Button
