@@ -134,7 +134,12 @@ header{
 
 .nav-right{
 
-    margin-left:auto;
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
 
 }
 
