@@ -53,7 +53,9 @@ body{
 
 header{
 
-    background:#F5F7FA;
+    background:#F3F6F9;
+
+    width:100%;
 
 }
 
@@ -61,7 +63,7 @@ header{
 
     width:100%;
 
-    background:#F5F7FA;
+    background:transparent;
 
     display:flex;
 
@@ -75,6 +77,22 @@ header{
 
 }
 
+.top-banner img{
+
+    width:100%;
+
+    max-width:520px;
+
+    height:auto;
+
+    display:block;
+
+}
+
+/* ==========================
+   Navigation
+========================== */
+
 .navbar{
 
     display:flex;
@@ -85,14 +103,13 @@ header{
 
     gap:12px;
 
-    padding:12px 20px 20px;
+    padding:12px 20px;
 
     background:#F5F7FA;
 
     border-bottom:1px solid var(--border);
 
 }
-
 .nav-left{
 
     display:flex;
@@ -117,23 +134,19 @@ header{
 
 .nav-right{
 
-    width:100%;
-
-    display:flex;
-
-    justify-content:center;
+    margin-left:auto;
 
 }
 
 .start-btn{
 
-    width:180px;
+    width:170px !important;
 
-    min-width:180px;
+    min-width:170px;
 
-    max-width:180px;
+    max-width:170px;
 
-    padding:14px 20px;
+    padding:14px 18px;
 
 }
 
@@ -204,13 +217,13 @@ header{
 
 .hero-buttons button{
 
-    width:220px !important;
+    width:210px !important;
 
-    min-width:220px;
+    min-width:210px;
 
-    max-width:220px;
+    max-width:210px;
 
-    padding:16px 20px;
+    padding:16px 18px;
 
     font-size:18px;
 
@@ -269,15 +282,16 @@ footer{
 
     .start-btn{
 
-    width:180px !important;
+    width:170px !important;
 
-    min-width:180px;
+    min-width:170px;
 
-    max-width:180px;
+    max-width:170px;
 
-    padding:14px 20px;
+    padding:14px 18px;
 
 }
+
     .hero{
 
         padding:28px 20px 32px;
@@ -316,17 +330,13 @@ footer{
 
     .hero-buttons button{
 
-    width:220px !important;
+        max-width:100%;
 
-    min-width:220px;
+        padding:16px;
 
-    max-width:220px;
+        font-size:18px;
 
-    padding:16px 20px;
-
-    font-size:18px;
-
-}
+    }
 
     footer{
 
@@ -621,28 +631,6 @@ button:disabled{
 
 }
 
-/* Landing Page Overrides */
-
-.navbar .start-btn{
-
-    width:180px !important;
-
-    min-width:180px;
-
-    max-width:180px;
-
-}
-
-.hero-buttons button{
-
-    width:220px !important;
-
-    min-width:220px;
-
-    max-width:220px;
-
-}
-
 
 /* ==========================
    Bottom Navigation
@@ -693,76 +681,75 @@ button:disabled{
    Setup Wizard
 ========================== */
 
-.option-button{
+.option-button {
 
-    width:100%;
+    width: 100%;
 
-    max-width:360px;
+    max-width: 360px;
 
-    display:flex;
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 
-    background:#fff;
+    background: var(--surface);
 
-    color:var(--text);
+    color: var(--text);
 
-    border:2px solid var(--border);
+    border: 2px solid var(--border);
 
-    border-radius:var(--radius);
+    border-radius: var(--radius);
 
-    padding:18px 20px;
+    box-shadow: var(--shadow);
 
-    margin-bottom:16px;
+    margin-bottom: 16px;
 
-    font-size:17px;
+    padding: 18px 20px;
 
-    font-weight:600;
+    font-size: 17px;
 
-    box-shadow:var(--shadow);
+    font-weight: 600;
 
     transition:
-        background .25s,
-        border-color .25s,
-        transform .15s;
+    background .25s,
+    border-color .25s,
+    transform .15s;
+
+}
+.option-button:hover {
+
+    border-color: var(--primary);
 
 }
 
-.option-button:hover{
+.option-button.selected {
 
-    border-color:var(--primary);
+    background: var(--primary-light);
 
-}
+    border-color: var(--primary);
 
-.option-button.selected{
-
-    background:var(--primary-light);
-
-    border-color:var(--primary);
-
-    transform:scale(1.01);
+    transform: scale(1.01);
 
 }
 
-.checkmark{
+.checkmark {
 
-    opacity:0;
+    opacity: 0;
 
-    color:var(--primary);
+    color: var(--primary);
 
-    font-size:20px;
+    font-size: 20px;
 
-    font-weight:700;
+    font-weight: bold;
 
-    transition:.25s;
+    transition: .25s;
 
 }
 
-.option-button.selected .checkmark{
+.option-button.selected .checkmark {
 
-    opacity:1;
+    opacity: 1;
 
 }
 
