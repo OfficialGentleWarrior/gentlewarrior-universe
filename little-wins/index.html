@@ -17,11 +17,6 @@
           type="image/png"
           href="assets/logo/little-wins-icon.png">
 
-    <!-- Global Styles -->
-    <link rel="stylesheet"
-          href="css/style.css">
-
-    <!-- Landing Page Styles -->
     <link rel="stylesheet"
           href="css/landing.css">
 
@@ -35,7 +30,6 @@
 
     <header>
 
-        <!-- Logo Banner -->
         <div class="top-banner">
 
             <img
@@ -44,7 +38,6 @@
 
         </div>
 
-        <!-- Navigation -->
         <nav class="navbar">
 
             <div class="nav-left">
@@ -60,7 +53,7 @@
             <div class="nav-right">
 
                 <button
-                    id="startJourney"
+                    id="navbarStart"
                     class="start-btn">
 
                     Start Your Journey
@@ -108,7 +101,7 @@
                 <div class="hero-buttons">
 
                     <button
-                        id="heroStartButton"
+                        id="heroStart"
                         class="primary">
 
                         Start Your Journey
@@ -122,37 +115,6 @@
         </section>
 
     </main>
-
-    <!-- ==========================================
-         LOGIN MODAL
-    =========================================== -->
-
-    <div
-        id="loginModal"
-        class="login-modal hidden">
-
-        <div class="login-card">
-
-            <img
-                src="assets/logo/little-wins-logo-full.png"
-                class="logo"
-                alt="Little Wins">
-
-            <p class="login-subtitle">
-
-                Continue with Google to start your journey.
-
-            </p>
-
-            <button id="googleLogin">
-
-                Continue with Google
-
-            </button>
-
-        </div>
-
-    </div>
 
     <!-- ==========================================
          FOOTER
@@ -176,24 +138,12 @@
 
         import { signInWithGoogle } from "./js/auth.js";
 
-        const modal = document.getElementById("loginModal");
-
-        const openModal = () => {
-
-            modal.classList.remove("hidden");
-
-        };
+        document
+            .getElementById("navbarStart")
+            .addEventListener("click", signInWithGoogle);
 
         document
-            .getElementById("startJourney")
-            .addEventListener("click", openModal);
-
-        document
-            .getElementById("heroStartButton")
-            .addEventListener("click", openModal);
-
-        document
-            .getElementById("googleLogin")
+            .getElementById("heroStart")
             .addEventListener("click", signInWithGoogle);
 
     </script>
