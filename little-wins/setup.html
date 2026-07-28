@@ -14,133 +14,143 @@
         name="description"
         content="Create your Little Wins journey in just a few simple steps.">
 
-    <link rel="icon"
-          type="image/png"
-          href="assets/logo/little-wins-icon.png">
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/logo/little-wins-icon.png">
 
-    <link rel="stylesheet"
-          href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css">
 
 </head>
 
 <body>
 
     <!-- ==========================================
+         HEADER
+    =========================================== -->
+
+    <header class="setup-header">
+
+        <img
+            src="assets/logo/little-wins-header.png"
+            class="header-logo"
+            alt="Little Wins">
+
+    </header>
+
+    <!-- ==========================================
          WELCOME SCREEN
     =========================================== -->
 
-    <div
-        id="welcomeScreen"
-        class="container">
+    <main>
 
-        <img
-            src="assets/logo/little-wins-logo-full.png"
-            class="logo"
-            alt="Little Wins">
+        <div
+            id="welcomeScreen"
+            class="container">
 
-        <h2>
-            Welcome! 💚
-        </h2>
+            <h2>
 
-        <p class="subtitle">
-            Every journey begins with a single step.
-            <br>
-            Let's create your journey.
-        </p>
+                Welcome! 💚
 
-        <button id="continueSetup">
-            Continue
-        </button>
+            </h2>
 
-    </div>
+            <p class="subtitle">
 
-    <!-- ==========================================
-         STEP 1
-    =========================================== -->
+                Every journey begins with a single step.
 
-    <div
-        id="step1"
-        class="container hidden">
+                <br>
 
-        <div class="progress">
+                Let's create your journey.
 
-            <div class="progress-fill"></div>
+            </p>
+
+            <button id="continueSetup">
+
+                Continue
+
+            </button>
 
         </div>
 
-        <h2>
-            Who is this journey for?
-        </h2>
+        <!-- ==========================================
+             STEP 1
+        =========================================== -->
 
-        <p class="subtitle">
-            Choose who this journey is for.
-        </p>
+        <div
+            id="step1"
+            class="container hidden">
 
-        <button
-            class="option-button"
-            data-value="Myself">
+            <div class="progress">
 
-            <span>
-                👤 Myself
-            </span>
+                <div class="progress-fill"></div>
 
-            <span class="checkmark">
-                ✓
-            </span>
+            </div>
 
-        </button>
+            <h2>
 
-        <button
-            class="option-button"
-            data-value="My Child">
+                Who is this journey for?
 
-            <span>
-                👶 My Child
-            </span>
+            </h2>
 
-            <span class="checkmark">
-                ✓
-            </span>
+            <p class="subtitle">
 
-        </button>
+                Choose who this journey is for.
 
-        <button
-            class="option-button"
-            data-value="Family Member">
+            </p>
 
-            <span>
-                👨‍👩‍👧 Family Member
-            </span>
+            <button
+                class="option-button"
+                data-value="Myself">
 
-            <span class="checkmark">
-                ✓
-            </span>
+                <span>👤 Myself</span>
 
-        </button>
+                <span class="checkmark">✓</span>
 
-        <button
-            class="option-button"
-            data-value="Someone I Care For">
+            </button>
 
-            <span>
-                ❤️ Someone I Care For
-            </span>
+            <button
+                class="option-button"
+                data-value="My Child">
 
-            <span class="checkmark">
-                ✓
-            </span>
+                <span>👶 My Child</span>
 
-        </button>
+                <span class="checkmark">✓</span>
 
-        <button
-            id="step1Continue"
-            disabled>
+            </button>
 
-            Continue
+            <button
+                class="option-button"
+                data-value="Family Member">
 
-        </button>
+                <span>👨‍👩‍👧 Family Member</span>
 
-    </div>
+                <span class="checkmark">✓</span>
+
+            </button>
+
+            <button
+                class="option-button"
+                data-value="Someone I Care For">
+
+                <span>❤️ Someone I Care For</span>
+
+                <span class="checkmark">✓</span>
+
+            </button>
+
+            <button
+                id="step1Continue"
+                disabled>
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </main>
 
     <script
         type="module"
