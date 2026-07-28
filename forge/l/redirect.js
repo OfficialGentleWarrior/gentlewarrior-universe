@@ -7,9 +7,7 @@ import { db } from "../js/firebase.js";
 
 import {
     doc,
-    getDoc,
-    updateDoc,
-    increment
+    getDoc
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const statusText = document.getElementById("statusText");
@@ -47,10 +45,11 @@ async function redirectLink() {
             return;
         }
 
-        // Increase click counter
-        await updateDoc(linkRef, {
-            clicks: increment(1)
-        });
+        // TODO: Enable after secure click counter rules are implemented
+
+// await updateDoc(linkRef, {
+//     clicks: increment(1)
+// });
 
         statusText.textContent = "Redirecting...";
 
