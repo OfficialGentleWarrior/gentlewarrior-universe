@@ -768,6 +768,23 @@ button:disabled{
 
 }
 
+/* ==========================
+   Welcome Illustration
+========================== */
+
+.welcome-illustration{
+
+    width:100%;
+
+    max-width:280px;
+
+    height:auto;
+
+    margin-bottom:32px;
+
+    display:block;
+
+}
 
 /* ==========================
    Utility
