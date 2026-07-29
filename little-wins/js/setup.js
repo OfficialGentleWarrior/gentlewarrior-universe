@@ -52,6 +52,11 @@ const closeCommunityModal =
 const communityOptions =
     document.querySelectorAll(".community-option");
 
+const step4 = document.getElementById("step4");
+const step4Back = document.getElementById("step4Back");
+const finishSetup = document.getElementById("finishSetup");
+
+
 const journeyData = {
 
     journeyFor: null,
@@ -237,7 +242,7 @@ step3Back.addEventListener("click", () => {
 });
 
 
-// ==========================================
+/// ==========================================
 // Step 3 Continue
 // ==========================================
 
@@ -250,6 +255,18 @@ step3Continue.addEventListener("click", () => {
 
     console.log(journeyData);
 
-    showStep(4);
+    step3.classList.add("hidden");
+    step4.classList.remove("hidden");
+
+});
+
+// ==========================================
+// Step 4 → Step 3
+// ==========================================
+
+step4Back.addEventListener("click", () => {
+
+    step4.classList.add("hidden");
+    step3.classList.remove("hidden");
 
 });
