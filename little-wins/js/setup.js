@@ -1,3 +1,9 @@
+import { auth } from "./firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
 const welcomeScreen =
     document.getElementById("welcomeScreen");
 
@@ -20,7 +26,25 @@ const journeyData = {
 };
 
 
+// ==========================================
+// Authentication Guard
+// ==========================================
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+
+        window.location.href = "index.html";
+        return;
+
+    }
+
+});
+
+
+// ==========================================
 // Welcome → Step 1
+// ==========================================
 
 continueSetup.addEventListener("click", () => {
 
@@ -31,7 +55,9 @@ continueSetup.addEventListener("click", () => {
 });
 
 
+// ==========================================
 // Step 1 Selection
+// ==========================================
 
 optionButtons.forEach(button => {
 
@@ -46,7 +72,7 @@ optionButtons.forEach(button => {
         button.classList.add("selected");
 
         journeyData.journeyFor =
-    button.dataset.value;
+            button.dataset.value;
 
         step1Continue.disabled = false;
 
@@ -57,7 +83,9 @@ optionButtons.forEach(button => {
 });
 
 
+// ==========================================
 // Continue
+// ==========================================
 
 step1Continue.addEventListener("click", () => {
 
