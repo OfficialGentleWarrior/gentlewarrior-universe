@@ -121,6 +121,16 @@ step2Back.addEventListener("click", () => {
 
 });
 
+// ==========================================
+// Step 2 Input
+// ==========================================
+
+journeyNameInput.addEventListener("input", () => {
+
+    step2Continue.disabled =
+        journeyNameInput.value.trim() === "";
+
+});
 
 // ==========================================
 // Step 2 Continue
