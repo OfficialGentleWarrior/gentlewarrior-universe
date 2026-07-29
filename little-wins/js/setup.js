@@ -10,18 +10,31 @@ const welcomeScreen =
 const step1 =
     document.getElementById("step1");
 
+const step2 =
+    document.getElementById("step2");
+
 const continueSetup =
     document.getElementById("continueSetup");
 
 const step1Continue =
     document.getElementById("step1Continue");
 
+const step2Back =
+    document.getElementById("step2Back");
+
+const step2Continue =
+    document.getElementById("step2Continue");
+
+const journeyNameInput =
+    document.getElementById("journeyName");
+
 const optionButtons =
     document.querySelectorAll(".option-button");
 
 const journeyData = {
 
-    journeyFor: null
+    journeyFor: null,
+    journeyName: ""
 
 };
 
@@ -84,13 +97,53 @@ optionButtons.forEach(button => {
 
 
 // ==========================================
-// Continue
+// Step 1 → Step 2
 // ==========================================
 
 step1Continue.addEventListener("click", () => {
 
-    console.log("Step 2");
+    step1.classList.add("hidden");
+
+    step2.classList.remove("hidden");
+
+});
+
+
+// ==========================================
+// Step 2 → Step 1
+// ==========================================
+
+step2Back.addEventListener("click", () => {
+
+    step2.classList.add("hidden");
+
+    step1.classList.remove("hidden");
+
+});
+
+
+// ==========================================
+// Step 2 Continue
+// ==========================================
+
+step2Continue.addEventListener("click", () => {
+
+    const journeyName =
+        journeyNameInput.value.trim();
+
+    if (!journeyName) {
+
+        alert("Please enter a journey name.");
+
+        return;
+
+    }
+
+    journeyData.journeyName =
+        journeyName;
 
     console.log(journeyData);
+
+    // Step 3 dito natin ilalagay
 
 });
