@@ -41,7 +41,7 @@ const optionButtons =
     document.querySelectorAll(".option-button");
 
 const communityButtons =
-    document.querySelectorAll(".community-button");
+    document.querySelectorAll(".option-button");
 
 const journeyData = {
 
