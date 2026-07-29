@@ -231,55 +231,16 @@
 
     <div class="input-group">
 
-        <select id="community">
+    <button
+        id="communityPicker"
+        class="picker-button"
+        type="button">
 
-            <option value="">
-                ❤️ Select your community
-            </option>
+        ❤️ Select your community
 
-            <option value="Cerebral Palsy">
-                💚 Cerebral Palsy
-            </option>
+    </button>
 
-            <option value="Autism">
-                🧩 Autism
-            </option>
-
-            <option value="Down Syndrome">
-                💙 Down Syndrome
-            </option>
-
-            <option value="Developmental Delay">
-                🌱 Developmental Delay
-            </option>
-
-            <option value="Rare Disease">
-                🦋 Rare Disease
-            </option>
-
-            <option value="Physical Disability">
-                ♿ Physical Disability
-            </option>
-
-            <option value="Visual Impairment">
-                👁️ Visual Impairment
-            </option>
-
-            <option value="Hearing Impairment">
-                🦻 Hearing Impairment
-            </option>
-
-            <option value="Undiagnosed / Still Seeking Diagnosis">
-                🩺 Undiagnosed / Still Seeking Diagnosis
-            </option>
-
-            <option value="Other">
-                ✨ Other
-            </option>
-
-        </select>
-
-    </div>
+</div>
 
     <div class="wizard-buttons">
 
@@ -296,6 +257,134 @@
             disabled>
 
             Continue
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     COMMUNITY PICKER MODAL
+========================================== -->
+
+<div
+    id="communityModal"
+    class="modal hidden">
+
+    <div class="modal-content">
+
+        <h3>
+
+            ❤️ Choose Your Community
+
+        </h3>
+
+        <!-- Neurodevelopmental -->
+
+        <div class="community-group">
+
+            <h4>🧠 Neurodevelopmental</h4>
+
+            <button class="community-option" data-value="Cerebral Palsy">💚 Cerebral Palsy</button>
+
+            <button class="community-option" data-value="Autism">🧩 Autism</button>
+
+            <button class="community-option" data-value="Down Syndrome">💙 Down Syndrome</button>
+
+            <button class="community-option" data-value="Global Developmental Delay (GDD)">🧒 Global Developmental Delay (GDD)</button>
+
+            <button class="community-option" data-value="Developmental Delay">🌱 Developmental Delay</button>
+
+            <button class="community-option" data-value="ADHD">🧠 ADHD</button>
+
+            <button class="community-option" data-value="Intellectual Disability">💜 Intellectual Disability</button>
+
+        </div>
+
+        <!-- Neurological & Genetic -->
+
+        <div class="community-group">
+
+            <h4>🧬 Neurological & Genetic</h4>
+
+            <button class="community-option" data-value="Epilepsy / Seizure Disorder">🧠 Epilepsy / Seizure Disorder</button>
+
+            <button class="community-option" data-value="Genetic Condition">🧬 Genetic Condition</button>
+
+            <button class="community-option" data-value="Muscular Dystrophy">🦴 Muscular Dystrophy</button>
+
+            <button class="community-option" data-value="Rare Disease">🦋 Rare Disease</button>
+
+        </div>
+
+        <!-- Physical & Sensory -->
+
+        <div class="community-group">
+
+            <h4>♿ Physical & Sensory</h4>
+
+            <button class="community-option" data-value="Physical Disability">♿ Physical Disability</button>
+
+            <button class="community-option" data-value="Visual Impairment">👁️ Visual Impairment</button>
+
+            <button class="community-option" data-value="Hearing Impairment">🦻 Hearing Impairment</button>
+
+            <button class="community-option" data-value="Speech & Language Delay">🗣️ Speech & Language Delay</button>
+
+            <button class="community-option" data-value="Feeding & Swallowing Challenges">🥣 Feeding & Swallowing Challenges</button>
+
+        </div>
+
+        <!-- Medical Journeys -->
+
+        <div class="community-group">
+
+            <h4>🏥 Medical Journeys</h4>
+
+            <button class="community-option" data-value="Congenital Heart Condition">❤️ Congenital Heart Condition</button>
+
+            <button class="community-option" data-value="Cancer Journey">🎗️ Cancer Journey</button>
+
+            <button class="community-option" data-value="Chronic Illness">🩹 Chronic Illness</button>
+
+            <button class="community-option" data-value="Undiagnosed / Still Seeking Diagnosis">🩺 Undiagnosed / Still Seeking Diagnosis</button>
+
+        </div>
+
+        <!-- Family & Caregiving -->
+
+        <div class="community-group">
+
+            <h4>👨‍👩‍👧 Family & Caregiving</h4>
+
+            <button class="community-option" data-value="Premature Baby Journey">👶 Premature Baby Journey</button>
+
+            <button class="community-option" data-value="NICU Journey">🤱 NICU Journey</button>
+
+            <button class="community-option" data-value="Pregnancy & Infant Loss">🌈 Pregnancy & Infant Loss</button>
+
+            <button class="community-option" data-value="Caregiving (No Specific Condition)">🫂 Caregiving (No Specific Condition)</button>
+
+            <button class="community-option" data-value="Mental Health">🧠 Mental Health</button>
+
+        </div>
+
+        <!-- Other -->
+
+        <div class="community-group">
+
+            <h4>✨ Other</h4>
+
+            <button class="community-option" data-value="Other">✨ Other</button>
+
+        </div>
+
+        <button
+            id="closeCommunityModal"
+            class="secondary-button">
+
+            Cancel
 
         </button>
 
