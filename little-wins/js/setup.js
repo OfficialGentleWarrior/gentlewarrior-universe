@@ -207,14 +207,11 @@ communityOptions.forEach(option => {
 
     option.addEventListener("click", () => {
 
-        const value =
-            option.dataset.value;
+        const value = option.dataset.value;
 
-        journeyData.community =
-            value;
+        journeyData.community = value;
 
-        communityPicker.textContent =
-            option.textContent;
+        communityPicker.textContent = option.textContent;
 
         step3Continue.disabled = false;
 
@@ -223,6 +220,8 @@ communityOptions.forEach(option => {
         console.log(journeyData);
 
     });
+
+});
 
 
 // ==========================================
