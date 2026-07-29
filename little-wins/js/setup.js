@@ -40,8 +40,17 @@ const journeyNameInput =
 const optionButtons =
     document.querySelectorAll(".option-button");
 
-const community =
-    document.getElementById("community");
+const communityPicker =
+    document.getElementById("communityPicker");
+
+const communityModal =
+    document.getElementById("communityModal");
+
+const closeCommunityModal =
+    document.getElementById("closeCommunityModal");
+
+const communityOptions =
+    document.querySelectorAll(".community-option");
 
 const journeyData = {
 
@@ -179,20 +188,41 @@ step2Continue.addEventListener("click", () => {
 
 
 // ==========================================
-// Step 3 Selection
+// Community Picker
 // ==========================================
 
-community.addEventListener("change", () => {
+communityPicker.addEventListener("click", () => {
 
-    journeyData.community =
-        community.value;
-
-    step3Continue.disabled =
-        community.value === "";
-
-    console.log(journeyData);
+    communityModal.classList.remove("hidden");
 
 });
+
+closeCommunityModal.addEventListener("click", () => {
+
+    communityModal.classList.add("hidden");
+
+});
+
+communityOptions.forEach(option => {
+
+    option.addEventListener("click", () => {
+
+        const value =
+            option.dataset.value;
+
+        journeyData.community =
+            value;
+
+        communityPicker.textContent =
+            option.textContent;
+
+        step3Continue.disabled = false;
+
+        communityModal.classList.add("hidden");
+
+        console.log(journeyData);
+
+    });
 
 
 // ==========================================
@@ -214,16 +244,13 @@ step3Back.addEventListener("click", () => {
 
 step3Continue.addEventListener("click", () => {
 
-    if (!community.value) {
+    if (!journeyData.community) {
 
-        alert("Please select your community.");
+    alert("Please select your community.");
 
-        return;
+    return;
 
-    }
-
-    journeyData.community =
-        community.value;
+}
 
     console.log(journeyData);
 
