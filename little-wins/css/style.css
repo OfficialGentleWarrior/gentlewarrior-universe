@@ -912,3 +912,150 @@ button:disabled{
     transform:scale(.98);
 
 }
+
+/* ==========================
+   Community Picker
+========================== */
+
+.picker-button{
+
+    width:100%;
+
+    max-width:360px;
+
+    height:60px;
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-start;
+
+    padding:0 20px;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    box-shadow:var(--shadow);
+
+}
+
+.picker-button:hover{
+
+    border-color:var(--primary);
+
+}
+
+
+/* ==========================
+   Community Modal
+========================== */
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    z-index:999;
+
+}
+
+.modal.hidden{
+
+    display:none;
+
+}
+
+.modal-content{
+
+    width:100%;
+
+    max-width:520px;
+
+    max-height:80vh;
+
+    overflow-y:auto;
+
+    background:#fff;
+
+    border-radius:24px 24px 0 0;
+
+    padding:24px;
+
+}
+
+.modal-content h3{
+
+    text-align:center;
+
+    margin-bottom:24px;
+
+}
+
+.community-group{
+
+    margin-bottom:28px;
+
+}
+
+.community-group h4{
+
+    margin-bottom:12px;
+
+    color:var(--text-light);
+
+    font-size:15px;
+
+}
+
+.community-option{
+
+    width:100%;
+
+    max-width:none;
+
+    background:#fff;
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+    box-shadow:none;
+
+    margin-bottom:10px;
+
+    text-align:left;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    padding:16px 18px;
+
+}
+
+.community-option:hover{
+
+    border-color:var(--primary);
+
+    background:var(--primary-light);
+
+   }
