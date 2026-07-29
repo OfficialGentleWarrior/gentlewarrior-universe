@@ -13,6 +13,9 @@ const step1 =
 const step2 =
     document.getElementById("step2");
 
+const step3 =
+    document.getElementById("step3");
+
 const continueSetup =
     document.getElementById("continueSetup");
 
@@ -25,16 +28,28 @@ const step2Back =
 const step2Continue =
     document.getElementById("step2Continue");
 
+const step3Back =
+    document.getElementById("step3Back");
+
+const step3Continue =
+    document.getElementById("step3Continue");
+
 const journeyNameInput =
     document.getElementById("journeyName");
 
 const optionButtons =
     document.querySelectorAll(".option-button");
 
+const communityButtons =
+    document.querySelectorAll(".community-button");
+
 const journeyData = {
 
     journeyFor: null,
-    journeyName: ""
+
+    journeyName: "",
+
+    community: ""
 
 };
 
@@ -121,6 +136,7 @@ step2Back.addEventListener("click", () => {
 
 });
 
+
 // ==========================================
 // Step 2 Input
 // ==========================================
@@ -131,6 +147,7 @@ journeyNameInput.addEventListener("input", () => {
         journeyNameInput.value.trim() === "";
 
 });
+
 
 // ==========================================
 // Step 2 Continue
@@ -154,6 +171,62 @@ step2Continue.addEventListener("click", () => {
 
     console.log(journeyData);
 
-    // Step 3 dito natin ilalagay
+    step2.classList.add("hidden");
+
+    step3.classList.remove("hidden");
+
+});
+
+
+// ==========================================
+// Step 3 Selection
+// ==========================================
+
+communityButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        communityButtons.forEach(option => {
+
+            option.classList.remove("selected");
+
+        });
+
+        button.classList.add("selected");
+
+        journeyData.community =
+            button.dataset.value;
+
+        step3Continue.disabled = false;
+
+        console.log(journeyData);
+
+    });
+
+});
+
+
+// ==========================================
+// Step 3 → Step 2
+// ==========================================
+
+step3Back.addEventListener("click", () => {
+
+    step3.classList.add("hidden");
+
+    step2.classList.remove("hidden");
+
+});
+
+
+// ==========================================
+// Step 3 Continue
+// ==========================================
+
+step3Continue.addEventListener("click", () => {
+
+    console.log(journeyData);
+
+    alert("Step 3 Complete! Step 4 coming next.");
 
 });
