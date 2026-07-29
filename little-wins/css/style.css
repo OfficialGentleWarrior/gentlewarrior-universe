@@ -885,11 +885,11 @@ button:disabled{
 
 .secondary-button{
 
-    background:#FFFFFF;
+    background:#EFF6FF;
 
-    color:var(--text);
+    color:#2563EB;
 
-    border:2px solid var(--border);
+    border:2px solid #BFDBFE;
 
     box-shadow:none;
 
@@ -897,9 +897,11 @@ button:disabled{
 
 .secondary-button:hover{
 
-    border-color:var(--primary);
+    background:#DBEAFE;
 
-    color:var(--primary);
+    border-color:#60A5FA;
+
+    color:#1D4ED8;
 
     transform:translateY(-2px);
 
@@ -909,4 +911,4 @@ button:disabled{
 
     transform:scale(.98);
 
-   }
+}
