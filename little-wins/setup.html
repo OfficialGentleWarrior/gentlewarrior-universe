@@ -392,6 +392,57 @@
 
 </div>
 
+<!-- ==========================================
+     STEP 4
+========================================== -->
+
+<div
+    id="step4"
+    class="container setup-screen hidden">
+
+    <div class="progress">
+        <div class="progress-fill" style="width:100%;"></div>
+    </div>
+
+    <h2>
+        When did your journey begin?
+    </h2>
+
+    <p class="subtitle">
+        Select the month and year your journey started.
+    </p>
+
+    <!-- Month -->
+    <div class="input-group">
+        <select id="journeyMonth">
+            <option value="">Select Month</option>
+        </select>
+    </div>
+
+    <!-- Year -->
+    <div class="input-group">
+        <select id="journeyYear">
+            <option value="">Select Year</option>
+        </select>
+    </div>
+
+    <div class="wizard-buttons">
+
+        <button
+            id="step4Back"
+            class="secondary-button">
+            Back
+        </button>
+
+        <button
+            id="finishSetup">
+            Finish
+        </button>
+
+    </div>
+
+</div>
+
 <script
     type="module"
     src="js/setup.js">
