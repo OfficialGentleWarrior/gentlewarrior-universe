@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase.js";
-import { dailyQuotes } from "./js/quotes.js";
+import { dailyQuotes } from "./quotes.js";
 
 import {
     onAuthStateChanged
@@ -19,7 +19,10 @@ const streak = document.getElementById("streak");
 
 const dailyQuote = document.getElementById("dailyQuote");
 
-// Daily Quote (same quote for everyone each day)
+// ==========================================
+// Daily Quote
+// ==========================================
+
 const today = new Date();
 const startOfYear = new Date(today.getFullYear(), 0, 0);
 const diff = today - startOfYear;
@@ -29,11 +32,17 @@ const dayOfYear = Math.floor(diff / oneDay);
 dailyQuote.textContent =
     dailyQuotes[(dayOfYear - 1) % dailyQuotes.length];
 
+// ==========================================
+// Authentication Guard
+// ==========================================
+
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
+
         window.location.href = "index.html";
         return;
+
     }
 
     try {
@@ -76,6 +85,7 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         // Placeholder values (will come from Journey later)
+
         totalWins.textContent = "0";
         streak.textContent = "0";
 
