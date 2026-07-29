@@ -244,15 +244,12 @@ step3Back.addEventListener("click", () => {
 step3Continue.addEventListener("click", () => {
 
     if (!journeyData.community) {
-
-    alert("Please select your community.");
-
-    return;
-
-}
+        alert("Please select your community.");
+        return;
+    }
 
     console.log(journeyData);
 
-    alert("Step 3 Complete! Step 4 coming next.");
+    showStep(4);
 
 });
