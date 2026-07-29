@@ -361,18 +361,6 @@ footer{
    Layout
 ========================== */
 
-main{
-
-    min-height:calc(100vh - 110px);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-}
-
 .container{
 
     width:100%;
@@ -380,6 +368,8 @@ main{
     max-width:480px;
 
     margin:0 auto;
+
+    min-height:calc(100vh - 88px);
 
     display:flex;
 
@@ -394,6 +384,7 @@ main{
     padding:24px;
 
 }
+
 
 /* ==========================
    Typography
