@@ -778,3 +778,19 @@ button:disabled{
     display:none;
 
 }
+
+/* ==========================
+   Setup Screens Only
+========================== */
+
+.welcome-screen{
+
+    min-height:calc(100vh - 120px);
+
+}
+
+.setup-screen{
+
+    min-height:calc(100vh - 120px);
+
+}
