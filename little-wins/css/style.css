@@ -774,15 +774,17 @@ button:disabled{
 
 .welcome-illustration{
 
-    width:100%;
+    width:70%;
 
-    max-width:280px;
+    max-width:220px;
+
+    min-width:180px;
 
     height:auto;
 
-    margin-bottom:32px;
-
     display:block;
+
+    margin:0 auto 24px;
 
 }
 
