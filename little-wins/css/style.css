@@ -774,17 +774,13 @@ button:disabled{
 
 .welcome-illustration{
 
-    width:70%;
-
-    max-width:220px;
-
-    min-width:180px;
-
-    height:auto;
-
     display:block;
 
-    margin:0 auto 24px;
+    width:100%;
+
+    max-width:420px;   /* dating 220–260px */
+
+    margin:20px auto 36px;
 
 }
 
@@ -804,7 +800,8 @@ button:disabled{
 
 .welcome-screen{
 
-    min-height:calc(100vh - 120px);
+    justify-content:flex-start;
+    padding-top:24px;
 
 }
 
