@@ -40,8 +40,8 @@ const journeyNameInput =
 const optionButtons =
     document.querySelectorAll(".option-button");
 
-const communityButtons =
-    document.querySelectorAll(".option-button");
+const community =
+    document.getElementById("community");
 
 const journeyData = {
 
@@ -182,26 +182,15 @@ step2Continue.addEventListener("click", () => {
 // Step 3 Selection
 // ==========================================
 
-communityButtons.forEach(button => {
+community.addEventListener("change", () => {
 
-    button.addEventListener("click", () => {
+    journeyData.community =
+        community.value;
 
-        communityButtons.forEach(option => {
+    step3Continue.disabled =
+        community.value === "";
 
-            option.classList.remove("selected");
-
-        });
-
-        button.classList.add("selected");
-
-        journeyData.community =
-            button.dataset.value;
-
-        step3Continue.disabled = false;
-
-        console.log(journeyData);
-
-    });
+    console.log(journeyData);
 
 });
 
@@ -224,6 +213,17 @@ step3Back.addEventListener("click", () => {
 // ==========================================
 
 step3Continue.addEventListener("click", () => {
+
+    if (!community.value) {
+
+        alert("Please select your community.");
+
+        return;
+
+    }
+
+    journeyData.community =
+        community.value;
 
     console.log(journeyData);
 
