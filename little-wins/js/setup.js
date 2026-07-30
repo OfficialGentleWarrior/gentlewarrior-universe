@@ -1,4 +1,10 @@
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+
+import {
+    doc,
+    setDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 import {
     onAuthStateChanged
@@ -335,16 +341,14 @@ for (let year = currentYear; year >= 1990; year--) {
 // Finish Setup
 // ==========================================
 
-finishSetup.addEventListener("click", () => {
+finishSetup.addEventListener("click", async () => {
 
     const month = journeyMonth.value;
     const year = journeyYear.value;
 
     if (!month || !year) {
-
         alert("Please select when your journey began.");
         return;
-
     }
 
     journeyData.journeyStarted = {
@@ -354,6 +358,50 @@ finishSetup.addEventListener("click", () => {
 
     console.log(journeyData);
 
-    alert("Journey data is ready to save!");
+    await createJourney();
+
+    window.location.href = "app.html";
 
 });
+
+// ==========================================
+// Create Journey
+// ==========================================
+
+async function createJourney() {
+
+    try {
+
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert("User not found.");
+            return;
+        }
+
+        await setDoc(doc(db, "journeys", user.uid), {
+
+            uid: user.uid,
+
+            journeyFor: journeyData.journeyFor,
+
+            journeyName: journeyData.journeyName,
+
+            community: journeyData.community,
+
+            journeyStarted: journeyData.journeyStarted,
+
+            createdAt: serverTimestamp(),
+
+            updatedAt: serverTimestamp()
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
+
+}
