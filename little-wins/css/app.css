@@ -1,1 +1,145 @@
+/* ==========================================
+   App Layout
+========================================== */
 
+body{
+    overflow:hidden;
+}
+
+.app-container{
+
+    height:calc(100vh - 170px);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+    padding:14px;
+
+}
+
+
+/* ==========================================
+   Welcome Card
+========================================== */
+
+.welcome-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:18px;
+
+    margin:0;
+
+}
+
+.avatar{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    flex-shrink:0;
+
+}
+
+.welcome-info{
+
+    flex:1;
+
+}
+
+.welcome-text{
+
+    margin-bottom:4px;
+
+}
+
+#userName{
+
+    font-size:34px;
+
+    margin:0;
+
+}
+
+
+/* ==========================================
+   Cards
+========================================== */
+
+.card{
+
+    margin:0;
+
+    padding:18px;
+
+}
+
+.card h3{
+
+    margin-bottom:10px;
+
+}
+
+
+/* ==========================================
+   Journey Summary
+========================================== */
+
+.stats{
+
+    margin-top:12px;
+
+}
+
+
+/* ==========================================
+   Record Button
+========================================== */
+
+.record-button{
+
+    max-width:none;
+
+    margin:0;
+
+}
+
+
+/* ==========================================
+   Recent Wins
+========================================== */
+
+#recentWins{
+
+    min-height:40px;
+
+}
+
+
+/* ==========================================
+   Bottom Navigation
+========================================== */
+
+.bottom-nav{
+
+    position:fixed;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+}
