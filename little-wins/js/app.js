@@ -48,41 +48,46 @@ onAuthStateChanged(auth, async (user) => {
     try {
 
         const userRef = doc(db, "lw_users", user.uid);
-        const snapshot = await getDoc(userRef);
+const journeyRef = doc(db, "lw_journeys", user.uid);
 
-        if (!snapshot.exists()) {
+const [userSnap, journeySnap] = await Promise.all([
+    getDoc(userRef),
+    getDoc(journeyRef)
+]);
 
-            alert("User profile not found.");
-            window.location.href = "index.html";
-            return;
+if (!userSnap.exists()) {
 
-        }
+    alert("User profile not found.");
+    window.location.href = "index.html";
+    return;
 
-        const data = snapshot.data();
+}
 
-        userName.textContent = data.name || "Little Wins User";
+const userData = userSnap.data();
+const journeyData = journeySnap.exists()
+    ? journeySnap.data()
+    : null;
 
-        if (data.photoURL) {
-            userPhoto.src = data.photoURL;
-        }
+        userName.textContent =
+    userData.name || "Little Wins User";
 
-        if (data.createdAt) {
+userPhoto.src =
+    userData.photoURL || "assets/avatar/default-avatar.png";
 
-            const date = data.createdAt.toDate();
+        if (journeyData?.journeyStarted) {
 
-            journeyStarted.textContent = date.toLocaleDateString(
-                "en-US",
-                {
-                    month: "short",
-                    year: "numeric"
-                }
-            );
+    journeyStarted.textContent =
+        `${journeyData.journeyStarted.month.substring(0,3)} ${journeyData.journeyStarted.year}`;
 
-        } else {
+} else {
 
-            journeyStarted.textContent = "--";
+    journeyStarted.textContent = "--";
 
-        }
+}
+
+    journeyStarted.textContent = "--";
+
+}
 
         // Placeholder values (will come from Journey later)
 
