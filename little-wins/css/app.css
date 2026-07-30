@@ -3,20 +3,20 @@
 ========================================== */
 
 body{
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;
+    background:#F8FAFC;
 }
 
 .app-container{
 
-    height:calc(100vh - 170px);
+    max-width:480px;
 
-    display:flex;
-
-    flex-direction:column;
-
-    gap:14px;
+    margin:0 auto;
 
     padding:14px;
+
+    padding-bottom:90px;
 
 }
 
@@ -33,17 +33,17 @@ body{
 
     gap:16px;
 
-    padding:18px;
+    padding:16px 18px;
 
-    margin:0;
+    margin-bottom:12px;
 
 }
 
 .avatar{
 
-    width:72px;
+    width:64px;
 
-    height:72px;
+    height:64px;
 
     border-radius:50%;
 
@@ -61,15 +61,23 @@ body{
 
 .welcome-text{
 
-    margin-bottom:4px;
+    margin:0 0 4px;
+
+    font-size:16px;
+
+    color:#6B7280;
 
 }
 
 #userName{
 
-    font-size:34px;
-
     margin:0;
+
+    font-size:28px;
+
+    line-height:1.15;
+
+    font-weight:700;
 
 }
 
@@ -80,15 +88,23 @@ body{
 
 .card{
 
-    margin:0;
-
     padding:18px;
+
+    margin-bottom:12px;
 
 }
 
 .card h3{
 
     margin-bottom:10px;
+
+    font-size:18px;
+
+}
+
+.card p{
+
+    font-size:15px;
 
 }
 
@@ -99,7 +115,33 @@ body{
 
 .stats{
 
-    margin-top:12px;
+    margin-top:10px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    text-align:center;
+
+}
+
+.stat{
+
+    flex:1;
+
+}
+
+.stat h2{
+
+    font-size:24px;
+
+    margin-bottom:2px;
+
+}
+
+.stat p{
+
+    font-size:12px;
 
 }
 
@@ -110,9 +152,15 @@ body{
 
 .record-button{
 
+    width:100%;
+
     max-width:none;
 
-    margin:0;
+    padding:16px;
+
+    margin-bottom:12px;
+
+    font-size:18px;
 
 }
 
@@ -124,6 +172,12 @@ body{
 #recentWins{
 
     min-height:40px;
+
+}
+
+#recentWins p{
+
+    margin:0;
 
 }
 
@@ -141,5 +195,43 @@ body{
     right:0;
 
     bottom:0;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    background:#FFFFFF;
+
+    border-top:1px solid #E5E7EB;
+
+    padding:8px 0;
+
+    z-index:999;
+
+}
+
+.bottom-nav button{
+
+    flex:1;
+
+    background:none;
+
+    border:none;
+
+    box-shadow:none;
+
+    color:#374151;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    padding:8px 4px;
+
+}
+
+.bottom-nav button:hover{
+
+    transform:none;
 
 }
