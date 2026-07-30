@@ -19,130 +19,121 @@
 
 <body>
 
+    <!-- Header -->
+
     <header class="top-banner">
 
-    <img
-        src="assets/logo/little-wins-header.png"
-        alt="Little Wins">
+        <img
+            src="assets/logo/little-wins-header.png"
+            alt="Little Wins">
 
-</header>
+    </header>
 
+    <main class="app-container">
 
-    <!-- Welcome -->
+        <!-- Welcome -->
 
-    <section class="welcome-card">
+        <section class="welcome-card">
 
-        <p class="welcome-text">
-            👋 Welcome back,
-        </p>
+            <img
+                id="userPhoto"
+                class="avatar"
+                src="assets/avatar/default-avatar.png"
+                alt="Avatar">
 
-        <h2 id="userName">
-            Loading...
-        </h2>
+            <div class="welcome-info">
 
-    </section>
-
-
-    <!-- Daily Encouragement -->
-
-    <section class="card">
-
-        <h3>
-            💚 Daily Encouragement
-        </h3>
-
-        <p id="dailyQuote">
-            Celebrate every little win, no matter how small.
-        </p>
-
-    </section>
-
-
-    <!-- Journey Summary -->
-
-    <section class="card">
-
-        <h3>
-            🌱 Journey Summary
-        </h3>
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <h2 id="journeyStarted">
-                    --
-                </h2>
-
-                <p>
-                    Journey Started
+                <p class="welcome-text">
+                    👋 Welcome back,
                 </p>
+
+                <h2 id="userName">
+                    Loading...
+                </h2>
 
             </div>
 
-            <div class="stat">
+        </section>
 
-                <h2 id="totalWins">
-                    0
-                </h2>
 
-                <p>
-                    Little Wins
-                </p>
+        <!-- Daily Encouragement -->
+
+        <section class="card">
+
+            <h3>💚 Daily Encouragement</h3>
+
+            <p id="dailyQuote">
+                Every little win is proof that progress is possible.
+            </p>
+
+        </section>
+
+
+        <!-- Journey Summary -->
+
+        <section class="card">
+
+            <h3>🌱 Journey Summary</h3>
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <h2 id="journeyStarted">--</h2>
+
+                    <p>Journey Started</p>
+
+                </div>
+
+                <div class="stat">
+
+                    <h2 id="totalWins">0</h2>
+
+                    <p>Little Wins</p>
+
+                </div>
+
+                <div class="stat">
+
+                    <h2 id="streak">0</h2>
+
+                    <p>Day Streak</p>
+
+                </div>
 
             </div>
 
-            <div class="stat">
-
-                <h2 id="streak">
-                    0
-                </h2>
-
-                <p>
-                    Day Streak
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
+        </section>
 
 
-    <!-- Record Button -->
+        <!-- Record Button -->
 
-    <section>
-
-        <button id="recordWin">
+        <button
+    id="recordWin"
+    class="record-button">
 
             ➕ Record Your First Little Win
 
         </button>
 
-    </section>
 
+        <!-- Recent Little Wins -->
 
-    <!-- Recent Little Wins -->
+        <section class="card">
 
-    <section class="card">
+            <h3>📝 Recent Little Wins</h3>
 
-        <h3>
-            📝 Recent Little Wins
-        </h3>
+            <div id="recentWins">
 
-        <div id="recentWins">
+                <p>
+    Your little wins will appear here.
+</p>
 
-            <p>
-                You haven't recorded a little win yet.
-            </p>
+            </div>
 
-            <p>
-                Start your journey today.
-            </p>
+        </section>
 
-        </div>
-
-    </section>
+    </main>
 
 
     <!-- Bottom Navigation -->
@@ -150,43 +141,23 @@
     <nav class="bottom-nav">
 
         <button id="navHome">
-
-            🏠
-            <br>
-            Home
-
+            🏠<br>Home
         </button>
 
         <button id="navJourney">
-
-            🌱
-            <br>
-            Journey
-
+            🌱<br>Journey
         </button>
 
         <button id="navAdd">
-
-            ➕
-            <br>
-            Add
-
+            ➕<br>Add
         </button>
 
         <button id="navCommunity">
-
-            🌍
-            <br>
-            Community
-
+            🌍<br>Community
         </button>
 
         <button id="navProfile">
-
-            👤
-            <br>
-            Profile
-
+            👤<br>Profile
         </button>
 
     </nav>
