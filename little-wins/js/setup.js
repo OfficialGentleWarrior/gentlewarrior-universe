@@ -25,6 +25,9 @@ const step3 =
 const continueSetup =
     document.getElementById("continueSetup");
 
+const termsCheckbox =
+    document.getElementById("termsCheckbox");
+
 const step1Continue =
     document.getElementById("step1Continue");
 
@@ -58,9 +61,14 @@ const closeCommunityModal =
 const communityOptions =
     document.querySelectorAll(".community-option");
 
-const step4 = document.getElementById("step4");
-const step4Back = document.getElementById("step4Back");
-const finishSetup = document.getElementById("finishSetup");
+const step4 =
+    document.getElementById("step4");
+
+const step4Back =
+    document.getElementById("step4Back");
+
+const finishSetup =
+    document.getElementById("finishSetup");
 
 const journeyMonth =
     document.getElementById("journeyMonth");
@@ -78,12 +86,14 @@ const journeyData = {
     community: "",
 
     journeyStarted: {
+
         month: "",
+
         year: ""
+
     }
 
 };
-
 
 
 // ==========================================
@@ -103,6 +113,19 @@ onAuthStateChanged(auth, (user) => {
 
 
 // ==========================================
+// Terms & Privacy Agreement
+// ==========================================
+
+continueSetup.disabled = true;
+
+termsCheckbox.addEventListener("change", () => {
+
+    continueSetup.disabled = !termsCheckbox.checked;
+
+});
+
+
+// ==========================================
 // Welcome → Step 1
 // ==========================================
 
@@ -113,7 +136,6 @@ continueSetup.addEventListener("click", () => {
     step1.classList.remove("hidden");
 
 });
-
 
 // ==========================================
 // Step 1 Selection
