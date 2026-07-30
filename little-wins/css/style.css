@@ -449,43 +449,6 @@ p{
 
 
 /* ==========================
-   Header (App)
-========================== */
-
-.header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:24px;
-
-}
-
-.header-content{
-
-    flex:1;
-
-}
-
-.avatar{
-
-    width:56px;
-
-    height:56px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    border:3px solid var(--primary-light);
-
-}
-
-
-/* ==========================
    Cards
 ========================== */
 
@@ -1104,4 +1067,4 @@ button:disabled{
 
     box-shadow: 0 0 0 4px rgba(34,197,94,.12);
 
-       }
+}
