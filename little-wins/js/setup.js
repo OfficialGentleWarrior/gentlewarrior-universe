@@ -56,6 +56,12 @@ const step4 = document.getElementById("step4");
 const step4Back = document.getElementById("step4Back");
 const finishSetup = document.getElementById("finishSetup");
 
+const journeyMonth =
+    document.getElementById("journeyMonth");
+
+const journeyYear =
+    document.getElementById("journeyYear");
+
 
 const journeyData = {
 
@@ -63,9 +69,15 @@ const journeyData = {
 
     journeyName: "",
 
-    community: ""
+    community: "",
+
+    journeyStarted: {
+        month: "",
+        year: ""
+    }
 
 };
+
 
 
 // ==========================================
@@ -268,5 +280,80 @@ step4Back.addEventListener("click", () => {
 
     step4.classList.add("hidden");
     step3.classList.remove("hidden");
+
+});
+
+// ==========================================
+// Populate Month
+// ==========================================
+
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+
+months.forEach(month => {
+
+    const option = document.createElement("option");
+
+    option.value = month;
+    option.textContent = month;
+
+    journeyMonth.appendChild(option);
+
+});
+
+
+// ==========================================
+// Populate Year
+// ==========================================
+
+const currentYear = new Date().getFullYear();
+
+for (let year = currentYear; year >= 1990; year--) {
+
+    const option = document.createElement("option");
+
+    option.value = year;
+    option.textContent = year;
+
+    journeyYear.appendChild(option);
+
+}
+
+// ==========================================
+// Finish Setup
+// ==========================================
+
+finishSetup.addEventListener("click", () => {
+
+    const month = journeyMonth.value;
+    const year = journeyYear.value;
+
+    if (!month || !year) {
+
+        alert("Please select when your journey began.");
+        return;
+
+    }
+
+    journeyData.journeyStarted = {
+        month,
+        year
+    };
+
+    console.log(journeyData);
+
+    alert("Journey data is ready to save!");
 
 });
