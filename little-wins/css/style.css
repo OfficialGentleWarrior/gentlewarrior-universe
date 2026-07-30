@@ -1059,3 +1059,49 @@ button:disabled{
     background:var(--primary-light);
 
    }
+
+/* ==========================
+   Step 4 - Select Dropdown
+========================== */
+
+.picker-select {
+
+    width: 100%;
+
+    height: 60px;
+
+    padding: 0 20px;
+
+    border: 2px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    outline: none;
+
+    transition: .25s;
+
+    box-shadow: var(--shadow);
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    cursor: pointer;
+
+}
+
+.picker-select:focus {
+
+    border-color: var(--primary);
+
+    box-shadow: 0 0 0 4px rgba(34,197,94,.12);
+
+       }
