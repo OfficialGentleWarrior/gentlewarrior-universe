@@ -379,7 +379,7 @@ async function createJourney() {
             return;
         }
 
-        await setDoc(doc(db, "journeys", user.uid), {
+        await setDoc(doc(db, "lw_journeys", user.uid), {
 
             uid: user.uid,
 
