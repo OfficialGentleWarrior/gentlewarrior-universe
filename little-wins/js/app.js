@@ -85,10 +85,6 @@ userPhoto.src =
 
 }
 
-    journeyStarted.textContent = "--";
-
-}
-
         // Placeholder values (will come from Journey later)
 
         totalWins.textContent = "0";
