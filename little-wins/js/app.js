@@ -30,6 +30,8 @@ const streak = document.getElementById("streak");
 
 const dailyQuote = document.getElementById("dailyQuote");
 
+const recordWin =
+    document.getElementById("recordWin");
 // ==========================================
 // Journey Photo Picker
 // ==========================================
@@ -178,5 +180,15 @@ alert("✅ Journey photo updated successfully!");
         alert(error.message);
 
     }
+
+});
+
+// ==========================================
+// Record Little Win
+// ==========================================
+
+recordWin.addEventListener("click", () => {
+
+    window.location.href = "record.html";
 
 });
