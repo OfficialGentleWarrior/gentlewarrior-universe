@@ -10,6 +10,10 @@ import {
   getAuth
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
+import {
+  getStorage
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDZQFN0iMQ1QvgY2ptRFuOKY1sTz9zZhb8",
   authDomain: "gentle-warrior.firebaseapp.com",
@@ -25,6 +29,7 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // Services
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 // Export
-export { app, db, auth };
+export { app, db, auth, storage };
