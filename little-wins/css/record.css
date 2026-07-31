@@ -1,16 +1,6 @@
 /* ==========================================
-   App Layout
+   Layout
 ========================================== */
-
-body{
-
-    overflow-x:hidden;
-
-    overflow-y:auto;
-
-    background:#F8FAFC;
-
-}
 
 .app-container{
 
@@ -18,47 +8,43 @@ body{
 
     margin:0 auto;
 
-    padding:14px;
+    padding:12px;
 
-    padding-bottom:40px;
+    padding-bottom:24px;
 
 }
 
-
 /* ==========================================
-   Card
+   Cards
 ========================================== */
 
 .card{
 
-    padding:18px;
-
-    margin-bottom:12px;
-
-}
-
-.card h2{
-
-    margin-bottom:8px;
-
-}
-
-.card h3{
+    padding:16px;
 
     margin-bottom:10px;
 
 }
 
-.subtitle{
+.card h2{
 
-    color:#6B7280;
+    margin-bottom:6px;
 
-    font-size:15px;
-
-    margin:0;
+    font-size:38px;
 
 }
 
+.subtitle{
+
+    margin:0;
+
+    font-size:16px;
+
+    color:#6B7280;
+
+    line-height:1.5;
+
+}
 
 /* ==========================================
    Photo Preview
@@ -68,112 +54,69 @@ body{
 
     width:100%;
 
-    height:220px;
+    height:180px;
 
-    object-fit:cover;
-
-    border-radius:16px;
+    object-fit:contain;
 
     border:2px dashed #22B455;
 
-    background:#F3F4F6;
+    border-radius:18px;
 
-    margin-bottom:14px;
+    background:#F8FFF9;
+
+    margin:12px 0;
 
 }
-
 
 /* ==========================================
    Inputs
 ========================================== */
 
-.text-input,
-
-.textarea{
+.text-input{
 
     width:100%;
 
     padding:14px;
 
-    border:1px solid #D1D5DB;
+    font-size:17px;
 
-    border-radius:12px;
-
-    font-size:16px;
-
-    font-family:inherit;
-
-    background:#FFFFFF;
-
-    outline:none;
-
-    box-sizing:border-box;
-
-}
-
-.text-input:focus,
-
-.textarea:focus{
-
-    border-color:#22B455;
+    border-radius:14px;
 
 }
 
 .textarea{
 
-    resize:vertical;
+    width:100%;
 
-    min-height:140px;
+    height:120px;
+
+    resize:none;
+
+    padding:14px;
+
+    font-size:16px;
+
+    border-radius:14px;
 
 }
-
 
 /* ==========================================
    Buttons
 ========================================== */
 
-.record-button{
-
-    width:100%;
-
-    margin-bottom:12px;
-
-    padding:16px;
-
-    font-size:18px;
-
-}
+.record-button,
 
 .secondary-button{
 
     width:100%;
 
-    padding:14px;
+    margin-top:10px;
 
-    border:none;
+    padding:15px;
 
-    border-radius:12px;
-
-    background:#E5E7EB;
-
-    color:#374151;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    margin-top:8px;
+    font-size:18px;
 
 }
-
-.secondary-button:hover{
-
-    background:#D1D5DB;
-
-}
-
 
 /* ==========================================
    Mobile
@@ -181,9 +124,27 @@ body{
 
 @media(max-width:480px){
 
+    .card{
+
+        padding:14px;
+
+    }
+
+    .card h2{
+
+        font-size:32px;
+
+    }
+
     .photo-preview{
 
-        height:200px;
+        height:150px;
+
+    }
+
+    .textarea{
+
+        height:100px;
 
     }
 
