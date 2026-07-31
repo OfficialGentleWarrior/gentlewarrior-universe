@@ -187,8 +187,12 @@ alert("✅ Journey photo updated successfully!");
 // Record Little Win
 // ==========================================
 
-recordWin.addEventListener("click", () => {
+alert("Before record button");
 
-    window.location.href = "record.html";
+recordWin.onclick = () => {
 
-});
+    alert("Clicked");
+
+    location.href = "record.html";
+
+};
