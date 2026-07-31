@@ -146,6 +146,8 @@ journeyPhotoInput.addEventListener("change", async (event) => {
 
         if (!user) return;
 
+alert("⏳ Uploading journey photo...");
+
         // Upload to Firebase Storage
         const storageRef = ref(
             storage,
@@ -168,7 +170,7 @@ journeyPhotoInput.addEventListener("change", async (event) => {
         // Update avatar immediately
         journeyPhoto.src = downloadURL;
 
-        alert("Journey photo updated successfully!");
+alert("✅ Journey photo updated successfully!");
 
     } catch (error) {
 
