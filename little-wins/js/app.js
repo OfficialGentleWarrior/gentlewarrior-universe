@@ -73,11 +73,19 @@ const journeyData = journeySnap.exists()
     : null;
 
         userName.textContent =
-    userData.name || "Little Wins User";
+
+    journeyData?.journeyName ||
+
+    userData.name ||
+
+    "Little Wins";
 
 journeyPhoto.src =
+
     journeyData?.journeyPhoto ||
+
     userData.photoURL ||
+
     "assets/avatar/default-avatar.png";
 
         if (journeyData?.journeyStarted) {
