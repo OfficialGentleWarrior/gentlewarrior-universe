@@ -1,4 +1,4 @@
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 import { dailyQuotes } from "./quotes.js";
 
 import {
@@ -7,8 +7,15 @@ import {
 
 import {
     doc,
-    getDoc
+    getDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
 const userName = document.getElementById("userName");
 const journeyPhoto =
@@ -22,6 +29,16 @@ const totalWins = document.getElementById("totalWins");
 const streak = document.getElementById("streak");
 
 const dailyQuote = document.getElementById("dailyQuote");
+
+// ==========================================
+// Journey Photo Picker
+// ==========================================
+
+journeyPhoto.addEventListener("click", () => {
+
+    journeyPhotoInput.click();
+
+});
 
 // ==========================================
 // Daily Quote
@@ -110,5 +127,19 @@ journeyPhoto.src =
         alert(error.message);
 
     }
+
+});
+
+// ==========================================
+// Journey Photo Upload
+// ==========================================
+
+journeyPhotoInput.addEventListener("change", async (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    alert("Upload feature - next step.");
 
 });
