@@ -31,6 +31,8 @@ body{
 
     align-items:center;
 
+    justify-content:space-between;
+
     gap:16px;
 
     padding:16px 18px;
@@ -41,9 +43,9 @@ body{
 
 .avatar{
 
-    width:64px;
+    width:68px;
 
-    height:64px;
+    height:68px;
 
     border-radius:50%;
 
@@ -51,7 +53,28 @@ body{
 
     flex-shrink:0;
 
+    cursor:pointer;
+
+    border:2px solid #22B455;
+
+    transition:.25s;
+
 }
+
+.avatar:hover{
+
+    transform:scale(1.05);
+
+    box-shadow:0 6px 18px rgba(34,180,85,.25);
+
+}
+
+.avatar:active{
+
+    transform:scale(.97);
+
+}
+
 
 .welcome-info{
 
@@ -233,5 +256,23 @@ body{
 .bottom-nav button:hover{
 
     transform:none;
+
+}
+
+@media(max-width:480px){
+
+    .avatar{
+
+        width:56px;
+
+        height:56px;
+
+    }
+
+    #userName{
+
+        font-size:24px;
+
+    }
 
 }
