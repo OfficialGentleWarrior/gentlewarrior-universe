@@ -11,7 +11,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const userName = document.getElementById("userName");
-const userPhoto = document.getElementById("userPhoto");
+const journeyPhoto =
+    document.getElementById("journeyPhoto");
+
+const journeyPhotoInput =
+    document.getElementById("journeyPhotoInput");
 
 const journeyStarted = document.getElementById("journeyStarted");
 const totalWins = document.getElementById("totalWins");
@@ -71,8 +75,10 @@ const journeyData = journeySnap.exists()
         userName.textContent =
     userData.name || "Little Wins User";
 
-userPhoto.src =
-    userData.photoURL || "assets/avatar/default-avatar.png";
+journeyPhoto.src =
+    journeyData?.journeyPhoto ||
+    userData.photoURL ||
+    "assets/avatar/default-avatar.png";
 
         if (journeyData?.journeyStarted) {
 
