@@ -1,10 +1,10 @@
 import { auth } from "./firebase.js";
 
-alert("record.js loaded");
-
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+alert("record.js loaded");
 
 
 
