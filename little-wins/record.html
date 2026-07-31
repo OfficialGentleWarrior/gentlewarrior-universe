@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Record Little Win</title>
+
+    <link rel="icon"
+          type="image/png"
+          href="assets/logo/little-wins-icon.png">
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/record.css">
+
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="top-banner">
+
+        <img
+            src="assets/logo/little-wins-header.png"
+            alt="Little Wins">
+
+    </header>
+
+    <main class="app-container">
+
+        <section class="card">
+
+            <h2>➕ Record Little Win</h2>
+
+            <p class="subtitle">
+
+                Capture today's progress and celebrate every little victory.
+
+            </p>
+
+        </section>
+
+
+        <!-- Photo -->
+
+        <section class="card">
+
+            <h3>📷 Photo (Optional)</h3>
+
+            <img
+                id="photoPreview"
+                class="photo-preview"
+                src="assets/image/photo-placeholder.png"
+                alt="Photo Preview">
+
+            <button
+                id="choosePhoto"
+                class="secondary-button">
+
+                Choose Photo
+
+            </button>
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*"
+                hidden>
+
+        </section>
+
+
+        <!-- Title -->
+
+        <section class="card">
+
+            <h3>🏆 Title</h3>
+
+            <input
+                id="winTitle"
+                class="text-input"
+                type="text"
+                maxlength="80"
+                placeholder="e.g. First Independent Step">
+
+        </section>
+
+
+        <!-- Story -->
+
+        <section class="card">
+
+            <h3>❤️ Story</h3>
+
+            <textarea
+                id="winStory"
+                class="textarea"
+                rows="6"
+                maxlength="1000"
+                placeholder="Tell us about today's little win..."></textarea>
+
+        </section>
+
+
+        <!-- Buttons -->
+
+        <button
+            id="saveWin"
+            class="record-button">
+
+            💚 Save Little Win
+
+        </button>
+
+        <button
+            id="cancelBtn"
+            class="secondary-button">
+
+            Cancel
+
+        </button>
+
+    </main>
+
+    <script
+        type="module"
+        src="js/record.js"></script>
+
+</body>
+
+</html>
