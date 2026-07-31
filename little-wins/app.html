@@ -35,25 +35,26 @@
 
         <section class="welcome-card">
 
-            <img
-                id="userPhoto"
-                class="avatar"
-                src="assets/avatar/default-avatar.png"
-                alt="Avatar">
+    <div class="welcome-info">
 
-            <div class="welcome-info">
+        <p class="welcome-text">
+            👋 Welcome back,
+        </p>
 
-                <p class="welcome-text">
-                    👋 Welcome back,
-                </p>
+        <h2 id="userName">
+            Loading...
+        </h2>
 
-                <h2 id="userName">
-                    Loading...
-                </h2>
+    </div>
 
-            </div>
+    <img
+    id="journeyPhoto"
+    class="avatar"
+    src="assets/avatar/default-avatar.png"
+    alt="Journey Photo"
+    title="Change Journey Photo">
 
-        </section>
+</section>
 
 
         <!-- Daily Encouragement -->
@@ -161,6 +162,12 @@
         </button>
 
     </nav>
+
+<input
+    type="file"
+    id="journeyPhotoInput"
+    accept="image/*"
+    hidden>
 
     <script type="module" src="js/app.js"></script>
 
