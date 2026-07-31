@@ -140,6 +140,41 @@ journeyPhotoInput.addEventListener("change", async (event) => {
 
     if (!file) return;
 
-    alert("Upload feature - next step.");
+    try {
+
+        const user = auth.currentUser;
+
+        if (!user) return;
+
+        // Upload to Firebase Storage
+        const storageRef = ref(
+            storage,
+            `journeyPhotos/${user.uid}/profile.jpg`
+        );
+
+        await uploadBytes(storageRef, file);
+
+        // Get Download URL
+        const downloadURL = await getDownloadURL(storageRef);
+
+        // Save URL to Firestore
+        await updateDoc(
+            doc(db, "lw_journeys", user.uid),
+            {
+                journeyPhoto: downloadURL
+            }
+        );
+
+        // Update avatar immediately
+        journeyPhoto.src = downloadURL;
+
+        alert("Journey photo updated successfully!");
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
 
 });
