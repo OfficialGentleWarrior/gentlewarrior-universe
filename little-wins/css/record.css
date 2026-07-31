@@ -1,0 +1,190 @@
+/* ==========================================
+   App Layout
+========================================== */
+
+body{
+
+    overflow-x:hidden;
+
+    overflow-y:auto;
+
+    background:#F8FAFC;
+
+}
+
+.app-container{
+
+    max-width:480px;
+
+    margin:0 auto;
+
+    padding:14px;
+
+    padding-bottom:40px;
+
+}
+
+
+/* ==========================================
+   Card
+========================================== */
+
+.card{
+
+    padding:18px;
+
+    margin-bottom:12px;
+
+}
+
+.card h2{
+
+    margin-bottom:8px;
+
+}
+
+.card h3{
+
+    margin-bottom:10px;
+
+}
+
+.subtitle{
+
+    color:#6B7280;
+
+    font-size:15px;
+
+    margin:0;
+
+}
+
+
+/* ==========================================
+   Photo Preview
+========================================== */
+
+.photo-preview{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:16px;
+
+    border:2px dashed #22B455;
+
+    background:#F3F4F6;
+
+    margin-bottom:14px;
+
+}
+
+
+/* ==========================================
+   Inputs
+========================================== */
+
+.text-input,
+
+.textarea{
+
+    width:100%;
+
+    padding:14px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+    font-family:inherit;
+
+    background:#FFFFFF;
+
+    outline:none;
+
+    box-sizing:border-box;
+
+}
+
+.text-input:focus,
+
+.textarea:focus{
+
+    border-color:#22B455;
+
+}
+
+.textarea{
+
+    resize:vertical;
+
+    min-height:140px;
+
+}
+
+
+/* ==========================================
+   Buttons
+========================================== */
+
+.record-button{
+
+    width:100%;
+
+    margin-bottom:12px;
+
+    padding:16px;
+
+    font-size:18px;
+
+}
+
+.secondary-button{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#E5E7EB;
+
+    color:#374151;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    margin-top:8px;
+
+}
+
+.secondary-button:hover{
+
+    background:#D1D5DB;
+
+}
+
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media(max-width:480px){
+
+    .photo-preview{
+
+        height:200px;
+
+    }
+
+}
