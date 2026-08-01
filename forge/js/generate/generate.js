@@ -1,20 +1,13 @@
 import { auth, db } from "../firebase.js";
 import { validateGenerateRequest } from "./validate.js";
-import { uploadImage } from "./uploadImage.js";
-import { generateUniqueShortCode } from "./utils.js";
-import {
-    doc,
-    collection,
-    setDoc,
-    runTransaction,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 export async function generateLink() {
 
-    alert("Generate Clicked");
-
     try {
+
+        // ======================================
+        // Get Form Values
+        // ======================================
 
         const imageFile =
             document.getElementById("previewImage").files[0];
@@ -22,153 +15,67 @@ export async function generateLink() {
         const destinationUrl =
             document.getElementById("destinationUrl").value.trim();
 
-        alert("Before Validation");
-
         // ======================================
-        // Step 1 - Validate
+        // Validate
         // ======================================
 
-        const validation = await validateGenerateRequest({
+        await validateGenerateRequest({
             auth,
             db,
             imageFile,
             destinationUrl
         });
 
-        alert("After Validation");
-
-        console.log("Validation Passed:", validation);
-
         // ======================================
-        // Step 2 - Upload Image
+        // Send Request to FORGE Backend
         // ======================================
 
-        alert("Before Upload");
+        const formData = new FormData();
 
-        const uploadResult =
-            await uploadImage(imageFile);
+        formData.append("image", imageFile);
+        formData.append("destinationUrl", destinationUrl);
 
-        alert("After Upload");
+        const response = await fetch(
+            "https://forge.gentlewarrior.world/generate",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
-        console.log("Upload Success");
-        console.log("Download URL:", uploadResult.downloadURL);
-        console.log("Storage Path:", uploadResult.storagePath);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+
+            throw new Error(
+                result.message ||
+                result.error ||
+                "Failed to generate link."
+            );
+
+        }
 
         // ======================================
-        // Step 3 - Generate Short Code
+        // Success
         // ======================================
 
-        alert("Generating Short Code");
+        console.log("FORGE Response:", result);
 
-const shortCode =
-    await generateUniqueShortCode();
+        const generatedLink = result.shortUrl;
 
-console.log("Short Code:", shortCode);
+        alert(
+`🎉 Link Generated!
 
-alert("Short Code Generated");
+${generatedLink}
 
-        /// ======================================
-// Step 4
-// Transaction
-// Create Link + Deduct Spark
-// ======================================
+Remaining Sparks: ${result.remainingSparks}`
+        );
 
-alert("Starting Transaction");
+        return generatedLink;
 
-await runTransaction(db, async (transaction) => {
-
-    const userRef = doc(db, "users", auth.currentUser.uid);
-
-    const linkRef = doc(db, "links", shortCode);
-
-    const userSnap = await transaction.get(userRef);
-
-    if (!userSnap.exists()) {
-        throw new Error("User not found.");
     }
 
-    const userData = userSnap.data();
-
-    if (userData.credits < 1) {
-        throw new Error("Not enough Sparks.");
-    }
-
-    // Create Link
-    transaction.set(linkRef, {
-
-        shortCode: shortCode,
-
-        uid: auth.currentUser.uid,
-
-        destinationUrl: destinationUrl,
-
-        previewImage: uploadResult.downloadURL,
-
-        storagePath: uploadResult.storagePath,
-
-        clicks: 0,
-
-        isActive: true,
-
-        createdAt: serverTimestamp()
-
-    });
-
-    // Deduct 1 Spark
-    transaction.update(userRef, {
-
-        credits: userData.credits - 1
-
-    });
-
-});
-
-alert("Transaction Complete");
-
-// ======================================
-// Step 5 - Create Credit History
-// ======================================
-
-alert("Saving Credit History");
-
-const historyRef =
-    doc(collection(db, "creditHistory"));
-
-await setDoc(historyRef, {
-
-    uid: auth.currentUser.uid,
-
-    type: "debit",
-
-    amount: -1,
-
-    reason: "Generate Link",
-
-    shortCode: shortCode,
-
-    createdAt: serverTimestamp()
-
-});
-
-alert("Credit History Saved");
-
-// ======================================
-// Step 6 - Return Generated Link
-// ======================================
-
-const generatedLink =
-    `https://gentlewarrior.world/l/${shortCode}`;
-
-console.log("Generated Link:", generatedLink);
-
-alert(`Link Generated!\n\n${generatedLink}`);
-
-return generatedLink;
-
-        // Step 7
-        // Return Generated Link
-
-    } catch (error) {
+    catch (error) {
 
         console.error(error);
 
