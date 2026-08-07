@@ -32,6 +32,14 @@ const previewDomain = document.getElementById("previewDomain");
 
 const generateBtn = document.getElementById("generateBtn");
 const clearImageBtn = document.getElementById("clearImageBtn");
+const successModal = document.getElementById("successModal");
+const generatedLinkInput = document.getElementById("generatedLink");
+const remainingSparksText = document.getElementById("remainingSparks");
+
+const copyLinkBtn = document.getElementById("copyLinkBtn");
+const myLinksBtn = document.getElementById("myLinksBtn");
+const generateAnotherBtn = document.getElementById("generateAnotherBtn");
+
 
 // ======================================
 // Upload Image
@@ -159,3 +167,16 @@ function validateForm() {
 // ======================================
 
 generateBtn.addEventListener("click", generateLink);
+
+// ======================================
+// Success Modal
+// ======================================
+
+export function showSuccessModal(link, sparks){
+
+    generatedLinkInput.value = link;
+    remainingSparksText.textContent = sparks;
+
+    successModal.style.display = "flex";
+
+}
