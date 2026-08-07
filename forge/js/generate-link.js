@@ -180,3 +180,16 @@ export function showSuccessModal(link, sparks){
     successModal.style.display = "flex";
 
 }
+
+// ======================================
+// Listen for Generate Success
+// ======================================
+
+window.addEventListener("forge:link-generated", (event) => {
+
+    const { link, remainingSparks } = event.detail;
+
+    showSuccessModal(link, remainingSparks);
+
+});
+
