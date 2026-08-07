@@ -264,3 +264,69 @@
     border-color:#ef4444 !important;
     box-shadow:0 0 0 3px rgba(239,68,68,.12);
 }
+
+
+
+
+/* ======================================
+   Success Modal
+====================================== */
+
+.success-modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.45);
+    z-index:9999;
+}
+
+.success-card{
+    width:min(420px,90%);
+    background:#fff;
+    border-radius:24px;
+    padding:28px 24px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.15);
+}
+
+.success-icon{
+    font-size:64px;
+    color:#22c55e;
+    margin-bottom:16px;
+}
+
+.success-card h2{
+    margin:0 0 8px;
+    font-size:1.6rem;
+    font-weight:800;
+    color:#111827;
+}
+
+.success-card p{
+    margin:0 0 20px;
+    color:#6b7280;
+}
+
+#generatedLink{
+    width:100%;
+    padding:14px 16px;
+    margin-bottom:18px;
+    border:1px solid #d8dce3;
+    border-radius:14px;
+    font-size:15px;
+    text-align:center;
+    box-sizing:border-box;
+}
+
+.remaining-sparks{
+    margin:0 0 20px;
+    font-size:.95rem;
+    font-weight:600;
+}
+
+.remaining-sparks strong{
+    color:#16a34a;
+}
+
