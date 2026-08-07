@@ -170,9 +170,6 @@
 }
 
 .link-preview{
-    display:flex;
-    align-items:center;
-    gap:14px;
     border:1px solid #e5e7eb;
     border-radius:18px;
     padding:16px;
@@ -180,14 +177,14 @@
 }
 
 .preview-image{
-    width:86px;
-    height:86px;
+    width:100%;
+    aspect-ratio:1200/630;
     border-radius:14px;
     background:#f3f4f6;
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-shrink:0;
+    overflow:hidden;
 }
 
 .preview-image img{
