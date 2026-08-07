@@ -340,3 +340,29 @@
     color:#64748b;
     text-align:left;
 }
+
+/* Secondary Button */
+
+.secondary-btn{
+    width:100%;
+    margin-top:12px;
+    padding:15px;
+    border:1.5px solid #d1d5db;
+    border-radius:16px;
+    background:#fff;
+    color:#374151;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.secondary-btn:hover{
+    background:#f9fafb;
+    border-color:#22c55e;
+    color:#16a34a;
+}
+
+.secondary-btn i{
+    margin-right:8px;
+}
