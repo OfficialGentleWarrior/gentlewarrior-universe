@@ -73,15 +73,6 @@ export async function generateLink() {
             })
         );
 
-        // Temporary (will remove later)
-        alert(
-`🎉 Link Generated!
-
-${generatedLink}
-
-Remaining Sparks: ${result.remainingSparks}`
-        );
-
         return generatedLink;
 
     }
