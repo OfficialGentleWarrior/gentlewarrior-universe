@@ -63,6 +63,17 @@ export async function generateLink() {
 
         const generatedLink = result.shortUrl;
 
+        // Notify UI
+        window.dispatchEvent(
+            new CustomEvent("forge:link-generated", {
+                detail: {
+                    link: generatedLink,
+                    remainingSparks: result.remainingSparks
+                }
+            })
+        );
+
+        // Temporary (will remove later)
         alert(
 `🎉 Link Generated!
 
