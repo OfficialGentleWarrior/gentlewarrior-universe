@@ -156,6 +156,45 @@
 
 </main>
 
+<!-- Success Modal -->
+<div id="successModal" class="success-modal" 
+style="display:none;">
+
+    <div class="success-card">
+
+        <i class="fa-solid fa-circle-check success-icon"></i>
+
+        <h2>Link Generated!</h2>
+
+        <p>Your FORGE link is ready.</p>
+
+        <input
+            type="text"
+            id="generatedLink"
+            readonly>
+
+        <p class="remaining-sparks">
+            Remaining Sparks:
+            <strong id="remainingSparks">0</strong>
+        </p>
+
+        <button id="copyLinkBtn" class="primary-btn">
+            <i class="fa-regular fa-copy"></i>
+            Copy Link
+        </button>
+
+        <button id="myLinksBtn" class="secondary-btn">
+            My Links
+        </button>
+
+        <button id="generateAnotherBtn" class="secondary-btn">
+            Generate Another
+        </button>
+
+    </div>
+
+</div>
+
 <script type="module" src="js/firebase.js"></script>
 <script type="module" src="js/generate-link.js"></script>
 
