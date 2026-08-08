@@ -39,6 +39,33 @@
     line-height:1.5;
 }
 
+/* Back Button */
+
+.back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:20px;
+    padding:10px 16px;
+    border-radius:999px;
+    background:#f0fdf4;
+    color:#16a34a;
+    font-size:15px;
+    font-weight:700;
+    text-decoration:none;
+    transition:.25s ease;
+}
+
+.back-btn:hover{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.back-btn i{
+    font-size:14px;
+}
+
+
 /* Main Card */
 
 .generate-card{
