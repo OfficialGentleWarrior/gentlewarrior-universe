@@ -612,3 +612,24 @@ body{
     background:rgba(255,255,255,.15);
     transform:translateY(-50%) scale(1.04);
 }
+
+/* ======================================
+   Spark Balance Icon
+====================================== */
+
+.spark-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:52px;
+    height:52px;
+
+    color:#22c55e;
+    font-size:26px;
+
+    background:#f0fdf4;
+    border-radius:16px;
+
+    flex-shrink:0;
+}
