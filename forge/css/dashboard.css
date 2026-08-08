@@ -9,20 +9,16 @@
 }
 
 body{
-
     font-family:Arial, Helvetica, sans-serif;
     background:#f8faf8;
     color:#222;
     line-height:1.5;
-
 }
 
 .dashboard-container{
-
     max-width:1200px;
     margin:auto;
     padding:16px;
-
 }
 
 
@@ -32,7 +28,6 @@ body{
 
 .topbar{
     position:relative;
-
     background:#111111;
 
     margin:-16px -16px 18px -16px;
@@ -40,40 +35,33 @@ body{
     padding:24px 20px;
 
     display:flex;
-
     justify-content:flex-start;
-
     align-items:center;
 
     border-radius:0;
-
     box-shadow:none;
 }
 
 .dashboard-logo{
-
     width:320px;
-
     max-width:100%;
-
     height:auto;
-
     display:block;
-
 }
 
+
+/* ======================================
+   Logout
+====================================== */
+
 .logout-btn{
-
     display:block;
-
     width:220px;
-
     margin:0 auto 22px;
 
     border:none;
 
     background:#22c55e;
-
     color:#fff;
 
     padding:12px 18px;
@@ -81,7 +69,6 @@ body{
     border-radius:14px;
 
     font-size:15px;
-
     font-weight:600;
 
     cursor:pointer;
@@ -89,13 +76,11 @@ body{
     transition:.25s;
 
     box-shadow:0 10px 22px rgba(34,197,94,.25);
-
 }
-.logout-btn:hover{
 
+.logout-btn:hover{
     background:#16a34a;
     transform:translateY(-2px);
-
 }
 
 
@@ -104,77 +89,74 @@ body{
 ====================================== */
 
 .welcome-card{
-
     background:#fff;
-    padding:20px 22px;
-    border-radius:22px;
-    margin-bottom:18px;
-    box-shadow:0 12px 30px rgba(0,0,0,.06);
 
+    padding:20px 22px;
+
+    border-radius:22px;
+
+    margin-bottom:18px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
 .welcome-card h2{
-
     font-size:1.9rem;
     margin-bottom:8px;
-
 }
 
 .welcome-card p{
-
     color:#6b7280;
     font-size:1rem;
-
 }
 
 
 /* ======================================
-   Stats
+   Legacy Stats
 ====================================== */
 
 .stats-grid{
-
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
     gap:14px;
     margin-bottom:18px;
-
 }
 
 .stat-card{
     background:#fff;
+
     border-radius:22px;
+
     padding:20px 16px;
+
     text-align:center;
+
     box-shadow:0 12px 30px rgba(0,0,0,.06);
 
     text-decoration:none;
     color:inherit;
+
     display:block;
+
     cursor:pointer;
+
     transition:.2s;
 }
 
 .stat-card i{
-
     font-size:30px;
     color:#22c55e;
     margin-bottom:8px;
-
 }
 
 .stat-card h3{
-
     font-size:2rem;
     margin-bottom:2px;
-
 }
 
 .stat-card span{
-
     color:#6b7280;
     font-size:.95rem;
-
 }
 
 .stat-card:hover{
@@ -185,12 +167,12 @@ body{
     transform:scale(.98);
 }
 
+
 /* ======================================
    Spark Balance
 ====================================== */
 
 .spark-balance-card{
-
     background:#fff;
 
     border-radius:22px;
@@ -200,220 +182,205 @@ body{
     margin-bottom:18px;
 
     box-shadow:0 12px 30px rgba(0,0,0,.06);
-
 }
 
-.spark-balance-header{
 
+/* Spark Label */
+
+.spark-balance-top{
+    margin-bottom:12px;
+}
+
+.spark-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:#6b7280;
+
+    font-size:.95rem;
+    font-weight:800;
+
+    letter-spacing:.3px;
+}
+
+.spark-label i{
+    color:#22c55e;
+    font-size:17px;
+}
+
+
+/* Balance */
+
+.spark-balance-main{
     display:flex;
 
     align-items:center;
 
     justify-content:space-between;
 
+    padding-bottom:20px;
+
+    border-bottom:1px solid #edf2f7;
 }
 
-.spark-label{
+.spark-amount{
+    display:flex;
 
-    display:block;
+    align-items:baseline;
 
-    margin-bottom:6px;
-
-    font-size:.9rem;
-
-    font-weight:700;
-
-    color:#6b7280;
-
-    letter-spacing:.4px;
-
+    gap:8px;
 }
 
-.spark-balance-header h2{
-
-    margin:0;
-
-    font-size:2rem;
+.spark-amount #credits{
+    font-size:2.5rem;
 
     font-weight:800;
 
     color:#111827;
-
 }
 
 .spark-unit{
-
     font-size:1rem;
 
     font-weight:600;
 
     color:#6b7280;
-
 }
 
+
+/* Small Spark Icon */
+
 .spark-icon{
-
-    width:48px;
-    height:48px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:14px;
-
-    background:#f0fdf4;
+    font-size:22px;
 
     color:#22c55e;
 
-    font-size:24px;
-
+    flex-shrink:0;
 }
 
-.spark-balance-actions{
 
+/* Spark Actions */
+
+.spark-balance-actions{
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
-    gap:10px;
+    gap:12px;
 
     margin-top:18px;
-
-    padding-top:16px;
-
-    border-top:1px solid #edf2f7;
-
 }
 
 .spark-balance-actions a{
-
     display:flex;
 
     align-items:center;
-
     justify-content:center;
 
-    min-height:44px;
+    min-height:46px;
 
-    border-radius:12px;
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-size:15px;
+
+    font-weight:700;
 
     background:#f8fafc;
 
     color:#374151;
 
-    text-decoration:none;
-
-    font-size:.9rem;
-
-    font-weight:700;
-
     transition:.2s ease;
-
 }
 
 .spark-balance-actions a:hover{
-
-    background:#f0fdf4;
-
-    color:#16a34a;
-
+    transform:translateY(-1px);
 }
 
 .spark-balance-actions a:last-child{
-
-    background:#f0fdf4;
+    background:#ecfdf5;
 
     color:#16a34a;
-
 }
 
-.spark-balance-actions a:last-child:hover{
-
-    background:#dcfce7;
-
-}
 
 /* ======================================
    Actions
 ====================================== */
 
 .action-grid{
-
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:14px;
-    margin-bottom:18px;
 
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:14px;
+
+    margin-bottom:18px;
 }
 
 .action-card{
-
     background:#fff;
+
     border-radius:22px;
+
     padding:22px 18px;
+
     min-height:120px;
 
     display:flex;
+
     flex-direction:column;
+
     align-items:center;
+
     justify-content:center;
 
     gap:12px;
 
     text-decoration:none;
+
     color:#222;
 
     transition:.25s;
 
     box-shadow:0 12px 30px rgba(0,0,0,.06);
-
 }
 
 .action-card:hover{
-
     transform:translateY(-4px);
 
     box-shadow:0 16px 32px rgba(34,197,94,.18);
-
 }
 
 .action-card i{
-
     font-size:34px;
 
     color:#22c55e;
-
 }
 
 .action-card span{
-
     font-size:1rem;
 
     font-weight:700;
-
 }
+
 
 /* Highlight Generate Link */
 
 .action-card:first-child{
-
     background:linear-gradient(135deg,#22c55e,#16a34a);
 
     color:#fff;
-
 }
 
 .action-card:first-child i{
-
     color:#fff;
-
 }
 
 .action-card:first-child:hover{
-
     box-shadow:0 18px 36px rgba(34,197,94,.30);
-
 }
 
 
@@ -422,7 +389,6 @@ body{
 ====================================== */
 
 .account-card{
-
     background:#fff;
 
     border-radius:22px;
@@ -430,19 +396,15 @@ body{
     padding:22px;
 
     box-shadow:0 12px 30px rgba(0,0,0,.06);
-
 }
 
 .account-card h3{
-
     margin-bottom:16px;
 
     font-size:1.5rem;
-
 }
 
 .info-row{
-
     display:flex;
 
     justify-content:space-between;
@@ -452,19 +414,56 @@ body{
     padding:12px 0;
 
     border-bottom:1px solid #edf2f7;
-
 }
 
 .info-row:last-child{
-
     border-bottom:none;
-
 }
 
 .info-row strong{
-
     font-weight:600;
+}
 
+
+/* ======================================
+   Notifications
+====================================== */
+
+.notifications-btn{
+    position:absolute;
+
+    top:50%;
+    right:18px;
+
+    transform:translateY(-50%);
+
+    width:42px;
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+
+    color:#fff;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.notifications-btn:hover{
+    background:rgba(255,255,255,.15);
+
+    transform:translateY(-50%) scale(1.04);
 }
 
 
@@ -474,162 +473,95 @@ body{
 
 @media(max-width:768px){
 
-.dashboard-container{
+    .dashboard-container{
+        padding:16px;
+    }
 
-    padding:16px;
+    .topbar{
+        position:relative;
 
-}
+        background:#111111;
 
-.topbar{
-    position:relative;
-    background:#111111;
+        margin:-16px -16px 18px -16px;
 
-    margin:-16px -16px 18px -16px;
+        padding:22px 18px;
 
-    padding:22px 18px;
+        display:flex;
 
-    display:flex;
+        justify-content:flex-start;
 
-    justify-content:flex-start;
+        align-items:center;
 
-    align-items:center;
+        border-radius:0;
 
-    border-radius:0;
+        box-shadow:none;
+    }
 
-    box-shadow:none;
-}
+    .dashboard-logo{
+        width:300px;
+        height:auto;
+    }
 
-.dashboard-logo{
+    .logout-btn{
+        width:220px;
+        margin:0 auto 18px;
+    }
 
-    width:300px;
+    .welcome-card{
+        padding:20px;
+    }
 
-    height:auto;
+    .welcome-card h2{
+        font-size:1.8rem;
+    }
 
-}
+    .stats-grid,
+    .action-grid{
+        gap:14px;
+    }
 
-.logout-btn{
+    .stat-card{
+        padding:18px 14px;
+    }
 
-    width:210px;
+    .action-card{
+        padding:20px 16px;
 
-    margin:0 auto 18px;
+        min-height:110px;
+    }
 
-}
+    .action-card i{
+        font-size:32px;
+    }
 
+    .account-card{
+        padding:20px;
+    }
 
-.logout-btn{
+    .info-row{
+        flex-direction:column;
 
-    width:220px;
+        align-items:flex-start;
 
-}
+        gap:4px;
+    }
 
-.welcome-card{
+    /* Spark Balance Mobile */
 
-    padding:20px;
+    .spark-balance-card{
+        padding:20px;
+    }
 
-}
+    .spark-amount #credits{
+        font-size:2.3rem;
+    }
 
-.welcome-card h2{
+    .spark-icon{
+        font-size:20px;
+    }
 
-    font-size:1.8rem;
+    .spark-balance-actions{
+        gap:10px;
+    }
 
-}
-
-.stats-grid,
-
-.action-grid{
-
-    gap:14px;
-
-}
-
-.stat-card{
-
-    padding:18px 14px;
-
-}
-
-.action-card{
-
-    padding:20px 16px;
-
-    min-height:110px;
-
-}
-
-.action-card i{
-
-    font-size:32px;
-
-}
-
-.account-card{
-
-    padding:20px;
-
-}
-
-.info-row{
-
-    flex-direction:column;
-
-    align-items:flex-start;
-
-    gap:4px;
-
-}
-
-}
-/* ======================================
-   Notifications Button
-====================================== */
-
-.notifications-btn{
-    position:absolute;
-    top:50%;
-    right:18px;
-    transform:translateY(-50%);
-
-    width:42px;
-    height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid rgba(255,255,255,.15);
-    border-radius:50%;
-
-    background:rgba(255,255,255,.08);
-    color:#fff;
-
-    font-size:18px;
-
-    cursor:pointer;
-    transition:.2s ease;
-}
-
-.notifications-btn:hover{
-    background:rgba(255,255,255,.15);
-    transform:translateY(-50%) scale(1.04);
-}
-
-/* ======================================
-   Spark Balance Icon
-====================================== */
-
-.spark-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    width:52px;
-    height:52px;
-
-    color:#22c55e;
-    font-size:26px;
-
-    background:#f0fdf4;
-    border-radius:16px;
-
-    flex-shrink:0;
 }
