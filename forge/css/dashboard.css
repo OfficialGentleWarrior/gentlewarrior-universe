@@ -40,13 +40,13 @@ body{
 
     display:flex;
 
-    justify-content:center;
+    justify-content:flex-start;
 
     align-items:center;
 
     border-radius:0;
 
-box-shadow:none;
+    box-shadow:none;
 
 }
 
