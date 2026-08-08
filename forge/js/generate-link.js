@@ -112,18 +112,6 @@ clearImageBtn.addEventListener("click", clearImage);
 
 urlInput.addEventListener("input", () => {
 
-    try {
-
-        const url = new URL(urlInput.value.trim());
-
-        previewDomain.textContent = url.hostname;
-
-    } catch {
-
-        previewDomain.textContent = "gentlewarrior.world";
-
-    }
-
     validateForm();
 
 });
