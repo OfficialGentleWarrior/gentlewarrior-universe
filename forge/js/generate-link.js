@@ -181,3 +181,18 @@ window.addEventListener("forge:link-generated", (event) => {
 
 });
 
+// ======================================
+// Modal Buttons
+// ======================================
+
+generateAnotherBtn.addEventListener("click", () => {
+
+    successModal.style.display = "none";
+
+});
+
+myLinksBtn.addEventListener("click", () => {
+
+    window.location.href = "my-links.html";
+
+});
