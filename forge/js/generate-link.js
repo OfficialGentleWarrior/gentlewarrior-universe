@@ -39,6 +39,7 @@ const remainingSparksText = document.getElementById("remainingSparks");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
 const myLinksBtn = document.getElementById("myLinksBtn");
 const generateAnotherBtn = document.getElementById("generateAnotherBtn");
+const closeSuccessModal = document.getElementById("closeSuccessModal");
 const loadingModal = document.getElementById("loadingModal");
 
 
@@ -57,10 +58,15 @@ imageInput.addEventListener("change", (e) => {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
+
         alert("Image must be 5 MB or smaller.");
+
         imageInput.value = "";
+
         validateForm();
+
         return;
+
     }
 
     const reader = new FileReader();
@@ -85,6 +91,7 @@ imageInput.addEventListener("change", (e) => {
 
 });
 
+
 // ======================================
 // Clear Image
 // ======================================
@@ -107,6 +114,7 @@ function clearImage() {
 
 clearImageBtn.addEventListener("click", clearImage);
 
+
 // ======================================
 // Destination URL
 // ======================================
@@ -116,6 +124,7 @@ urlInput.addEventListener("input", () => {
     validateForm();
 
 });
+
 
 // ======================================
 // Form Validation
@@ -142,14 +151,19 @@ function validateForm() {
     }
 
     if (urlInput.value.trim() !== "" && !validUrl) {
+
         urlInput.classList.add("input-error");
+
     } else {
+
         urlInput.classList.remove("input-error");
+
     }
 
     generateBtn.disabled = !(hasImage && validUrl);
 
 }
+
 
 // ======================================
 // Generate Button
@@ -157,18 +171,21 @@ function validateForm() {
 
 generateBtn.addEventListener("click", generateLink);
 
+
 // ======================================
 // Success Modal
 // ======================================
 
-export function showSuccessModal(link, sparks){
+export function showSuccessModal(link, sparks) {
 
     generatedLinkInput.value = link;
+
     remainingSparksText.textContent = sparks;
 
     successModal.style.display = "flex";
 
 }
+
 
 // ======================================
 // Listen for Generate Success
@@ -182,10 +199,20 @@ window.addEventListener("forge:link-generated", (event) => {
 
 });
 
+
 // ======================================
 // Modal Buttons
 // ======================================
 
+// Close Success Modal
+closeSuccessModal.addEventListener("click", () => {
+
+    successModal.style.display = "none";
+
+});
+
+
+// Generate Another
 generateAnotherBtn.addEventListener("click", () => {
 
     // Close modal
@@ -196,10 +223,12 @@ generateAnotherBtn.addEventListener("click", () => {
 
     // Clear URL
     urlInput.value = "";
+
     urlInput.classList.remove("input-error");
 
     // Clear generated link
     generatedLinkInput.value = "";
+
     remainingSparksText.textContent = "0";
 
     // Disable Generate button ulit
@@ -207,6 +236,8 @@ generateAnotherBtn.addEventListener("click", () => {
 
 });
 
+
+// My Links
 myLinksBtn.addEventListener("click", () => {
 
     window.location.href = "my-links.html";
