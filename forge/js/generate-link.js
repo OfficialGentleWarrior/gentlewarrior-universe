@@ -243,3 +243,60 @@ myLinksBtn.addEventListener("click", () => {
     window.location.href = "my-links.html";
 
 });
+// ======================================
+// Copy Generated Link
+// ======================================
+
+copyLinkBtn.addEventListener("click", async () => {
+
+    const link = generatedLinkInput.value.trim();
+
+    if (!link) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(link);
+
+        copyLinkBtn.innerHTML =
+            '<i class="fa-solid fa-check"></i> Copied!';
+
+        setTimeout(() => {
+
+            copyLinkBtn.innerHTML =
+                '<i class="fa-regular fa-copy"></i> Copy Link';
+
+        }, 2000);
+
+    } catch (error) {
+
+        console.error("Copy failed:", error);
+
+        // Mobile/browser fallback
+        generatedLinkInput.focus();
+        generatedLinkInput.select();
+
+        try {
+
+            document.execCommand("copy");
+
+            copyLinkBtn.innerHTML =
+                '<i class="fa-solid fa-check"></i> Copied!';
+
+            setTimeout(() => {
+
+                copyLinkBtn.innerHTML =
+                    '<i class="fa-regular fa-copy"></i> Copy Link';
+
+            }, 2000);
+
+        } catch {
+
+            alert("Unable to copy the link. Please copy it manually.");
+
+        }
+
+    }
+
+});
