@@ -136,19 +136,16 @@ body{
     box-shadow:0 10px 28px rgba(0,0,0,.05);
 }
 
-.spark-balance-header{
-    display:flex;
 
-    align-items:center;
-    justify-content:center;
-
-    gap:8px;
-
-    margin-bottom:6px;
-}
+/* Label */
 
 .spark-label{
+    display:block;
+
+    margin-bottom:6px;
+
     font-size:.88rem;
+
     font-weight:800;
 
     color:#6b7280;
@@ -156,15 +153,14 @@ body{
     letter-spacing:.5px;
 }
 
-.spark-icon{
-    color:#22c55e;
-    font-size:19px;
-}
+
+/* Amount */
 
 .spark-balance-amount{
     display:flex;
 
     align-items:baseline;
+
     justify-content:center;
 
     gap:7px;
@@ -174,19 +170,24 @@ body{
 
 .spark-balance-amount #credits{
     font-size:2.5rem;
+
+    line-height:1;
+
     font-weight:800;
 
     color:#111827;
-
-    line-height:1;
 }
 
 .spark-unit{
     font-size:1rem;
-    font-weight:600;
+
+    font-weight:700;
 
     color:#6b7280;
 }
+
+
+/* Buttons */
 
 .spark-balance-actions{
     display:grid;
@@ -204,7 +205,9 @@ body{
     min-height:44px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     gap:7px;
@@ -218,6 +221,7 @@ body{
     text-decoration:none;
 
     font-size:.9rem;
+
     font-weight:700;
 
     transition:.2s ease;
@@ -225,18 +229,19 @@ body{
 
 .spark-balance-actions a:hover{
     background:#f0fdf4;
+
     color:#16a34a;
 }
 
 .spark-balance-actions a:last-child{
     background:#f0fdf4;
+
     color:#16a34a;
 }
 
 .spark-balance-actions a:last-child:hover{
     background:#dcfce7;
 }
-
 
 /* ======================================
    Generate Link
