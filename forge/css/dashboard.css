@@ -31,6 +31,7 @@ body{
 ====================================== */
 
 .topbar{
+    position:relative;
 
     background:#111111;
 
@@ -47,7 +48,6 @@ body{
     border-radius:0;
 
     box-shadow:none;
-
 }
 
 .dashboard-logo{
@@ -341,14 +341,13 @@ body{
 
     display:flex;
 
-    justify-content:center;
+    justify-content:flex-start;
 
     align-items:center;
 
     border-radius:0;
 
     box-shadow:none;
-
 }
 
 .dashboard-logo{
