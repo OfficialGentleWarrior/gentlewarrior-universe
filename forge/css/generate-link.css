@@ -366,3 +366,7 @@
 .secondary-btn i{
     margin-right:8px;
 }
+
+.preview-content{
+    display:none;
+}
