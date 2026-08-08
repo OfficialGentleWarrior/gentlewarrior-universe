@@ -4,6 +4,71 @@
 
 
 /* ======================================
+   Header
+====================================== */
+
+.topbar{
+    position:relative;
+
+    width:100%;
+
+    background:#111111;
+
+    padding:18px 20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+    min-height:86px;
+
+    overflow:hidden;
+}
+
+.dashboard-logo{
+    display:block;
+
+    width:300px;
+    max-width:78%;
+
+    height:auto;
+}
+
+.notifications-btn{
+    position:absolute;
+
+    top:50%;
+    right:18px;
+
+    transform:translateY(-50%);
+
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+
+    color:#fff;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.notifications-btn:hover{
+    background:rgba(255,255,255,.15);
+}
+
+
+/* ======================================
    Page Header
 ====================================== */
 
@@ -65,7 +130,6 @@
 
 .back-btn:hover{
     background:#dcfce7;
-
     color:#15803d;
 }
 
@@ -309,19 +373,16 @@
 
 .starter-icon{
     background:#eff6ff;
-
     color:#3b82f6;
 }
 
 .creator-icon{
     background:#fefce8;
-
     color:#eab308;
 }
 
 .pro-icon{
     background:#faf5ff;
-
     color:#9333ea;
 }
 
@@ -440,4 +501,208 @@
 }
 
 .spark-plan-card.featured .choose-plan-btn:hover{
-    background:#
+    background:#16a34a;
+}
+
+
+/* ======================================
+   GWAR Payment
+====================================== */
+
+.gwar-payment{
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:10px;
+
+    margin-top:24px;
+
+    padding:16px;
+
+    background:#f8fafc;
+
+    border-radius:16px;
+
+    color:#374151;
+}
+
+.gwar-payment i{
+    margin-top:2px;
+
+    color:#16a34a;
+
+    font-size:17px;
+}
+
+.gwar-payment strong{
+    display:block;
+
+    margin-bottom:2px;
+
+    font-size:.9rem;
+
+    color:#111827;
+}
+
+.gwar-payment span{
+    display:block;
+
+    font-size:.8rem;
+
+    color:#6b7280;
+
+    line-height:1.4;
+}
+
+
+/* ======================================
+   Mobile
+====================================== */
+
+@media(max-width:768px){
+
+    .topbar{
+        padding:16px 18px;
+
+        min-height:78px;
+    }
+
+    .dashboard-logo{
+        width:280px;
+
+        max-width:76%;
+    }
+
+    .notifications-btn{
+        right:16px;
+
+        width:40px;
+        height:40px;
+
+        font-size:17px;
+    }
+
+    .page-header{
+        margin-top:16px;
+    }
+
+    .page-header h1{
+        font-size:1.8rem;
+    }
+
+    .page-header p{
+        font-size:.95rem;
+    }
+
+    .free-sparks-card{
+        align-items:flex-start;
+
+        gap:12px;
+
+        padding:16px;
+    }
+
+    .free-icon{
+        width:44px;
+        height:44px;
+
+        font-size:19px;
+    }
+
+    .free-plan-btn{
+        padding:9px 10px;
+
+        font-size:.78rem;
+    }
+
+    .spark-plan-card{
+        padding:20px;
+
+        border-radius:20px;
+    }
+
+    .plan-price strong{
+        font-size:2.2rem;
+    }
+
+    .plan-details{
+        font-size:.85rem;
+    }
+
+}
+
+
+/* ======================================
+   Small Phones
+====================================== */
+
+@media(max-width:480px){
+
+    .topbar{
+        padding:15px 16px;
+    }
+
+    .dashboard-logo{
+        width:260px;
+        max-width:74%;
+    }
+
+    .notifications-btn{
+        right:14px;
+
+        width:38px;
+        height:38px;
+
+        font-size:16px;
+    }
+
+    .free-sparks-card{
+        display:grid;
+
+        grid-template-columns:44px 1fr;
+
+        gap:10px;
+    }
+
+    .free-plan-btn{
+        grid-column:1 / -1;
+
+        width:100%;
+
+        justify-content:center;
+
+        margin-top:4px;
+    }
+
+    .spark-plan-card{
+        padding:18px;
+    }
+
+    .popular-badge{
+        top:12px;
+        right:12px;
+
+        font-size:.6rem;
+    }
+
+    .plan-top{
+        margin-bottom:14px;
+    }
+
+    .plan-icon{
+        width:42px;
+        height:42px;
+
+        font-size:18px;
+    }
+
+    .plan-price strong{
+        font-size:2rem;
+    }
+
+    .choose-plan-btn{
+        min-height:44px;
+    }
+
+   }
