@@ -27,6 +27,12 @@ export async function generateLink() {
         });
 
         // ======================================
+        // Show Loading
+        // ======================================
+
+        document.getElementById("loadingModal").style.display = "flex";
+
+        // ======================================
         // Send Request to FORGE Backend
         // ======================================
 
@@ -56,6 +62,12 @@ export async function generateLink() {
         }
 
         // ======================================
+        // Hide Loading
+        // ======================================
+
+        document.getElementById("loadingModal").style.display = "none";
+
+        // ======================================
         // Success
         // ======================================
 
@@ -78,6 +90,12 @@ export async function generateLink() {
     }
 
     catch (error) {
+
+        // ======================================
+        // Hide Loading
+        // ======================================
+
+        document.getElementById("loadingModal").style.display = "none";
 
         console.error(error);
 
