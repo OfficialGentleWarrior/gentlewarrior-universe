@@ -23,6 +23,10 @@
 
 <body>
 
+<!-- ======================================
+     Header
+====================================== -->
+
 <header class="topbar">
 
     <img
@@ -42,14 +46,13 @@
 
 </header>
 
+
 <div class="dashboard-container">
 
-<button id="logoutBtn" class="logout-btn">
-    <i class="fa-solid fa-right-from-bracket"></i>
-    Logout
-</button>
 
-    <!-- Welcome -->
+    <!-- ======================================
+         Welcome
+    ====================================== -->
 
     <section class="welcome-card">
 
@@ -58,9 +61,7 @@
             Welcome back,
 
             <span id="userName">
-
                 Loading...
-
             </span>
 
             👋
@@ -68,158 +69,314 @@
         </h2>
 
         <p>
-
             Ready to create your next smart link?
-
         </p>
 
     </section>
 
 
+    <!-- ======================================
+         Spark Balance
+    ====================================== -->
 
-    <!-- Spark Balance -->
+    <section class="spark-balance-card">
 
-<section class="spark-balance-card">
-
-    <div class="spark-balance-header">
-
-        <div>
+        <div class="spark-balance-header">
 
             <span class="spark-label">
                 ✨ SPARK BALANCE
             </span>
 
-            <h2>
-                <span id="credits">0</span>
-                <span class="spark-unit">Sparks</span>
-            </h2>
+            <i class="fa-solid fa-wand-sparkles spark-icon"></i>
 
         </div>
 
-    </div>
+        <div class="spark-balance-amount">
 
-    <div class="spark-balance-actions">
+            <span id="credits">
+                0
+            </span>
 
-        <a href="wallet.html">
-            View History
-        </a>
+            <span class="spark-unit">
+                Sparks
+            </span>
 
-        <a href="#">
-            Buy Sparks
-        </a>
+        </div>
 
-    </div>
+        <div class="spark-balance-actions">
 
-</section>
+            <a href="wallet.html">
 
-<!-- Account Role -->
+                <i class="fa-solid fa-clock-rotate-left"></i>
 
-<section class="role-card">
+                View History
 
-    <div class="role-icon">
-        <i class="fa-solid fa-user"></i>
-    </div>
+            </a>
 
-    <div class="role-info">
+            <a href="buy-sparks.html">
 
-        <span>Account Role</span>
+                <i class="fa-solid fa-plus"></i>
 
-        <strong id="role">
-            User
-        </strong>
+                Buy Sparks
 
-    </div>
+            </a>
 
-</section>
-
-
-
-    <!-- Quick Actions -->
-
-    <section class="action-grid">
-
-        <a href="generate-link.html"
-   class="action-card">
-
-    <i class="fa-solid fa-link"></i>
-
-    <span>Generate Link</span>
-
-</a>
-
-        <a href="#"
-           class="action-card">
-
-            <i class="fa-solid fa-folder-open"></i>
-
-            <span>My Links</span>
-
-        </a>
-
-        <a href="#"
-           class="action-card">
-
-            <i class="fa-solid fa-wallet"></i>
-
-            <span>Buy Sparks</span>
-
-        </a>
-
-<a href="rewards.html"
-   class="action-card">
-
-    <i class="fa-solid fa-gift"></i>
-
-    <span>Rewards</span>
-
-</a>
+        </div>
 
     </section>
 
 
+    <!-- ======================================
+         Generate Link
+    ====================================== -->
 
-    <!-- Account -->
+    <a
+        href="generate-link.html"
+        class="generate-main-card">
+
+        <div class="generate-main-icon">
+
+            <i class="fa-solid fa-link"></i>
+
+        </div>
+
+        <div class="generate-main-content">
+
+            <h2>
+                Generate Link
+            </h2>
+
+            <p>
+                Create your next smart link
+            </p>
+
+        </div>
+
+        <i class="fa-solid fa-chevron-right generate-arrow"></i>
+
+    </a>
+
+
+    <!-- ======================================
+         My Links
+    ====================================== -->
+
+    <a
+        href="my-links.html"
+        class="my-links-card">
+
+        <div class="section-icon">
+
+            <i class="fa-solid fa-folder-open"></i>
+
+        </div>
+
+        <div class="section-content">
+
+            <h3>
+                My Links
+            </h3>
+
+            <p>
+                View all your FORGE links →
+            </p>
+
+        </div>
+
+        <i class="fa-solid fa-chevron-right section-arrow"></i>
+
+    </a>
+
+
+    <!-- ======================================
+         Explore
+    ====================================== -->
+
+    <section class="explore-section">
+
+        <div class="section-heading">
+
+            <h2>
+                EXPLORE
+            </h2>
+
+        </div>
+
+
+        <div class="explore-grid">
+
+
+            <!-- Tasks -->
+
+            <a
+                href="tasks.html"
+                class="explore-card">
+
+                <div class="explore-icon">
+
+                    <i class="fa-solid fa-bullseye"></i>
+
+                </div>
+
+                <h3>
+                    Tasks
+                </h3>
+
+                <p>
+                    Earn Sparks
+                </p>
+
+            </a>
+
+
+            <!-- Game Hub -->
+
+            <a
+                href="game-hub.html"
+                class="explore-card">
+
+                <div class="explore-icon">
+
+                    <i class="fa-solid fa-gamepad"></i>
+
+                </div>
+
+                <h3>
+                    Game Hub
+                </h3>
+
+                <p>
+                    Play & Learn
+                </p>
+
+            </a>
+
+
+            <!-- GWAR Hub -->
+
+            <a
+                href="gwar-hub.html"
+                class="explore-card">
+
+                <div class="explore-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+                <h3>
+                    GWAR Hub
+                </h3>
+
+                <p>
+                    Explore the GWAR ecosystem
+                </p>
+
+            </a>
+
+
+            <!-- Referrals -->
+
+            <a
+                href="referrals.html"
+                class="explore-card">
+
+                <div class="explore-icon">
+
+                    <i class="fa-solid fa-user-group"></i>
+
+                </div>
+
+                <h3>
+                    Referrals
+                </h3>
+
+                <p>
+                    Invite & Earn Sparks
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         Account
+    ====================================== -->
 
     <section class="account-card">
 
-        <h3>
+        <h2>
+            ACCOUNT
+        </h2>
 
-            Account Information
-
-        </h3>
 
         <div class="info-row">
 
-            <span>Email</span>
+            <span>
+                <i class="fa-solid fa-envelope"></i>
+                Email
+            </span>
 
             <strong id="userEmail">
-
                 Loading...
-
             </strong>
 
         </div>
+
 
         <div class="info-row">
 
-            <span>Member Since</span>
+            <span>
+                <i class="fa-solid fa-calendar"></i>
+                Member Since
+            </span>
 
             <strong id="memberSince">
-
                 Loading...
-
             </strong>
 
         </div>
+
+
+        <div class="info-row">
+
+            <span>
+                <i class="fa-solid fa-user"></i>
+                Role
+            </span>
+
+            <strong id="role">
+                User
+            </strong>
+
+        </div>
+
+
+        <!-- Logout -->
+
+        <button
+            id="logoutBtn"
+            class="logout-btn"
+            type="button">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
 
     </section>
 
 </div>
 
 
-
-<script type="module"
-        src="js/dashboard.js?v=2"></script>
+<script
+    type="module"
+    src="js/dashboard.js?v=2">
+</script>
 
 </body>
 
