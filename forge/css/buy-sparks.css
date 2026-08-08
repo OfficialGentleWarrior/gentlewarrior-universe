@@ -5,51 +5,63 @@
 
 /* ======================================
    Header
+   Match Dashboard UI
 ====================================== */
 
 .topbar{
     position:relative;
 
-    width:100%;
-
     background:#111111;
 
-    padding:18px 20px;
+    margin:0 0 18px 0;
+
+    padding:24px 20px;
 
     display:flex;
-    align-items:center;
+
     justify-content:flex-start;
 
-    min-height:86px;
+    align-items:center;
 
-    overflow:hidden;
+    border-radius:0;
+
+    box-shadow:none;
 }
 
 .dashboard-logo{
-    display:block;
 
-    width:300px;
-    max-width:78%;
+    width:320px;
+
+    max-width:100%;
 
     height:auto;
+
+    display:block;
+
 }
 
 .notifications-btn{
+
     position:absolute;
 
     top:50%;
+
     right:18px;
 
     transform:translateY(-50%);
 
     width:42px;
+
     height:42px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     border:1px solid rgba(255,255,255,.15);
+
     border-radius:50%;
 
     background:rgba(255,255,255,.08);
@@ -61,10 +73,15 @@
     cursor:pointer;
 
     transition:.2s ease;
+
 }
 
 .notifications-btn:hover{
+
     background:rgba(255,255,255,.15);
+
+    transform:translateY(-50%) scale(1.04);
+
 }
 
 
@@ -80,6 +97,7 @@
     margin:0 0 6px;
 
     font-size:2rem;
+
     font-weight:800;
 
     color:#111827;
@@ -130,6 +148,7 @@
 
 .back-btn:hover{
     background:#dcfce7;
+
     color:#15803d;
 }
 
@@ -165,6 +184,7 @@
     flex-shrink:0;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
@@ -323,6 +343,7 @@
     position:absolute;
 
     top:14px;
+
     right:14px;
 
     padding:5px 9px;
@@ -357,6 +378,7 @@
 
 .plan-icon{
     width:46px;
+
     height:46px;
 
     flex-shrink:0;
@@ -364,6 +386,7 @@
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     border-radius:14px;
@@ -373,16 +396,19 @@
 
 .starter-icon{
     background:#eff6ff;
+
     color:#3b82f6;
 }
 
 .creator-icon{
     background:#fefce8;
+
     color:#eab308;
 }
 
 .pro-icon{
     background:#faf5ff;
+
     color:#9333ea;
 }
 
@@ -465,6 +491,7 @@
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     gap:8px;
@@ -557,30 +584,51 @@
 
 
 /* ======================================
-   Mobile
+   Responsive
+   Match Dashboard
 ====================================== */
 
 @media(max-width:768px){
 
     .topbar{
-        padding:16px 18px;
 
-        min-height:78px;
+        position:relative;
+
+        background:#111111;
+
+        margin:0 0 18px 0;
+
+        padding:22px 18px;
+
+        display:flex;
+
+        justify-content:flex-start;
+
+        align-items:center;
+
+        border-radius:0;
+
+        box-shadow:none;
     }
 
     .dashboard-logo{
-        width:280px;
 
-        max-width:76%;
+        width:300px;
+
+        height:auto;
+
     }
 
     .notifications-btn{
-        right:16px;
 
-        width:40px;
-        height:40px;
+        right:18px;
 
-        font-size:17px;
+        width:42px;
+
+        height:42px;
+
+        font-size:18px;
+
     }
 
     .page-header{
@@ -605,6 +653,7 @@
 
     .free-icon{
         width:44px;
+
         height:44px;
 
         font-size:19px;
@@ -640,32 +689,43 @@
 @media(max-width:480px){
 
     .topbar{
-        padding:15px 16px;
+
+        padding:22px 18px;
+
     }
 
     .dashboard-logo{
-        width:260px;
-        max-width:74%;
+
+        width:300px;
+
+        max-width:76%;
+
     }
 
     .notifications-btn{
-        right:14px;
 
-        width:38px;
-        height:38px;
+        right:16px;
 
-        font-size:16px;
+        width:40px;
+
+        height:40px;
+
+        font-size:17px;
+
     }
 
     .free-sparks-card{
+
         display:grid;
 
         grid-template-columns:44px 1fr;
 
         gap:10px;
+
     }
 
     .free-plan-btn{
+
         grid-column:1 / -1;
 
         width:100%;
@@ -673,36 +733,51 @@
         justify-content:center;
 
         margin-top:4px;
+
     }
 
     .spark-plan-card{
+
         padding:18px;
+
     }
 
     .popular-badge{
+
         top:12px;
+
         right:12px;
 
         font-size:.6rem;
+
     }
 
     .plan-top{
+
         margin-bottom:14px;
+
     }
 
     .plan-icon{
+
         width:42px;
+
         height:42px;
 
         font-size:18px;
+
     }
 
     .plan-price strong{
+
         font-size:2rem;
+
     }
 
     .choose-plan-btn{
+
         min-height:44px;
+
     }
 
    }
