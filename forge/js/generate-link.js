@@ -39,6 +39,7 @@ const remainingSparksText = document.getElementById("remainingSparks");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
 const myLinksBtn = document.getElementById("myLinksBtn");
 const generateAnotherBtn = document.getElementById("generateAnotherBtn");
+const loadingModal = document.getElementById("loadingModal");
 
 
 // ======================================
@@ -187,7 +188,22 @@ window.addEventListener("forge:link-generated", (event) => {
 
 generateAnotherBtn.addEventListener("click", () => {
 
+    // Close modal
     successModal.style.display = "none";
+
+    // Clear image
+    clearImage();
+
+    // Clear URL
+    urlInput.value = "";
+    urlInput.classList.remove("input-error");
+
+    // Clear generated link
+    generatedLinkInput.value = "";
+    remainingSparksText.textContent = "0";
+
+    // Disable Generate button ulit
+    validateForm();
 
 });
 
