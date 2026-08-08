@@ -156,10 +156,21 @@
 </main>
 
 <!-- Success Modal -->
-<div id="successModal" class="success-modal" 
-style="display:none;">
+<div id="successModal" class="success-modal"
+     style="display:none;">
 
     <div class="success-card">
+
+        <!-- Close Button -->
+        <button
+            id="closeSuccessModal"
+            class="modal-close-btn"
+            type="button"
+            aria-label="Close">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
 
         <i class="fa-solid fa-circle-check success-icon"></i>
 
@@ -177,17 +188,29 @@ style="display:none;">
             <strong id="remainingSparks">0</strong>
         </p>
 
-        <button id="copyLinkBtn" class="primary-btn">
+        <button
+            id="copyLinkBtn"
+            class="primary-btn">
+
             <i class="fa-regular fa-copy"></i>
             Copy Link
+
         </button>
 
-        <button id="myLinksBtn" class="secondary-btn">
+        <button
+            id="myLinksBtn"
+            class="secondary-btn">
+
             My Links
+
         </button>
 
-        <button id="generateAnotherBtn" class="secondary-btn">
+        <button
+            id="generateAnotherBtn"
+            class="secondary-btn">
+
             Generate Another
+
         </button>
 
     </div>
