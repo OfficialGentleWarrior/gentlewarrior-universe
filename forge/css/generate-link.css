@@ -397,3 +397,32 @@
 .preview-content{
     display:none;
 }
+/* ======================================
+   Loading Modal
+====================================== */
+
+.loading-spinner{
+    width:64px;
+    height:64px;
+    margin:0 auto 20px;
+    border:6px solid #e5e7eb;
+    border-top:6px solid #22c55e;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+
+.loading-note{
+    display:block;
+    margin-top:8px;
+    color:#9ca3af;
+    font-size:.9rem;
+}
+
+@keyframes spin{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}
