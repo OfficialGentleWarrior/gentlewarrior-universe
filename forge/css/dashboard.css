@@ -124,104 +124,74 @@ body{
 
 .spark-balance-card{
     background:#fff;
-
     border-radius:22px;
-
-    padding:22px;
-
+    padding:26px 22px;
     margin-bottom:18px;
-
-    text-align:center;
-
-    box-shadow:0 10px 28px rgba(0,0,0,.05);
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
-
-
-/* Label */
 
 .spark-label{
-    display:block;
+    text-align:center;
+    margin-bottom:12px;
 
-    margin-bottom:6px;
-
-    font-size:.88rem;
-
+    font-size:.95rem;
     font-weight:800;
-
     color:#6b7280;
-
-    letter-spacing:.5px;
+    letter-spacing:.4px;
 }
-
-
-/* Amount */
 
 .spark-balance-amount{
     display:flex;
-
-    align-items:baseline;
-
+    align-items:center;
     justify-content:center;
+    gap:8px;
 
-    gap:7px;
-
-    margin-bottom:18px;
+    margin-bottom:22px;
 }
 
 .spark-balance-amount #credits{
-    font-size:2.5rem;
-
+    font-size:2.7rem;
     line-height:1;
-
     font-weight:800;
-
     color:#111827;
 }
 
 .spark-unit{
-    font-size:1rem;
+    font-size:2rem;
+    line-height:1;
+    font-weight:900;
 
-    font-weight:700;
+    display:inline-block;
 
-    color:#6b7280;
+    /* Makes the sparkle more visible */
+    transform:scale(1.08);
 }
-
-
-/* Buttons */
 
 .spark-balance-actions{
     display:grid;
-
     grid-template-columns:1fr 1fr;
+    gap:12px;
 
-    gap:10px;
-
-    padding-top:16px;
-
+    padding-top:18px;
     border-top:1px solid #edf2f7;
 }
 
 .spark-balance-actions a{
-    min-height:44px;
+    min-height:48px;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
+    gap:8px;
 
-    gap:7px;
-
-    border-radius:12px;
+    border-radius:14px;
 
     background:#f8fafc;
-
     color:#374151;
 
     text-decoration:none;
 
-    font-size:.9rem;
-
+    font-size:.95rem;
     font-weight:700;
 
     transition:.2s ease;
@@ -229,18 +199,20 @@ body{
 
 .spark-balance-actions a:hover{
     background:#f0fdf4;
-
     color:#16a34a;
 }
 
 .spark-balance-actions a:last-child{
     background:#f0fdf4;
-
     color:#16a34a;
 }
 
 .spark-balance-actions a:last-child:hover{
     background:#dcfce7;
+}
+
+.spark-balance-actions i{
+    font-size:.95rem;
 }
 
 /* ======================================
