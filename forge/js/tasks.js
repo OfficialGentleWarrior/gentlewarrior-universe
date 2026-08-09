@@ -1,5 +1,5 @@
 /* ======================================
-   FORGE Community Tasks
+   FORGE Tasks
 ====================================== */
 
 
@@ -19,7 +19,7 @@ const taskModalClose = document.querySelector(".task-modal-close");
 const TASKS = {
 
     /* ==================================
-       TASK 1
+       COMMUNITY — TASK 1
     ================================== */
 
     follow_baby_leam: {
@@ -55,7 +55,7 @@ const TASKS = {
 
 
     /* ==================================
-       TASK 2
+       COMMUNITY — TASK 2
     ================================== */
 
     follow_gentle_warrior: {
@@ -91,7 +91,7 @@ const TASKS = {
 
 
     /* ==================================
-       TASK 17
+       COMMUNITY — TASK 17
     ================================== */
 
     join_messenger_gc: {
@@ -127,7 +127,7 @@ const TASKS = {
 
 
     /* ==================================
-       TASK 18
+       COMMUNITY — TASK 18
     ================================== */
 
     join_tg_community: {
@@ -163,7 +163,7 @@ const TASKS = {
 
 
     /* ==================================
-       TASK 19
+       COMMUNITY — TASK 19
     ================================== */
 
     join_x_community: {
@@ -194,6 +194,43 @@ const TASKS = {
 
         proofDescription:
             "Provide the X username you used to join the community."
+
+    },
+
+
+    /* ==================================
+       MUSIC — TASK 3
+    ================================== */
+
+    follow_gentle_warrior_spotify: {
+
+        title:
+            "Follow Gentle Warrior on Spotify",
+
+        description:
+            "Follow Gentle Warrior on Spotify and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "Spotify",
+
+        link:
+            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
+
+        stepTitle:
+            "Follow Gentle Warrior on Spotify",
+
+        stepDescription:
+            "Open Gentle Warrior on Spotify and follow the artist.",
+
+        proofLabel:
+            "Spotify Name",
+
+        proofPlaceholder:
+            "Enter your Spotify name",
+
+        proofDescription:
+            "Provide the Spotify name you used to follow Gentle Warrior."
 
     }
 
@@ -284,9 +321,9 @@ function openTask(taskId) {
                     class="task-open-btn"
                 >
 
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <i class="fa-brands fa-spotify"></i>
 
-                    Open ${task.platform}
+                    Open Spotify
 
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
@@ -311,7 +348,7 @@ function openTask(taskId) {
             <div class="task-step-content">
 
                 <h3>
-                    Enter your ${task.platform} name
+                    Enter your Spotify name
                 </h3>
 
                 <p>
@@ -358,7 +395,7 @@ function openTask(taskId) {
                 </h3>
 
                 <p>
-                    Upload a screenshot showing that you completed this task.
+                    Upload a screenshot showing that you followed Gentle Warrior on Spotify.
                 </p>
 
 
