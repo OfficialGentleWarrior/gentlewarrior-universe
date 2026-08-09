@@ -27,12 +27,6 @@ export async function generateLink() {
         });
 
         // ======================================
-        // Show Loading
-        // ======================================
-
-        document.getElementById("loadingModal").style.display = "flex";
-
-        // ======================================
         // Send Request to FORGE Backend
         // ======================================
 
@@ -41,10 +35,16 @@ export async function generateLink() {
         formData.append("image", imageFile);
         formData.append("destinationUrl", destinationUrl);
 
+        // Firebase Authentication token
+        const token = await auth.currentUser.getIdToken();
+
         const response = await fetch(
             "https://forge.gentlewarrior.world/generate",
             {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 body: formData
             }
         );
@@ -62,12 +62,6 @@ export async function generateLink() {
         }
 
         // ======================================
-        // Hide Loading
-        // ======================================
-
-        document.getElementById("loadingModal").style.display = "none";
-
-        // ======================================
         // Success
         // ======================================
 
@@ -75,27 +69,17 @@ export async function generateLink() {
 
         const generatedLink = result.shortUrl;
 
-        // Notify UI
-        window.dispatchEvent(
-            new CustomEvent("forge:link-generated", {
-                detail: {
-                    link: generatedLink,
-                    remainingSparks: result.remainingSparks
-                }
-            })
-        );
+        alert(`🎉 Link Generated!
+
+${generatedLink}
+
+Remaining Sparks: ${result.remainingSparks}`);
 
         return generatedLink;
 
     }
 
     catch (error) {
-
-        // ======================================
-        // Hide Loading
-        // ======================================
-
-        document.getElementById("loadingModal").style.display = "none";
 
         console.error(error);
 
