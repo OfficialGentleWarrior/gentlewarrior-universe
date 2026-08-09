@@ -506,7 +506,9 @@ document.querySelectorAll(".task-card").forEach(card => {
 
     card.addEventListener("click", () => {
 
-        openTask(card.dataset.task);
+        const taskId = card.dataset.task;
+
+        openTask(taskId);
 
     });
 
@@ -533,11 +535,9 @@ function openTask(taskId) {
     const platform =
         PLATFORM_CONFIG[task.platform] || {
 
-            icon:
-                "fa-solid fa-arrow-up-right-from-square",
+            icon: "fa-solid fa-arrow-up-right-from-square",
 
-            buttonText:
-                `Open ${task.platform}`
+            buttonText: `Open ${task.platform}`
 
         };
 
@@ -563,6 +563,10 @@ function openTask(taskId) {
         </p>
 
 
+        <!-- ==================================
+             STEP 1
+        ================================== -->
+
         <div class="task-step">
 
             <div class="task-step-number">
@@ -582,12 +586,10 @@ function openTask(taskId) {
 
 
                 <a
-                    href="${task.link}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="task-open-btn"
-                    onclick="event.stopPropagation();"
-                >
+    href="${task.link}"
+    class="task-open-btn"
+    onclick="event.preventDefault(); event.stopPropagation(); window.open(this.href, '_blank');"
+>
 
                     <i class="${platform.icon}"></i>
 
@@ -601,6 +603,10 @@ function openTask(taskId) {
 
         </div>
 
+
+        <!-- ==================================
+             STEP 2
+        ================================== -->
 
         <div class="task-step">
 
@@ -640,6 +646,10 @@ function openTask(taskId) {
 
         </div>
 
+
+        <!-- ==================================
+             STEP 3
+        ================================== -->
 
         <div class="task-step">
 
@@ -717,6 +727,10 @@ function openTask(taskId) {
         </div>
 
 
+        <!-- ==================================
+             REVIEW NOTICE
+        ================================== -->
+
         <div class="review-notice">
 
             <i class="fa-solid fa-circle-info"></i>
@@ -728,6 +742,10 @@ function openTask(taskId) {
 
         </div>
 
+
+        <!-- ==================================
+             SUBMIT
+        ================================== -->
 
         <button
             type="button"
@@ -783,11 +801,13 @@ function setupProofForm() {
     let screenshotReady = false;
 
 
+    /* ==================================
+       Screenshot Upload
+    ================================== */
+
     screenshotInput.addEventListener("change", () => {
 
-        const file =
-            screenshotInput.files[0];
-
+        const file = screenshotInput.files[0];
 
         if (!file) {
 
@@ -802,7 +822,7 @@ function setupProofForm() {
 
         if (
             !["image/png", "image/jpeg"]
-                .includes(file.type)
+            .includes(file.type)
         ) {
 
             alert(
@@ -820,10 +840,7 @@ function setupProofForm() {
         }
 
 
-        if (
-            file.size >
-            5 * 1024 * 1024
-        ) {
+        if (file.size > 5 * 1024 * 1024) {
 
             alert(
                 "Screenshot must be 5 MB or smaller."
@@ -840,25 +857,22 @@ function setupProofForm() {
         }
 
 
-        const reader =
-            new FileReader();
+        const reader = new FileReader();
 
 
-        reader.onload =
-            event => {
+        reader.onload = event => {
 
-                previewImage.src =
-                    event.target.result;
+            previewImage.src =
+                event.target.result;
 
-                preview.style.display =
-                    "block";
+            preview.style.display =
+                "block";
 
-                screenshotReady =
-                    true;
+            screenshotReady = true;
 
-                updateSubmitButton();
+            updateSubmitButton();
 
-            };
+        };
 
 
         reader.readAsDataURL(file);
@@ -866,21 +880,22 @@ function setupProofForm() {
     });
 
 
+    /* ==================================
+       Remove Screenshot
+    ================================== */
+
     removeButton.addEventListener(
         "click",
         () => {
 
-            screenshotInput.value =
-                "";
+            screenshotInput.value = "";
 
-            previewImage.src =
-                "";
+            previewImage.src = "";
 
             preview.style.display =
                 "none";
 
-            screenshotReady =
-                false;
+            screenshotReady = false;
 
             updateSubmitButton();
 
@@ -888,11 +903,19 @@ function setupProofForm() {
     );
 
 
+    /* ==================================
+       Name Input
+    ================================== */
+
     nameInput.addEventListener(
         "input",
         updateSubmitButton
     );
 
+
+    /* ==================================
+       Submit
+    ================================== */
 
     submitButton.addEventListener(
         "click",
@@ -905,19 +928,21 @@ function setupProofForm() {
                 screenshotInput.files[0];
 
 
-            if (
-                !name ||
-                !file
-            ) {
+            if (!name || !file) {
 
                 return;
 
             }
 
 
-            submitButton.disabled =
-                true;
+            /*
+             * FRONTEND ONLY
+             *
+             * No SPARK is awarded.
+             * Backend/admin validation comes later.
+             */
 
+            submitButton.disabled = true;
 
             submitButton.innerHTML = `
 
@@ -928,11 +953,9 @@ function setupProofForm() {
             `;
 
 
-            nameInput.disabled =
-                true;
+            nameInput.disabled = true;
 
-            screenshotInput.disabled =
-                true;
+            screenshotInput.disabled = true;
 
 
             const uploadLabel =
@@ -960,18 +983,18 @@ function setupProofForm() {
     );
 
 
+    /* ==================================
+       Validate
+    ================================== */
+
     function updateSubmitButton() {
 
         const validName =
-            nameInput.value.trim().length >
-            0;
+            nameInput.value.trim().length > 0;
 
 
         submitButton.disabled =
-            !(
-                validName &&
-                screenshotReady
-            );
+            !(validName && screenshotReady);
 
     }
 
@@ -988,8 +1011,7 @@ function closeTaskModal() {
         "is-open"
     );
 
-    document.body.style.overflow =
-        "";
+    document.body.style.overflow = "";
 
 }
 
