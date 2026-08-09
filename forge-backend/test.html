@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FORGE Backend Upload Test</title>
+</head>
+<body>
+
+    <h1>FORGE Backend Upload Test</h1>
+
+    <input type="file" id="image">
+    <br><br>
+
+    <input
+        id="destinationUrl"
+        type="text"
+        placeholder="https://google.com"
+        value="https://google.com"
+        style="width:500px;"
+    >
+
+    <br><br>
+
+    <button id="btn">Generate</button>
+
+    <h2>Response</h2>
+
+    <pre id="result"></pre>
+
+<script>
+
+document.getElementById("btn").onclick = async () => {
+
+    const image =
+        document.getElementById("image").files[0];
+
+    const destinationUrl =
+        document.getElementById("destinationUrl").value;
+
+    if (!image) {
+        alert("Please choose an image.");
+        return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("image", image);
+    formData.append("destinationUrl", destinationUrl);
+
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:5001/gentle-warrior/asia-southeast1/api/api/generate",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const text = await response.text();
+
+        document.getElementById("result").textContent = text;
+
+    } catch (err) {
+
+        console.error(err);
+
+        document.getElementById("result").textContent =
+            err.toString();
+
+    }
+
+};
+
+</script>
+
+</body>
+</html>

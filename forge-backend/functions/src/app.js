@@ -2,10 +2,18 @@ const express = require("express");
 
 const app = express();
 
-// Parse JSON requests
-app.use(express.json());
+// Parse JSON body
+// app.use(express.json());
 
-// Health Check
+// Import Generate Route
+const generateRoute = require("./generate");
+
+/*
+|--------------------------------------------------------------------------
+| Health Check
+|--------------------------------------------------------------------------
+*/
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -14,5 +22,17 @@ app.get("/", (req, res) => {
     status: "online",
   });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Generate Link API
+|--------------------------------------------------------------------------
+*/
+app.use((req, res, next) => {
+  console.log(req.method, req.url, req.headers["content-type"]);
+  next();
+});
+
+app.use("/api/generate", generateRoute);
 
 module.exports = app;
