@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tasks | FORGE</title>
+
+    <meta name="description"
+          content="Earn free SPARKS through FORGE tasks">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="css/tasks.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <img
+        src="assets/logo/forge-header.png"
+        alt="FORGE"
+        class="dashboard-logo">
+
+    <button
+        id="notificationsBtn"
+        class="notifications-btn"
+        type="button"
+        aria-label="Notifications">
+
+        <i class="fa-regular fa-bell"></i>
+
+    </button>
+
+</header>
+
+
+<main class="dashboard-container">
+
+    <!-- Page Header -->
+
+    <section class="page-header">
+
+        <a href="dashboard.html" class="back-btn">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Dashboard
+
+        </a>
+
+        <h1>Tasks</h1>
+
+        <p>
+            Earn free SPARKS through tasks
+        </p>
+
+    </section>
+
+
+    <!-- Community -->
+
+    <section class="task-group">
+
+        <div class="task-group-header">
+
+            <div class="task-group-icon community-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+
+                <h2>Community</h2>
+
+                <p>
+                    Support and join the Gentle Warrior community
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Task 1 -->
+
+        <button
+            class="task-card"
+            id="followBabyLeamTask"
+            type="button">
+
+            <div class="task-card-icon">
+                <i class="fa-brands fa-facebook"></i>
+            </div>
+
+            <div class="task-card-content">
+
+                <h3>
+                    Follow Baby Leam's Page
+                </h3>
+
+                <span>
+                    Follow the page and submit proof
+                </span>
+
+            </div>
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right task-arrow"></i>
+
+        </button>
+
+    </section>
+
+</main>
+
+
+<!-- ======================================
+     Task Modal
+====================================== -->
+
+<div
+    id="taskModal"
+    class="task-modal"
+    aria-hidden="true">
+
+    <div class="task-modal-card">
+
+        <!-- Close -->
+
+        <button
+            id="closeTaskModal"
+            class="task-modal-close"
+            type="button"
+            aria-label="Close">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <!-- Reward -->
+
+        <div class="task-reward-badge">
+
+            <i class="fa-solid fa-sparkles"></i>
+
+            +1 SPARK
+
+        </div>
+
+
+        <h2>
+            Follow Baby Leam's Page
+        </h2>
+
+        <p class="task-modal-intro">
+            Follow the Baby Leam Facebook Page
+            and submit your proof to earn 1 SPARK.
+        </p>
+
+
+        <!-- Step 1 -->
+
+        <div class="task-step">
+
+            <span class="task-step-number">
+                1
+            </span>
+
+            <div class="task-step-content">
+
+                <h3>
+                    Follow the Facebook Page
+                </h3>
+
+                <p>
+                    Open the Baby Leam Facebook Page
+                    and follow the page.
+                </p>
+
+                <a
+                    href="https://facebook.com/BabyLeamOfficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="task-open-btn">
+
+                    <i class="fa-brands fa-facebook"></i>
+
+                    Open Facebook Page
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Step 2 -->
+
+        <div class="task-step">
+
+            <span class="task-step-number">
+                2
+            </span>
+
+            <div class="task-step-content">
+
+                <h3>
+                    Enter your Facebook name
+                </h3>
+
+                <p>
+                    Provide the name or Page you used
+                    to follow Baby Leam.
+                </p>
+
+                <label
+                    for="facebookName"
+                    class="proof-label">
+
+                    Facebook Name / Page
+
+                </label>
+
+                <input
+                    type="text"
+                    id="facebookName"
+                    class="proof-input"
+                    placeholder="Enter your Facebook name"
+                    autocomplete="off">
+
+            </div>
+
+        </div>
+
+
+        <!-- Step 3 -->
+
+        <div class="task-step">
+
+            <span class="task-step-number">
+                3
+            </span>
+
+            <div class="task-step-content">
+
+                <h3>
+                    Upload screenshot proof
+                </h3>
+
+                <p>
+                    Upload a screenshot showing that
+                    you followed the page.
+                </p>
+
+
+                <label
+                    for="proofScreenshot"
+                    class="screenshot-upload">
+
+                    <i class="fa-solid fa-camera"></i>
+
+                    <strong>
+                        Upload Screenshot
+                    </strong>
+
+                    <small>
+                        PNG, JPG • Max 5 MB
+                    </small>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="proofScreenshot"
+                    accept="image/png,image/jpeg"
+                    hidden>
+
+
+                <!-- Screenshot Preview -->
+
+                <div
+                    id="screenshotPreview"
+                    class="screenshot-preview"
+                    style="display:none;">
+
+                    <img
+                        id="proofPreviewImage"
+                        src=""
+                        alt="Screenshot proof">
+
+                    <button
+                        id="removeScreenshot"
+                        type="button"
+                        class="remove-screenshot">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Review Notice -->
+
+        <div class="review-notice">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            <p>
+                Your submission will be reviewed before
+                the SPARK is added to your account.
+            </p>
+
+        </div>
+
+
+        <!-- Submit -->
+
+        <button
+            id="submitTaskBtn"
+            class="submit-task-btn"
+            type="button"
+            disabled>
+
+            <i class="fa-solid fa-paper-plane"></i>
+
+            Submit for Review
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script
+    type="module"
+    src="js/tasks.js">
+</script>
+
+</body>
+
+</html>
