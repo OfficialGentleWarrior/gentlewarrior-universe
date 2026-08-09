@@ -587,8 +587,9 @@ function openTask(taskId) {
 
                 <a
     href="${task.link}"
+    target="_blank"
+    rel="noopener noreferrer"
     class="task-open-btn"
-    onclick="event.preventDefault(); event.stopPropagation(); window.open(this.href, '_blank');"
 >
 
                     <i class="${platform.icon}"></i>
