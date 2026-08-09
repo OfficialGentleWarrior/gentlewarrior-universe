@@ -506,9 +506,7 @@ document.querySelectorAll(".task-card").forEach(card => {
 
     card.addEventListener("click", () => {
 
-        const taskId = card.dataset.task;
-
-        openTask(taskId);
+        openTask(card.dataset.task);
 
     });
 
@@ -565,10 +563,6 @@ function openTask(taskId) {
         </p>
 
 
-        <!-- ==================================
-             STEP 1
-        ================================== -->
-
         <div class="task-step">
 
             <div class="task-step-number">
@@ -587,17 +581,12 @@ function openTask(taskId) {
                 </p>
 
 
-                <!--
-                    REAL LINK
-                    Opens directly in a NEW TAB.
-                    No window.open().
-                -->
-
                 <a
                     href="${task.link}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="task-open-btn"
+                    onclick="event.stopPropagation();"
                 >
 
                     <i class="${platform.icon}"></i>
@@ -612,10 +601,6 @@ function openTask(taskId) {
 
         </div>
 
-
-        <!-- ==================================
-             STEP 2
-        ================================== -->
 
         <div class="task-step">
 
@@ -656,10 +641,6 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- ==================================
-             STEP 3
-        ================================== -->
-
         <div class="task-step">
 
             <div class="task-step-number">
@@ -672,7 +653,6 @@ function openTask(taskId) {
                 <h3>
                     Upload screenshot proof
                 </h3>
-
 
                 <p>
                     Upload a screenshot showing that you completed this task.
@@ -737,10 +717,6 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- ==================================
-             REVIEW NOTICE
-        ================================== -->
-
         <div class="review-notice">
 
             <i class="fa-solid fa-circle-info"></i>
@@ -752,10 +728,6 @@ function openTask(taskId) {
 
         </div>
 
-
-        <!-- ==================================
-             SUBMIT
-        ================================== -->
 
         <button
             type="button"
@@ -810,10 +782,6 @@ function setupProofForm() {
 
     let screenshotReady = false;
 
-
-    /* ==================================
-       Screenshot Upload
-    ================================== */
 
     screenshotInput.addEventListener("change", () => {
 
@@ -898,10 +866,6 @@ function setupProofForm() {
     });
 
 
-    /* ==================================
-       Remove Screenshot
-    ================================== */
-
     removeButton.addEventListener(
         "click",
         () => {
@@ -924,19 +888,11 @@ function setupProofForm() {
     );
 
 
-    /* ==================================
-       Name Input
-    ================================== */
-
     nameInput.addEventListener(
         "input",
         updateSubmitButton
     );
 
-
-    /* ==================================
-       Submit
-    ================================== */
 
     submitButton.addEventListener(
         "click",
@@ -958,13 +914,6 @@ function setupProofForm() {
 
             }
 
-
-            /*
-             * FRONTEND ONLY
-             *
-             * No SPARK is awarded.
-             * Backend/admin validation comes later.
-             */
 
             submitButton.disabled =
                 true;
@@ -1010,10 +959,6 @@ function setupProofForm() {
         }
     );
 
-
-    /* ==================================
-       Validate
-    ================================== */
 
     function updateSubmitButton() {
 
