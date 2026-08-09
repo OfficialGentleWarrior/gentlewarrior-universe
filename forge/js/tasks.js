@@ -30,7 +30,6 @@ const TASKS = {
             "Follow the Baby Leam Facebook Page and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "Facebook",
 
         link:
@@ -66,7 +65,6 @@ const TASKS = {
             "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "Facebook",
 
         link:
@@ -102,7 +100,6 @@ const TASKS = {
             "Join the Gentle Warrior Messenger community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "Messenger",
 
         link:
@@ -138,7 +135,6 @@ const TASKS = {
             "Join the Gentle Warrior Telegram community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "Telegram",
 
         link:
@@ -174,7 +170,6 @@ const TASKS = {
             "Join the Gentle Warrior X Community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "X",
 
         link:
@@ -199,7 +194,7 @@ const TASKS = {
 
 
     /* ==================================
-       MUSIC — TASK 3
+       MUSIC — TASK 1
     ================================== */
 
     follow_gentle_warrior_spotify: {
@@ -211,7 +206,6 @@ const TASKS = {
             "Follow Gentle Warrior on Spotify and submit your proof to earn 1 SPARK.",
 
         reward: 1,
-
         platform: "Spotify",
 
         link:
@@ -231,6 +225,114 @@ const TASKS = {
 
         proofDescription:
             "Provide the Spotify name you used to follow Gentle Warrior."
+
+    },
+
+
+    /* ==================================
+       MUSIC — TASK 2
+    ================================== */
+
+    add_gentle_warrior_playlist: {
+
+        title:
+            "Add Gentle Warrior's Music to Your Spotify Playlist",
+
+        description:
+            "Add Gentle Warrior's music to your Spotify playlist and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+        platform: "Spotify",
+
+        link:
+            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
+
+        stepTitle:
+            "Add Gentle Warrior's Music to Your Playlist",
+
+        stepDescription:
+            "Open Gentle Warrior on Spotify and add the music to one of your playlists.",
+
+        proofLabel:
+            "Spotify Name",
+
+        proofPlaceholder:
+            "Enter your Spotify name",
+
+        proofDescription:
+            "Provide the Spotify name you used to add the music to your playlist."
+
+    },
+
+
+    /* ==================================
+       MUSIC — TASK 3
+    ================================== */
+
+    share_gentle_warrior_spotify: {
+
+        title:
+            "Share Gentle Warrior on Spotify",
+
+        description:
+            "Share Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+        platform: "Spotify",
+
+        link:
+            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
+
+        stepTitle:
+            "Share Gentle Warrior on Spotify",
+
+        stepDescription:
+            "Open Gentle Warrior on Spotify and share the music.",
+
+        proofLabel:
+            "Spotify Name",
+
+        proofPlaceholder:
+            "Enter your Spotify name",
+
+        proofDescription:
+            "Provide the Spotify name you used to share Gentle Warrior."
+
+    },
+
+
+    /* ==================================
+       MUSIC — TASK 4
+    ================================== */
+
+    listen_gentle_warrior_spotify: {
+
+        title:
+            "Listen to Gentle Warrior on Spotify",
+
+        description:
+            "Listen to Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+        platform: "Spotify",
+
+        link:
+            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
+
+        stepTitle:
+            "Listen to Gentle Warrior on Spotify",
+
+        stepDescription:
+            "Open Gentle Warrior on Spotify and listen to the music.",
+
+        proofLabel:
+            "Spotify Name",
+
+        proofPlaceholder:
+            "Enter your Spotify name",
+
+        proofDescription:
+            "Provide the Spotify name you used to listen to Gentle Warrior."
 
     }
 
@@ -395,7 +497,7 @@ function openTask(taskId) {
                 </h3>
 
                 <p>
-                    Upload a screenshot showing that you followed Gentle Warrior on Spotify.
+                    Upload a screenshot showing that you completed this task.
                 </p>
 
 
