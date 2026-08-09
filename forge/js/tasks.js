@@ -30,6 +30,7 @@ const TASKS = {
             "Follow the Baby Leam Facebook Page and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Facebook",
 
         link:
@@ -45,7 +46,7 @@ const TASKS = {
             "Facebook Name / Page",
 
         proofPlaceholder:
-            "Enter your Facebook name",
+            "Enter your Facebook name or Page",
 
         proofDescription:
             "Provide the name or Page you used to follow Baby Leam."
@@ -65,6 +66,7 @@ const TASKS = {
             "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Facebook",
 
         link:
@@ -80,7 +82,7 @@ const TASKS = {
             "Facebook Name / Page",
 
         proofPlaceholder:
-            "Enter your Facebook name",
+            "Enter your Facebook name or Page",
 
         proofDescription:
             "Provide the name or Page you used to follow Gentle Warrior."
@@ -100,6 +102,7 @@ const TASKS = {
             "Join the Gentle Warrior Messenger community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Messenger",
 
         link:
@@ -135,6 +138,7 @@ const TASKS = {
             "Join the Gentle Warrior Telegram community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Telegram",
 
         link:
@@ -170,6 +174,7 @@ const TASKS = {
             "Join the Gentle Warrior X Community and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "X",
 
         link:
@@ -206,6 +211,7 @@ const TASKS = {
             "Follow Gentle Warrior on Spotify and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Spotify",
 
         link:
@@ -242,6 +248,7 @@ const TASKS = {
             "Add Gentle Warrior's music to your Spotify playlist and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Spotify",
 
         link:
@@ -278,6 +285,7 @@ const TASKS = {
             "Share Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Spotify",
 
         link:
@@ -314,6 +322,7 @@ const TASKS = {
             "Listen to Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
 
         reward: 1,
+
         platform: "Spotify",
 
         link:
@@ -331,7 +340,7 @@ const TASKS = {
         proofPlaceholder:
             "Enter your Spotify name",
 
-                proofDescription:
+        proofDescription:
             "Provide the Spotify name you used to listen to Gentle Warrior."
 
     },
@@ -451,6 +460,45 @@ const TASKS = {
 
 
 /* ======================================
+   PLATFORM CONFIG
+====================================== */
+
+const PLATFORM_CONFIG = {
+
+    Facebook: {
+        icon: "fa-brands fa-facebook",
+        buttonText: "Open Facebook"
+    },
+
+    Messenger: {
+        icon: "fa-brands fa-facebook-messenger",
+        buttonText: "Open Messenger"
+    },
+
+    Telegram: {
+        icon: "fa-brands fa-telegram",
+        buttonText: "Open Telegram"
+    },
+
+    X: {
+        icon: "fa-brands fa-x-twitter",
+        buttonText: "Open X"
+    },
+
+    Spotify: {
+        icon: "fa-brands fa-spotify",
+        buttonText: "Open Spotify"
+    },
+
+    YouTube: {
+        icon: "fa-brands fa-youtube",
+        buttonText: "Open YouTube"
+    }
+
+};
+
+
+/* ======================================
    TASK CARD CLICK
 ====================================== */
 
@@ -482,6 +530,16 @@ function openTask(taskId) {
         return;
 
     }
+
+
+    const platform =
+        PLATFORM_CONFIG[task.platform] || {
+
+            icon: "fa-solid fa-arrow-up-right-from-square",
+
+            buttonText: `Open ${task.platform}`
+
+        };
 
 
     taskModalContent.innerHTML = `
@@ -534,9 +592,9 @@ function openTask(taskId) {
                     class="task-open-btn"
                 >
 
-                    <i class="fa-brands fa-spotify"></i>
+                    <i class="${platform.icon}"></i>
 
-                    Open Spotify
+                    ${platform.buttonText}
 
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
@@ -561,7 +619,7 @@ function openTask(taskId) {
             <div class="task-step-content">
 
                 <h3>
-                    Enter your Spotify name
+                    Enter your ${task.platform} name
                 </h3>
 
                 <p>
