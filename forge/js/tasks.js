@@ -535,9 +535,11 @@ function openTask(taskId) {
     const platform =
         PLATFORM_CONFIG[task.platform] || {
 
-            icon: "fa-solid fa-arrow-up-right-from-square",
+            icon:
+                "fa-solid fa-arrow-up-right-from-square",
 
-            buttonText: `Open ${task.platform}`
+            buttonText:
+                `Open ${task.platform}`
 
         };
 
@@ -585,10 +587,18 @@ function openTask(taskId) {
                 </p>
 
 
+                <!--
+                    REAL LINK
+                    Opens directly in a NEW TAB.
+                    No window.open().
+                -->
+
                 <a
-    href="${task.link}"
-    class="task-open-btn"
->
+                    href="${task.link}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="task-open-btn"
+                >
 
                     <i class="${platform.icon}"></i>
 
@@ -662,6 +672,7 @@ function openTask(taskId) {
                 <h3>
                     Upload screenshot proof
                 </h3>
+
 
                 <p>
                     Upload a screenshot showing that you completed this task.
@@ -806,7 +817,9 @@ function setupProofForm() {
 
     screenshotInput.addEventListener("change", () => {
 
-        const file = screenshotInput.files[0];
+        const file =
+            screenshotInput.files[0];
+
 
         if (!file) {
 
@@ -821,7 +834,7 @@ function setupProofForm() {
 
         if (
             !["image/png", "image/jpeg"]
-            .includes(file.type)
+                .includes(file.type)
         ) {
 
             alert(
@@ -839,7 +852,10 @@ function setupProofForm() {
         }
 
 
-        if (file.size > 5 * 1024 * 1024) {
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
 
             alert(
                 "Screenshot must be 5 MB or smaller."
@@ -856,22 +872,25 @@ function setupProofForm() {
         }
 
 
-        const reader = new FileReader();
+        const reader =
+            new FileReader();
 
 
-        reader.onload = event => {
+        reader.onload =
+            event => {
 
-            previewImage.src =
-                event.target.result;
+                previewImage.src =
+                    event.target.result;
 
-            preview.style.display =
-                "block";
+                preview.style.display =
+                    "block";
 
-            screenshotReady = true;
+                screenshotReady =
+                    true;
 
-            updateSubmitButton();
+                updateSubmitButton();
 
-        };
+            };
 
 
         reader.readAsDataURL(file);
@@ -887,14 +906,17 @@ function setupProofForm() {
         "click",
         () => {
 
-            screenshotInput.value = "";
+            screenshotInput.value =
+                "";
 
-            previewImage.src = "";
+            previewImage.src =
+                "";
 
             preview.style.display =
                 "none";
 
-            screenshotReady = false;
+            screenshotReady =
+                false;
 
             updateSubmitButton();
 
@@ -927,7 +949,10 @@ function setupProofForm() {
                 screenshotInput.files[0];
 
 
-            if (!name || !file) {
+            if (
+                !name ||
+                !file
+            ) {
 
                 return;
 
@@ -941,7 +966,9 @@ function setupProofForm() {
              * Backend/admin validation comes later.
              */
 
-            submitButton.disabled = true;
+            submitButton.disabled =
+                true;
+
 
             submitButton.innerHTML = `
 
@@ -952,9 +979,11 @@ function setupProofForm() {
             `;
 
 
-            nameInput.disabled = true;
+            nameInput.disabled =
+                true;
 
-            screenshotInput.disabled = true;
+            screenshotInput.disabled =
+                true;
 
 
             const uploadLabel =
@@ -989,11 +1018,15 @@ function setupProofForm() {
     function updateSubmitButton() {
 
         const validName =
-            nameInput.value.trim().length > 0;
+            nameInput.value.trim().length >
+            0;
 
 
         submitButton.disabled =
-            !(validName && screenshotReady);
+            !(
+                validName &&
+                screenshotReady
+            );
 
     }
 
@@ -1010,7 +1043,8 @@ function closeTaskModal() {
         "is-open"
     );
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
 
 }
 
