@@ -34,7 +34,7 @@ const TASKS = {
         platform: "Facebook",
 
         link:
-            "https://facebook.com/BabyLeamOfficial",
+            "https://www.facebook.com/BabyLeamOfficial",
 
         stepTitle:
             "Follow the Facebook Page",
@@ -70,7 +70,7 @@ const TASKS = {
         platform: "Facebook",
 
         link:
-            "https://facebook.com/GentleWarriorOfficial",
+            "https://www.facebook.com/GentleWarriorOfficial",
 
         stepTitle:
             "Follow the Facebook Page",
