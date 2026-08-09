@@ -7,9 +7,14 @@
    Modal Elements
 ====================================== */
 
-const taskModal = document.getElementById("taskModal");
-const taskModalContent = document.getElementById("taskModalContent");
-const taskModalClose = document.querySelector(".task-modal-close");
+const taskModal =
+    document.getElementById("taskModal");
+
+const taskModalContent =
+    document.getElementById("taskModalContent");
+
+const taskModalClose =
+    document.querySelector(".task-modal-close");
 
 
 /* ======================================
@@ -60,7 +65,8 @@ const TASKS = {
 
     follow_gentle_warrior: {
 
-        title: "Follow Gentle Warrior's Page",
+        title:
+            "Follow Gentle Warrior's Page",
 
         description:
             "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
@@ -96,7 +102,8 @@ const TASKS = {
 
     join_messenger_gc: {
 
-        title: "Join our Messenger GC",
+        title:
+            "Join our Messenger GC",
 
         description:
             "Join the Gentle Warrior Messenger community and submit your proof to earn 1 SPARK.",
@@ -132,7 +139,8 @@ const TASKS = {
 
     join_tg_community: {
 
-        title: "Join our TG Community",
+        title:
+            "Join our TG Community",
 
         description:
             "Join the Gentle Warrior Telegram community and submit your proof to earn 1 SPARK.",
@@ -168,7 +176,8 @@ const TASKS = {
 
     join_x_community: {
 
-        title: "Join our X Community",
+        title:
+            "Join our X Community",
 
         description:
             "Join the Gentle Warrior X Community and submit your proof to earn 1 SPARK.",
@@ -506,7 +515,8 @@ document.querySelectorAll(".task-card").forEach(card => {
 
     card.addEventListener("click", () => {
 
-        const taskId = card.dataset.task;
+        const taskId =
+            card.dataset.task;
 
         openTask(taskId);
 
@@ -521,11 +531,15 @@ document.querySelectorAll(".task-card").forEach(card => {
 
 function openTask(taskId) {
 
-    const task = TASKS[taskId];
+    const task =
+        TASKS[taskId];
 
     if (!task) {
 
-        console.warn("Task not found:", taskId);
+        console.warn(
+            "Task not found:",
+            taskId
+        );
 
         return;
 
@@ -535,9 +549,11 @@ function openTask(taskId) {
     const platform =
         PLATFORM_CONFIG[task.platform] || {
 
-            icon: "fa-solid fa-arrow-up-right-from-square",
+            icon:
+                "fa-solid fa-arrow-up-right-from-square",
 
-            buttonText: `Open ${task.platform}`
+            buttonText:
+                `Open ${task.platform}`
 
         };
 
@@ -586,11 +602,12 @@ function openTask(taskId) {
 
 
                 <a
-    href="${task.link}"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="task-open-btn"
->
+                    href="${task.link}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="task-open-btn"
+                    data-external-link="true"
+                >
 
                     <i class="${platform.icon}"></i>
 
@@ -764,12 +781,89 @@ function openTask(taskId) {
     `;
 
 
-    taskModal.classList.add("is-open");
+    taskModal.classList.add(
+        "is-open"
+    );
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+        "hidden";
+
+
+    setupExternalLink();
 
 
     setupProofForm();
+
+}
+
+
+/* ======================================
+   EXTERNAL LINK
+====================================== */
+
+function setupExternalLink() {
+
+    const link =
+        taskModalContent.querySelector(
+            "[data-external-link]"
+        );
+
+    if (!link) {
+
+        return;
+
+    }
+
+
+    link.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            const url =
+                this.getAttribute("href");
+
+            if (!url) {
+
+                return;
+
+            }
+
+
+            /*
+             * Open directly from the user's tap.
+             * This avoids the modal/backdrop click
+             * interfering with the external link.
+             */
+
+            const newTab =
+                window.open(
+                    url,
+                    "_blank"
+                );
+
+
+            /*
+             * Some mobile browsers may block
+             * window.open(). If that happens,
+             * navigate using the normal anchor.
+             */
+
+            if (!newTab) {
+
+                window.location.href =
+                    url;
+
+            }
+
+        },
+        {
+            once: true
+        }
+    );
 
 }
 
@@ -781,104 +875,151 @@ function openTask(taskId) {
 function setupProofForm() {
 
     const nameInput =
-        document.getElementById("proofName");
+        document.getElementById(
+            "proofName"
+        );
 
     const screenshotInput =
-        document.getElementById("proofScreenshot");
+        document.getElementById(
+            "proofScreenshot"
+        );
 
     const submitButton =
-        document.getElementById("submitTask");
+        document.getElementById(
+            "submitTask"
+        );
 
     const preview =
-        document.getElementById("screenshotPreview");
+        document.getElementById(
+            "screenshotPreview"
+        );
 
     const previewImage =
-        document.getElementById("previewImage");
+        document.getElementById(
+            "previewImage"
+        );
 
     const removeButton =
-        document.getElementById("removeScreenshot");
+        document.getElementById(
+            "removeScreenshot"
+        );
 
 
-    let screenshotReady = false;
+    if (
+        !nameInput ||
+        !screenshotInput ||
+        !submitButton ||
+        !preview ||
+        !previewImage ||
+        !removeButton
+    ) {
+
+        return;
+
+    }
+
+
+    let screenshotReady =
+        false;
 
 
     /* ==================================
        Screenshot Upload
     ================================== */
 
-    screenshotInput.addEventListener("change", () => {
+    screenshotInput.addEventListener(
+        "change",
+        () => {
 
-        const file = screenshotInput.files[0];
-
-        if (!file) {
-
-            screenshotReady = false;
-
-            updateSubmitButton();
-
-            return;
-
-        }
+            const file =
+                screenshotInput.files[0];
 
 
-        if (
-            !["image/png", "image/jpeg"]
-            .includes(file.type)
-        ) {
+            if (!file) {
 
-            alert(
-                "Please upload a PNG or JPG image."
+                screenshotReady =
+                    false;
+
+                updateSubmitButton();
+
+                return;
+
+            }
+
+
+            if (
+                ![
+                    "image/png",
+                    "image/jpeg"
+                ].includes(file.type)
+            ) {
+
+                alert(
+                    "Please upload a PNG or JPG image."
+                );
+
+                screenshotInput.value =
+                    "";
+
+                screenshotReady =
+                    false;
+
+                updateSubmitButton();
+
+                return;
+
+            }
+
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                alert(
+                    "Screenshot must be 5 MB or smaller."
+                );
+
+                screenshotInput.value =
+                    "";
+
+                screenshotReady =
+                    false;
+
+                updateSubmitButton();
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                event => {
+
+                    previewImage.src =
+                        event.target.result;
+
+                    preview.style.display =
+                        "block";
+
+                    screenshotReady =
+                        true;
+
+                    updateSubmitButton();
+
+                };
+
+
+            reader.readAsDataURL(
+                file
             );
 
-            screenshotInput.value = "";
-
-            screenshotReady = false;
-
-            updateSubmitButton();
-
-            return;
-
         }
-
-
-        if (file.size > 5 * 1024 * 1024) {
-
-            alert(
-                "Screenshot must be 5 MB or smaller."
-            );
-
-            screenshotInput.value = "";
-
-            screenshotReady = false;
-
-            updateSubmitButton();
-
-            return;
-
-        }
-
-
-        const reader = new FileReader();
-
-
-        reader.onload = event => {
-
-            previewImage.src =
-                event.target.result;
-
-            preview.style.display =
-                "block";
-
-            screenshotReady = true;
-
-            updateSubmitButton();
-
-        };
-
-
-        reader.readAsDataURL(file);
-
-    });
+    );
 
 
     /* ==================================
@@ -889,14 +1030,17 @@ function setupProofForm() {
         "click",
         () => {
 
-            screenshotInput.value = "";
+            screenshotInput.value =
+                "";
 
-            previewImage.src = "";
+            previewImage.src =
+                "";
 
             preview.style.display =
                 "none";
 
-            screenshotReady = false;
+            screenshotReady =
+                false;
 
             updateSubmitButton();
 
@@ -929,7 +1073,10 @@ function setupProofForm() {
                 screenshotInput.files[0];
 
 
-            if (!name || !file) {
+            if (
+                !name ||
+                !file
+            ) {
 
                 return;
 
@@ -943,7 +1090,9 @@ function setupProofForm() {
              * Backend/admin validation comes later.
              */
 
-            submitButton.disabled = true;
+            submitButton.disabled =
+                true;
+
 
             submitButton.innerHTML = `
 
@@ -954,9 +1103,11 @@ function setupProofForm() {
             `;
 
 
-            nameInput.disabled = true;
+            nameInput.disabled =
+                true;
 
-            screenshotInput.disabled = true;
+            screenshotInput.disabled =
+                true;
 
 
             const uploadLabel =
@@ -991,11 +1142,15 @@ function setupProofForm() {
     function updateSubmitButton() {
 
         const validName =
-            nameInput.value.trim().length > 0;
+            nameInput.value.trim().length >
+            0;
 
 
         submitButton.disabled =
-            !(validName && screenshotReady);
+            !(
+                validName &&
+                screenshotReady
+            );
 
     }
 
@@ -1012,7 +1167,18 @@ function closeTaskModal() {
         "is-open"
     );
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
+
+
+    /*
+     * Destroy the old dynamic DOM.
+     * Every reopen creates a completely
+     * fresh external link and proof form.
+     */
+
+    taskModalContent.innerHTML =
+        "";
 
 }
 
