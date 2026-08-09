@@ -331,8 +331,119 @@ const TASKS = {
         proofPlaceholder:
             "Enter your Spotify name",
 
-        proofDescription:
+                proofDescription:
             "Provide the Spotify name you used to listen to Gentle Warrior."
+
+    },
+
+
+    /* ==================================
+       YOUTUBE — TASK 1
+    ================================== */
+
+    follow_gentle_warrior_youtube: {
+
+        title:
+            "Subscribe to Gentle Warrior on YouTube",
+
+        description:
+            "Subscribe to the Gentle Warrior YouTube channel and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "YouTube",
+
+        link:
+            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
+
+        stepTitle:
+            "Subscribe to the YouTube Channel",
+
+        stepDescription:
+            "Open the Gentle Warrior YouTube channel and subscribe.",
+
+        proofLabel:
+            "YouTube Name",
+
+        proofPlaceholder:
+            "Enter your YouTube name",
+
+        proofDescription:
+            "Provide the YouTube name you used to subscribe to Gentle Warrior."
+
+    },
+
+
+    /* ==================================
+       YOUTUBE — TASK 2
+    ================================== */
+
+    like_gentle_warrior_youtube: {
+
+        title:
+            "Like Gentle Warrior's Music Video on YouTube",
+
+        description:
+            "Like the Gentle Warrior music video on YouTube and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "YouTube",
+
+        link:
+            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
+
+        stepTitle:
+            "Like the Music Video",
+
+        stepDescription:
+            "Open the Gentle Warrior music video and tap the Like button.",
+
+        proofLabel:
+            "YouTube Name",
+
+        proofPlaceholder:
+            "Enter your YouTube name",
+
+        proofDescription:
+            "Provide the YouTube name you used to like the music video."
+
+    },
+
+
+    /* ==================================
+       YOUTUBE — TASK 3
+    ================================== */
+
+    share_gentle_warrior_youtube: {
+
+        title:
+            "Share Gentle Warrior's Music Video on YouTube",
+
+        description:
+            "Share the Gentle Warrior music video on YouTube and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "YouTube",
+
+        link:
+            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
+
+        stepTitle:
+            "Share the Music Video",
+
+        stepDescription:
+            "Open the Gentle Warrior music video and share it.",
+
+        proofLabel:
+            "YouTube Name",
+
+        proofPlaceholder:
+            "Enter your YouTube name",
+
+        proofDescription:
+            "Provide the YouTube name you used to share the music video."
 
     }
 
