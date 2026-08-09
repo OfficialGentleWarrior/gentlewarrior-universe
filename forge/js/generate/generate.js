@@ -35,13 +35,18 @@ export async function generateLink() {
         formData.append("image", imageFile);
         formData.append("destinationUrl", destinationUrl);
 
-        const response = await fetch(
-            "https://forge.gentlewarrior.world/generate",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
+        const token = await auth.currentUser.getIdToken();
+
+const response = await fetch(
+    "https://forge.gentlewarrior.world/generate",
+    {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    }
+);
 
         const result = await response.json();
 

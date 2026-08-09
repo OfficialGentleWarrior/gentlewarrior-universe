@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const sharp = require("sharp");
-const { db, bucket } = require("./firebase");
+const { db, bucket, auth } = require("./firebase");
 const { randomUUID } = require("crypto");
 
 const app = express();
@@ -48,10 +48,34 @@ app.post("/generate", upload.single("image"), async (req, res) => {
             });
         }
 
-        // TEMP TEST USER
-        const uid = "k9P5wvpQYbg4BkSVl8NF0deM8Tr2";
+        // Verify Firebase Authentication token
+const authHeader = req.headers.authorization;
 
-        const userRef = db.collection("users").doc(uid);
+if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+    });
+}
+
+const idToken = authHeader.split("Bearer ")[1];
+
+let decodedToken;
+
+try {
+    decodedToken = await auth.verifyIdToken(idToken);
+} catch (error) {
+    console.error("Firebase token verification failed:", error);
+
+    return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token",
+    });
+}
+
+const uid = decodedToken.uid;
+
+const userRef = db.collection("users").doc(uid);
         const userSnap = await userRef.get();
 
         if (!userSnap.exists) {
