@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>YouTube Tasks | FORGE</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- FORGE Global CSS -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <!-- Tasks CSS -->
+    <link
+        rel="stylesheet"
+        href="css/tasks.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================
+     FORGE HEADER
+====================================== -->
+
+<header class="topbar">
+
+    <img
+        src="assets/logo/forge-header.png"
+        alt="FORGE"
+        class="dashboard-logo"
+    >
+
+    <button
+        class="notifications-btn"
+        type="button"
+        aria-label="Notifications"
+    >
+
+        <i class="fa-regular fa-bell"></i>
+
+    </button>
+
+</header>
+
+
+<!-- ======================================
+     PAGE
+====================================== -->
+
+<main class="tasks-container">
+
+
+    <!-- Back -->
+
+    <a
+        href="tasks.html"
+        class="back-btn"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Tasks
+
+    </a>
+
+
+    <!-- Page Header -->
+
+    <section class="page-header">
+
+        <h1>
+            YouTube
+        </h1>
+
+        <p>
+            Help Gentle Warrior's music reach more people
+        </p>
+
+    </section>
+
+
+    <!-- ======================================
+         YOUTUBE TASKS
+    ====================================== -->
+
+    <section class="task-group">
+
+
+        <!-- Group Header -->
+
+        <div class="task-group-header">
+
+            <div class="task-group-icon youtube-icon">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+                    YouTube
+                </h2>
+
+                <p>
+                    Help Gentle Warrior's music reach more people
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             TASK 1
+        ================================== -->
+
+        <button
+            class="task-card"
+            type="button"
+            data-task="follow_gentle_warrior_youtube"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Follow Gentle Warrior on YouTube
+                </h3>
+
+                <span>
+                    Subscribe to the channel and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+        <!-- ==================================
+             TASK 2
+        ================================== -->
+
+        <button
+            class="task-card"
+            type="button"
+            data-task="like_gentle_warrior_youtube"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Like the Gentle Warrior's Music Video on YouTube
+                </h3>
+
+                <span>
+                    Like the music video and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+        <!-- ==================================
+             TASK 3
+        ================================== -->
+
+        <button
+            class="task-card"
+            type="button"
+            data-task="share_gentle_warrior_youtube"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Share the Gentle Warrior's Music Video on YouTube
+                </h3>
+
+                <span>
+                    Share the music video and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- ======================================
+     TASK MODAL
+====================================== -->
+
+<div
+    class="task-modal"
+    id="taskModal"
+>
+
+    <div class="task-modal-card">
+
+        <button
+            class="task-modal-close"
+            type="button"
+            aria-label="Close"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <div id="taskModalContent">
+
+            <!-- Task content loaded by JS -->
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================
+     Tasks JS
+====================================== -->
+
+<script src="js/tasks.js"></script>
+
+
+</body>
+
+</html>
