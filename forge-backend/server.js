@@ -174,7 +174,9 @@ await db.collection("links").doc(slug).set({
 });
 
 app.get("/:slug", async (req, res) => {
+
     try {
+
         const { slug } = req.params;
 
         const doc = await db.collection("links").doc(slug).get();
@@ -185,13 +187,52 @@ app.get("/:slug", async (req, res) => {
 
         const link = doc.data();
 
-        return res.redirect(link.destinationUrl);
+        return res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<title>FORGE</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content=".">
+<meta property="og:description" content="">
+<meta property="og:url" content="https://forge.gentlewarrior.world/${slug}">
+
+<meta property="og:image" content="${link.imageUrl}">
+<meta property="og:image:secure_url" content="${link.imageUrl}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FORGE Preview">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${link.imageUrl}">
+
+</head>
+
+<body>
+
+Redirecting...
+
+<script>
+    window.location.replace("${link.destinationUrl}");
+</script
+
+</body>
+</html>
+`);
 
     } catch (err) {
+
         console.error(err);
 
         return res.status(500).send("Server Error");
+
     }
+
 });
 
 
