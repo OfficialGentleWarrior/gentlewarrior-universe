@@ -1019,3 +1019,499 @@
     }
 
 }
+/* ======================================
+   GROUPS-ONLY TASKS PAGE
+====================================== */
+
+
+/* ======================================
+   Main Tasks Container
+====================================== */
+
+.tasks-container{
+    width:100%;
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    padding:28px 20px 50px;
+}
+
+
+/* ======================================
+   Task Groups List
+====================================== */
+
+.task-groups{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+
+/* ======================================
+   Group Card
+====================================== */
+
+.task-group-card{
+    position:relative;
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px;
+
+    background:#fff;
+
+    border:1px solid #edf2f7;
+
+    border-radius:20px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.task-group-card:hover{
+    transform:translateY(-2px);
+
+    border-color:#bbf7d0;
+
+    box-shadow:
+        0 12px 28px rgba(34,197,94,.10);
+}
+
+.task-group-card:active{
+    transform:scale(.99);
+}
+
+
+/* ======================================
+   Group Icon
+====================================== */
+
+.task-group-card .task-group-icon{
+    width:54px;
+    height:54px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    font-size:22px;
+}
+
+
+/* Community */
+
+.community-icon{
+    background:#ecfdf5;
+
+    color:#22c55e;
+}
+
+
+/* Music */
+
+.music-icon{
+    background:#fefce8;
+
+    color:#eab308;
+}
+
+
+/* YouTube */
+
+.youtube-icon{
+    background:#fef2f2;
+
+    color:#ef4444;
+}
+
+
+/* Games */
+
+.games-icon{
+    background:#eff6ff;
+
+    color:#3b82f6;
+}
+
+
+/* Social Media */
+
+.social-icon{
+    background:#f5f3ff;
+
+    color:#8b5cf6;
+}
+
+
+/* GWAR / Web3 */
+
+.gwar-icon{
+    background:#f0fdf4;
+
+    color:#16a34a;
+}
+
+
+/* ======================================
+   Group Content
+====================================== */
+
+.task-group-content{
+    flex:1;
+
+    min-width:0;
+}
+
+.task-group-content h2{
+    margin:0 0 3px;
+
+    font-size:1.05rem;
+
+    font-weight:800;
+
+    color:#111827;
+
+    text-transform:capitalize;
+}
+
+.task-group-content p{
+    margin:0 0 5px;
+
+    color:#6b7280;
+
+    font-size:.88rem;
+
+    line-height:1.4;
+}
+
+.task-group-meta{
+    display:block;
+
+    color:#16a34a;
+
+    font-size:.82rem;
+
+    font-weight:800;
+}
+
+
+/* ======================================
+   Group Arrow
+====================================== */
+
+.task-group-arrow{
+    flex-shrink:0;
+
+    width:34px;
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:15px;
+
+    transition:.2s ease;
+}
+
+.task-group-card:hover .task-group-arrow{
+    color:#16a34a;
+
+    transform:translateX(3px);
+}
+
+
+/* ======================================
+   WATCH ADS
+====================================== */
+
+.watch-ads-section{
+    margin-top:30px;
+}
+
+.watch-ads-divider{
+    width:100%;
+
+    height:1px;
+
+    margin-bottom:20px;
+
+    background:#e5e7eb;
+}
+
+
+.watch-ads-card{
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    width:100%;
+
+    padding:18px;
+
+    background:#fff;
+
+    border:1px solid #fde68a;
+
+    border-radius:20px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.watch-ads-card:hover{
+    transform:translateY(-2px);
+
+    border-color:#fbbf24;
+
+    box-shadow:
+        0 12px 28px rgba(245,158,11,.12);
+}
+
+.watch-ads-card:active{
+    transform:scale(.99);
+}
+
+
+/* ======================================
+   Watch Ads Icon
+====================================== */
+
+.watch-ads-icon{
+    width:54px;
+    height:54px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    background:#fffbeb;
+
+    color:#f59e0b;
+
+    font-size:22px;
+}
+
+
+/* ======================================
+   Watch Ads Content
+====================================== */
+
+.watch-ads-content{
+    flex:1;
+
+    min-width:0;
+}
+
+.watch-ads-content h2{
+    margin:0 0 3px;
+
+    font-size:1.05rem;
+
+    font-weight:800;
+
+    color:#111827;
+}
+
+.watch-ads-content p{
+    margin:0 0 4px;
+
+    color:#374151;
+
+    font-size:.88rem;
+
+    font-weight:600;
+}
+
+.watch-ads-content span{
+    display:block;
+
+    color:#9ca3af;
+
+    font-size:.8rem;
+
+    line-height:1.4;
+}
+
+
+/* ======================================
+   Watch Ads Arrow
+====================================== */
+
+.watch-ads-arrow{
+    flex-shrink:0;
+
+    width:34px;
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:15px;
+
+    transition:.2s ease;
+}
+
+.watch-ads-card:hover .watch-ads-arrow{
+    color:#f59e0b;
+
+    transform:translateX(3px);
+}
+
+
+/* ======================================
+   Groups Mobile
+====================================== */
+
+@media(max-width:768px){
+
+    .tasks-container{
+        padding:24px 16px 40px;
+    }
+
+    .task-group-card,
+    .watch-ads-card{
+        padding:16px;
+
+        gap:13px;
+
+        border-radius:19px;
+    }
+
+    .task-group-card .task-group-icon,
+    .watch-ads-icon{
+        width:50px;
+        height:50px;
+
+        border-radius:15px;
+
+        font-size:20px;
+    }
+
+    .task-group-content h2,
+    .watch-ads-content h2{
+        font-size:1rem;
+    }
+
+    .task-group-content p,
+    .watch-ads-content p{
+        font-size:.84rem;
+    }
+
+    .task-group-meta{
+        font-size:.78rem;
+    }
+
+}
+
+
+/* ======================================
+   Groups Small Phones
+====================================== */
+
+@media(max-width:480px){
+
+    .tasks-container{
+        padding:22px 14px 36px;
+    }
+
+    .task-groups{
+        gap:10px;
+    }
+
+    .task-group-card,
+    .watch-ads-card{
+        padding:15px;
+
+        gap:12px;
+
+        border-radius:18px;
+    }
+
+    .task-group-card .task-group-icon,
+    .watch-ads-icon{
+        width:46px;
+        height:46px;
+
+        border-radius:14px;
+
+        font-size:19px;
+    }
+
+    .task-group-content h2,
+    .watch-ads-content h2{
+        font-size:.98rem;
+    }
+
+    .task-group-content p,
+    .watch-ads-content p{
+        font-size:.8rem;
+    }
+
+    .task-group-meta{
+        font-size:.75rem;
+    }
+
+    .watch-ads-content span{
+        font-size:.74rem;
+    }
+
+    .task-group-arrow,
+    .watch-ads-arrow{
+        width:28px;
+        height:28px;
+
+        font-size:13px;
+    }
+
+}
