@@ -2,6 +2,11 @@
    FORGE Community Tasks
 ====================================== */
 
+
+/* ======================================
+   Modal Elements
+====================================== */
+
 const taskModal = document.getElementById("taskModal");
 const taskModalContent = document.getElementById("taskModalContent");
 const taskModalClose = document.querySelector(".task-modal-close");
@@ -12,6 +17,10 @@ const taskModalClose = document.querySelector(".task-modal-close");
 ====================================== */
 
 const TASKS = {
+
+    /* ==================================
+       TASK 1
+    ================================== */
 
     follow_baby_leam: {
 
@@ -27,6 +36,12 @@ const TASKS = {
         link:
             "https://facebook.com/BabyLeamOfficial",
 
+        stepTitle:
+            "Follow the Facebook Page",
+
+        stepDescription:
+            "Open the Baby Leam Facebook Page and follow the page.",
+
         proofLabel:
             "Facebook Name / Page",
 
@@ -36,13 +51,157 @@ const TASKS = {
         proofDescription:
             "Provide the name or Page you used to follow Baby Leam."
 
+    },
+
+
+    /* ==================================
+       TASK 2
+    ================================== */
+
+    follow_gentle_warrior: {
+
+        title: "Follow Gentle Warrior's Page",
+
+        description:
+            "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "Facebook",
+
+        link:
+            "https://facebook.com/GentleWarriorOfficial",
+
+        stepTitle:
+            "Follow the Facebook Page",
+
+        stepDescription:
+            "Open the Gentle Warrior Facebook Page and follow the page.",
+
+        proofLabel:
+            "Facebook Name / Page",
+
+        proofPlaceholder:
+            "Enter your Facebook name",
+
+        proofDescription:
+            "Provide the name or Page you used to follow Gentle Warrior."
+
+    },
+
+
+    /* ==================================
+       TASK 17
+    ================================== */
+
+    join_messenger_gc: {
+
+        title: "Join our Messenger GC",
+
+        description:
+            "Join the Gentle Warrior Messenger community and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "Messenger",
+
+        link:
+            "https://m.me/j/AbYNtC1uuP4G7bLe/?send_source=gc%3Acopy_invite_link_c",
+
+        stepTitle:
+            "Join the Messenger Group",
+
+        stepDescription:
+            "Open the Messenger invitation and join the Gentle Warrior community chat.",
+
+        proofLabel:
+            "Messenger Name",
+
+        proofPlaceholder:
+            "Enter your Messenger name",
+
+        proofDescription:
+            "Provide the Messenger name you used to join the community."
+
+    },
+
+
+    /* ==================================
+       TASK 18
+    ================================== */
+
+    join_tg_community: {
+
+        title: "Join our TG Community",
+
+        description:
+            "Join the Gentle Warrior Telegram community and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "Telegram",
+
+        link:
+            "https://t.me/OfficialGentleWarriorHQ/632",
+
+        stepTitle:
+            "Join the Telegram Community",
+
+        stepDescription:
+            "Open the Telegram community link and join the Gentle Warrior community.",
+
+        proofLabel:
+            "Telegram Username",
+
+        proofPlaceholder:
+            "Enter your Telegram username",
+
+        proofDescription:
+            "Provide the Telegram username you used to join the community."
+
+    },
+
+
+    /* ==================================
+       TASK 19
+    ================================== */
+
+    join_x_community: {
+
+        title: "Join our X Community",
+
+        description:
+            "Join the Gentle Warrior X Community and submit your proof to earn 1 SPARK.",
+
+        reward: 1,
+
+        platform: "X",
+
+        link:
+            "https://x.com/i/communities/1991734527128137859",
+
+        stepTitle:
+            "Join the X Community",
+
+        stepDescription:
+            "Open the X Community and join the Gentle Warrior community.",
+
+        proofLabel:
+            "X Username",
+
+        proofPlaceholder:
+            "Enter your X username",
+
+        proofDescription:
+            "Provide the X username you used to join the community."
+
     }
 
 };
 
 
 /* ======================================
-   OPEN TASK
+   TASK CARD CLICK
 ====================================== */
 
 document.querySelectorAll(".task-card").forEach(card => {
@@ -59,7 +218,7 @@ document.querySelectorAll(".task-card").forEach(card => {
 
 
 /* ======================================
-   OPEN MODAL
+   OPEN TASK MODAL
 ====================================== */
 
 function openTask(taskId) {
@@ -96,7 +255,9 @@ function openTask(taskId) {
         </p>
 
 
-        <!-- STEP 1 -->
+        <!-- ==================================
+             STEP 1
+        ================================== -->
 
         <div class="task-step">
 
@@ -108,11 +269,11 @@ function openTask(taskId) {
             <div class="task-step-content">
 
                 <h3>
-                    Follow the Facebook Page
+                    ${task.stepTitle}
                 </h3>
 
                 <p>
-                    Open the Baby Leam Facebook Page and follow the page.
+                    ${task.stepDescription}
                 </p>
 
 
@@ -123,9 +284,9 @@ function openTask(taskId) {
                     class="task-open-btn"
                 >
 
-                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
-                    Open Facebook Page
+                    Open ${task.platform}
 
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
@@ -136,7 +297,9 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- STEP 2 -->
+        <!-- ==================================
+             STEP 2
+        ================================== -->
 
         <div class="task-step">
 
@@ -148,7 +311,7 @@ function openTask(taskId) {
             <div class="task-step-content">
 
                 <h3>
-                    Enter your Facebook name
+                    Enter your ${task.platform} name
                 </h3>
 
                 <p>
@@ -177,7 +340,9 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- STEP 3 -->
+        <!-- ==================================
+             STEP 3
+        ================================== -->
 
         <div class="task-step">
 
@@ -193,7 +358,7 @@ function openTask(taskId) {
                 </h3>
 
                 <p>
-                    Upload a screenshot showing that you followed the page.
+                    Upload a screenshot showing that you completed this task.
                 </p>
 
 
@@ -235,6 +400,7 @@ function openTask(taskId) {
                         alt="Screenshot preview"
                     >
 
+
                     <button
                         type="button"
                         id="removeScreenshot"
@@ -254,7 +420,9 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- REVIEW NOTICE -->
+        <!-- ==================================
+             REVIEW NOTICE
+        ================================== -->
 
         <div class="review-notice">
 
@@ -268,7 +436,9 @@ function openTask(taskId) {
         </div>
 
 
-        <!-- SUBMIT -->
+        <!-- ==================================
+             SUBMIT
+        ================================== -->
 
         <button
             type="button"
@@ -343,11 +513,14 @@ function setupProofForm() {
         }
 
 
-        /* File type */
+        if (
+            !["image/png", "image/jpeg"]
+            .includes(file.type)
+        ) {
 
-        if (!["image/png", "image/jpeg"].includes(file.type)) {
-
-            alert("Please upload a PNG or JPG image.");
+            alert(
+                "Please upload a PNG or JPG image."
+            );
 
             screenshotInput.value = "";
 
@@ -360,11 +533,11 @@ function setupProofForm() {
         }
 
 
-        /* 5 MB limit */
-
         if (file.size > 5 * 1024 * 1024) {
 
-            alert("Screenshot must be 5 MB or smaller.");
+            alert(
+                "Screenshot must be 5 MB or smaller."
+            );
 
             screenshotInput.value = "";
 
@@ -382,9 +555,11 @@ function setupProofForm() {
 
         reader.onload = event => {
 
-            previewImage.src = event.target.result;
+            previewImage.src =
+                event.target.result;
 
-            preview.style.display = "block";
+            preview.style.display =
+                "block";
 
             screenshotReady = true;
 
@@ -402,93 +577,107 @@ function setupProofForm() {
        Remove Screenshot
     ================================== */
 
-    removeButton.addEventListener("click", () => {
+    removeButton.addEventListener(
+        "click",
+        () => {
 
-        screenshotInput.value = "";
+            screenshotInput.value = "";
 
-        previewImage.src = "";
+            previewImage.src = "";
 
-        preview.style.display = "none";
+            preview.style.display =
+                "none";
 
-        screenshotReady = false;
+            screenshotReady = false;
 
-        updateSubmitButton();
+            updateSubmitButton();
 
-    });
+        }
+    );
 
 
     /* ==================================
        Name Input
     ================================== */
 
-    nameInput.addEventListener("input", updateSubmitButton);
+    nameInput.addEventListener(
+        "input",
+        updateSubmitButton
+    );
 
 
     /* ==================================
-       Submit Button
+       Submit
     ================================== */
 
-    submitButton.addEventListener("click", () => {
+    submitButton.addEventListener(
+        "click",
+        () => {
 
-        const name =
-            nameInput.value.trim();
+            const name =
+                nameInput.value.trim();
 
-        const file =
-            screenshotInput.files[0];
+            const file =
+                screenshotInput.files[0];
 
 
-        if (!name || !file) {
+            if (!name || !file) {
 
-            return;
+                return;
+
+            }
+
+
+            /*
+             * FRONTEND ONLY
+             *
+             * No SPARK is awarded.
+             * Backend/admin validation comes later.
+             */
+
+            submitButton.disabled = true;
+
+            submitButton.innerHTML = `
+
+                <i class="fa-solid fa-clock"></i>
+
+                Pending Review
+
+            `;
+
+
+            nameInput.disabled = true;
+
+            screenshotInput.disabled = true;
+
+
+            const uploadLabel =
+                document.querySelector(
+                    ".screenshot-upload"
+                );
+
+
+            if (uploadLabel) {
+
+                uploadLabel.style.pointerEvents =
+                    "none";
+
+                uploadLabel.style.opacity =
+                    ".6";
+
+            }
+
+
+            alert(
+                "Your proof has been submitted for review."
+            );
 
         }
-
-
-        /*
-         * FRONTEND TEST ONLY
-         *
-         * No SPARK is awarded here.
-         * Backend/admin validation will be
-         * connected later.
-         */
-
-        submitButton.disabled = true;
-
-        submitButton.innerHTML = `
-
-            <i class="fa-solid fa-clock"></i>
-
-            Pending Review
-
-        `;
-
-
-        nameInput.disabled = true;
-
-        screenshotInput.disabled = true;
-
-
-        const uploadLabel =
-            document.querySelector(".screenshot-upload");
-
-        if (uploadLabel) {
-
-            uploadLabel.style.pointerEvents = "none";
-
-            uploadLabel.style.opacity = ".6";
-
-        }
-
-
-        alert(
-            "Your proof has been submitted for review."
-        );
-
-    });
+    );
 
 
     /* ==================================
-       Validate Form
+       Validate
     ================================== */
 
     function updateSubmitButton() {
@@ -511,47 +700,68 @@ function setupProofForm() {
 
 function closeTaskModal() {
 
-    taskModal.classList.remove("is-open");
+    taskModal.classList.remove(
+        "is-open"
+    );
 
     document.body.style.overflow = "";
 
 }
 
 
-taskModalClose.addEventListener(
-    "click",
-    closeTaskModal
-);
+if (taskModalClose) {
+
+    taskModalClose.addEventListener(
+        "click",
+        closeTaskModal
+    );
+
+}
 
 
 /* ======================================
-   CLOSE BY BACKDROP
+   CLOSE BACKDROP
 ====================================== */
 
-taskModal.addEventListener("click", event => {
+if (taskModal) {
 
-    if (event.target === taskModal) {
+    taskModal.addEventListener(
+        "click",
+        event => {
 
-        closeTaskModal();
+            if (
+                event.target === taskModal
+            ) {
 
-    }
+                closeTaskModal();
 
-});
+            }
+
+        }
+    );
+
+}
 
 
 /* ======================================
    ESC KEY
 ====================================== */
 
-document.addEventListener("keydown", event => {
+document.addEventListener(
+    "keydown",
+    event => {
 
-    if (
-        event.key === "Escape" &&
-        taskModal.classList.contains("is-open")
-    ) {
+        if (
+            event.key === "Escape" &&
+            taskModal &&
+            taskModal.classList.contains(
+                "is-open"
+            )
+        ) {
 
-        closeTaskModal();
+            closeTaskModal();
+
+        }
 
     }
-
-});
+);
