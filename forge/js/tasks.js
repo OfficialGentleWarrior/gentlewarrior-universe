@@ -868,9 +868,8 @@ function openTask(taskId) {
                 <a
     href="${task.link}"
     target="_blank"
-    rel="noopener"
+    rel="noopener noreferrer"
     class="task-open-btn"
-    data-external-link="true"
 >
 
                     <i class="${platform.icon}"></i>
@@ -1378,19 +1377,4 @@ document.addEventListener(
     }
 );
 
-/* ======================================
-   EXTERNAL TASK LINK
-   Native tap handling
-====================================== */
 
-document.addEventListener("click", function (event) {
-
-    const link = event.target.closest(
-        'a[data-external-link="true"]'
-    );
-
-    if (!link) return;
-
-    event.stopPropagation();
-
-}, true);
