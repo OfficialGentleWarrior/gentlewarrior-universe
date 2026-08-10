@@ -562,10 +562,12 @@ reach_pillar_match_level_5: {
     proofPlaceholder:
         "Enter your player's name",
 
-    proofDescription:
+        proofDescription:
         "Provide the player's name used in Pillar Match."
 
-}
+    }
+
+};
 
 /* ======================================
    PLATFORM CONFIG
