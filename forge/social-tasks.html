@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Social Media Tasks | FORGE</title>
+
+    <meta
+        name="description"
+        content="Follow Gentle Warrior on social media"
+    >
+
+    <!-- Tasks CSS -->
+    <link
+        rel="stylesheet"
+        href="css/tasks.css"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body class="social-tasks-page">
+
+
+<!-- ======================================
+     FORGE HEADER
+====================================== -->
+
+<header class="topbar">
+
+    <img
+        src="assets/logo/forge-header.png"
+        alt="FORGE"
+        class="dashboard-logo"
+    >
+
+
+    <button
+        id="notificationsBtn"
+        class="notifications-btn"
+        type="button"
+        aria-label="Notifications"
+    >
+
+        <i class="fa-regular fa-bell"></i>
+
+    </button>
+
+</header>
+
+
+
+<!-- ======================================
+     MAIN
+====================================== -->
+
+<main class="tasks-container">
+
+
+    <!-- ==================================
+         BACK TO TASKS
+    ================================== -->
+
+    <a
+        href="tasks.html"
+        class="back-btn"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Tasks
+
+    </a>
+
+
+
+    <!-- ==================================
+         PAGE HEADER
+    ================================== -->
+
+    <section class="page-header">
+
+        <h1>
+            Social Media
+        </h1>
+
+        <p>
+            Follow Gentle Warrior across TikTok, X, and Instagram
+        </p>
+
+    </section>
+
+
+
+    <!-- ======================================
+         SOCIAL MEDIA TASKS
+    ====================================== -->
+
+    <section class="task-group">
+
+
+        <!-- ==================================
+             GROUP HEADER
+        ================================== -->
+
+        <div class="task-group-header">
+
+            <div class="task-group-icon social-icon">
+
+                <i class="fa-solid fa-share-nodes"></i>
+
+            </div>
+
+
+            <div class="task-group-header-text">
+
+                <h2>
+                    Social Media
+                </h2>
+
+                <p>
+                    Follow Gentle Warrior across social platforms
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================
+             TASK 14 — TIKTOK
+        ================================== -->
+
+        <button
+            type="button"
+            class="task-card"
+            data-task="follow_gentle_warrior_tiktok"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-tiktok"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Follow Gentle Warrior on TikTok
+                </h3>
+
+                <span>
+                    Follow the account and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+
+        <!-- ==================================
+             TASK 15 — X
+        ================================== -->
+
+        <button
+            type="button"
+            class="task-card"
+            data-task="follow_gentle_warrior_x"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-x-twitter"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Follow Gentle Warrior on X
+                </h3>
+
+                <span>
+                    Follow the account and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+
+        <!-- ==================================
+             TASK 16 — INSTAGRAM
+        ================================== -->
+
+        <button
+            type="button"
+            class="task-card"
+            data-task="follow_gentle_warrior_instagram"
+        >
+
+            <div class="task-card-icon">
+
+                <i class="fa-brands fa-instagram"></i>
+
+            </div>
+
+
+            <div class="task-card-content">
+
+                <h3>
+                    Follow Gentle Warrior on Instagram
+                </h3>
+
+                <span>
+                    Follow the account and submit proof
+                </span>
+
+            </div>
+
+
+            <div class="task-card-reward">
+
+                <strong>
+                    +1
+                </strong>
+
+                <small>
+                    SPARK
+                </small>
+
+            </div>
+
+
+            <div class="task-arrow">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </div>
+
+        </button>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ======================================
+     TASK MODAL
+====================================== -->
+
+<div
+    class="task-modal"
+    id="taskModal"
+>
+
+    <div class="task-modal-card">
+
+        <button
+            type="button"
+            class="task-modal-close"
+            aria-label="Close"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <div id="taskModalContent">
+
+            <!-- Task content loaded by tasks.js -->
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================
+     EXISTING TASKS JS
+====================================== -->
+
+<script
+    type="module"
+    src="js/tasks.js?v=1"
+></script>
+
+
+</body>
+
+</html>
