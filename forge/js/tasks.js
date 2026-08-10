@@ -456,6 +456,116 @@ const TASKS = {
 
         },
 
+/* ==================================
+   SOCIAL MEDIA — TASK 14
+================================== */
+
+follow_gentle_warrior_tiktok: {
+
+    title:
+        "Follow Gentle Warrior on TikTok",
+
+    description:
+        "Follow Gentle Warrior on TikTok and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "TikTok",
+
+    link:
+        "https://www.tiktok.com/@officialgentlewarrior",
+
+    stepTitle:
+        "Follow Gentle Warrior on TikTok",
+
+    stepDescription:
+        "Open the Gentle Warrior TikTok account and follow the account.",
+
+    proofLabel:
+        "TikTok Name",
+
+    proofPlaceholder:
+        "Enter your TikTok name",
+
+    proofDescription:
+        "Provide the TikTok name you used to follow Gentle Warrior."
+
+},
+
+
+/* ==================================
+   SOCIAL MEDIA — TASK 15
+================================== */
+
+follow_gentle_warrior_x: {
+
+    title:
+        "Follow Gentle Warrior on X",
+
+    description:
+        "Follow Gentle Warrior on X and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "X",
+
+    link:
+        "https://x.com/GentleWarrior02",
+
+    stepTitle:
+        "Follow Gentle Warrior on X",
+
+    stepDescription:
+        "Open the Gentle Warrior X account and follow the account.",
+
+    proofLabel:
+        "X Username",
+
+    proofPlaceholder:
+        "Enter your X username",
+
+    proofDescription:
+        "Provide the X username you used to follow Gentle Warrior."
+
+},
+
+
+/* ==================================
+   SOCIAL MEDIA — TASK 16
+================================== */
+
+follow_gentle_warrior_instagram: {
+
+    title:
+        "Follow Gentle Warrior on Instagram",
+
+    description:
+        "Follow Gentle Warrior on Instagram and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "Instagram",
+
+    link:
+        "https://instagram.com/officialgentlewarrior/",
+
+    stepTitle:
+        "Follow Gentle Warrior on Instagram",
+
+    stepDescription:
+        "Open the Gentle Warrior Instagram account and follow the account.",
+
+    proofLabel:
+        "Instagram Username",
+
+    proofPlaceholder:
+        "Enter your Instagram username",
+
+    proofDescription:
+        "Provide the Instagram username you used to follow Gentle Warrior."
+
+},
+
 
     /* ==================================
        GAMES — TASK 11
@@ -593,6 +703,16 @@ const PLATFORM_CONFIG = {
     X: {
         icon: "fa-brands fa-x-twitter",
         buttonText: "Open X"
+    },
+
+    TikTok: {
+        icon: "fa-brands fa-tiktok",
+        buttonText: "Open TikTok"
+    },
+
+    Instagram: {
+        icon: "fa-brands fa-instagram",
+        buttonText: "Open Instagram"
     },
 
     Spotify: {
