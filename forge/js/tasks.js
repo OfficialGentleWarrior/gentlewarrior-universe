@@ -566,6 +566,41 @@ follow_gentle_warrior_instagram: {
 
 },
 
+/* ==================================
+   GWAR / WEB3 — TASK 7
+================================== */
+
+click_dex_screener_rocket: {
+
+    title:
+        "Click the 🚀 on Dex Screener",
+
+    description:
+        "Open the GWAR Dex Screener page and click the 🚀 to support the token.",
+
+    reward: 1,
+
+    platform: "Dex Screener",
+
+    link:
+        "https://dexscreener.com/solana/DrjTwEpMDX8sK2JeQ7LyX94gTDZyQV6Qfxe4rpat65Gy",
+
+    stepTitle:
+        "Click the 🚀 on Dex Screener",
+
+    stepDescription:
+        "Open the GWAR Dex Screener page and click the 🚀.",
+
+    proofLabel:
+        "Screenshot Proof",
+
+    proofPlaceholder:
+        "Screenshot required",
+
+    proofDescription:
+        "Upload a screenshot showing that you clicked the 🚀 on the GWAR Dex Screener page."
+
+},
 
     /* ==================================
        GAMES — TASK 11
@@ -728,7 +763,12 @@ const PLATFORM_CONFIG = {
     Game: {
         icon: "fa-solid fa-gamepad",
         buttonText: "Open Game"
-    }
+    },
+
+    "Dex Screener": {
+        icon: "fa-solid fa-chart-line",
+        buttonText: "Open Dex Screener"
+    },
 
 };
 
