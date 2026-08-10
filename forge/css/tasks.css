@@ -1,2008 +1,1675 @@
 /* ======================================
-FORGE Tasks
+   FORGE Tasks
 ====================================== */
 
 /* ======================================
-FORGE Dashboard Header
+   FORGE Dashboard Header
 ====================================== */
 
 .topbar{
-position:relative;
+    position:relative;
 
-width:100%;  
+    width:100%;
 
-min-height:86px;  
+    min-height:86px;
 
-padding:18px 20px;  
+    padding:18px 20px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
-justify-content:flex-start;  
+    align-items:center;
+    justify-content:flex-start;
 
-background:#111111;  
+    background:#111111;
 
-overflow:hidden;
-
+    overflow:hidden;
 }
 
 .dashboard-logo{
-display:block;
+    display:block;
 
-width:300px;  
+    width:300px;
 
-max-width:78%;  
+    max-width:78%;
 
-height:auto;
-
+    height:auto;
 }
 
 .notifications-btn{
-position:absolute;
+    position:absolute;
 
-top:50%;  
-right:18px;  
+    top:50%;
+    right:18px;
 
-transform:translateY(-50%);  
+    transform:translateY(-50%);
 
-width:42px;  
-height:42px;  
+    width:42px;
+    height:42px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
-justify-content:center;  
+    align-items:center;
+    justify-content:center;
 
-border:1px solid rgba(255,255,255,.15);  
+    border:1px solid rgba(255,255,255,.15);
 
-border-radius:50%;  
+    border-radius:50%;
 
-background:rgba(255,255,255,.08);  
+    background:rgba(255,255,255,.08);
 
-color:#fff;  
+    color:#fff;
 
-font-size:18px;  
+    font-size:18px;
 
-cursor:pointer;  
+    cursor:pointer;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .notifications-btn:hover{
-background:rgba(255,255,255,.15);
+    background:rgba(255,255,255,.15);
 }
 
+
 /* ======================================
-Tasks Page Font
+   Tasks Page Font
 ====================================== */
 
 body{
-font-family:
--apple-system,
-BlinkMacSystemFont,
-"Segoe UI",
-Roboto,
-Helvetica,
-Arial,
-sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
 }
 
+
 /* ======================================
-Header Mobile
+   Header Mobile
 ====================================== */
 
 @media(max-width:768px){
 
-.topbar{  
-    min-height:78px;  
+    .topbar{
+        min-height:78px;
 
-    padding:16px 18px;  
-}  
+        padding:16px 18px;
+    }
 
-.dashboard-logo{  
-    width:280px;  
+    .dashboard-logo{
+        width:280px;
 
-    max-width:76%;  
-}  
+        max-width:76%;
+    }
 
-.notifications-btn{  
-    right:16px;  
+    .notifications-btn{
+        right:16px;
 
-    width:40px;  
-    height:40px;  
+        width:40px;
+        height:40px;
 
-    font-size:17px;  
+        font-size:17px;
+    }
+
 }
 
-}
 
 /* ======================================
-Header Small Phones
+   Header Small Phones
 ====================================== */
 
 @media(max-width:480px){
 
-.topbar{  
-    min-height:78px;  
+    .topbar{
+        min-height:78px;
 
-    padding:15px 16px;  
-}  
+        padding:15px 16px;
+    }
 
-.dashboard-logo{  
-    width:260px;  
+    .dashboard-logo{
+        width:260px;
 
-    max-width:74%;  
-}  
+        max-width:74%;
+    }
 
-.notifications-btn{  
-    right:14px;  
+    .notifications-btn{
+        right:14px;
 
-    width:38px;  
-    height:38px;  
+        width:38px;
+        height:38px;
 
-    font-size:16px;  
-}
+        font-size:16px;
+    }
 
 }
 
 /* ======================================
-Page Header
+   Page Header
 ====================================== */
 
 .page-header{
-margin:18px 0 20px;
+    margin:18px 0 20px;
 }
 
 .page-header h1{
-margin:0 0 6px;
+    margin:0 0 6px;
 
-font-size:2rem;  
-font-weight:800;  
+    font-size:2rem;
+    font-weight:800;
 
-color:#111827;  
+    color:#111827;
 
-letter-spacing:-.7px;
-
+    letter-spacing:-.7px;
 }
 
 .page-header p{
-margin:0;
+    margin:0;
 
-font-size:1rem;  
+    font-size:1rem;
 
-color:#6b7280;  
+    color:#6b7280;
 
-line-height:1.5;
-
+    line-height:1.5;
 }
 
+
 /* ======================================
-Back Button
+   Back Button
 ====================================== */
 
 .back-btn{
-display:inline-flex;
+    display:inline-flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:8px;  
+    gap:8px;
 
-margin-bottom:18px;  
+    margin-bottom:18px;
 
-padding:10px 16px;  
+    padding:10px 16px;
 
-border-radius:999px;  
+    border-radius:999px;
 
-background:#f0fdf4;  
+    background:#f0fdf4;
 
-color:#16a34a;  
+    color:#16a34a;
 
-font-size:15px;  
+    font-size:15px;
 
-font-weight:700;  
+    font-weight:700;
 
-text-decoration:none;  
+    text-decoration:none;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .back-btn:hover{
-background:#dcfce7;
+    background:#dcfce7;
 
-color:#15803d;
-
+    color:#15803d;
 }
 
+
 /* ======================================
-Task Group
+   Task Group
 ====================================== */
 
 .task-group{
-margin-bottom:18px;
+    margin-bottom:18px;
 
-background:#fff;  
+    background:#fff;
 
-border-radius:22px;  
+    border-radius:22px;
 
-padding:18px;  
+    padding:18px;
 
-box-shadow:0 12px 30px rgba(0,0,0,.06);
-
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
+
 /* ======================================
-Task Group Header
+   Task Group Header
 ====================================== */
 
 .task-group-header{
-display:flex;
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:14px;  
+    gap:14px;
 
-margin-bottom:16px;
-
+    margin-bottom:16px;
 }
 
 .task-group-icon{
-width:50px;
-height:50px;
+    width:50px;
+    height:50px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
-justify-content:center;  
+    align-items:center;
+    justify-content:center;
 
-border-radius:15px;  
+    border-radius:15px;
 
-background:#f0fdf4;  
+    background:#f0fdf4;
 
-color:#22c55e;  
+    color:#22c55e;
 
-font-size:21px;
-
+    font-size:21px;
 }
 
 .task-group-header h2{
-margin:0 0 3px;
+    margin:0 0 3px;
 
-font-size:1.15rem;  
+    font-size:1.15rem;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;  
+    color:#111827;
 
-text-transform:capitalize;
-
+    text-transform:capitalize;
 }
 
 .task-group-header p{
-margin:0;
+    margin:0;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.85rem;  
+    font-size:.85rem;
 
-line-height:1.4;
-
+    line-height:1.4;
 }
 
+
 /* ======================================
-Task Card
+   Task Card
 ====================================== */
 
 .task-card{
-width:100%;
+    width:100%;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:12px;  
+    gap:12px;
 
-padding:15px;  
+    padding:15px;
 
-border:1px solid #edf2f7;  
+    border:1px solid #edf2f7;
 
-border-radius:16px;  
+    border-radius:16px;
 
-background:#fff;  
+    background:#fff;
 
-color:#111827;  
+    color:#111827;
 
-text-align:left;  
+    text-align:left;
 
-cursor:pointer;  
+    cursor:pointer;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .task-card:hover{
-background:#f8fffa;
+    background:#f8fffa;
 
-border-color:#bbf7d0;  
+    border-color:#bbf7d0;
 
-transform:translateY(-1px);
-
+    transform:translateY(-1px);
 }
 
 .task-card:active{
-transform:scale(.99);
+    transform:scale(.99);
 }
 
+
 /* ======================================
-Task Card Icon
+   Task Card Icon
 ====================================== */
 
 .task-card-icon{
-width:42px;
-height:42px;
+    width:42px;
+    height:42px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
-justify-content:center;  
+    align-items:center;
+    justify-content:center;
 
-border-radius:12px;  
+    border-radius:12px;
 
-background:#eff6ff;  
+    background:#eff6ff;
 
-color:#1877f2;  
+    color:#1877f2;
 
-font-size:19px;
-
+    font-size:19px;
 }
 
+
 /* ======================================
-Task Card Content
+   Task Card Content
 ====================================== */
 
 .task-card-content{
-flex:1;
+    flex:1;
 
-min-width:0;
-
+    min-width:0;
 }
 
 .task-card-content h3{
-margin:0 0 3px;
+    margin:0 0 3px;
 
-font-size:.95rem;  
+    font-size:.95rem;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;
-
+    color:#111827;
 }
 
 .task-card-content span{
-display:block;
+    display:block;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.78rem;  
+    font-size:.78rem;
 
-line-height:1.4;
-
+    line-height:1.4;
 }
 
+
 /* ======================================
-Task Reward
+   Task Reward
 ====================================== */
 
 .task-card-reward{
-flex-shrink:0;
+    flex-shrink:0;
 
-min-width:48px;  
+    min-width:48px;
 
-text-align:center;  
+    text-align:center;
 
-line-height:1.1;
-
+    line-height:1.1;
 }
 
 .task-card-reward strong{
-display:block;
+    display:block;
 
-color:#16a34a;  
+    color:#16a34a;
 
-font-size:1rem;  
+    font-size:1rem;
 
-font-weight:800;
-
+    font-weight:800;
 }
 
 .task-card-reward small{
-display:block;
+    display:block;
 
-margin-top:3px;  
+    margin-top:3px;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.58rem;  
+    font-size:.58rem;
 
-font-weight:800;  
+    font-weight:800;
 
-letter-spacing:.3px;
-
+    letter-spacing:.3px;
 }
 
+
 /* ======================================
-Task Arrow
+   Task Arrow
 ====================================== */
 
 .task-arrow{
-flex-shrink:0;
+    flex-shrink:0;
 
-color:#9ca3af;  
+    color:#9ca3af;
 
-font-size:13px;
-
+    font-size:13px;
 }
 
+
 /* ======================================
-Task Modal
+   Task Modal
 ====================================== */
 
 .task-modal{
-position:fixed;
+    position:fixed;
 
-inset:0;  
+    inset:0;
 
-z-index:9999;  
+    z-index:9999;
 
-display:none;  
+    display:none;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-padding:20px;  
+    padding:20px;
 
-background:rgba(15,23,42,.55);  
+    background:rgba(15,23,42,.55);
 
-backdrop-filter:blur(3px);  
+    backdrop-filter:blur(3px);
 
-overflow-y:auto;
-
+    overflow-y:auto;
 }
 
 .task-modal.is-open{
-display:flex;
+    display:flex;
 }
 
+
 /* ======================================
-Task Modal Card
+   Task Modal Card
 ====================================== */
 
 .task-modal-card{
-position:relative;
+    position:relative;
 
-width:min(560px,100%);  
+    width:min(560px,100%);
 
-max-height:calc(100vh - 40px);  
+    max-height:calc(100vh - 40px);
 
-overflow-y:auto;  
+    overflow-y:auto;
 
-padding:28px 24px;  
+    padding:28px 24px;
 
-background:#fff;  
+    background:#fff;
 
-border-radius:24px;  
+    border-radius:24px;
 
-box-shadow:0 24px 60px rgba(0,0,0,.20);  
+    box-shadow:0 24px 60px rgba(0,0,0,.20);
 
-animation:taskModalIn .2s ease;
-
+    animation:taskModalIn .2s ease;
 }
 
 @keyframes taskModalIn{
 
-from{  
-    opacity:0;  
+    from{
+        opacity:0;
 
-    transform:translateY(12px) scale(.98);  
-}  
+        transform:translateY(12px) scale(.98);
+    }
 
-to{  
-    opacity:1;  
+    to{
+        opacity:1;
 
-    transform:translateY(0) scale(1);  
+        transform:translateY(0) scale(1);
+    }
+
 }
 
-}
 
 /* ======================================
-Modal Close
+   Modal Close
 ====================================== */
 
 .task-modal-close{
-position:absolute;
+    position:absolute;
 
-top:14px;  
+    top:14px;
 
-right:14px;  
+    right:14px;
 
-width:40px;  
+    width:40px;
 
-height:40px;  
+    height:40px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-border:none;  
+    border:none;
 
-border-radius:50%;  
+    border-radius:50%;
 
-background:#f3f4f6;  
+    background:#f3f4f6;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:18px;  
+    font-size:18px;
 
-cursor:pointer;  
+    cursor:pointer;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .task-modal-close:hover{
-background:#e5e7eb;
+    background:#e5e7eb;
 
-color:#111827;
-
+    color:#111827;
 }
 
 .task-modal-close:active{
-transform:scale(.94);
+    transform:scale(.94);
 }
 
+
 /* ======================================
-Reward Badge
+   Reward Badge
 ====================================== */
 
 .task-reward-badge{
-display:inline-flex;
+    display:inline-flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:6px;  
+    gap:6px;
 
-margin-bottom:12px;  
+    margin-bottom:12px;
 
-padding:7px 11px;  
+    padding:7px 11px;
 
-border-radius:999px;  
+    border-radius:999px;
 
-background:#f0fdf4;  
+    background:#f0fdf4;
 
-color:#16a34a;  
+    color:#16a34a;
 
-font-size:.78rem;  
+    font-size:.78rem;
 
-font-weight:800;
-
+    font-weight:800;
 }
 
 .task-reward-badge i{
-font-size:12px;
+    font-size:12px;
 }
 
+
 /* ======================================
-Modal Heading
+   Modal Heading
 ====================================== */
 
 .task-modal-card h2{
-margin:0 48px 7px 0;
+    margin:0 48px 7px 0;
 
-font-size:1.55rem;  
+    font-size:1.55rem;
 
-line-height:1.25;  
+    line-height:1.25;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;
-
+    color:#111827;
 }
 
 .task-modal-intro{
-margin:0 0 22px;
+    margin:0 0 22px;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.92rem;  
+    font-size:.92rem;
 
-line-height:1.5;
-
+    line-height:1.5;
 }
 
+
 /* ======================================
-Task Step
+   Task Step
 ====================================== */
 
 .task-step{
-display:flex;
+    display:flex;
 
-align-items:flex-start;  
+    align-items:flex-start;
 
-gap:12px;  
+    gap:12px;
 
-margin-bottom:18px;  
+    margin-bottom:18px;
 
-padding:16px;  
+    padding:16px;
 
-background:#f8fafc;  
+    background:#f8fafc;
 
-border:1px solid #edf2f7;  
+    border:1px solid #edf2f7;
 
-border-radius:16px;
-
+    border-radius:16px;
 }
 
 .task-step-number{
-width:30px;
-height:30px;
+    width:30px;
+    height:30px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
-justify-content:center;  
+    align-items:center;
+    justify-content:center;
 
-border-radius:50%;  
+    border-radius:50%;
 
-background:#22c55e;  
+    background:#22c55e;
 
-color:#fff;  
+    color:#fff;
 
-font-size:.85rem;  
+    font-size:.85rem;
 
-font-weight:800;
-
+    font-weight:800;
 }
 
 .task-step-content{
-flex:1;
+    flex:1;
 
-min-width:0;
-
+    min-width:0;
 }
 
 .task-step-content h3{
-margin:1px 0 5px;
+    margin:1px 0 5px;
 
-font-size:.95rem;  
+    font-size:.95rem;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;
-
+    color:#111827;
 }
 
 .task-step-content p{
-margin:0 0 13px;
+    margin:0 0 13px;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.82rem;  
+    font-size:.82rem;
 
-line-height:1.5;
-
+    line-height:1.5;
 }
 
+
 /* ======================================
-Open Task Link
+   Open Task Link
 ====================================== */
 
 .task-open-btn{
-width:100%;
+    width:100%;
 
-min-height:46px;  
+    min-height:46px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-gap:8px;  
+    gap:8px;
 
-padding:12px 14px;  
+    padding:12px 14px;
 
-border-radius:13px;  
+    border-radius:13px;
 
-background:#1877f2;  
+    background:#1877f2;
 
-color:#fff;  
+    color:#fff;
 
-text-decoration:none;  
+    text-decoration:none;
 
-font-size:.9rem;  
+    font-size:.9rem;
 
-font-weight:700;  
+    font-weight:700;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .task-open-btn:hover{
-background:#166fe5;
+    background:#166fe5;
 
-transform:translateY(-1px);
-
+    transform:translateY(-1px);
 }
 
 .task-open-btn i:last-child{
-font-size:11px;
+    font-size:11px;
 
-margin-left:2px;
-
+    margin-left:2px;
 }
 
+
 /* ======================================
-Proof Label
+   Proof Label
 ====================================== */
 
 .proof-label{
-display:block;
+    display:block;
 
-margin-bottom:7px;  
+    margin-bottom:7px;
 
-color:#374151;  
+    color:#374151;
 
-font-size:.8rem;  
+    font-size:.8rem;
 
-font-weight:700;
-
+    font-weight:700;
 }
 
+
 /* ======================================
-Proof Input
+   Proof Input
 ====================================== */
 
 .proof-input{
-width:100%;
+    width:100%;
 
-min-height:46px;  
+    min-height:46px;
 
-padding:12px 14px;  
+    padding:12px 14px;
 
-border:1.5px solid #d8dce3;  
+    border:1.5px solid #d8dce3;
 
-border-radius:13px;  
+    border-radius:13px;
 
-background:#fff;  
+    background:#fff;
 
-color:#111827;  
+    color:#111827;
 
-font-size:15px;  
+    font-size:15px;
 
-outline:none;  
+    outline:none;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .proof-input:focus{
-border-color:#22c55e;
+    border-color:#22c55e;
 
-box-shadow:0 0 0 3px rgba(34,197,94,.12);
-
+    box-shadow:0 0 0 3px rgba(34,197,94,.12);
 }
 
 .proof-input::placeholder{
-color:#9ca3af;
+    color:#9ca3af;
 }
 
+
 /* ======================================
-Screenshot Upload
+   Screenshot Upload
 ====================================== */
 
 .screenshot-upload{
-width:100%;
+    width:100%;
 
-min-height:110px;  
+    min-height:110px;
 
-display:flex;  
+    display:flex;
 
-flex-direction:column;  
+    flex-direction:column;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-gap:5px;  
+    gap:5px;
 
-padding:18px;  
+    padding:18px;
 
-border:2px dashed #cbd5e1;  
+    border:2px dashed #cbd5e1;
 
-border-radius:15px;  
+    border-radius:15px;
 
-background:#fff;  
+    background:#fff;
 
-color:#475569;  
+    color:#475569;
 
-cursor:pointer;  
+    cursor:pointer;
 
-text-align:center;  
+    text-align:center;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .screenshot-upload:hover{
-background:#f0fdf4;
+    background:#f0fdf4;
 
-border-color:#22c55e;  
+    border-color:#22c55e;
 
-color:#15803d;
-
+    color:#15803d;
 }
 
 .screenshot-upload i{
-margin-bottom:3px;
+    margin-bottom:3px;
 
-color:#22c55e;  
+    color:#22c55e;
 
-font-size:24px;
-
+    font-size:24px;
 }
 
 .screenshot-upload strong{
-font-size:.9rem;
+    font-size:.9rem;
 }
 
 .screenshot-upload small{
-color:#94a3b8;
+    color:#94a3b8;
 
-font-size:.72rem;
-
+    font-size:.72rem;
 }
 
+
 /* ======================================
-Screenshot Preview
+   Screenshot Preview
 ====================================== */
 
 .screenshot-preview{
-margin-top:12px;
+    margin-top:12px;
 
-padding:10px;  
+    padding:10px;
 
-background:#fff;  
+    background:#fff;
 
-border:1px solid #e5e7eb;  
+    border:1px solid #e5e7eb;
 
-border-radius:14px;
-
+    border-radius:14px;
 }
 
 .screenshot-preview img{
-display:block;
+    display:block;
 
-width:100%;  
+    width:100%;
 
-max-height:280px;  
+    max-height:280px;
 
-object-fit:contain;  
+    object-fit:contain;
 
-border-radius:10px;  
+    border-radius:10px;
 
-background:#f8fafc;
-
+    background:#f8fafc;
 }
 
+
 /* ======================================
-Remove Screenshot
+   Remove Screenshot
 ====================================== */
 
 .remove-screenshot{
-width:100%;
+    width:100%;
 
-margin-top:9px;  
+    margin-top:9px;
 
-min-height:40px;  
+    min-height:40px;
 
-border:1px solid #fecaca;  
+    border:1px solid #fecaca;
 
-border-radius:11px;  
+    border-radius:11px;
 
-background:#fff;  
+    background:#fff;
 
-color:#dc2626;  
+    color:#dc2626;
 
-font-size:.82rem;  
+    font-size:.82rem;
 
-font-weight:700;  
+    font-weight:700;
 
-cursor:pointer;  
+    cursor:pointer;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .remove-screenshot:hover{
-background:#fef2f2;
+    background:#fef2f2;
 }
 
 .remove-screenshot i{
-margin-right:5px;
+    margin-right:5px;
 }
 
+
 /* ======================================
-Review Notice
+   Review Notice
 ====================================== */
 
 .review-notice{
-display:flex;
+    display:flex;
 
-align-items:flex-start;  
+    align-items:flex-start;
 
-gap:10px;  
+    gap:10px;
 
-margin:4px 0 16px;  
+    margin:4px 0 16px;
 
-padding:13px 14px;  
+    padding:13px 14px;
 
-border:1px solid #dbeafe;  
+    border:1px solid #dbeafe;
 
-border-radius:13px;  
+    border-radius:13px;
 
-background:#eff6ff;  
+    background:#eff6ff;
 
-color:#1e40af;
-
+    color:#1e40af;
 }
 
 .review-notice i{
-margin-top:2px;
+    margin-top:2px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-font-size:15px;
-
+    font-size:15px;
 }
 
 .review-notice p{
-margin:0;
+    margin:0;
 
-font-size:.78rem;  
+    font-size:.78rem;
 
-line-height:1.45;
-
+    line-height:1.45;
 }
 
+
 /* ======================================
-Submit Button
+   Submit Button
 ====================================== */
 
 .submit-task-btn{
-width:100%;
+    width:100%;
 
-min-height:50px;  
+    min-height:50px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-gap:8px;  
+    gap:8px;
 
-border:none;  
+    border:none;
 
-border-radius:15px;  
+    border-radius:15px;
 
-background:linear-gradient(135deg,#22c55e,#16a34a);  
+    background:linear-gradient(135deg,#22c55e,#16a34a);
 
-color:#fff;  
+    color:#fff;
 
-font-size:.95rem;  
+    font-size:.95rem;
 
-font-weight:800;  
+    font-weight:800;
 
-cursor:pointer;  
+    cursor:pointer;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .submit-task-btn:hover:not(:disabled){
-transform:translateY(-1px);
+    transform:translateY(-1px);
 
-box-shadow:0 8px 20px rgba(34,197,94,.25);
-
+    box-shadow:0 8px 20px rgba(34,197,94,.25);
 }
 
 .submit-task-btn:disabled{
-background:#cbd5e1;
+    background:#cbd5e1;
 
-color:#fff;  
+    color:#fff;
 
-cursor:not-allowed;  
+    cursor:not-allowed;
 
-box-shadow:none;
-
+    box-shadow:none;
 }
 
+
 /* ======================================
-Mobile
+   Mobile
 ====================================== */
 
 @media(max-width:768px){
 
-.page-header{  
-    margin-top:16px;  
-}  
+    .page-header{
+        margin-top:16px;
+    }
 
-.page-header h1{  
-    font-size:1.8rem;  
-}  
+    .page-header h1{
+        font-size:1.8rem;
+    }
 
-.page-header p{  
-    font-size:.95rem;  
-}  
+    .page-header p{
+        font-size:.95rem;
+    }
 
-.task-group{  
-    padding:16px;  
+    .task-group{
+        padding:16px;
 
-    border-radius:20px;  
-}  
+        border-radius:20px;
+    }
 
-.task-group-header{  
-    gap:12px;  
-}  
+    .task-group-header{
+        gap:12px;
+    }
 
-.task-group-icon{  
-    width:46px;  
-    height:46px;  
+    .task-group-icon{
+        width:46px;
+        height:46px;
 
-    border-radius:14px;  
-}  
+        border-radius:14px;
+    }
 
-.task-card{  
-    padding:14px;  
+    .task-card{
+        padding:14px;
 
-    gap:10px;  
-}  
+        gap:10px;
+    }
 
-.task-card-content h3{  
-    font-size:.9rem;  
-}  
+    .task-card-content h3{
+        font-size:.9rem;
+    }
 
-.task-card-content span{  
-    font-size:.74rem;  
-}  
+    .task-card-content span{
+        font-size:.74rem;
+    }
 
-.task-modal{  
-    align-items:flex-end;  
+    .task-modal{
+        align-items:flex-end;
 
-    padding:0;  
-}  
+        padding:0;
+    }
 
-.task-modal-card{  
-    width:100%;  
+    .task-modal-card{
+        width:100%;
 
-    max-height:92vh;  
+        max-height:92vh;
 
-    padding:26px 18px 22px;  
+        padding:26px 18px 22px;
 
-    border-radius:24px 24px 0 0;  
+        border-radius:24px 24px 0 0;
+    }
+
 }
 
-}
 
 /* ======================================
-Small Phones
+   Small Phones
 ====================================== */
 
 @media(max-width:480px){
 
-.task-group{  
-    padding:14px;  
+    .task-group{
+        padding:14px;
 
-    border-radius:18px;  
-}  
+        border-radius:18px;
+    }
 
-.task-group-header{  
-    align-items:flex-start;  
-}  
+    .task-group-header{
+        align-items:flex-start;
+    }
 
-.task-group-icon{  
-    width:44px;  
-    height:44px;  
+    .task-group-icon{
+        width:44px;
+        height:44px;
 
-    font-size:19px;  
-}  
+        font-size:19px;
+    }
 
-.task-group-header h2{  
-    font-size:1.05rem;  
-}  
+    .task-group-header h2{
+        font-size:1.05rem;
+    }
 
-.task-group-header p{  
-    font-size:.78rem;  
-}  
+    .task-group-header p{
+        font-size:.78rem;
+    }
 
-.task-card{  
-    padding:13px 12px;  
-}  
+    .task-card{
+        padding:13px 12px;
+    }
 
-.task-card-icon{  
-    width:38px;  
-    height:38px;  
+    .task-card-icon{
+        width:38px;
+        height:38px;
 
-    font-size:17px;  
-}  
+        font-size:17px;
+    }
 
-.task-card-content h3{  
-    font-size:.84rem;  
-}  
+    .task-card-content h3{
+        font-size:.84rem;
+    }
 
-.task-card-content span{  
-    font-size:.7rem;  
-}  
+    .task-card-content span{
+        font-size:.7rem;
+    }
 
-.task-card-reward{  
-    min-width:42px;  
-}  
+    .task-card-reward{
+        min-width:42px;
+    }
 
-.task-card-reward strong{  
-    font-size:.9rem;  
-}  
+    .task-card-reward strong{
+        font-size:.9rem;
+    }
 
-.task-arrow{  
-    font-size:11px;  
-}  
+    .task-arrow{
+        font-size:11px;
+    }
 
-.task-modal-card{  
-    padding:24px 16px 20px;  
-}  
+    .task-modal-card{
+        padding:24px 16px 20px;
+    }
 
-.task-modal-card h2{  
-    font-size:1.35rem;  
-}  
+    .task-modal-card h2{
+        font-size:1.35rem;
+    }
 
-.task-step{  
-    padding:14px;  
+    .task-step{
+        padding:14px;
 
-    gap:10px;  
-}  
+        gap:10px;
+    }
 
-.task-step-number{  
-    width:28px;  
-    height:28px;  
+    .task-step-number{
+        width:28px;
+        height:28px;
 
-    font-size:.78rem;  
+        font-size:.78rem;
+    }
+
 }
 
-}
 
 /* ======================================
-GROUPS-ONLY TASKS PAGE
+   GROUPS-ONLY TASKS PAGE
 ====================================== */
 
+
 /* ======================================
-Main Tasks Container
+   Main Tasks Container
 ====================================== */
 
 .tasks-container{
-width:100%;
+    width:100%;
 
-max-width:900px;  
+    max-width:900px;
 
-margin:0 auto;  
+    margin:0 auto;
 
-padding:28px 20px 50px;
-
+    padding:28px 20px 50px;
 }
 
+
 /* ======================================
-Task Groups List
+   Task Groups List
 ====================================== */
 
 .task-groups{
-display:flex;
+    display:flex;
 
-flex-direction:column;  
+    flex-direction:column;
 
-gap:12px;
-
+    gap:12px;
 }
 
+
 /* ======================================
-Group Card
+   Group Card
 ====================================== */
 
 .task-group-card{
-position:relative;
+    position:relative;
 
-width:100%;  
+    width:100%;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:15px;  
+    gap:15px;
 
-padding:18px;  
+    padding:18px;
 
-background:#fff;  
+    background:#fff;
 
-border:1px solid #edf2f7;  
+    border:1px solid #edf2f7;
 
-border-radius:20px;  
+    border-radius:20px;
 
-text-decoration:none;  
+    text-decoration:none;
 
-color:#111827;  
+    color:#111827;
 
-box-shadow:0 8px 24px rgba(0,0,0,.045);  
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
 
-transition:  
-    transform .2s ease,  
-    box-shadow .2s ease,  
-    border-color .2s ease;
-
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
 }
 
 .task-group-card:hover{
-transform:translateY(-2px);
+    transform:translateY(-2px);
 
-border-color:#bbf7d0;  
+    border-color:#bbf7d0;
 
-box-shadow:  
-    0 12px 28px rgba(34,197,94,.10);
-
+    box-shadow:
+        0 12px 28px rgba(34,197,94,.10);
 }
 
 .task-group-card:active{
-transform:scale(.99);
+    transform:scale(.99);
 }
 
+
 /* ======================================
-Group Icon
+   Group Icon
 ====================================== */
 
 .task-group-card .task-group-icon{
-width:54px;
-height:54px;
+    width:54px;
+    height:54px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-border-radius:16px;  
+    border-radius:16px;
 
-font-size:22px;
-
+    font-size:22px;
 }
+
 
 /* Community */
 
 .community-icon{
-background:#ecfdf5;
+    background:#ecfdf5;
 
-color:#22c55e;
-
+    color:#22c55e;
 }
+
 
 /* Music */
 
 .music-icon{
-background:#fefce8;
+    background:#fefce8;
 
-color:#eab308;
-
+    color:#eab308;
 }
+
 
 /* YouTube */
 
 .youtube-icon{
-background:#fef2f2;
+    background:#fef2f2;
 
-color:#ef4444;
-
+    color:#ef4444;
 }
+
 
 /* Games */
 
 .games-icon{
-background:#eff6ff;
+    background:#eff6ff;
 
-color:#3b82f6;
-
+    color:#3b82f6;
 }
+
 
 /* Social Media */
 
 .social-icon{
-background:#f5f3ff;
+    background:#f5f3ff;
 
-color:#8b5cf6;
-
+    color:#8b5cf6;
 }
+
 
 /* GWAR / Web3 */
 
 .gwar-icon{
-background:#f0fdf4;
+    background:#f0fdf4;
 
-color:#16a34a;
-
+    color:#16a34a;
 }
 
+
 /* ======================================
-Group Content
+   Group Content
 ====================================== */
 
 .task-group-content{
-flex:1;
+    flex:1;
 
-min-width:0;
-
+    min-width:0;
 }
 
 .task-group-content h2{
-margin:0 0 3px;
+    margin:0 0 3px;
 
-font-size:1.05rem;  
+    font-size:1.05rem;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;  
+    color:#111827;
 
-text-transform:capitalize;
-
+    text-transform:capitalize;
 }
 
 .task-group-content p{
-margin:0 0 5px;
+    margin:0 0 5px;
 
-color:#6b7280;  
+    color:#6b7280;
 
-font-size:.88rem;  
+    font-size:.88rem;
 
-line-height:1.4;
-
+    line-height:1.4;
 }
 
 .task-group-meta{
-display:block;
+    display:block;
 
-color:#16a34a;  
+    color:#16a34a;
 
-font-size:.82rem;  
+    font-size:.82rem;
 
-font-weight:800;
-
+    font-weight:800;
 }
 
+
 /* ======================================
-Group Arrow
+   Group Arrow
 ====================================== */
 
 .task-group-arrow{
-flex-shrink:0;
+    flex-shrink:0;
 
-width:34px;  
-height:34px;  
+    width:34px;
+    height:34px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-color:#9ca3af;  
+    color:#9ca3af;
 
-font-size:15px;  
+    font-size:15px;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .task-group-card:hover .task-group-arrow{
-color:#16a34a;
+    color:#16a34a;
 
-transform:translateX(3px);
-
+    transform:translateX(3px);
 }
 
+
 /* ======================================
-WATCH ADS
+   WATCH ADS
 ====================================== */
 
 .watch-ads-section{
-margin-top:30px;
+    margin-top:30px;
 }
 
 .watch-ads-divider{
-width:100%;
+    width:100%;
 
-height:1px;  
+    height:1px;
 
-margin-bottom:20px;  
+    margin-bottom:20px;
 
-background:#e5e7eb;
-
+    background:#e5e7eb;
 }
 
+
 .watch-ads-card{
-display:flex;
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-gap:15px;  
+    gap:15px;
 
-width:100%;  
+    width:100%;
 
-padding:18px;  
+    padding:18px;
 
-background:#fff;  
+    background:#fff;
 
-border:1px solid #fde68a;  
+    border:1px solid #fde68a;
 
-border-radius:20px;  
+    border-radius:20px;
 
-text-decoration:none;  
+    text-decoration:none;
 
-color:#111827;  
+    color:#111827;
 
-box-shadow:0 8px 24px rgba(0,0,0,.045);  
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
 
-transition:  
-    transform .2s ease,  
-    box-shadow .2s ease,  
-    border-color .2s ease;
-
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
 }
 
 .watch-ads-card:hover{
-transform:translateY(-2px);
+    transform:translateY(-2px);
 
-border-color:#fbbf24;  
+    border-color:#fbbf24;
 
-box-shadow:  
-    0 12px 28px rgba(245,158,11,.12);
-
+    box-shadow:
+        0 12px 28px rgba(245,158,11,.12);
 }
 
 .watch-ads-card:active{
-transform:scale(.99);
+    transform:scale(.99);
 }
 
+
 /* ======================================
-Watch Ads Icon
+   Watch Ads Icon
 ====================================== */
 
 .watch-ads-icon{
-width:54px;
-height:54px;
+    width:54px;
+    height:54px;
 
-flex-shrink:0;  
+    flex-shrink:0;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-border-radius:16px;  
+    border-radius:16px;
 
-background:#fffbeb;  
+    background:#fffbeb;
 
-color:#f59e0b;  
+    color:#f59e0b;
 
-font-size:22px;
-
+    font-size:22px;
 }
 
+
 /* ======================================
-Watch Ads Content
+   Watch Ads Content
 ====================================== */
 
 .watch-ads-content{
-flex:1;
+    flex:1;
 
-min-width:0;
-
+    min-width:0;
 }
 
 .watch-ads-content h2{
-margin:0 0 3px;
+    margin:0 0 3px;
 
-font-size:1.05rem;  
+    font-size:1.05rem;
 
-font-weight:800;  
+    font-weight:800;
 
-color:#111827;
-
+    color:#111827;
 }
 
 .watch-ads-content p{
-margin:0 0 4px;
+    margin:0 0 4px;
 
-color:#374151;  
+    color:#374151;
 
-font-size:.88rem;  
+    font-size:.88rem;
 
-font-weight:600;
-
+    font-weight:600;
 }
 
 .watch-ads-content span{
-display:block;
+    display:block;
 
-color:#9ca3af;  
+    color:#9ca3af;
 
-font-size:.8rem;  
+    font-size:.8rem;
 
-line-height:1.4;
-
+    line-height:1.4;
 }
 
+
 /* ======================================
-Watch Ads Arrow
+   Watch Ads Arrow
 ====================================== */
 
 .watch-ads-arrow{
-flex-shrink:0;
+    flex-shrink:0;
 
-width:34px;  
-height:34px;  
+    width:34px;
+    height:34px;
 
-display:flex;  
+    display:flex;
 
-align-items:center;  
+    align-items:center;
 
-justify-content:center;  
+    justify-content:center;
 
-color:#9ca3af;  
+    color:#9ca3af;
 
-font-size:15px;  
+    font-size:15px;
 
-transition:.2s ease;
-
+    transition:.2s ease;
 }
 
 .watch-ads-card:hover .watch-ads-arrow{
-color:#f59e0b;
+    color:#f59e0b;
 
-transform:translateX(3px);
-
+    transform:translateX(3px);
 }
 
+
 /* ======================================
-Groups Mobile
+   Groups Mobile
 ====================================== */
 
 @media(max-width:768px){
 
-.tasks-container{  
-    padding:24px 16px 40px;  
-}  
+    .tasks-container{
+        padding:24px 16px 40px;
+    }
 
-.task-group-card,  
-.watch-ads-card{  
-    padding:16px;  
+    .task-group-card,
+    .watch-ads-card{
+        padding:16px;
 
-    gap:13px;  
+        gap:13px;
 
-    border-radius:19px;  
-}  
+        border-radius:19px;
+    }
 
-.task-group-card .task-group-icon,  
-.watch-ads-icon{  
-    width:50px;  
-    height:50px;  
+    .task-group-card .task-group-icon,
+    .watch-ads-icon{
+        width:50px;
+        height:50px;
 
-    border-radius:15px;  
+        border-radius:15px;
 
-    font-size:20px;  
-}  
+        font-size:20px;
+    }
 
-.task-group-content h2,  
-.watch-ads-content h2{  
-    font-size:1rem;  
-}  
+    .task-group-content h2,
+    .watch-ads-content h2{
+        font-size:1rem;
+    }
 
-.task-group-content p,  
-.watch-ads-content p{  
-    font-size:.84rem;  
-}  
+    .task-group-content p,
+    .watch-ads-content p{
+        font-size:.84rem;
+    }
 
-.task-group-meta{  
-    font-size:.78rem;  
+    .task-group-meta{
+        font-size:.78rem;
+    }
+
 }
 
-}
 
 /* ======================================
-Groups Small Phones
+   Groups Small Phones
 ====================================== */
 
 @media(max-width:480px){
 
-.tasks-container{  
-    padding:22px 14px 36px;  
-}  
+    .tasks-container{
+        padding:22px 14px 36px;
+    }
 
-.task-groups{  
-    gap:10px;  
-}  
+    .task-groups{
+        gap:10px;
+    }
 
-.task-group-card,  
-.watch-ads-card{  
-    padding:15px;  
+    .task-group-card,
+    .watch-ads-card{
+        padding:15px;
 
-    gap:12px;  
+        gap:12px;
 
-    border-radius:18px;  
-}  
+        border-radius:18px;
+    }
 
-.task-group-card .task-group-icon,  
-.watch-ads-icon{  
-    width:46px;  
-    height:46px;  
+    .task-group-card .task-group-icon,
+    .watch-ads-icon{
+        width:46px;
+        height:46px;
 
-    border-radius:14px;  
+        border-radius:14px;
 
-    font-size:19px;  
-}  
+        font-size:19px;
+    }
 
-.task-group-content h2,  
-.watch-ads-content h2{  
-    font-size:.98rem;  
-}  
+    .task-group-content h2,
+    .watch-ads-content h2{
+        font-size:.98rem;
+    }
 
-.task-group-content p,  
-.watch-ads-content p{  
-    font-size:.8rem;  
-}  
+    .task-group-content p,
+    .watch-ads-content p{
+        font-size:.8rem;
+    }
 
-.task-group-meta{  
-    font-size:.75rem;  
-}  
+    .task-group-meta{
+        font-size:.75rem;
+    }
 
-.watch-ads-content span{  
-    font-size:.74rem;  
-}  
+    .watch-ads-content span{
+        font-size:.74rem;
+    }
 
-.task-group-arrow,  
-.watch-ads-arrow{  
-    width:28px;  
-    height:28px;  
+    .task-group-arrow,
+    .watch-ads-arrow{
+        width:28px;
+        height:28px;
 
-    font-size:13px;  
-}  
+        font-size:13px;
+    }
 
-   }
-
+       }
 /* ======================================
-EXTERNAL TASK LINK TOUCH FIX
+   EXTERNAL TASK LINK TOUCH FIX
 ====================================== */
 
 .task-open-btn{
-position:relative;
-z-index:10000;
+    position:relative;
+    z-index:10000;
 
-pointer-events:auto;  
-touch-action:manipulation;  
+    pointer-events:auto;
+    touch-action:manipulation;
 
--webkit-tap-highlight-color:transparent;
-
-}
-
-/* ======================================
-FINAL TASK MODAL MOBILE FIX
-====================================== */
-
-.task-modal-card,
-.task-modal-card *,
-.task-modal-card *::before,
-.task-modal-card *::after{
-box-sizing:border-box;
-}
-
-/* ======================================
-Modal Content Safety
-====================================== */
-
-.task-modal-card{
-width:min(560px,100%);
-max-width:100%;
-overflow-x:hidden;
-}
-
-.task-modal-card h2,
-.task-modal-intro,
-.task-step-content{
-min-width:0;
-max-width:100%;
-}
-
-/* ======================================
-Task Step
-====================================== */
-
-.task-step{
-width:100%;
-max-width:100%;
-overflow:hidden;
-}
-
-.task-step-content{
-width:100%;
-}
-
-/* ======================================
-External Task Button
-====================================== */
-
-.task-open-btn{
-width:100%;
-max-width:100%;
-min-width:0;
-
-box-sizing:border-box;
-
-}
-
-/* ======================================
-Proof Input
-====================================== */
-
-.proof-input{
-width:100%;
-max-width:100%;
-min-width:0;
-
-box-sizing:border-box;
-
-}
-
-/* ======================================
-Screenshot Upload
-====================================== */
-
-.screenshot-upload{
-width:100%;
-max-width:100%;
-min-width:0;
-
-box-sizing:border-box;
-
-}
-
-.screenshot-preview{
-width:100%;
-max-width:100%;
-box-sizing:border-box;
-}
-
-.screenshot-preview img{
-width:100%;
-max-width:100%;
-height:auto;
-box-sizing:border-box;
-}
-
-/* ======================================
-Review Notice
-====================================== */
-
-.review-notice{
-width:100%;
-max-width:100%;
-box-sizing:border-box;
-}
-
-/* ======================================
-Submit Button
-====================================== */
-
-.submit-task-btn{
-width:100%;
-max-width:100%;
-box-sizing:border-box;
-}
-
-/* ======================================
-MOBILE MODAL
-====================================== */
-
-@media(max-width:768px){
-
-.task-modal{  
-    width:100%;  
-    padding:0;  
-    overflow-x:hidden;  
-}  
-
-.task-modal-card{  
-    width:100%;  
-    max-width:100%;  
-    padding:24px 16px 20px;  
-
-    border-radius:24px 24px 0 0;  
-
-    overflow-x:hidden;  
-}  
-
-.task-step{  
-    width:100%;  
-    max-width:100%;  
-
-    padding:14px;  
-    gap:10px;  
-}  
-
-.task-step-content{  
-    width:100%;  
-    min-width:0;  
-}  
-
-.task-open-btn{  
-    width:100%;  
-    max-width:100%;  
-}  
-
-.proof-input,  
-.screenshot-upload,  
-.review-notice,  
-.submit-task-btn{  
-    width:100%;  
-    max-width:100%;  
-}
-
-}
-
-/* ======================================
-SMALL PHONES
-====================================== */
-
-@media(max-width:480px){
-
-.task-modal-card{  
-    padding:22px 14px 18px;  
-}  
-
-.task-step{  
-    padding:13px;  
-}  
-
-.task-step-content h3{  
-    font-size:.92rem;  
-}  
-
-.task-step-content p{  
-    font-size:.78rem;  
-}  
-
-.task-open-btn{  
-    min-height:46px;  
-    padding:11px 12px;  
-}  
-
-.proof-input{  
-    min-height:46px;  
-    padding:11px 12px;  
-}  
-
-.screenshot-upload{  
-    min-height:105px;  
-    padding:16px 12px;  
-}
-
-}
-/* ======================================
-GAMES TASK PAGE
-Match Community / Music / YouTube
-====================================== */
-
-.games-tasks-page .tasks-container{
-width:100%;
-max-width:900px;
-margin:0 auto;
-padding:28px 20px 50px;
-}
-
-.games-tasks-page .page-header{
-margin:18px 0 20px;
-}
-
-.games-tasks-page .task-group{
-width:100%;
-margin-bottom:18px;
-padding:18px;
-background:#fff;
-border-radius:22px;
-box-shadow:0 12px 30px rgba(0,0,0,.06);
-}
-
-.games-tasks-page .task-group-header{
-display:flex;
-align-items:center;
-gap:14px;
-margin-bottom:16px;
-}
-
-.games-tasks-page .task-group-icon{
-width:50px;
-height:50px;
-flex-shrink:0;
-
-display:flex;  
-align-items:center;  
-justify-content:center;  
-
-border-radius:15px;  
-
-background:#eff6ff;  
-color:#3b82f6;  
-
-font-size:21px;
-
-}
-
-@media(max-width:768px){
-
-.games-tasks-page .tasks-container{  
-    padding:24px 16px 40px;  
-}  
-
-.games-tasks-page .task-group{  
-    padding:16px;  
-    border-radius:20px;  
-}  
-
-.games-tasks-page .task-group-header{  
-    gap:12px;  
-}  
-
-.games-tasks-page .task-group-icon{  
-    width:46px;  
-    height:46px;  
-    border-radius:14px;  
-}
-
-}
-
-@media(max-width:480px){
-
-.games-tasks-page .tasks-container{  
-    padding:22px 14px 36px;  
-}  
-
-.games-tasks-page .task-group{  
-    padding:14px;  
-    border-radius:18px;  
-}  
-
-.games-tasks-page .task-group-header{  
-    align-items:flex-start;  
-}  
-
-.games-tasks-page .task-group-icon{  
-    width:44px;  
-    height:44px;  
-    font-size:19px;  
-}
-
+    -webkit-tap-highlight-color:transparent;
 }
