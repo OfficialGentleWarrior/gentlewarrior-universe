@@ -1673,3 +1673,212 @@ body{
 
     -webkit-tap-highlight-color:transparent;
 }
+
+/* ======================================
+   FINAL TASK MODAL MOBILE FIX
+====================================== */
+
+.task-modal-card,
+.task-modal-card *,
+.task-modal-card *::before,
+.task-modal-card *::after{
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Modal Content Safety
+====================================== */
+
+.task-modal-card{
+    width:min(560px,100%);
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+.task-modal-card h2,
+.task-modal-intro,
+.task-step-content{
+    min-width:0;
+    max-width:100%;
+}
+
+
+/* ======================================
+   Task Step
+====================================== */
+
+.task-step{
+    width:100%;
+    max-width:100%;
+    overflow:hidden;
+}
+
+.task-step-content{
+    width:100%;
+}
+
+
+/* ======================================
+   External Task Button
+====================================== */
+
+.task-open-btn{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Proof Input
+====================================== */
+
+.proof-input{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Screenshot Upload
+====================================== */
+
+.screenshot-upload{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+.screenshot-preview{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+.screenshot-preview img{
+    width:100%;
+    max-width:100%;
+    height:auto;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Review Notice
+====================================== */
+
+.review-notice{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Submit Button
+====================================== */
+
+.submit-task-btn{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   MOBILE MODAL
+====================================== */
+
+@media(max-width:768px){
+
+    .task-modal{
+        width:100%;
+        padding:0;
+        overflow-x:hidden;
+    }
+
+    .task-modal-card{
+        width:100%;
+        max-width:100%;
+        padding:24px 16px 20px;
+
+        border-radius:24px 24px 0 0;
+
+        overflow-x:hidden;
+    }
+
+    .task-step{
+        width:100%;
+        max-width:100%;
+
+        padding:14px;
+        gap:10px;
+    }
+
+    .task-step-content{
+        width:100%;
+        min-width:0;
+    }
+
+    .task-open-btn{
+        width:100%;
+        max-width:100%;
+    }
+
+    .proof-input,
+    .screenshot-upload,
+    .review-notice,
+    .submit-task-btn{
+        width:100%;
+        max-width:100%;
+    }
+
+}
+
+
+/* ======================================
+   SMALL PHONES
+====================================== */
+
+@media(max-width:480px){
+
+    .task-modal-card{
+        padding:22px 14px 18px;
+    }
+
+    .task-step{
+        padding:13px;
+    }
+
+    .task-step-content h3{
+        font-size:.92rem;
+    }
+
+    .task-step-content p{
+        font-size:.78rem;
+    }
+
+    .task-open-btn{
+        min-height:46px;
+        padding:11px 12px;
+    }
+
+    .proof-input{
+        min-height:46px;
+        padding:11px 12px;
+    }
+
+    .screenshot-upload{
+        min-height:105px;
+        padding:16px 12px;
+    }
+
+}
