@@ -1377,4 +1377,18 @@ document.addEventListener(
     }
 );
 
+/* ======================================
+   EXTERNAL TASK LINK
+   NATIVE NEW TAB
+====================================== */
 
+document.addEventListener("click", function (event) {
+
+    const link = event.target.closest(".task-open-btn");
+
+    if (!link) return;
+
+    // Let the browser handle the real <a target="_blank>
+    // Do not use window.open() here.
+
+}, false);
