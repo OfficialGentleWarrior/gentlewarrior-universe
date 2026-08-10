@@ -1661,15 +1661,357 @@ body{
 
        }
 /* ======================================
-   EXTERNAL TASK LINK TOUCH FIX
+   EXTERNAL TASK LINK
 ====================================== */
 
 .task-open-btn{
     position:relative;
-    z-index:10000;
+
+    z-index:10001;
 
     pointer-events:auto;
+
+    display:flex;
+
+    width:100%;
+
+    min-height:46px;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:12px 14px;
+
+    border-radius:13px;
+
+    background:#1877f2;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    font-size:.9rem;
+
+    font-weight:700;
+
+    cursor:pointer;
+
     touch-action:manipulation;
 
     -webkit-tap-highlight-color:transparent;
+
+    pointer-events:auto;
+}
+
+.task-open-btn:hover{
+    background:#166fe5;
+}
+
+.task-open-btn:active{
+    transform:scale(.99);
+}
+
+/* ======================================
+   FINAL TASK MODAL MOBILE FIX
+====================================== */
+
+.task-modal-card,
+.task-modal-card *,
+.task-modal-card *::before,
+.task-modal-card *::after{
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Modal Content Safety
+====================================== */
+
+.task-modal-card{
+    width:min(560px,100%);
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+.task-modal-card h2,
+.task-modal-intro,
+.task-step-content{
+    min-width:0;
+    max-width:100%;
+}
+
+
+/* ======================================
+   Task Step
+====================================== */
+
+.task-step{
+    width:100%;
+    max-width:100%;
+    overflow:hidden;
+}
+
+.task-step-content{
+    width:100%;
+}
+
+
+/* ======================================
+   External Task Button
+====================================== */
+
+.task-open-btn{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Proof Input
+====================================== */
+
+.proof-input{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Screenshot Upload
+====================================== */
+
+.screenshot-upload{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+}
+
+.screenshot-preview{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+.screenshot-preview img{
+    width:100%;
+    max-width:100%;
+    height:auto;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Review Notice
+====================================== */
+
+.review-notice{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   Submit Button
+====================================== */
+
+.submit-task-btn{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+
+/* ======================================
+   MOBILE MODAL
+====================================== */
+
+@media(max-width:768px){
+
+    .task-modal{
+        width:100%;
+        padding:0;
+        overflow-x:hidden;
+    }
+
+    .task-modal-card{
+        width:100%;
+        max-width:100%;
+        padding:24px 16px 20px;
+
+        border-radius:24px 24px 0 0;
+
+        overflow-x:hidden;
+    }
+
+    .task-step{
+        width:100%;
+        max-width:100%;
+
+        padding:14px;
+        gap:10px;
+    }
+
+    .task-step-content{
+        width:100%;
+        min-width:0;
+    }
+
+    .task-open-btn{
+        width:100%;
+        max-width:100%;
+    }
+
+    .proof-input,
+    .screenshot-upload,
+    .review-notice,
+    .submit-task-btn{
+        width:100%;
+        max-width:100%;
+    }
+
+}
+
+
+/* ======================================
+   SMALL PHONES
+====================================== */
+
+@media(max-width:480px){
+
+    .task-modal-card{
+        padding:22px 14px 18px;
+    }
+
+    .task-step{
+        padding:13px;
+    }
+
+    .task-step-content h3{
+        font-size:.92rem;
+    }
+
+    .task-step-content p{
+        font-size:.78rem;
+    }
+
+    .task-open-btn{
+        min-height:46px;
+        padding:11px 12px;
+    }
+
+    .proof-input{
+        min-height:46px;
+        padding:11px 12px;
+    }
+
+    .screenshot-upload{
+        min-height:105px;
+        padding:16px 12px;
+    }
+
+}
+/* ======================================
+   GAMES TASK PAGE
+   Match Community / Music / YouTube
+====================================== */
+
+.games-tasks-page .tasks-container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:28px 20px 50px;
+}
+
+.games-tasks-page .page-header{
+    margin:18px 0 20px;
+}
+
+.games-tasks-page .task-group{
+    width:100%;
+    margin-bottom:18px;
+    padding:18px;
+    background:#fff;
+    border-radius:22px;
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
+}
+
+.games-tasks-page .task-group-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+}
+
+.games-tasks-page .task-group-icon{
+    width:50px;
+    height:50px;
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:#eff6ff;
+    color:#3b82f6;
+
+    font-size:21px;
+}
+
+@media(max-width:768px){
+
+    .games-tasks-page .tasks-container{
+        padding:24px 16px 40px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:16px;
+        border-radius:20px;
+    }
+
+    .games-tasks-page .task-group-header{
+        gap:12px;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:46px;
+        height:46px;
+        border-radius:14px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .games-tasks-page .tasks-container{
+        padding:22px 14px 36px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:14px;
+        border-radius:18px;
+    }
+
+    .games-tasks-page .task-group-header{
+        align-items:flex-start;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:44px;
+        height:44px;
+        font-size:19px;
+    }
+
 }
