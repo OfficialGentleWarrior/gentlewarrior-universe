@@ -4,18 +4,14 @@
 
 /* ======================================
    FORGE Dashboard Header
-   UNIFORM — COMMUNITY / MUSIC / YOUTUBE /
-   GAMES / SOCIAL MEDIA / GWAR
 ====================================== */
 
 .topbar{
     position:relative;
 
-    width:100vw;
-    min-height:86px;
+    width:100%;
 
-    margin-left:calc(50% - 50vw);
-    margin-right:calc(50% - 50vw);
+    min-height:86px;
 
     padding:18px 20px;
 
@@ -33,11 +29,10 @@
     display:block;
 
     width:300px;
+
     max-width:78%;
 
     height:auto;
-
-    margin:0;
 }
 
 .notifications-btn{
@@ -99,12 +94,7 @@ body{
 @media(max-width:768px){
 
     .topbar{
-        width:100vw;
-
         min-height:78px;
-
-        margin-left:calc(50% - 50vw);
-        margin-right:calc(50% - 50vw);
 
         padding:16px 18px;
     }
@@ -134,12 +124,7 @@ body{
 @media(max-width:480px){
 
     .topbar{
-        width:100vw;
-
         min-height:78px;
-
-        margin-left:calc(50% - 50vw);
-        margin-right:calc(50% - 50vw);
 
         padding:15px 16px;
     }
@@ -160,7 +145,6 @@ body{
     }
 
 }
-
 
 /* ======================================
    Page Header
@@ -534,14 +518,17 @@ body{
     position:absolute;
 
     top:14px;
+
     right:14px;
 
     width:40px;
+
     height:40px;
 
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     border:none;
@@ -1181,6 +1168,11 @@ body{
    GROUPS-ONLY TASKS PAGE
 ====================================== */
 
+
+/* ======================================
+   Main Tasks Container
+====================================== */
+
 .tasks-container{
     width:100%;
 
@@ -1667,25 +1659,20 @@ body{
         font-size:13px;
     }
 
-}
-
-
+       }
 /* ======================================
    EXTERNAL TASK LINK TOUCH FIX
 ====================================== */
 
 .task-open-btn{
     position:relative;
-
     z-index:10000;
 
     pointer-events:auto;
-
     touch-action:manipulation;
 
     -webkit-tap-highlight-color:transparent;
 }
-
 
 /* ======================================
    FINAL TASK MODAL MOBILE FIX
@@ -1705,9 +1692,7 @@ body{
 
 .task-modal-card{
     width:min(560px,100%);
-
     max-width:100%;
-
     overflow-x:hidden;
 }
 
@@ -1715,7 +1700,6 @@ body{
 .task-modal-intro,
 .task-step-content{
     min-width:0;
-
     max-width:100%;
 }
 
@@ -1726,9 +1710,7 @@ body{
 
 .task-step{
     width:100%;
-
     max-width:100%;
-
     overflow:hidden;
 }
 
@@ -1743,9 +1725,7 @@ body{
 
 .task-open-btn{
     width:100%;
-
     max-width:100%;
-
     min-width:0;
 
     box-sizing:border-box;
@@ -1758,9 +1738,7 @@ body{
 
 .proof-input{
     width:100%;
-
     max-width:100%;
-
     min-width:0;
 
     box-sizing:border-box;
@@ -1773,9 +1751,7 @@ body{
 
 .screenshot-upload{
     width:100%;
-
     max-width:100%;
-
     min-width:0;
 
     box-sizing:border-box;
@@ -1783,19 +1759,14 @@ body{
 
 .screenshot-preview{
     width:100%;
-
     max-width:100%;
-
     box-sizing:border-box;
 }
 
 .screenshot-preview img{
     width:100%;
-
     max-width:100%;
-
     height:auto;
-
     box-sizing:border-box;
 }
 
@@ -1806,9 +1777,7 @@ body{
 
 .review-notice{
     width:100%;
-
     max-width:100%;
-
     box-sizing:border-box;
 }
 
@@ -1819,9 +1788,7 @@ body{
 
 .submit-task-btn{
     width:100%;
-
     max-width:100%;
-
     box-sizing:border-box;
 }
 
@@ -1834,17 +1801,13 @@ body{
 
     .task-modal{
         width:100%;
-
         padding:0;
-
         overflow-x:hidden;
     }
 
     .task-modal-card{
         width:100%;
-
         max-width:100%;
-
         padding:24px 16px 20px;
 
         border-radius:24px 24px 0 0;
@@ -1854,23 +1817,19 @@ body{
 
     .task-step{
         width:100%;
-
         max-width:100%;
 
         padding:14px;
-
         gap:10px;
     }
 
     .task-step-content{
         width:100%;
-
         min-width:0;
     }
 
     .task-open-btn{
         width:100%;
-
         max-width:100%;
     }
 
@@ -1879,7 +1838,6 @@ body{
     .review-notice,
     .submit-task-btn{
         width:100%;
-
         max-width:100%;
     }
 
@@ -1910,25 +1868,20 @@ body{
 
     .task-open-btn{
         min-height:46px;
-
         padding:11px 12px;
     }
 
     .proof-input{
         min-height:46px;
-
         padding:11px 12px;
     }
 
     .screenshot-upload{
         min-height:105px;
-
         padding:16px 12px;
     }
 
 }
-
-
 /* ======================================
    GAMES TASK PAGE
    Match Community / Music / YouTube
@@ -1936,11 +1889,8 @@ body{
 
 .games-tasks-page .tasks-container{
     width:100%;
-
     max-width:900px;
-
     margin:0 auto;
-
     padding:28px 20px 50px;
 }
 
@@ -1950,43 +1900,32 @@ body{
 
 .games-tasks-page .task-group{
     width:100%;
-
     margin-bottom:18px;
-
     padding:18px;
-
     background:#fff;
-
     border-radius:22px;
-
     box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
 .games-tasks-page .task-group-header{
     display:flex;
-
     align-items:center;
-
     gap:14px;
-
     margin-bottom:16px;
 }
 
 .games-tasks-page .task-group-icon{
     width:50px;
     height:50px;
-
     flex-shrink:0;
 
     display:flex;
-
     align-items:center;
     justify-content:center;
 
     border-radius:15px;
 
     background:#eff6ff;
-
     color:#3b82f6;
 
     font-size:21px;
@@ -2000,7 +1939,6 @@ body{
 
     .games-tasks-page .task-group{
         padding:16px;
-
         border-radius:20px;
     }
 
@@ -2011,7 +1949,6 @@ body{
     .games-tasks-page .task-group-icon{
         width:46px;
         height:46px;
-
         border-radius:14px;
     }
 
@@ -2025,7 +1962,6 @@ body{
 
     .games-tasks-page .task-group{
         padding:14px;
-
         border-radius:18px;
     }
 
@@ -2036,7 +1972,6 @@ body{
     .games-tasks-page .task-group-icon{
         width:44px;
         height:44px;
-
         font-size:19px;
     }
 
