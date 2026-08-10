@@ -591,11 +591,16 @@ function openTask(taskId) {
                 ================================== -->
 
                 <a
-                    href="${task.link}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="task-open-btn"
-                >
+    href="${task.link}"
+    class="task-open-btn"
+    onclick="
+        const newTab = window.open('about:blank', '_blank');
+        if (newTab) {
+            newTab.location.href = this.href;
+        }
+        return false;
+    "
+>
 
                     <i class="${platform.icon}"></i>
 
