@@ -1882,3 +1882,97 @@ body{
     }
 
 }
+/* ======================================
+   GAMES TASK PAGE
+   Match Community / Music / YouTube
+====================================== */
+
+.games-tasks-page .tasks-container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:28px 20px 50px;
+}
+
+.games-tasks-page .page-header{
+    margin:18px 0 20px;
+}
+
+.games-tasks-page .task-group{
+    width:100%;
+    margin-bottom:18px;
+    padding:18px;
+    background:#fff;
+    border-radius:22px;
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
+}
+
+.games-tasks-page .task-group-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+}
+
+.games-tasks-page .task-group-icon{
+    width:50px;
+    height:50px;
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:#eff6ff;
+    color:#3b82f6;
+
+    font-size:21px;
+}
+
+@media(max-width:768px){
+
+    .games-tasks-page .tasks-container{
+        padding:24px 16px 40px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:16px;
+        border-radius:20px;
+    }
+
+    .games-tasks-page .task-group-header{
+        gap:12px;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:46px;
+        height:46px;
+        border-radius:14px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .games-tasks-page .tasks-container{
+        padding:22px 14px 36px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:14px;
+        border-radius:18px;
+    }
+
+    .games-tasks-page .task-group-header{
+        align-items:flex-start;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:44px;
+        height:44px;
+        font-size:19px;
+    }
+
+}
