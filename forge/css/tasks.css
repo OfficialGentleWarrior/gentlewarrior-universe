@@ -1,48 +1,26 @@
 /* ======================================
-   FORGE TASKS
+   FORGE Tasks
 ====================================== */
 
-
 /* ======================================
-   GLOBAL
-====================================== */
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-
-    background:#fff;
-    color:#111827;
-}
-
-
-/* ======================================
-   FORGE HEADER — FINAL
-   Same header for ALL task pages
+   FORGE Dashboard Header
+   UNIFORM — COMMUNITY / MUSIC / YOUTUBE /
+   GAMES / SOCIAL MEDIA / GWAR
 ====================================== */
 
 .topbar{
     position:relative;
 
-    width:100%;
-    height:198px;
-    min-height:198px;
+    width:100vw;
+    min-height:86px;
 
-    padding:0 24px;
+    margin-left:calc(50% - 50vw);
+    margin-right:calc(50% - 50vw);
+
+    padding:18px 20px;
 
     display:flex;
+
     align-items:center;
     justify-content:flex-start;
 
@@ -51,57 +29,46 @@ body{
     overflow:hidden;
 }
 
-
-/* ======================================
-   FORGE LOGO
-====================================== */
-
 .dashboard-logo{
     display:block;
 
-    width:370px;
-    max-width:calc(100% - 90px);
+    width:300px;
+    max-width:78%;
+
     height:auto;
 
-    flex-shrink:0;
+    margin:0;
 }
-
-
-/* ======================================
-   NOTIFICATIONS
-====================================== */
 
 .notifications-btn{
     position:absolute;
 
     top:50%;
-    right:24px;
+    right:18px;
 
     transform:translateY(-50%);
 
-    width:58px;
-    height:58px;
+    width:42px;
+    height:42px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
-    padding:0;
-
     border:1px solid rgba(255,255,255,.15);
+
     border-radius:50%;
 
     background:rgba(255,255,255,.08);
 
     color:#fff;
 
-    font-size:22px;
+    font-size:18px;
 
     cursor:pointer;
 
-    transition:
-        background .2s ease,
-        transform .2s ease;
+    transition:.2s ease;
 }
 
 .notifications-btn:hover{
@@ -110,118 +77,93 @@ body{
 
 
 /* ======================================
-   HEADER MOBILE
+   Tasks Page Font
+====================================== */
+
+body{
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+}
+
+
+/* ======================================
+   Header Mobile
 ====================================== */
 
 @media(max-width:768px){
 
     .topbar{
-        width:100%;
-        height:198px;
-        min-height:198px;
+        width:100vw;
 
-        padding:0 18px;
+        min-height:78px;
+
+        margin-left:calc(50% - 50vw);
+        margin-right:calc(50% - 50vw);
+
+        padding:16px 18px;
     }
 
     .dashboard-logo{
-        width:370px;
-        max-width:calc(100% - 78px);
-    }
+        width:280px;
 
-    .notifications-btn{
-        right:18px;
-
-        width:58px;
-        height:58px;
-
-        font-size:21px;
-    }
-
-}
-
-
-/* ======================================
-   HEADER SMALL PHONES
-====================================== */
-
-@media(max-width:480px){
-
-    .topbar{
-        width:100%;
-        height:198px;
-        min-height:198px;
-
-        padding:0 16px;
-    }
-
-    .dashboard-logo{
-        width:370px;
-        max-width:calc(100% - 72px);
+        max-width:76%;
     }
 
     .notifications-btn{
         right:16px;
 
-        width:56px;
-        height:56px;
+        width:40px;
+        height:40px;
 
-        font-size:20px;
+        font-size:17px;
     }
 
 }
 
 
 /* ======================================
-   MAIN TASKS CONTAINER
+   Header Small Phones
 ====================================== */
 
-.tasks-container{
-    width:100%;
-    max-width:900px;
+@media(max-width:480px){
 
-    margin:0 auto;
+    .topbar{
+        width:100vw;
 
-    padding:28px 20px 50px;
+        min-height:78px;
+
+        margin-left:calc(50% - 50vw);
+        margin-right:calc(50% - 50vw);
+
+        padding:15px 16px;
+    }
+
+    .dashboard-logo{
+        width:260px;
+
+        max-width:74%;
+    }
+
+    .notifications-btn{
+        right:14px;
+
+        width:38px;
+        height:38px;
+
+        font-size:16px;
+    }
+
 }
 
 
 /* ======================================
-   BACK BUTTON
-====================================== */
-
-.back-btn{
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    margin-bottom:18px;
-
-    padding:10px 16px;
-
-    border-radius:999px;
-
-    background:#f0fdf4;
-
-    color:#16a34a;
-
-    font-size:15px;
-    font-weight:700;
-
-    text-decoration:none;
-
-    transition:.2s ease;
-}
-
-.back-btn:hover{
-    background:#dcfce7;
-    color:#15803d;
-}
-
-
-/* ======================================
-   PAGE HEADER
+   Page Header
 ====================================== */
 
 .page-header{
@@ -251,27 +193,61 @@ body{
 
 
 /* ======================================
-   TASK GROUP
+   Back Button
 ====================================== */
 
-.task-group{
-    width:100%;
+.back-btn{
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
 
     margin-bottom:18px;
 
-    padding:18px;
+    padding:10px 16px;
+
+    border-radius:999px;
+
+    background:#f0fdf4;
+
+    color:#16a34a;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    transition:.2s ease;
+}
+
+.back-btn:hover{
+    background:#dcfce7;
+
+    color:#15803d;
+}
+
+
+/* ======================================
+   Task Group
+====================================== */
+
+.task-group{
+    margin-bottom:18px;
 
     background:#fff;
 
     border-radius:22px;
 
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.06);
+    padding:18px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
 }
 
 
 /* ======================================
-   TASK GROUP HEADER
+   Task Group Header
 ====================================== */
 
 .task-group-header{
@@ -298,6 +274,7 @@ body{
     border-radius:15px;
 
     background:#f0fdf4;
+
     color:#22c55e;
 
     font-size:21px;
@@ -307,6 +284,7 @@ body{
     margin:0 0 3px;
 
     font-size:1.15rem;
+
     font-weight:800;
 
     color:#111827;
@@ -326,7 +304,7 @@ body{
 
 
 /* ======================================
-   TASK CARD
+   Task Card
 ====================================== */
 
 .task-card{
@@ -369,7 +347,7 @@ body{
 
 
 /* ======================================
-   TASK CARD ICON
+   Task Card Icon
 ====================================== */
 
 .task-card-icon{
@@ -394,7 +372,7 @@ body{
 
 
 /* ======================================
-   TASK CARD CONTENT
+   Task Card Content
 ====================================== */
 
 .task-card-content{
@@ -407,6 +385,7 @@ body{
     margin:0 0 3px;
 
     font-size:.95rem;
+
     font-weight:800;
 
     color:#111827;
@@ -424,7 +403,7 @@ body{
 
 
 /* ======================================
-   TASK REWARD
+   Task Reward
 ====================================== */
 
 .task-card-reward{
@@ -443,6 +422,7 @@ body{
     color:#16a34a;
 
     font-size:1rem;
+
     font-weight:800;
 }
 
@@ -454,6 +434,7 @@ body{
     color:#6b7280;
 
     font-size:.58rem;
+
     font-weight:800;
 
     letter-spacing:.3px;
@@ -461,7 +442,7 @@ body{
 
 
 /* ======================================
-   TASK ARROW
+   Task Arrow
 ====================================== */
 
 .task-arrow{
@@ -474,42 +455,7 @@ body{
 
 
 /* ======================================
-   PLATFORM / GROUP COLORS
-====================================== */
-
-.community-icon{
-    background:#ecfdf5;
-    color:#22c55e;
-}
-
-.music-icon{
-    background:#fefce8;
-    color:#eab308;
-}
-
-.youtube-icon{
-    background:#fef2f2;
-    color:#ef4444;
-}
-
-.games-icon{
-    background:#eff6ff;
-    color:#3b82f6;
-}
-
-.social-icon{
-    background:#f5f3ff;
-    color:#8b5cf6;
-}
-
-.gwar-icon{
-    background:#f0fdf4;
-    color:#16a34a;
-}
-
-
-/* ======================================
-   TASK MODAL
+   Task Modal
 ====================================== */
 
 .task-modal{
@@ -522,6 +468,7 @@ body{
     display:none;
 
     align-items:center;
+
     justify-content:center;
 
     padding:20px;
@@ -539,18 +486,16 @@ body{
 
 
 /* ======================================
-   TASK MODAL CARD
+   Task Modal Card
 ====================================== */
 
 .task-modal-card{
     position:relative;
 
     width:min(560px,100%);
-    max-width:100%;
 
     max-height:calc(100vh - 40px);
 
-    overflow-x:hidden;
     overflow-y:auto;
 
     padding:28px 24px;
@@ -559,8 +504,7 @@ body{
 
     border-radius:24px;
 
-    box-shadow:
-        0 24px 60px rgba(0,0,0,.20);
+    box-shadow:0 24px 60px rgba(0,0,0,.20);
 
     animation:taskModalIn .2s ease;
 }
@@ -569,11 +513,13 @@ body{
 
     from{
         opacity:0;
+
         transform:translateY(12px) scale(.98);
     }
 
     to{
         opacity:1;
+
         transform:translateY(0) scale(1);
     }
 
@@ -581,7 +527,7 @@ body{
 
 
 /* ======================================
-   MODAL CLOSE
+   Modal Close
 ====================================== */
 
 .task-modal-close{
@@ -615,6 +561,7 @@ body{
 
 .task-modal-close:hover{
     background:#e5e7eb;
+
     color:#111827;
 }
 
@@ -624,7 +571,7 @@ body{
 
 
 /* ======================================
-   REWARD BADGE
+   Reward Badge
 ====================================== */
 
 .task-reward-badge{
@@ -645,6 +592,7 @@ body{
     color:#16a34a;
 
     font-size:.78rem;
+
     font-weight:800;
 }
 
@@ -654,7 +602,7 @@ body{
 
 
 /* ======================================
-   MODAL HEADING
+   Modal Heading
 ====================================== */
 
 .task-modal-card h2{
@@ -681,13 +629,10 @@ body{
 
 
 /* ======================================
-   TASK STEP
+   Task Step
 ====================================== */
 
 .task-step{
-    width:100%;
-    max-width:100%;
-
     display:flex;
 
     align-items:flex-start;
@@ -703,8 +648,6 @@ body{
     border:1px solid #edf2f7;
 
     border-radius:16px;
-
-    overflow:hidden;
 }
 
 .task-step-number{
@@ -725,21 +668,21 @@ body{
     color:#fff;
 
     font-size:.85rem;
+
     font-weight:800;
 }
 
 .task-step-content{
     flex:1;
 
-    width:100%;
     min-width:0;
-    max-width:100%;
 }
 
 .task-step-content h3{
     margin:1px 0 5px;
 
     font-size:.95rem;
+
     font-weight:800;
 
     color:#111827;
@@ -757,22 +700,18 @@ body{
 
 
 /* ======================================
-   OPEN TASK LINK
+   Open Task Link
 ====================================== */
 
 .task-open-btn{
-    position:relative;
-    z-index:10000;
-
     width:100%;
-    max-width:100%;
-    min-width:0;
 
     min-height:46px;
 
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     gap:8px;
@@ -788,15 +727,10 @@ body{
     text-decoration:none;
 
     font-size:.9rem;
+
     font-weight:700;
 
     transition:.2s ease;
-
-    pointer-events:auto;
-
-    touch-action:manipulation;
-
-    -webkit-tap-highlight-color:transparent;
 }
 
 .task-open-btn:hover{
@@ -807,12 +741,13 @@ body{
 
 .task-open-btn i:last-child{
     font-size:11px;
+
     margin-left:2px;
 }
 
 
 /* ======================================
-   PROOF LABEL
+   Proof Label
 ====================================== */
 
 .proof-label{
@@ -823,18 +758,17 @@ body{
     color:#374151;
 
     font-size:.8rem;
+
     font-weight:700;
 }
 
 
 /* ======================================
-   PROOF INPUT
+   Proof Input
 ====================================== */
 
 .proof-input{
     width:100%;
-    max-width:100%;
-    min-width:0;
 
     min-height:46px;
 
@@ -858,8 +792,7 @@ body{
 .proof-input:focus{
     border-color:#22c55e;
 
-    box-shadow:
-        0 0 0 3px rgba(34,197,94,.12);
+    box-shadow:0 0 0 3px rgba(34,197,94,.12);
 }
 
 .proof-input::placeholder{
@@ -868,13 +801,11 @@ body{
 
 
 /* ======================================
-   SCREENSHOT UPLOAD
+   Screenshot Upload
 ====================================== */
 
 .screenshot-upload{
     width:100%;
-    max-width:100%;
-    min-width:0;
 
     min-height:110px;
 
@@ -883,6 +814,7 @@ body{
     flex-direction:column;
 
     align-items:center;
+
     justify-content:center;
 
     gap:5px;
@@ -932,13 +864,10 @@ body{
 
 
 /* ======================================
-   SCREENSHOT PREVIEW
+   Screenshot Preview
 ====================================== */
 
 .screenshot-preview{
-    width:100%;
-    max-width:100%;
-
     margin-top:12px;
 
     padding:10px;
@@ -954,8 +883,6 @@ body{
     display:block;
 
     width:100%;
-    max-width:100%;
-    height:auto;
 
     max-height:280px;
 
@@ -968,7 +895,7 @@ body{
 
 
 /* ======================================
-   REMOVE SCREENSHOT
+   Remove Screenshot
 ====================================== */
 
 .remove-screenshot{
@@ -987,6 +914,7 @@ body{
     color:#dc2626;
 
     font-size:.82rem;
+
     font-weight:700;
 
     cursor:pointer;
@@ -1004,13 +932,10 @@ body{
 
 
 /* ======================================
-   REVIEW NOTICE
+   Review Notice
 ====================================== */
 
 .review-notice{
-    width:100%;
-    max-width:100%;
-
     display:flex;
 
     align-items:flex-start;
@@ -1048,18 +973,18 @@ body{
 
 
 /* ======================================
-   SUBMIT BUTTON
+   Submit Button
 ====================================== */
 
 .submit-task-btn{
     width:100%;
-    max-width:100%;
 
     min-height:50px;
 
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     gap:8px;
@@ -1068,16 +993,12 @@ body{
 
     border-radius:15px;
 
-    background:
-        linear-gradient(
-            135deg,
-            #22c55e,
-            #16a34a
-        );
+    background:linear-gradient(135deg,#22c55e,#16a34a);
 
     color:#fff;
 
     font-size:.95rem;
+
     font-weight:800;
 
     cursor:pointer;
@@ -1088,8 +1009,7 @@ body{
 .submit-task-btn:hover:not(:disabled){
     transform:translateY(-1px);
 
-    box-shadow:
-        0 8px 20px rgba(34,197,94,.25);
+    box-shadow:0 8px 20px rgba(34,197,94,.25);
 }
 
 .submit-task-btn:disabled{
@@ -1104,369 +1024,10 @@ body{
 
 
 /* ======================================
-   GROUPS-ONLY TASKS PAGE
-====================================== */
-
-.task-groups{
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-}
-
-
-/* ======================================
-   GROUP CARD
-====================================== */
-
-.task-group-card{
-    position:relative;
-
-    width:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:18px;
-
-    background:#fff;
-
-    border:1px solid #edf2f7;
-
-    border-radius:20px;
-
-    text-decoration:none;
-
-    color:#111827;
-
-    box-shadow:
-        0 8px 24px rgba(0,0,0,.045);
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-}
-
-.task-group-card:hover{
-    transform:translateY(-2px);
-
-    border-color:#bbf7d0;
-
-    box-shadow:
-        0 12px 28px rgba(34,197,94,.10);
-}
-
-.task-group-card:active{
-    transform:scale(.99);
-}
-
-
-/* ======================================
-   GROUP ICON
-====================================== */
-
-.task-group-card .task-group-icon{
-    width:54px;
-    height:54px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:16px;
-
-    font-size:22px;
-}
-
-
-/* ======================================
-   GROUP CONTENT
-====================================== */
-
-.task-group-content{
-    flex:1;
-
-    min-width:0;
-}
-
-.task-group-content h2{
-    margin:0 0 3px;
-
-    font-size:1.05rem;
-    font-weight:800;
-
-    color:#111827;
-
-    text-transform:capitalize;
-}
-
-.task-group-content p{
-    margin:0 0 5px;
-
-    color:#6b7280;
-
-    font-size:.88rem;
-
-    line-height:1.4;
-}
-
-.task-group-meta{
-    display:block;
-
-    color:#16a34a;
-
-    font-size:.82rem;
-    font-weight:800;
-}
-
-
-/* ======================================
-   GROUP ARROW
-====================================== */
-
-.task-group-arrow{
-    flex-shrink:0;
-
-    width:34px;
-    height:34px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    color:#9ca3af;
-
-    font-size:15px;
-
-    transition:.2s ease;
-}
-
-.task-group-card:hover .task-group-arrow{
-    color:#16a34a;
-
-    transform:translateX(3px);
-}
-
-
-/* ======================================
-   WATCH ADS
-====================================== */
-
-.watch-ads-section{
-    margin-top:30px;
-}
-
-.watch-ads-divider{
-    width:100%;
-
-    height:1px;
-
-    margin-bottom:20px;
-
-    background:#e5e7eb;
-}
-
-.watch-ads-card{
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    width:100%;
-
-    padding:18px;
-
-    background:#fff;
-
-    border:1px solid #fde68a;
-
-    border-radius:20px;
-
-    text-decoration:none;
-
-    color:#111827;
-
-    box-shadow:
-        0 8px 24px rgba(0,0,0,.045);
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-}
-
-.watch-ads-card:hover{
-    transform:translateY(-2px);
-
-    border-color:#fbbf24;
-
-    box-shadow:
-        0 12px 28px rgba(245,158,11,.12);
-}
-
-
-/* ======================================
-   WATCH ADS ICON
-====================================== */
-
-.watch-ads-icon{
-    width:54px;
-    height:54px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:16px;
-
-    background:#fffbeb;
-
-    color:#f59e0b;
-
-    font-size:22px;
-}
-
-
-/* ======================================
-   WATCH ADS CONTENT
-====================================== */
-
-.watch-ads-content{
-    flex:1;
-
-    min-width:0;
-}
-
-.watch-ads-content h2{
-    margin:0 0 3px;
-
-    font-size:1.05rem;
-    font-weight:800;
-
-    color:#111827;
-}
-
-.watch-ads-content p{
-    margin:0 0 4px;
-
-    color:#374151;
-
-    font-size:.88rem;
-    font-weight:600;
-}
-
-.watch-ads-content span{
-    display:block;
-
-    color:#9ca3af;
-
-    font-size:.8rem;
-
-    line-height:1.4;
-}
-
-
-/* ======================================
-   WATCH ADS ARROW
-====================================== */
-
-.watch-ads-arrow{
-    flex-shrink:0;
-
-    width:34px;
-    height:34px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    color:#9ca3af;
-
-    font-size:15px;
-
-    transition:.2s ease;
-}
-
-.watch-ads-card:hover .watch-ads-arrow{
-    color:#f59e0b;
-
-    transform:translateX(3px);
-}
-
-
-/* ======================================
-   GAMES TASK PAGE
-====================================== */
-
-.games-tasks-page .task-group{
-    width:100%;
-
-    margin-bottom:18px;
-
-    padding:18px;
-
-    background:#fff;
-
-    border-radius:22px;
-
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.06);
-}
-
-.games-tasks-page .task-group-header{
-    display:flex;
-
-    align-items:center;
-
-    gap:14px;
-
-    margin-bottom:16px;
-}
-
-.games-tasks-page .task-group-icon{
-    width:50px;
-    height:50px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:15px;
-
-    background:#eff6ff;
-
-    color:#3b82f6;
-
-    font-size:21px;
-}
-
-
-/* ======================================
-   MOBILE
+   Mobile
 ====================================== */
 
 @media(max-width:768px){
-
-    .tasks-container{
-        padding:24px 16px 40px;
-    }
 
     .page-header{
         margin-top:16px;
@@ -1512,100 +1073,29 @@ body{
     }
 
     .task-modal{
-        width:100%;
-
         align-items:flex-end;
 
         padding:0;
-
-        overflow-x:hidden;
     }
 
     .task-modal-card{
         width:100%;
-        max-width:100%;
 
         max-height:92vh;
 
-        padding:24px 16px 20px;
+        padding:26px 18px 22px;
 
         border-radius:24px 24px 0 0;
-
-        overflow-x:hidden;
-    }
-
-    .task-step{
-        width:100%;
-        max-width:100%;
-
-        padding:14px;
-
-        gap:10px;
-    }
-
-    .task-step-content{
-        width:100%;
-        min-width:0;
-    }
-
-    .task-open-btn,
-    .proof-input,
-    .screenshot-upload,
-    .review-notice,
-    .submit-task-btn{
-        width:100%;
-        max-width:100%;
-    }
-
-    .task-group-card,
-    .watch-ads-card{
-        padding:16px;
-
-        gap:13px;
-
-        border-radius:19px;
-    }
-
-    .task-group-card .task-group-icon,
-    .watch-ads-icon{
-        width:50px;
-        height:50px;
-
-        border-radius:15px;
-
-        font-size:20px;
-    }
-
-    .task-group-content h2,
-    .watch-ads-content h2{
-        font-size:1rem;
-    }
-
-    .task-group-content p,
-    .watch-ads-content p{
-        font-size:.84rem;
-    }
-
-    .task-group-meta{
-        font-size:.78rem;
     }
 
 }
 
 
 /* ======================================
-   SMALL PHONES
+   Small Phones
 ====================================== */
 
 @media(max-width:480px){
-
-    .tasks-container{
-        padding:22px 14px 36px;
-    }
-
-    .page-header h1{
-        font-size:1.75rem;
-    }
 
     .task-group{
         padding:14px;
@@ -1664,7 +1154,7 @@ body{
     }
 
     .task-modal-card{
-        padding:22px 14px 18px;
+        padding:24px 16px 20px;
     }
 
     .task-modal-card h2{
@@ -1672,33 +1162,464 @@ body{
     }
 
     .task-step{
-        padding:13px;
+        padding:14px;
+
+        gap:10px;
     }
 
-    .task-step-content h3{
-        font-size:.92rem;
-    }
+    .task-step-number{
+        width:28px;
+        height:28px;
 
-    .task-step-content p{
         font-size:.78rem;
     }
 
-    .task-open-btn{
-        min-height:46px;
+}
 
-        padding:11px 12px;
+
+/* ======================================
+   GROUPS-ONLY TASKS PAGE
+====================================== */
+
+.tasks-container{
+    width:100%;
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    padding:28px 20px 50px;
+}
+
+
+/* ======================================
+   Task Groups List
+====================================== */
+
+.task-groups{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+
+/* ======================================
+   Group Card
+====================================== */
+
+.task-group-card{
+    position:relative;
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px;
+
+    background:#fff;
+
+    border:1px solid #edf2f7;
+
+    border-radius:20px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.task-group-card:hover{
+    transform:translateY(-2px);
+
+    border-color:#bbf7d0;
+
+    box-shadow:
+        0 12px 28px rgba(34,197,94,.10);
+}
+
+.task-group-card:active{
+    transform:scale(.99);
+}
+
+
+/* ======================================
+   Group Icon
+====================================== */
+
+.task-group-card .task-group-icon{
+    width:54px;
+    height:54px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    font-size:22px;
+}
+
+
+/* Community */
+
+.community-icon{
+    background:#ecfdf5;
+
+    color:#22c55e;
+}
+
+
+/* Music */
+
+.music-icon{
+    background:#fefce8;
+
+    color:#eab308;
+}
+
+
+/* YouTube */
+
+.youtube-icon{
+    background:#fef2f2;
+
+    color:#ef4444;
+}
+
+
+/* Games */
+
+.games-icon{
+    background:#eff6ff;
+
+    color:#3b82f6;
+}
+
+
+/* Social Media */
+
+.social-icon{
+    background:#f5f3ff;
+
+    color:#8b5cf6;
+}
+
+
+/* GWAR / Web3 */
+
+.gwar-icon{
+    background:#f0fdf4;
+
+    color:#16a34a;
+}
+
+
+/* ======================================
+   Group Content
+====================================== */
+
+.task-group-content{
+    flex:1;
+
+    min-width:0;
+}
+
+.task-group-content h2{
+    margin:0 0 3px;
+
+    font-size:1.05rem;
+
+    font-weight:800;
+
+    color:#111827;
+
+    text-transform:capitalize;
+}
+
+.task-group-content p{
+    margin:0 0 5px;
+
+    color:#6b7280;
+
+    font-size:.88rem;
+
+    line-height:1.4;
+}
+
+.task-group-meta{
+    display:block;
+
+    color:#16a34a;
+
+    font-size:.82rem;
+
+    font-weight:800;
+}
+
+
+/* ======================================
+   Group Arrow
+====================================== */
+
+.task-group-arrow{
+    flex-shrink:0;
+
+    width:34px;
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:15px;
+
+    transition:.2s ease;
+}
+
+.task-group-card:hover .task-group-arrow{
+    color:#16a34a;
+
+    transform:translateX(3px);
+}
+
+
+/* ======================================
+   WATCH ADS
+====================================== */
+
+.watch-ads-section{
+    margin-top:30px;
+}
+
+.watch-ads-divider{
+    width:100%;
+
+    height:1px;
+
+    margin-bottom:20px;
+
+    background:#e5e7eb;
+}
+
+
+.watch-ads-card{
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    width:100%;
+
+    padding:18px;
+
+    background:#fff;
+
+    border:1px solid #fde68a;
+
+    border-radius:20px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.045);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.watch-ads-card:hover{
+    transform:translateY(-2px);
+
+    border-color:#fbbf24;
+
+    box-shadow:
+        0 12px 28px rgba(245,158,11,.12);
+}
+
+.watch-ads-card:active{
+    transform:scale(.99);
+}
+
+
+/* ======================================
+   Watch Ads Icon
+====================================== */
+
+.watch-ads-icon{
+    width:54px;
+    height:54px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    background:#fffbeb;
+
+    color:#f59e0b;
+
+    font-size:22px;
+}
+
+
+/* ======================================
+   Watch Ads Content
+====================================== */
+
+.watch-ads-content{
+    flex:1;
+
+    min-width:0;
+}
+
+.watch-ads-content h2{
+    margin:0 0 3px;
+
+    font-size:1.05rem;
+
+    font-weight:800;
+
+    color:#111827;
+}
+
+.watch-ads-content p{
+    margin:0 0 4px;
+
+    color:#374151;
+
+    font-size:.88rem;
+
+    font-weight:600;
+}
+
+.watch-ads-content span{
+    display:block;
+
+    color:#9ca3af;
+
+    font-size:.8rem;
+
+    line-height:1.4;
+}
+
+
+/* ======================================
+   Watch Ads Arrow
+====================================== */
+
+.watch-ads-arrow{
+    flex-shrink:0;
+
+    width:34px;
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:15px;
+
+    transition:.2s ease;
+}
+
+.watch-ads-card:hover .watch-ads-arrow{
+    color:#f59e0b;
+
+    transform:translateX(3px);
+}
+
+
+/* ======================================
+   Groups Mobile
+====================================== */
+
+@media(max-width:768px){
+
+    .tasks-container{
+        padding:24px 16px 40px;
     }
 
-    .proof-input{
-        min-height:46px;
+    .task-group-card,
+    .watch-ads-card{
+        padding:16px;
 
-        padding:11px 12px;
+        gap:13px;
+
+        border-radius:19px;
     }
 
-    .screenshot-upload{
-        min-height:105px;
+    .task-group-card .task-group-icon,
+    .watch-ads-icon{
+        width:50px;
+        height:50px;
 
-        padding:16px 12px;
+        border-radius:15px;
+
+        font-size:20px;
+    }
+
+    .task-group-content h2,
+    .watch-ads-content h2{
+        font-size:1rem;
+    }
+
+    .task-group-content p,
+    .watch-ads-content p{
+        font-size:.84rem;
+    }
+
+    .task-group-meta{
+        font-size:.78rem;
+    }
+
+}
+
+
+/* ======================================
+   Groups Small Phones
+====================================== */
+
+@media(max-width:480px){
+
+    .tasks-container{
+        padding:22px 14px 36px;
+    }
+
+    .task-groups{
+        gap:10px;
     }
 
     .task-group-card,
@@ -1755,6 +1676,7 @@ body{
 
 .task-open-btn{
     position:relative;
+
     z-index:10000;
 
     pointer-events:auto;
@@ -1766,7 +1688,7 @@ body{
 
 
 /* ======================================
-   MODAL CONTENT SAFETY
+   FINAL TASK MODAL MOBILE FIX
 ====================================== */
 
 .task-modal-card,
@@ -1776,29 +1698,54 @@ body{
     box-sizing:border-box;
 }
 
+
+/* ======================================
+   Modal Content Safety
+====================================== */
+
+.task-modal-card{
+    width:min(560px,100%);
+
+    max-width:100%;
+
+    overflow-x:hidden;
+}
+
 .task-modal-card h2,
 .task-modal-intro,
 .task-step-content{
     min-width:0;
+
     max-width:100%;
-}
-
-.task-step{
-    overflow:hidden;
-}
-
-.task-modal-card{
-    overflow-x:hidden;
 }
 
 
 /* ======================================
-   EXTERNAL TASK LINK
+   Task Step
+====================================== */
+
+.task-step{
+    width:100%;
+
+    max-width:100%;
+
+    overflow:hidden;
+}
+
+.task-step-content{
+    width:100%;
+}
+
+
+/* ======================================
+   External Task Button
 ====================================== */
 
 .task-open-btn{
     width:100%;
+
     max-width:100%;
+
     min-width:0;
 
     box-sizing:border-box;
@@ -1806,12 +1753,14 @@ body{
 
 
 /* ======================================
-   PROOF INPUT SAFETY
+   Proof Input
 ====================================== */
 
 .proof-input{
     width:100%;
+
     max-width:100%;
+
     min-width:0;
 
     box-sizing:border-box;
@@ -1819,12 +1768,14 @@ body{
 
 
 /* ======================================
-   SCREENSHOT SAFETY
+   Screenshot Upload
 ====================================== */
 
 .screenshot-upload{
     width:100%;
+
     max-width:100%;
+
     min-width:0;
 
     box-sizing:border-box;
@@ -1832,6 +1783,7 @@ body{
 
 .screenshot-preview{
     width:100%;
+
     max-width:100%;
 
     box-sizing:border-box;
@@ -1839,7 +1791,9 @@ body{
 
 .screenshot-preview img{
     width:100%;
+
     max-width:100%;
+
     height:auto;
 
     box-sizing:border-box;
@@ -1847,19 +1801,243 @@ body{
 
 
 /* ======================================
-   REVIEW / SUBMIT SAFETY
+   Review Notice
 ====================================== */
 
 .review-notice{
     width:100%;
+
     max-width:100%;
 
     box-sizing:border-box;
 }
 
+
+/* ======================================
+   Submit Button
+====================================== */
+
 .submit-task-btn{
     width:100%;
+
     max-width:100%;
 
     box-sizing:border-box;
-   }
+}
+
+
+/* ======================================
+   MOBILE MODAL
+====================================== */
+
+@media(max-width:768px){
+
+    .task-modal{
+        width:100%;
+
+        padding:0;
+
+        overflow-x:hidden;
+    }
+
+    .task-modal-card{
+        width:100%;
+
+        max-width:100%;
+
+        padding:24px 16px 20px;
+
+        border-radius:24px 24px 0 0;
+
+        overflow-x:hidden;
+    }
+
+    .task-step{
+        width:100%;
+
+        max-width:100%;
+
+        padding:14px;
+
+        gap:10px;
+    }
+
+    .task-step-content{
+        width:100%;
+
+        min-width:0;
+    }
+
+    .task-open-btn{
+        width:100%;
+
+        max-width:100%;
+    }
+
+    .proof-input,
+    .screenshot-upload,
+    .review-notice,
+    .submit-task-btn{
+        width:100%;
+
+        max-width:100%;
+    }
+
+}
+
+
+/* ======================================
+   SMALL PHONES
+====================================== */
+
+@media(max-width:480px){
+
+    .task-modal-card{
+        padding:22px 14px 18px;
+    }
+
+    .task-step{
+        padding:13px;
+    }
+
+    .task-step-content h3{
+        font-size:.92rem;
+    }
+
+    .task-step-content p{
+        font-size:.78rem;
+    }
+
+    .task-open-btn{
+        min-height:46px;
+
+        padding:11px 12px;
+    }
+
+    .proof-input{
+        min-height:46px;
+
+        padding:11px 12px;
+    }
+
+    .screenshot-upload{
+        min-height:105px;
+
+        padding:16px 12px;
+    }
+
+}
+
+
+/* ======================================
+   GAMES TASK PAGE
+   Match Community / Music / YouTube
+====================================== */
+
+.games-tasks-page .tasks-container{
+    width:100%;
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    padding:28px 20px 50px;
+}
+
+.games-tasks-page .page-header{
+    margin:18px 0 20px;
+}
+
+.games-tasks-page .task-group{
+    width:100%;
+
+    margin-bottom:18px;
+
+    padding:18px;
+
+    background:#fff;
+
+    border-radius:22px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.06);
+}
+
+.games-tasks-page .task-group-header{
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:16px;
+}
+
+.games-tasks-page .task-group-icon{
+    width:50px;
+    height:50px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:#eff6ff;
+
+    color:#3b82f6;
+
+    font-size:21px;
+}
+
+@media(max-width:768px){
+
+    .games-tasks-page .tasks-container{
+        padding:24px 16px 40px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:16px;
+
+        border-radius:20px;
+    }
+
+    .games-tasks-page .task-group-header{
+        gap:12px;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:46px;
+        height:46px;
+
+        border-radius:14px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .games-tasks-page .tasks-container{
+        padding:22px 14px 36px;
+    }
+
+    .games-tasks-page .task-group{
+        padding:14px;
+
+        border-radius:18px;
+    }
+
+    .games-tasks-page .task-group-header{
+        align-items:flex-start;
+    }
+
+    .games-tasks-page .task-group-icon{
+        width:44px;
+        height:44px;
+
+        font-size:19px;
+    }
+
+}
