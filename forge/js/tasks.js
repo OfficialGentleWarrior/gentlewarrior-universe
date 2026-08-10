@@ -1,5 +1,5 @@
 /* ======================================
-   FORGE Tasks
+   FORGE Community Tasks
 ====================================== */
 
 
@@ -7,14 +7,9 @@
    Modal Elements
 ====================================== */
 
-const taskModal =
-    document.getElementById("taskModal");
-
-const taskModalContent =
-    document.getElementById("taskModalContent");
-
-const taskModalClose =
-    document.querySelector(".task-modal-close");
+const taskModal = document.getElementById("taskModal");
+const taskModalContent = document.getElementById("taskModalContent");
+const taskModalClose = document.querySelector(".task-modal-close");
 
 
 /* ======================================
@@ -24,7 +19,7 @@ const taskModalClose =
 const TASKS = {
 
     /* ==================================
-       COMMUNITY — TASK 1
+       TASK 1
     ================================== */
 
     follow_baby_leam: {
@@ -39,7 +34,7 @@ const TASKS = {
         platform: "Facebook",
 
         link:
-            "https://www.facebook.com/BabyLeamOfficial",
+            "https://facebook.com/BabyLeamOfficial",
 
         stepTitle:
             "Follow the Facebook Page",
@@ -51,7 +46,7 @@ const TASKS = {
             "Facebook Name / Page",
 
         proofPlaceholder:
-            "Enter your Facebook name or Page",
+            "Enter your Facebook name",
 
         proofDescription:
             "Provide the name or Page you used to follow Baby Leam."
@@ -60,13 +55,12 @@ const TASKS = {
 
 
     /* ==================================
-       COMMUNITY — TASK 2
+       TASK 2
     ================================== */
 
     follow_gentle_warrior: {
 
-        title:
-            "Follow Gentle Warrior's Page",
+        title: "Follow Gentle Warrior's Page",
 
         description:
             "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
@@ -76,7 +70,7 @@ const TASKS = {
         platform: "Facebook",
 
         link:
-            "https://www.facebook.com/GentleWarriorOfficial",
+            "https://facebook.com/GentleWarriorOfficial",
 
         stepTitle:
             "Follow the Facebook Page",
@@ -88,7 +82,7 @@ const TASKS = {
             "Facebook Name / Page",
 
         proofPlaceholder:
-            "Enter your Facebook name or Page",
+            "Enter your Facebook name",
 
         proofDescription:
             "Provide the name or Page you used to follow Gentle Warrior."
@@ -97,13 +91,12 @@ const TASKS = {
 
 
     /* ==================================
-       COMMUNITY — TASK 17
+       TASK 17
     ================================== */
 
     join_messenger_gc: {
 
-        title:
-            "Join our Messenger GC",
+        title: "Join our Messenger GC",
 
         description:
             "Join the Gentle Warrior Messenger community and submit your proof to earn 1 SPARK.",
@@ -134,13 +127,12 @@ const TASKS = {
 
 
     /* ==================================
-       COMMUNITY — TASK 18
+       TASK 18
     ================================== */
 
     join_tg_community: {
 
-        title:
-            "Join our TG Community",
+        title: "Join our TG Community",
 
         description:
             "Join the Gentle Warrior Telegram community and submit your proof to earn 1 SPARK.",
@@ -171,13 +163,12 @@ const TASKS = {
 
 
     /* ==================================
-       COMMUNITY — TASK 19
+       TASK 19
     ================================== */
 
     join_x_community: {
 
-        title:
-            "Join our X Community",
+        title: "Join our X Community",
 
         description:
             "Join the Gentle Warrior X Community and submit your proof to earn 1 SPARK.",
@@ -204,304 +195,6 @@ const TASKS = {
         proofDescription:
             "Provide the X username you used to join the community."
 
-    },
-
-
-    /* ==================================
-       MUSIC — TASK 1
-    ================================== */
-
-    follow_gentle_warrior_spotify: {
-
-        title:
-            "Follow Gentle Warrior on Spotify",
-
-        description:
-            "Follow Gentle Warrior on Spotify and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Spotify",
-
-        link:
-            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
-
-        stepTitle:
-            "Follow Gentle Warrior on Spotify",
-
-        stepDescription:
-            "Open Gentle Warrior on Spotify and follow the artist.",
-
-        proofLabel:
-            "Spotify Name",
-
-        proofPlaceholder:
-            "Enter your Spotify name",
-
-        proofDescription:
-            "Provide the Spotify name you used to follow Gentle Warrior."
-
-    },
-
-
-    /* ==================================
-       MUSIC — TASK 2
-    ================================== */
-
-    add_gentle_warrior_playlist: {
-
-        title:
-            "Add Gentle Warrior's Music to Your Spotify Playlist",
-
-        description:
-            "Add Gentle Warrior's music to your Spotify playlist and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Spotify",
-
-        link:
-            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
-
-        stepTitle:
-            "Add Gentle Warrior's Music to Your Playlist",
-
-        stepDescription:
-            "Open Gentle Warrior on Spotify and add the music to one of your playlists.",
-
-        proofLabel:
-            "Spotify Name",
-
-        proofPlaceholder:
-            "Enter your Spotify name",
-
-        proofDescription:
-            "Provide the Spotify name you used to add the music to your playlist."
-
-    },
-
-
-    /* ==================================
-       MUSIC — TASK 3
-    ================================== */
-
-    share_gentle_warrior_spotify: {
-
-        title:
-            "Share Gentle Warrior on Spotify",
-
-        description:
-            "Share Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Spotify",
-
-        link:
-            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
-
-        stepTitle:
-            "Share Gentle Warrior on Spotify",
-
-        stepDescription:
-            "Open Gentle Warrior on Spotify and share the music.",
-
-        proofLabel:
-            "Spotify Name",
-
-        proofPlaceholder:
-            "Enter your Spotify name",
-
-        proofDescription:
-            "Provide the Spotify name you used to share Gentle Warrior."
-
-    },
-
-
-    /* ==================================
-       MUSIC — TASK 4
-    ================================== */
-
-    listen_gentle_warrior_spotify: {
-
-        title:
-            "Listen to Gentle Warrior on Spotify",
-
-        description:
-            "Listen to Gentle Warrior's music on Spotify and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Spotify",
-
-        link:
-            "https://open.spotify.com/album/438CnMtDfkQmC8860coayj",
-
-        stepTitle:
-            "Listen to Gentle Warrior on Spotify",
-
-        stepDescription:
-            "Open Gentle Warrior on Spotify and listen to the music.",
-
-        proofLabel:
-            "Spotify Name",
-
-        proofPlaceholder:
-            "Enter your Spotify name",
-
-        proofDescription:
-            "Provide the Spotify name you used to listen to Gentle Warrior."
-
-    },
-
-
-    /* ==================================
-       YOUTUBE — TASK 1
-    ================================== */
-
-    follow_gentle_warrior_youtube: {
-
-        title:
-            "Subscribe to Gentle Warrior on YouTube",
-
-        description:
-            "Subscribe to the Gentle Warrior YouTube channel and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "YouTube",
-
-        link:
-            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
-
-        stepTitle:
-            "Subscribe to the YouTube Channel",
-
-        stepDescription:
-            "Open the Gentle Warrior YouTube channel and subscribe.",
-
-        proofLabel:
-            "YouTube Name",
-
-        proofPlaceholder:
-            "Enter your YouTube name",
-
-        proofDescription:
-            "Provide the YouTube name you used to subscribe to Gentle Warrior."
-
-    },
-
-
-    /* ==================================
-       YOUTUBE — TASK 2
-    ================================== */
-
-    like_gentle_warrior_youtube: {
-
-        title:
-            "Like Gentle Warrior's Music Video on YouTube",
-
-        description:
-            "Like the Gentle Warrior music video on YouTube and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "YouTube",
-
-        link:
-            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
-
-        stepTitle:
-            "Like the Music Video",
-
-        stepDescription:
-            "Open the Gentle Warrior music video and tap the Like button.",
-
-        proofLabel:
-            "YouTube Name",
-
-        proofPlaceholder:
-            "Enter your YouTube name",
-
-        proofDescription:
-            "Provide the YouTube name you used to like the music video."
-
-    },
-
-
-    /* ==================================
-       YOUTUBE — TASK 3
-    ================================== */
-
-    share_gentle_warrior_youtube: {
-
-        title:
-            "Share Gentle Warrior's Music Video on YouTube",
-
-        description:
-            "Share the Gentle Warrior music video on YouTube and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "YouTube",
-
-        link:
-            "https://youtu.be/X7Xc8ulnvWs?si=cK7qW6WmL4cFWVwa",
-
-        stepTitle:
-            "Share the Music Video",
-
-        stepDescription:
-            "Open the Gentle Warrior music video and share it.",
-
-        proofLabel:
-            "YouTube Name",
-
-        proofPlaceholder:
-            "Enter your YouTube name",
-
-        proofDescription:
-            "Provide the YouTube name you used to share the music video."
-
-    }
-
-};
-
-
-/* ======================================
-   PLATFORM CONFIG
-====================================== */
-
-const PLATFORM_CONFIG = {
-
-    Facebook: {
-        icon: "fa-brands fa-facebook",
-        buttonText: "Open Facebook"
-    },
-
-    Messenger: {
-        icon: "fa-brands fa-facebook-messenger",
-        buttonText: "Open Messenger"
-    },
-
-    Telegram: {
-        icon: "fa-brands fa-telegram",
-        buttonText: "Open Telegram"
-    },
-
-    X: {
-        icon: "fa-brands fa-x-twitter",
-        buttonText: "Open X"
-    },
-
-    Spotify: {
-        icon: "fa-brands fa-spotify",
-        buttonText: "Open Spotify"
-    },
-
-    YouTube: {
-        icon: "fa-brands fa-youtube",
-        buttonText: "Open YouTube"
     }
 
 };
@@ -515,8 +208,7 @@ document.querySelectorAll(".task-card").forEach(card => {
 
     card.addEventListener("click", () => {
 
-        const taskId =
-            card.dataset.task;
+        const taskId = card.dataset.task;
 
         openTask(taskId);
 
@@ -531,31 +223,15 @@ document.querySelectorAll(".task-card").forEach(card => {
 
 function openTask(taskId) {
 
-    const task =
-        TASKS[taskId];
+    const task = TASKS[taskId];
 
     if (!task) {
 
-        console.warn(
-            "Task not found:",
-            taskId
-        );
+        console.warn("Task not found:", taskId);
 
         return;
 
     }
-
-
-    const platform =
-        PLATFORM_CONFIG[task.platform] || {
-
-            icon:
-                "fa-solid fa-arrow-up-right-from-square",
-
-            buttonText:
-                `Open ${task.platform}`
-
-        };
 
 
     taskModalContent.innerHTML = `
@@ -606,12 +282,11 @@ function openTask(taskId) {
                     target="_blank"
                     rel="noopener noreferrer"
                     class="task-open-btn"
-                    data-external-link="true"
                 >
 
-                    <i class="${platform.icon}"></i>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
-                    ${platform.buttonText}
+                    Open ${task.platform}
 
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
 
@@ -781,89 +456,12 @@ function openTask(taskId) {
     `;
 
 
-    taskModal.classList.add(
-        "is-open"
-    );
+    taskModal.classList.add("is-open");
 
-    document.body.style.overflow =
-        "hidden";
-
-
-    setupExternalLink();
+    document.body.style.overflow = "hidden";
 
 
     setupProofForm();
-
-}
-
-
-/* ======================================
-   EXTERNAL LINK
-====================================== */
-
-function setupExternalLink() {
-
-    const link =
-        taskModalContent.querySelector(
-            "[data-external-link]"
-        );
-
-    if (!link) {
-
-        return;
-
-    }
-
-
-    link.addEventListener(
-        "click",
-        function(event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            const url =
-                this.getAttribute("href");
-
-            if (!url) {
-
-                return;
-
-            }
-
-
-            /*
-             * Open directly from the user's tap.
-             * This avoids the modal/backdrop click
-             * interfering with the external link.
-             */
-
-            const newTab =
-                window.open(
-                    url,
-                    "_blank"
-                );
-
-
-            /*
-             * Some mobile browsers may block
-             * window.open(). If that happens,
-             * navigate using the normal anchor.
-             */
-
-            if (!newTab) {
-
-                window.location.href =
-                    url;
-
-            }
-
-        },
-        {
-            once: true
-        }
-    );
 
 }
 
@@ -875,151 +473,104 @@ function setupExternalLink() {
 function setupProofForm() {
 
     const nameInput =
-        document.getElementById(
-            "proofName"
-        );
+        document.getElementById("proofName");
 
     const screenshotInput =
-        document.getElementById(
-            "proofScreenshot"
-        );
+        document.getElementById("proofScreenshot");
 
     const submitButton =
-        document.getElementById(
-            "submitTask"
-        );
+        document.getElementById("submitTask");
 
     const preview =
-        document.getElementById(
-            "screenshotPreview"
-        );
+        document.getElementById("screenshotPreview");
 
     const previewImage =
-        document.getElementById(
-            "previewImage"
-        );
+        document.getElementById("previewImage");
 
     const removeButton =
-        document.getElementById(
-            "removeScreenshot"
-        );
+        document.getElementById("removeScreenshot");
 
 
-    if (
-        !nameInput ||
-        !screenshotInput ||
-        !submitButton ||
-        !preview ||
-        !previewImage ||
-        !removeButton
-    ) {
-
-        return;
-
-    }
-
-
-    let screenshotReady =
-        false;
+    let screenshotReady = false;
 
 
     /* ==================================
        Screenshot Upload
     ================================== */
 
-    screenshotInput.addEventListener(
-        "change",
-        () => {
+    screenshotInput.addEventListener("change", () => {
 
-            const file =
-                screenshotInput.files[0];
+        const file = screenshotInput.files[0];
 
+        if (!file) {
 
-            if (!file) {
+            screenshotReady = false;
 
-                screenshotReady =
-                    false;
+            updateSubmitButton();
 
-                updateSubmitButton();
-
-                return;
-
-            }
-
-
-            if (
-                ![
-                    "image/png",
-                    "image/jpeg"
-                ].includes(file.type)
-            ) {
-
-                alert(
-                    "Please upload a PNG or JPG image."
-                );
-
-                screenshotInput.value =
-                    "";
-
-                screenshotReady =
-                    false;
-
-                updateSubmitButton();
-
-                return;
-
-            }
-
-
-            if (
-                file.size >
-                5 * 1024 * 1024
-            ) {
-
-                alert(
-                    "Screenshot must be 5 MB or smaller."
-                );
-
-                screenshotInput.value =
-                    "";
-
-                screenshotReady =
-                    false;
-
-                updateSubmitButton();
-
-                return;
-
-            }
-
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                event => {
-
-                    previewImage.src =
-                        event.target.result;
-
-                    preview.style.display =
-                        "block";
-
-                    screenshotReady =
-                        true;
-
-                    updateSubmitButton();
-
-                };
-
-
-            reader.readAsDataURL(
-                file
-            );
+            return;
 
         }
-    );
+
+
+        if (
+            !["image/png", "image/jpeg"]
+            .includes(file.type)
+        ) {
+
+            alert(
+                "Please upload a PNG or JPG image."
+            );
+
+            screenshotInput.value = "";
+
+            screenshotReady = false;
+
+            updateSubmitButton();
+
+            return;
+
+        }
+
+
+        if (file.size > 5 * 1024 * 1024) {
+
+            alert(
+                "Screenshot must be 5 MB or smaller."
+            );
+
+            screenshotInput.value = "";
+
+            screenshotReady = false;
+
+            updateSubmitButton();
+
+            return;
+
+        }
+
+
+        const reader = new FileReader();
+
+
+        reader.onload = event => {
+
+            previewImage.src =
+                event.target.result;
+
+            preview.style.display =
+                "block";
+
+            screenshotReady = true;
+
+            updateSubmitButton();
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
 
 
     /* ==================================
@@ -1030,17 +581,14 @@ function setupProofForm() {
         "click",
         () => {
 
-            screenshotInput.value =
-                "";
+            screenshotInput.value = "";
 
-            previewImage.src =
-                "";
+            previewImage.src = "";
 
             preview.style.display =
                 "none";
 
-            screenshotReady =
-                false;
+            screenshotReady = false;
 
             updateSubmitButton();
 
@@ -1073,10 +621,7 @@ function setupProofForm() {
                 screenshotInput.files[0];
 
 
-            if (
-                !name ||
-                !file
-            ) {
+            if (!name || !file) {
 
                 return;
 
@@ -1090,9 +635,7 @@ function setupProofForm() {
              * Backend/admin validation comes later.
              */
 
-            submitButton.disabled =
-                true;
-
+            submitButton.disabled = true;
 
             submitButton.innerHTML = `
 
@@ -1103,11 +646,9 @@ function setupProofForm() {
             `;
 
 
-            nameInput.disabled =
-                true;
+            nameInput.disabled = true;
 
-            screenshotInput.disabled =
-                true;
+            screenshotInput.disabled = true;
 
 
             const uploadLabel =
@@ -1142,15 +683,11 @@ function setupProofForm() {
     function updateSubmitButton() {
 
         const validName =
-            nameInput.value.trim().length >
-            0;
+            nameInput.value.trim().length > 0;
 
 
         submitButton.disabled =
-            !(
-                validName &&
-                screenshotReady
-            );
+            !(validName && screenshotReady);
 
     }
 
@@ -1167,18 +704,7 @@ function closeTaskModal() {
         "is-open"
     );
 
-    document.body.style.overflow =
-        "";
-
-
-    /*
-     * Destroy the old dynamic DOM.
-     * Every reopen creates a completely
-     * fresh external link and proof form.
-     */
-
-    taskModalContent.innerHTML =
-        "";
+    document.body.style.overflow = "";
 
 }
 
