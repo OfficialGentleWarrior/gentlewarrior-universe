@@ -458,6 +458,7 @@ const TASKS = {
 
 };
 
+
 /* ======================================
    PLATFORM CONFIG
 ====================================== */
@@ -591,16 +592,11 @@ function openTask(taskId) {
                 ================================== -->
 
                 <a
-    href="${task.link}"
-    class="task-open-btn"
-    onclick="
-        const newTab = window.open('about:blank', '_blank');
-        if (newTab) {
-            newTab.location.href = this.href;
-        }
-        return false;
-    "
->
+                    href="${task.link}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="task-open-btn"
+                >
 
                     <i class="${platform.icon}"></i>
 
@@ -783,6 +779,7 @@ function openTask(taskId) {
     setupProofForm();
 
 }
+
 
 /* ======================================
    PROOF FORM
@@ -1106,4 +1103,3 @@ document.addEventListener(
 
     }
 );
-
