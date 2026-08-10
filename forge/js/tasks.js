@@ -458,6 +458,116 @@ const TASKS = {
 
 };
 
+/* ==================================
+   GAMES — TASK 11
+================================== */
+
+reach_memory_level_5: {
+
+    title:
+        "Reach Level 5 in Memory Game",
+
+    description:
+        "Reach Level 5 in the Memory Game and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "Game",
+
+    link:
+        "https://gentlewarrior.world/#play",
+
+    stepTitle:
+        "Reach Level 5 in Memory Game",
+
+    stepDescription:
+        "Open the Memory Game and reach Level 5.",
+
+    proofLabel:
+        "Player's Name",
+
+    proofPlaceholder:
+        "Enter your player's name",
+
+    proofDescription:
+        "Provide the player's name used in the Memory Game."
+
+},
+
+
+/* ==================================
+   GAMES — TASK 12
+================================== */
+
+reach_heart_defender_level_5: {
+
+    title:
+        "Reach Level 5 in Heart Defender",
+
+    description:
+        "Reach Level 5 in Heart Defender and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "Game",
+
+    link:
+        "https://gentlewarrior.world/heart-defender",
+
+    stepTitle:
+        "Reach Level 5 in Heart Defender",
+
+    stepDescription:
+        "Open Heart Defender and reach Level 5.",
+
+    proofLabel:
+        "Player's Name",
+
+    proofPlaceholder:
+        "Enter your player's name",
+
+    proofDescription:
+        "Provide the player's name used in Heart Defender."
+
+},
+
+
+/* ==================================
+   GAMES — TASK 13
+================================== */
+
+reach_pillar_match_level_5: {
+
+    title:
+        "Reach Level 5 in Pillar Match",
+
+    description:
+        "Reach Level 5 in Pillar Match and submit your proof to earn 1 SPARK.",
+
+    reward: 1,
+
+    platform: "Game",
+
+    link:
+        "https://gentlewarrior.world/pillars-match",
+
+    stepTitle:
+        "Reach Level 5 in Pillar Match",
+
+    stepDescription:
+        "Open Pillar Match and reach Level 5.",
+
+    proofLabel:
+        "Player's Name",
+
+    proofPlaceholder:
+        "Enter your player's name",
+
+    proofDescription:
+        "Provide the player's name used in Pillar Match."
+
+}
+
 /* ======================================
    PLATFORM CONFIG
 ====================================== */
@@ -495,6 +605,14 @@ const PLATFORM_CONFIG = {
     }
 
 };
+
+Game: {
+
+    icon: "fa-solid fa-gamepad",
+
+    buttonText: "Open Game"
+
+}
 
 
 /* ======================================
