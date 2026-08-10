@@ -454,15 +454,14 @@ const TASKS = {
         proofDescription:
             "Provide the YouTube name you used to share the music video."
 
-    }
+        },
 
-};
 
-/* ==================================
-   GAMES — TASK 11
-================================== */
+    /* ==================================
+       GAMES — TASK 11
+    ================================== */
 
-reach_memory_level_5: {
+    reach_memory_level_5: {
 
     title:
         "Reach Level 5 in Memory Game",
@@ -602,18 +601,14 @@ const PLATFORM_CONFIG = {
     YouTube: {
         icon: "fa-brands fa-youtube",
         buttonText: "Open YouTube"
+    },
+
+    Game: {
+        icon: "fa-solid fa-gamepad",
+        buttonText: "Open Game"
     }
 
 };
-
-Game: {
-
-    icon: "fa-solid fa-gamepad",
-
-    buttonText: "Open Game"
-
-}
-
 
 /* ======================================
    TASK CARD CLICK
