@@ -34,7 +34,7 @@ const TASKS = {
         platform: "Facebook",
 
         link:
-            "https://www.facebook.com/BabyLeamOfficial",
+            "https://www.facebook.com/BabyLeamOfficial/",
 
         stepTitle:
             "Follow the Facebook Page",
