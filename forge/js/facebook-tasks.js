@@ -1,23 +1,11 @@
-/* ======================================
-   FACEBOOK TASK BUTTON
-   Separate handler
-====================================== */
-
 document.addEventListener("click", function (event) {
 
-    const link = event.target.closest(".task-open-btn");
+    const card = event.target.closest(
+        '.task-card[data-task="follow_baby_leam"]'
+    );
 
-    if (!link) return;
+    if (!card) return;
 
-    const url = link.getAttribute("href");
-
-    if (!url) return;
-
-    if (!url.includes("facebook.com")) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    window.location.assign(url);
+    alert("BABY LEAM CARD CLICK DETECTED");
 
 }, true);
