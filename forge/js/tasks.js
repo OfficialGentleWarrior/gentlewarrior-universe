@@ -18,77 +18,6 @@ const taskModalClose = document.querySelector(".task-modal-close");
 
 const TASKS = {
 
-    /* ==================================
-       COMMUNITY — TASK 1
-    ================================== */
-
-    follow_baby_leam: {
-
-        title: "Follow Baby Leam's Page",
-
-        description:
-            "Follow the Baby Leam Facebook Page and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Facebook",
-
-        link:
-            "https://www.facebook.com/BabyLeamOfficial/",
-
-        stepTitle:
-            "Follow the Facebook Page",
-
-        stepDescription:
-            "Open the Baby Leam Facebook Page and follow the page.",
-
-        proofLabel:
-            "Facebook Name / Page",
-
-        proofPlaceholder:
-            "Enter your Facebook name or Page",
-
-        proofDescription:
-            "Provide the name or Page you used to follow Baby Leam."
-
-    },
-
-
-    /* ==================================
-       COMMUNITY — TASK 2
-    ================================== */
-
-    follow_gentle_warrior: {
-
-        title: "Follow Gentle Warrior's Page",
-
-        description:
-            "Follow the Gentle Warrior Facebook Page and submit your proof to earn 1 SPARK.",
-
-        reward: 1,
-
-        platform: "Facebook",
-
-        link:
-            "https://www.facebook.com/GentleWarriorOfficial",
-
-        stepTitle:
-            "Follow the Facebook Page",
-
-        stepDescription:
-            "Open the Gentle Warrior Facebook Page and follow the page.",
-
-        proofLabel:
-            "Facebook Name / Page",
-
-        proofPlaceholder:
-            "Enter your Facebook name or Page",
-
-        proofDescription:
-            "Provide the name or Page you used to follow Gentle Warrior."
-
-    },
-
 
     /* ==================================
        COMMUNITY — TASK 17
@@ -720,10 +649,6 @@ reach_pillar_match_level_5: {
 
 const PLATFORM_CONFIG = {
 
-    Facebook: {
-        icon: "fa-brands fa-facebook",
-        buttonText: "Open Facebook"
-    },
 
     Messenger: {
         icon: "fa-brands fa-facebook-messenger",
@@ -868,8 +793,9 @@ function openTask(taskId) {
                 <a
     href="${task.link}"
     target="_blank"
-    rel="noopener noreferrer"
+    rel="noopener"
     class="task-open-btn"
+    data-external-link="true"
 >
 
                     <i class="${platform.icon}"></i>
@@ -1377,3 +1303,19 @@ document.addEventListener(
     }
 );
 
+/* ======================================
+   EXTERNAL TASK LINK
+   Native tap handling
+====================================== */
+
+document.addEventListener("click", function (event) {
+
+    const link = event.target.closest(
+        'a[data-external-link="true"]'
+    );
+
+    if (!link) return;
+
+    event.stopPropagation();
+
+}, true);
