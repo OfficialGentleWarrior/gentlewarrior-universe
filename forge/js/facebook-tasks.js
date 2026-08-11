@@ -1,20 +1,10 @@
 /* ======================================
    FORGE Facebook Tasks
-   Isolated Facebook Module
+   Isolated Test
 ====================================== */
 
-const FACEBOOK_TASKS = {
+document.addEventListener("DOMContentLoaded", function () {
 
-    follow_baby_leam: {
-        title: "Follow Baby Leam's Page",
-        link: "https://www.facebook.com/BabyLeamOfficial"
-    },
+    console.log("Facebook Task Module Loaded");
 
-    follow_gentle_warrior: {
-        title: "Follow Gentle Warrior's Page",
-        link: "https://www.facebook.com/GentleWarriorOfficial"
-    }
-
-};
-
-console.log("Facebook Task Module Loaded");
+});
