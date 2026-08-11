@@ -1,3 +1,5 @@
+alert("FACEBOOK JS LOADED");
+
 /* ======================================
    FORGE Facebook Tasks
    Isolated Facebook Module
