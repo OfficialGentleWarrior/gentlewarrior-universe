@@ -1,6 +1,5 @@
 /* ======================================
-   FACEBOOK TASK
-   Directly open existing task modal
+   FACEBOOK TASK DIAGNOSTIC
 ====================================== */
 
 document.addEventListener("click", function (event) {
@@ -11,14 +10,9 @@ document.addEventListener("click", function (event) {
 
     if (!card) return;
 
-    if (typeof openTask === "function") {
-
-        openTask("follow_baby_leam");
-
-    } else {
-
-        alert("openTask() NOT FOUND");
-
-    }
+    alert(
+        "CARD FOUND\n\nopenTask type: " +
+        typeof openTask
+    );
 
 }, true);
