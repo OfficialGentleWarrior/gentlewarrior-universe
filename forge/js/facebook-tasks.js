@@ -1,3 +1,8 @@
+/* ======================================
+   FACEBOOK TASK
+   Directly open existing task modal
+====================================== */
+
 document.addEventListener("click", function (event) {
 
     const card = event.target.closest(
@@ -6,6 +11,14 @@ document.addEventListener("click", function (event) {
 
     if (!card) return;
 
-    alert("BABY LEAM CARD CLICK DETECTED");
+    if (typeof openTask === "function") {
+
+        openTask("follow_baby_leam");
+
+    } else {
+
+        alert("openTask() NOT FOUND");
+
+    }
 
 }, true);
