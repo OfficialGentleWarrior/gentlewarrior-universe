@@ -1,7 +1,3 @@
-/* ======================================
-   FACEBOOK TASK DIAGNOSTIC
-====================================== */
-
 document.addEventListener("click", function (event) {
 
     const card = event.target.closest(
@@ -10,9 +6,22 @@ document.addEventListener("click", function (event) {
 
     if (!card) return;
 
+    const modal = document.getElementById("taskModal");
+    const content = document.getElementById("taskModalContent");
+
+    if (!modal) {
+        alert("taskModal NOT FOUND");
+        return;
+    }
+
+    if (!content) {
+        alert("taskModalContent NOT FOUND");
+        return;
+    }
+
     alert(
-        "CARD FOUND\n\nopenTask type: " +
-        typeof openTask
+        "FOUND BOTH\n\n" +
+        "Modal class: " + modal.className
     );
 
 }, true);
