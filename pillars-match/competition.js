@@ -32,7 +32,7 @@ window.COMPETITION_CONFIG = {
 
     // Facebook competition post
     // Leave blank until the official competition post is published.
-    postUrl: "https://www.facebook.com/share/p/1AT8JiQAYp/",
+    postUrl: "https://www.facebook.com/share/p/192kmQAnRV/",
 
     instructions:
     "📸 Screenshot your result before joining the competition.",
