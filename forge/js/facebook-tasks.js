@@ -1,3 +1,7 @@
+/* ======================================
+   FACEBOOK TASK — DIRECT TEST
+====================================== */
+
 document.addEventListener("click", function (event) {
 
     const card = event.target.closest(
@@ -6,22 +10,23 @@ document.addEventListener("click", function (event) {
 
     if (!card) return;
 
-    const modal = document.getElementById("taskModal");
-    const content = document.getElementById("taskModalContent");
+    setTimeout(function () {
 
-    if (!modal) {
-        alert("taskModal NOT FOUND");
-        return;
-    }
+        openTask("follow_baby_leam");
 
-    if (!content) {
-        alert("taskModalContent NOT FOUND");
-        return;
-    }
+        setTimeout(function () {
 
-    alert(
-        "FOUND BOTH\n\n" +
-        "Modal class: " + modal.className
-    );
+            const modal =
+                document.getElementById("taskModal");
+
+            alert(
+                "AFTER openTask\n\n" +
+                "Modal class: " +
+                modal.className
+            );
+
+        }, 300);
+
+    }, 100);
 
 }, true);
