@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>PH 0 — Foundation | Gentle Warrior</title>
 
@@ -1804,7 +1807,7 @@
 
   <!-- =========================
        JAVASCRIPT
-  ========================= -->
+    ========================= -->
 
   <script>
 
@@ -1832,16 +1835,37 @@
        SOLANA CONFIGURATION
     ========================================= */
 
-    const SOLANA_RPC =
-      "https://api.mainnet-beta.solana.com";
-
     const GWAR_MINT =
       "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
+
+
+    /*
+      Official Solana Mainnet RPC first.
+
+      Fallback is kept for temporary RPC failures.
+    */
+
+    const SOLANA_RPCS = [
+
+      "https://api.mainnet.solana.com",
+
+      "https://api.mainnet-beta.solana.com"
+
+    ];
+
+
+    const RPC_TIMEOUT =
+      10000;
+
+
+    const REFRESH_INTERVAL =
+      30000;
 
 
     const WALLETS = {
 
       dev: {
+
         address:
           "7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL",
 
@@ -1853,9 +1877,12 @@
 
         statusElement:
           "dev-status"
+
       },
 
+
       reward: {
+
         address:
           "2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf",
 
@@ -1867,13 +1894,126 @@
 
         statusElement:
           "reward-status"
+
       }
 
     };
 
 
     /* =========================================
-       RPC HELPER
+       CURRENT RPC INDEX
+    ========================================= */
+
+    let currentRpcIndex = 0;
+
+
+    /* =========================================
+       SLEEP
+    ========================================= */
+
+    function sleep(ms) {
+
+      return new Promise(
+        resolve => setTimeout(resolve, ms)
+      );
+
+    }
+
+
+    /* =========================================
+       RPC REQUEST WITH TIMEOUT
+    ========================================= */
+
+    async function requestRpc(
+      rpcUrl,
+      method,
+      params
+    ) {
+
+      const controller =
+        new AbortController();
+
+
+      const timeout =
+        setTimeout(
+          () => controller.abort(),
+          RPC_TIMEOUT
+        );
+
+
+      try {
+
+        const response =
+          await fetch(
+            rpcUrl,
+            {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                jsonrpc: "2.0",
+
+                id:
+                  Date.now(),
+
+                method:
+                  method,
+
+                params:
+                  params
+
+              }),
+
+              signal:
+                controller.signal
+
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "HTTP " +
+            response.status
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        if (data.error) {
+
+          throw new Error(
+            data.error.message ||
+            "Solana RPC error"
+          );
+
+        }
+
+
+        return data.result;
+
+      } finally {
+
+        clearTimeout(timeout);
+
+      }
+
+    }
+
+
+    /* =========================================
+       SOLANA RPC WITH FALLBACK + RETRY
     ========================================= */
 
     async function solanaRpc(
@@ -1881,51 +2021,79 @@
       params
     ) {
 
-      const response =
-        await fetch(
-          SOLANA_RPC,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              id: 1,
-              method: method,
-              params: params
-            })
-          }
-        );
+      let lastError =
+        null;
 
 
-      if (!response.ok) {
+      for (
+        let attempt = 0;
+        attempt < SOLANA_RPCS.length;
+        attempt++
+      ) {
 
-        throw new Error(
-          "Solana RPC request failed"
-        );
+        const rpcIndex =
+          (
+            currentRpcIndex +
+            attempt
+          ) %
+          SOLANA_RPCS.length;
+
+
+        const rpcUrl =
+          SOLANA_RPCS[rpcIndex];
+
+
+        try {
+
+          const result =
+            await requestRpc(
+              rpcUrl,
+              method,
+              params
+            );
+
+
+          /*
+            Keep using the RPC that
+            successfully responded.
+          */
+
+          currentRpcIndex =
+            rpcIndex;
+
+
+          return result;
+
+        } catch (error) {
+
+          lastError =
+            error;
+
+          console.warn(
+            "RPC failed:",
+            rpcUrl,
+            error
+          );
+
+
+          /*
+            Small delay before
+            trying the next RPC.
+          */
+
+          await sleep(350);
+
+        }
 
       }
 
 
-      const data =
-        await response.json();
-
-
-      if (data.error) {
-
-        throw new Error(
-          data.error.message ||
-          "Solana RPC error"
-        );
-
-      }
-
-
-      return data.result;
+      throw (
+        lastError ||
+        new Error(
+          "All Solana RPC endpoints failed."
+        )
+      );
 
     }
 
@@ -1934,17 +2102,28 @@
        GET SOL BALANCE
     ========================================= */
 
-    async function getSolBalance(address) {
+    async function getSolBalance(
+      address
+    ) {
 
       const result =
         await solanaRpc(
+
           "getBalance",
+
           [
+
             address,
+
             {
-              commitment: "confirmed"
+
+              commitment:
+                "confirmed"
+
             }
+
           ]
+
         );
 
 
@@ -1952,7 +2131,10 @@
         result.value;
 
 
-      return lamports / 1000000000;
+      return (
+        Number(lamports) /
+        1000000000
+      );
 
     }
 
@@ -1961,31 +2143,61 @@
        GET $GWAR BALANCE
     ========================================= */
 
-    async function getGwarBalance(address) {
+    async function getGwarBalance(
+      address
+    ) {
 
       const result =
         await solanaRpc(
+
           "getTokenAccountsByOwner",
+
           [
+
             address,
 
             {
-              mint: GWAR_MINT
+
+              mint:
+                GWAR_MINT
+
             },
 
             {
+
               encoding:
                 "jsonParsed",
 
               commitment:
                 "confirmed"
+
             }
 
           ]
+
         );
 
 
-      let total = 0;
+      /*
+        No token account means
+        the wallet currently has 0 $GWAR.
+      */
+
+      if (
+        !result ||
+        !Array.isArray(result.value)
+      ) {
+
+        return 0;
+
+      }
+
+
+      let totalRaw =
+        0n;
+
+      let decimals =
+        0;
 
 
       for (
@@ -1995,24 +2207,69 @@
 
         const tokenAmount =
           account
-            .account
-            .data
-            .parsed
-            .info
-            .tokenAmount;
+            ?.account
+            ?.data
+            ?.parsed
+            ?.info
+            ?.tokenAmount;
 
 
-        total +=
-          Number(
-            tokenAmount.uiAmountString ||
-            tokenAmount.uiAmount ||
-            0
-          );
+        if (!tokenAmount) {
+          continue;
+        }
+
+
+        const rawAmount =
+          tokenAmount.amount;
+
+
+        if (
+          typeof rawAmount ===
+          "string"
+        ) {
+
+          totalRaw +=
+            BigInt(rawAmount);
+
+        }
+
+
+        if (
+          Number.isInteger(
+            tokenAmount.decimals
+          )
+        ) {
+
+          decimals =
+            tokenAmount.decimals;
+
+        }
 
       }
 
 
-      return total;
+      /*
+        Convert raw SPL token amount
+        to human-readable amount.
+      */
+
+      if (decimals === 0) {
+
+        return Number(
+          totalRaw
+        );
+
+      }
+
+
+      const divisor =
+        10 ** decimals;
+
+
+      return (
+        Number(totalRaw) /
+        divisor
+      );
 
     }
 
@@ -2027,11 +2284,19 @@
     ) {
 
       return new Intl.NumberFormat(
+
         "en-US",
+
         {
+
           maximumFractionDigits:
-            maximumFractionDigits
+            maximumFractionDigits,
+
+          minimumFractionDigits:
+            0
+
         }
+
       ).format(number);
 
     }
@@ -2050,15 +2315,28 @@
           wallet.solElement
         );
 
+
       const gwarElement =
         document.getElementById(
           wallet.gwarElement
         );
 
+
       const statusElement =
         document.getElementById(
           wallet.statusElement
         );
+
+
+      if (
+        !solElement ||
+        !gwarElement ||
+        !statusElement
+      ) {
+
+        return;
+
+      }
 
 
       try {
@@ -2067,15 +2345,24 @@
           "error"
         );
 
+
         statusElement.textContent =
           "Updating live balance...";
 
 
+        /*
+          Get both balances.
+        */
+
         const [
+
           solBalance,
+
           gwarBalance
+
         ] =
           await Promise.all([
+
             getSolBalance(
               wallet.address
             ),
@@ -2083,35 +2370,64 @@
             getGwarBalance(
               wallet.address
             )
+
           ]);
 
 
+        /*
+          Update SOL.
+        */
+
         solElement.innerHTML =
+
           formatNumber(
             solBalance,
             6
           )
+
           +
+
           ' <span class="balance-unit">SOL</span>';
 
 
+        /*
+          Update GWAR.
+        */
+
         gwarElement.innerHTML =
+
           formatNumber(
             gwarBalance,
             2
           )
+
           +
+
           ' <span class="balance-unit">$GWAR</span>';
 
 
+        /*
+          Timestamp.
+        */
+
         const time =
           new Date().toLocaleTimeString(
+
             [],
+
             {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
+
+              hour:
+                "2-digit",
+
+              minute:
+                "2-digit",
+
+              second:
+                "2-digit"
+
             }
+
           );
 
 
@@ -2123,23 +2439,138 @@
 
         console.error(
           "Wallet balance error:",
+          wallet.address,
           error
         );
 
 
-        solElement.textContent =
-          "Unavailable";
+        /*
+          Do not destroy a previously
+          loaded balance if a refresh
+          temporarily fails.
+        */
 
-        gwarElement.textContent =
-          "Unavailable";
+        const hasPreviousSol =
+          solElement.dataset.loaded ===
+          "true";
+
+
+        const hasPreviousGwar =
+          gwarElement.dataset.loaded ===
+          "true";
+
+
+        if (!hasPreviousSol) {
+
+          solElement.textContent =
+            "Unavailable";
+
+        }
+
+
+        if (!hasPreviousGwar) {
+
+          gwarElement.textContent =
+            "Unavailable";
+
+        }
 
 
         statusElement.classList.add(
           "error"
         );
 
+
         statusElement.textContent =
           "Unable to load live balance. Retrying...";
+
+      }
+
+    }
+
+
+    /* =========================================
+       MARK SUCCESSFUL BALANCES
+    ========================================= */
+
+    function markBalanceLoaded(
+      wallet
+    ) {
+
+      const solElement =
+        document.getElementById(
+          wallet.solElement
+        );
+
+
+      const gwarElement =
+        document.getElementById(
+          wallet.gwarElement
+        );
+
+
+      if (solElement) {
+
+        solElement.dataset.loaded =
+          "true";
+
+      }
+
+
+      if (gwarElement) {
+
+        gwarElement.dataset.loaded =
+          "true";
+
+      }
+
+    }
+
+
+    /* =========================================
+       UPDATE WALLET WRAPPER
+    ========================================= */
+
+    async function safeUpdateWallet(
+      wallet
+    ) {
+
+      try {
+
+        await updateWallet(
+          wallet
+        );
+
+
+        const status =
+          document.getElementById(
+            wallet.statusElement
+          );
+
+
+        /*
+          If update succeeded,
+          mark the values as valid.
+        */
+
+        if (
+          status &&
+          !status.classList.contains(
+            "error"
+          )
+        ) {
+
+          markBalanceLoaded(
+            wallet
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
 
       }
 
@@ -2152,10 +2583,23 @@
 
     async function updateAllWallets() {
 
-      await Promise.all([
-        updateWallet(WALLETS.dev),
-        updateWallet(WALLETS.reward)
-      ]);
+      /*
+        Update wallets one after another.
+        This reduces the chance of hitting
+        public RPC rate limits.
+      */
+
+      await safeUpdateWallet(
+        WALLETS.dev
+      );
+
+
+      await sleep(250);
+
+
+      await safeUpdateWallet(
+        WALLETS.reward
+      );
 
     }
 
@@ -2173,8 +2617,11 @@
     ========================================= */
 
     setInterval(
+
       updateAllWallets,
-      30000
+
+      REFRESH_INTERVAL
+
     );
 
   </script>
