@@ -732,6 +732,301 @@
 
     </section>
 
+    <!-- =========================
+     SECTION 02 — MISSION & VISION
+========================= -->
+
+<section class="foundation-section">
+
+  <button
+    class="section-toggle"
+    type="button"
+    onclick="toggleSection(this)"
+    aria-expanded="false"
+  >
+
+    <div class="section-number">
+      02
+    </div>
+
+    <div class="section-title">
+      <h2>Mission &amp; Vision</h2>
+      <p>What Gentle Warrior aims to do and become.</p>
+    </div>
+
+    <span class="section-arrow">
+      →
+    </span>
+
+  </button>
+
+
+  <div class="section-content">
+
+    <div class="content-block">
+
+      <h3>Mission</h3>
+
+      <p>
+        To raise awareness for children with cerebral palsy,
+        share real stories of resilience, and create meaningful
+        experiences that encourage understanding, kindness,
+        and support.
+      </p>
+
+      <p>
+        Gentle Warrior aims to turn awareness into connection —
+        helping families, caregivers, and communities feel seen,
+        understood, and supported.
+      </p>
+
+    </div>
+
+
+    <div class="content-block">
+
+      <h3>Vision</h3>
+
+      <p>
+        A world where children with cerebral palsy are seen
+        beyond their limitations — recognized for their strength,
+        individuality, potential, and humanity.
+      </p>
+
+      <p>
+        Gentle Warrior envisions a growing community where
+        awareness leads to empathy, empathy leads to action,
+        and every little win is worth celebrating.
+      </p>
+
+    </div>
+
+
+    <div class="content-quote">
+
+      <p>
+        Soft Heart. Strong Spirit.
+      </p>
+
+      <span>
+        Every child deserves to be seen, understood, and valued.
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<style>
+
+  /* =========================
+     FOUNDATION SECTION
+  ========================= */
+
+  .foundation-section {
+    margin-top: 16px;
+
+    border: 1px solid rgba(168, 239, 112, 0.16);
+    border-radius: 22px;
+
+    background: rgba(3, 48, 34, 0.88);
+
+    overflow: hidden;
+  }
+
+
+  /* =========================
+     CLICKABLE HEADER
+  ========================= */
+
+  .section-toggle {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 22px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+  }
+
+  .section-toggle:active {
+    background: rgba(168, 239, 112, 0.04);
+  }
+
+
+  .section-number {
+    flex: 0 0 auto;
+
+    color: var(--gold);
+
+    font-size: 12px;
+    font-weight: 900;
+
+    letter-spacing: 0.12em;
+  }
+
+
+  .section-title {
+    flex: 1;
+  }
+
+  .section-title h2 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .section-title p {
+    margin: 5px 0 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+  }
+
+
+  /* =========================
+     ARROW
+  ========================= */
+
+  .section-arrow {
+    flex: 0 0 auto;
+
+    color: var(--lime);
+
+    font-size: 22px;
+    font-weight: 800;
+
+    transition:
+      transform 0.25s ease;
+  }
+
+
+  .section-toggle[aria-expanded="true"] .section-arrow {
+    transform: rotate(90deg);
+  }
+
+
+  /* =========================
+     HIDDEN CONTENT
+  ========================= */
+
+  .section-content {
+    display: none;
+
+    padding: 0 22px 24px;
+
+    border-top: 1px solid
+      rgba(168, 239, 112, 0.10);
+  }
+
+
+  .section-content.open {
+    display: block;
+  }
+
+
+  /* =========================
+     CONTENT
+  ========================= */
+
+  .content-block {
+    padding-top: 22px;
+  }
+
+  .content-block h3 {
+    margin: 0 0 9px;
+
+    color: var(--lime);
+
+    font-size: 16px;
+  }
+
+  .content-block p {
+    margin: 0 0 14px;
+
+    color: #c3d0c7;
+
+    font-size: 14px;
+
+    line-height: 1.75;
+  }
+
+
+  /* =========================
+     QUOTE
+  ========================= */
+
+  .content-quote {
+    margin-top: 22px;
+
+    padding: 18px;
+
+    border-left: 3px solid var(--lime);
+
+    border-radius: 0 12px 12px 0;
+
+    background: rgba(1, 36, 25, 0.72);
+  }
+
+  .content-quote p {
+    margin: 0 0 6px;
+
+    color: var(--lime);
+
+    font-weight: 800;
+  }
+
+  .content-quote span {
+    color: #aebdb3;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
+</style>
+
+
+<script>
+
+  function toggleSection(button) {
+
+    const content =
+      button.parentElement.querySelector(".section-content");
+
+    const isOpen =
+      content.classList.contains("open");
+
+    content.classList.toggle("open");
+
+    button.setAttribute(
+      "aria-expanded",
+      String(!isOpen)
+    );
+
+  }
+
+</script>
+
 
     <!-- FOOTER -->
 
