@@ -1,0 +1,137 @@
+<!-- =========================
+     TRANSPARENCY
+========================= -->
+
+<section class="section">
+
+  <p class="section-label">
+    TRANSPARENCY
+  </p>
+
+  <h2>
+    Public Wallets
+  </h2>
+
+  <p class="section-intro">
+    Gentle Warrior keeps its project wallets publicly visible
+    so the community can independently verify their activity.
+  </p>
+
+
+  <!-- DEV WALLET -->
+
+  <div class="wallet-card">
+
+    <div class="wallet-header">
+
+      <div>
+        <p class="wallet-label">
+          DEV WALLET
+        </p>
+
+        <h3>
+          Development Wallet
+        </h3>
+      </div>
+
+      <span class="wallet-status">
+        PUBLIC
+      </span>
+
+    </div>
+
+    <div class="wallet-address">
+      7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL
+    </div>
+
+    <div class="wallet-actions">
+
+      <button
+        class="copy-btn"
+        onclick="copyWallet('7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL', this)"
+      >
+        Copy Address
+      </button>
+
+      <a
+        href="https://solscan.io/account/7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="explorer-btn"
+      >
+        View on Solscan →
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- REWARDS WALLET -->
+
+  <div class="wallet-card">
+
+    <div class="wallet-header">
+
+      <div>
+        <p class="wallet-label">
+          REWARDS WALLET
+        </p>
+
+        <h3>
+          Community Rewards
+        </h3>
+      </div>
+
+      <span class="wallet-status">
+        PUBLIC
+      </span>
+
+    </div>
+
+    <div class="wallet-address">
+      2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf
+    </div>
+
+    <div class="wallet-actions">
+
+      <button
+        class="copy-btn"
+        onclick="copyWallet('2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf', this)"
+      >
+        Copy Address
+      </button>
+
+      <a
+        href="https://solscan.io/account/2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="explorer-btn"
+      >
+        View on Solscan →
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+
+function copyWallet(address, button) {
+
+  navigator.clipboard.writeText(address);
+
+  const originalText = button.textContent;
+
+  button.textContent = "Copied ✓";
+
+  setTimeout(() => {
+    button.textContent = originalText;
+  }, 1800);
+
+}
+
+</script>
