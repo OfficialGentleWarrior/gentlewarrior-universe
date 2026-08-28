@@ -1811,30 +1811,42 @@
 
     /* =========================================
        SOLANA CONFIGURATION
+       
+       PRIMARY:
+       Official Solana Mainnet RPC
+       
+       FALLBACK:
+       PublicNode Solana RPC
+       
+       Public RPC endpoints are rate limited,
+       so requests are handled sequentially
+       through the endpoint list instead of
+       repeatedly hammering one failed RPC.
     ========================================= */
 
     const RPC_ENDPOINTS = [
 
-      /*
-       * Official Solana Mainnet RPC
-       */
       "https://api.mainnet.solana.com",
 
-      /*
-       * PublicNode Solana Mainnet
-       */
-      "https://solana-rpc.publicnode.com",
-
-      /*
-       * dRPC public Solana endpoint
-       */
-      "https://solana.drpc.org"
+      "https://solana-rpc.publicnode.com"
 
     ];
 
 
     const GWAR_MINT =
       "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
+
+
+    /* Standard SPL Token Program */
+
+    const SPL_TOKEN_PROGRAM =
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+
+
+    /* Token-2022 Program */
+
+    const TOKEN_2022_PROGRAM =
+      "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxwEb";
 
 
     const WALLETS = {
@@ -1875,296 +1887,193 @@
     };
 
 
-    /*
-     * Start from a different RPC on each refresh.
-     *
-     * This prevents the page from hammering
-     * the same public RPC every 30 seconds.
-     */
-
-    let rpcIndex = 0;
-
-
-    /*
-     * Keep the last successful values.
-     *
-     * If an RPC temporarily fails, we do NOT
-     * replace a valid balance with "Unavailable".
-     */
-
-    const lastKnownBalances = {
-
-      dev: {
-        sol: null,
-        gwar: null
-      },
-
-      reward: {
-        sol: null,
-        gwar: null
-      }
-
-    };
-
-
     /* =========================================
-       JSON-RPC BATCH REQUEST
+       RPC REQUEST
+       
+       IMPORTANT:
+       - Try each endpoint ONCE per request.
+       - If one endpoint fails, immediately move
+         to the next endpoint.
+       - Do NOT retry the same dead endpoint
+         three times.
     ========================================= */
 
-    async function rpcBatch(
-      endpoint,
-      requests
+    async function solanaRpc(
+      method,
+      params
     ) {
 
-      const controller =
-        new AbortController();
+      let lastError = null;
 
 
-      const timeout =
-        setTimeout(
-          () => controller.abort(),
-          12000
-        );
+      for (
+        let index = 0;
+        index < RPC_ENDPOINTS.length;
+        index++
+      ) {
+
+        const endpoint =
+          RPC_ENDPOINTS[index];
 
 
-      try {
+        let controller = null;
+        let timeoutId = null;
 
-        const response =
-          await fetch(
+
+        try {
+
+          controller =
+            new AbortController();
+
+
+          timeoutId =
+            setTimeout(
+              () => controller.abort(),
+              8000
+            );
+
+
+          const response =
+            await fetch(
+              endpoint,
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+
+                  jsonrpc: "2.0",
+
+                  id:
+                    "gwar-" +
+                    Date.now() +
+                    "-" +
+                    Math.random()
+                      .toString(36)
+                      .slice(2),
+
+                  method:
+                    method,
+
+                  params:
+                    params
+
+                }),
+
+                signal:
+                  controller.signal,
+
+                cache: "no-store"
+
+              }
+            );
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              "HTTP " +
+              response.status +
+              " from " +
+              endpoint
+            );
+
+          }
+
+
+          const data =
+            await response.json();
+
+
+          if (data.error) {
+
+            throw new Error(
+              data.error.message ||
+              "Solana RPC error"
+            );
+
+          }
+
+
+          if (
+            typeof data.result ===
+            "undefined"
+          ) {
+
+            throw new Error(
+              "RPC returned no result"
+            );
+
+          }
+
+
+          return data.result;
+
+        }
+
+        catch (error) {
+
+          lastError =
+            error;
+
+          console.warn(
+            "Solana RPC failed:",
             endpoint,
-            {
-
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-
-                "Accept":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify(requests),
-
-              signal:
-                controller.signal
-
-            }
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "HTTP " +
-            response.status
+            error
           );
 
         }
 
+        finally {
 
-        const data =
-          await response.json();
+          if (timeoutId) {
 
+            clearTimeout(
+              timeoutId
+            );
 
-        if (!Array.isArray(data)) {
-
-          throw new Error(
-            "Invalid RPC batch response"
-          );
+          }
 
         }
 
-
-        return data;
-
       }
 
-      finally {
 
-        clearTimeout(timeout);
-
-      }
+      throw (
+        lastError ||
+        new Error(
+          "All Solana RPC endpoints failed"
+        )
+      );
 
     }
 
 
     /* =========================================
-       BUILD BALANCE REQUESTS
+       GET SOL BALANCE
     ========================================= */
 
-    function buildBalanceRequests() {
-
-      return [
-
-        /* DEV SOL */
-
-        {
-          jsonrpc: "2.0",
-
-          id: "dev-sol",
-
-          method:
-            "getBalance",
-
-          params: [
-
-            WALLETS.dev.address,
-
-            {
-              commitment:
-                "confirmed"
-            }
-
-          ]
-
-        },
-
-
-        /* DEV GWAR */
-
-        {
-          jsonrpc: "2.0",
-
-          id: "dev-gwar",
-
-          method:
-            "getTokenAccountsByOwner",
-
-          params: [
-
-            WALLETS.dev.address,
-
-            {
-              mint:
-                GWAR_MINT
-            },
-
-            {
-              encoding:
-                "jsonParsed",
-
-              commitment:
-                "confirmed"
-
-            }
-
-          ]
-
-        },
-
-
-        /* REWARD SOL */
-
-        {
-          jsonrpc: "2.0",
-
-          id: "reward-sol",
-
-          method:
-            "getBalance",
-
-          params: [
-
-            WALLETS.reward.address,
-
-            {
-              commitment:
-                "confirmed"
-            }
-
-          ]
-
-        },
-
-
-        /* REWARD GWAR */
-
-        {
-          jsonrpc: "2.0",
-
-          id: "reward-gwar",
-
-          method:
-            "getTokenAccountsByOwner",
-
-          params: [
-
-            WALLETS.reward.address,
-
-            {
-              mint:
-                GWAR_MINT
-            },
-
-            {
-              encoding:
-                "jsonParsed",
-
-              commitment:
-                "confirmed"
-
-            }
-
-          ]
-
-        }
-
-      ];
-
-    }
-
-
-    /* =========================================
-       FIND RPC RESULT
-    ========================================= */
-
-    function getRpcResult(
-      responses,
-      id
+    async function getSolBalance(
+      address
     ) {
 
-      const item =
-        responses.find(
-          response =>
-            String(response.id) ===
-            String(id)
+      const result =
+        await solanaRpc(
+          "getBalance",
+          [
+            address,
+
+            {
+              commitment:
+                "confirmed"
+            }
+          ]
         );
 
-
-      if (!item) {
-
-        throw new Error(
-          "Missing RPC response: " +
-          id
-        );
-
-      }
-
-
-      if (item.error) {
-
-        throw new Error(
-          item.error.message ||
-          "RPC error"
-        );
-
-      }
-
-
-      return item.result;
-
-    }
-
-
-    /* =========================================
-       SOL BALANCE PARSER
-    ========================================= */
-
-    function parseSolBalance(
-      result
-    ) {
 
       if (
         !result ||
@@ -2173,7 +2082,7 @@
       ) {
 
         throw new Error(
-          "Invalid SOL balance"
+          "Invalid SOL balance response"
         );
 
       }
@@ -2188,107 +2097,253 @@
 
 
     /* =========================================
-       GWAR BALANCE PARSER
+       GET TOKEN BALANCE
+       
+       We query the mint directly instead of
+       downloading every token account owned
+       by the wallet.
+       
+       This is much smaller and more reliable.
+       
+       We check BOTH:
+       1. Standard SPL Token
+       2. Token-2022
     ========================================= */
 
-    function parseGwarBalance(
-      result
+    async function getGwarBalance(
+      address
     ) {
 
-      if (
-        !result ||
-        !Array.isArray(
-          result.value
-        )
-      ) {
-
-        throw new Error(
-          "Invalid $GWAR response"
-        );
-
-      }
+      let lastError = null;
 
 
-      /*
-       * Because the request is already filtered
-       * by the GWAR mint, every returned account
-       * belongs to $GWAR.
-       */
+      const programs = [
 
-      let totalRaw =
-        0n;
+        SPL_TOKEN_PROGRAM,
 
+        TOKEN_2022_PROGRAM
 
-      let decimals =
-        0;
+      ];
 
 
       for (
-        const account
-        of result.value
+        const programId
+        of programs
       ) {
-
-        const tokenAmount =
-          account
-            ?.account
-            ?.data
-            ?.parsed
-            ?.info
-            ?.tokenAmount;
-
-
-        if (!tokenAmount) {
-          continue;
-        }
-
-
-        if (
-          typeof tokenAmount.amount !==
-          "string"
-        ) {
-
-          continue;
-
-        }
-
 
         try {
 
-          totalRaw +=
-            BigInt(
-              tokenAmount.amount
+          const result =
+            await solanaRpc(
+              "getTokenAccountsByOwner",
+              [
+
+                address,
+
+                {
+                  mint:
+                    GWAR_MINT
+                },
+
+                {
+                  encoding:
+                    "jsonParsed",
+
+                  commitment:
+                    "confirmed"
+
+                }
+
+              ]
             );
+
+
+          if (
+            !result ||
+            !Array.isArray(
+              result.value
+            )
+          ) {
+
+            throw new Error(
+              "Invalid token account response"
+            );
+
+          }
+
+
+          let total = 0;
+
+
+          for (
+            const account
+            of result.value
+          ) {
+
+            try {
+
+              const info =
+                account
+                  .account
+                  .data
+                  .parsed
+                  .info;
+
+
+              if (
+                !info ||
+                info.mint !==
+                  GWAR_MINT
+              ) {
+
+                continue;
+
+              }
+
+
+              const tokenAmount =
+                info.tokenAmount;
+
+
+              if (!tokenAmount) {
+
+                continue;
+
+              }
+
+
+              /*
+               * Prefer uiAmountString.
+               *
+               * This avoids precision loss for
+               * large token balances.
+               */
+
+              if (
+                typeof
+                  tokenAmount.uiAmountString ===
+                  "string"
+              ) {
+
+                const value =
+                  Number(
+                    tokenAmount.uiAmountString
+                  );
+
+
+                if (
+                  Number.isFinite(value)
+                ) {
+
+                  total +=
+                    value;
+
+                }
+
+              }
+
+              else if (
+                typeof
+                  tokenAmount.amount ===
+                  "string"
+              ) {
+
+                const decimals =
+                  Number(
+                    tokenAmount.decimals || 0
+                  );
+
+
+                const raw =
+                  BigInt(
+                    tokenAmount.amount
+                  );
+
+
+                const divisor =
+                  10n **
+                  BigInt(
+                    decimals
+                  );
+
+
+                const whole =
+                  raw /
+                  divisor;
+
+
+                const remainder =
+                  raw %
+                  divisor;
+
+
+                const decimal =
+                  Number(
+                    remainder
+                  ) /
+                  Number(
+                    divisor
+                  );
+
+
+                total +=
+                  Number(whole) +
+                  decimal;
+
+              }
+
+            }
+
+            catch (parseError) {
+
+              console.warn(
+                "Could not parse token account:",
+                parseError
+              );
+
+            }
+
+          }
+
+
+          /*
+           * A valid RPC response with zero
+           * token accounts is a legitimate
+           * zero balance.
+           */
+
+          return total;
 
         }
 
         catch (error) {
 
+          lastError =
+            error;
+
           console.warn(
-            "Invalid token amount:",
+            "Token program query failed:",
+            programId,
             error
           );
 
         }
 
-
-        decimals =
-          Number(
-            tokenAmount.decimals
-          );
-
       }
 
 
-      return {
-        raw: totalRaw,
-        decimals: decimals
-      };
+      throw (
+        lastError ||
+        new Error(
+          "Unable to read $GWAR balance"
+        )
+      );
 
     }
 
 
     /* =========================================
-       FORMAT SOL
+       FORMAT SOL NUMBER
     ========================================= */
 
     function formatSol(
@@ -2298,7 +2353,6 @@
       return new Intl.NumberFormat(
         "en-US",
         {
-
           minimumFractionDigits:
             0,
 
@@ -2312,118 +2366,34 @@
 
 
     /* =========================================
-       FORMAT TOKEN BIGINT
+       FORMAT TOKEN NUMBER
     ========================================= */
 
-    function formatTokenAmount(
-      raw,
-      decimals,
-      maximumDecimals = 2
+    function formatGwar(
+      number
     ) {
 
-      if (
-        typeof raw !== "bigint"
-      ) {
-
-        return "0";
-
-      }
-
-
-      if (
-        decimals === 0
-      ) {
-
-        return new Intl.NumberFormat(
-          "en-US"
-        ).format(
-          Number(raw)
-        );
-
-      }
-
-
-      const rawString =
-        raw
-          .toString()
-          .padStart(
-            decimals + 1,
-            "0"
-          );
-
-
-      const splitIndex =
-        rawString.length -
-        decimals;
-
-
-      let whole =
-        rawString.slice(
-          0,
-          splitIndex
-        );
-
-
-      let fraction =
-        rawString.slice(
-          splitIndex
-        );
-
-
-      /*
-       * Remove trailing zeroes.
-       */
-
-      fraction =
-        fraction.replace(
-          /0+$/,
-          ""
-        );
-
-
-      /*
-       * Limit displayed decimals.
-       */
-
-      if (
-        fraction.length >
-        maximumDecimals
-      ) {
-
-        fraction =
-          fraction.slice(
+      return new Intl.NumberFormat(
+        "en-US",
+        {
+          minimumFractionDigits:
             0,
-            maximumDecimals
-          );
 
-      }
+          maximumFractionDigits:
+            2
 
-
-      /*
-       * Add commas to whole number.
-       */
-
-      whole =
-        whole.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-
-
-      return fraction
-        ? whole + "." + fraction
-        : whole;
+        }
+      ).format(number);
 
     }
 
 
     /* =========================================
-       UPDATE DOM
+       UPDATE SOL ONLY
     ========================================= */
 
-    function setSolBalance(
-      wallet,
-      balance
+    async function updateSol(
+      wallet
     ) {
 
       const element =
@@ -2432,17 +2402,51 @@
         );
 
 
-      element.innerHTML =
-        formatSol(balance)
-        +
-        ' <span class="balance-unit">SOL</span>';
+      try {
+
+        const balance =
+          await getSolBalance(
+            wallet.address
+          );
+
+
+        element.innerHTML =
+          formatSol(
+            balance
+          ) +
+          ' <span class="balance-unit">SOL</span>';
+
+
+        return true;
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "SOL balance error:",
+          wallet.address,
+          error
+        );
+
+
+        element.textContent =
+          "Unavailable";
+
+
+        return false;
+
+      }
 
     }
 
 
-    function setGwarBalance(
-      wallet,
-      balance
+    /* =========================================
+       UPDATE $GWAR ONLY
+    ========================================= */
+
+    async function updateGwar(
+      wallet
     ) {
 
       const element =
@@ -2451,201 +2455,103 @@
         );
 
 
-      element.innerHTML =
-        formatTokenAmount(
-          balance.raw,
-          balance.decimals,
-          2
-        )
-        +
-        ' <span class="balance-unit">$GWAR</span>';
-
-    }
-
-
-    /* =========================================
-       UPDATE WALLET FROM BATCH RESULTS
-    ========================================= */
-
-    function processWalletResults(
-      walletName,
-      responses
-    ) {
-
-      const wallet =
-        WALLETS[walletName];
-
-
-      let solSuccess =
-        false;
-
-
-      let gwarSuccess =
-        false;
-
-
-      /*
-       * SOL
-       */
-
       try {
 
-        const result =
-          getRpcResult(
-            responses,
-            walletName + "-sol"
-          );
-
-
         const balance =
-          parseSolBalance(
-            result
+          await getGwarBalance(
+            wallet.address
           );
 
 
-        lastKnownBalances[
-          walletName
-        ].sol =
-          balance;
+        element.innerHTML =
+          formatGwar(
+            balance
+          ) +
+          ' <span class="balance-unit">$GWAR</span>';
 
 
-        setSolBalance(
-          wallet,
-          balance
-        );
-
-
-        solSuccess =
-          true;
+        return true;
 
       }
 
       catch (error) {
 
-        console.warn(
-          walletName +
-          " SOL RPC error:",
+        console.error(
+          "$GWAR balance error:",
+          wallet.address,
           error
         );
 
 
-        /*
-         * IMPORTANT:
-         * Do NOT erase the last successful value.
-         */
+        element.textContent =
+          "Unavailable";
 
-        if (
-          lastKnownBalances[
-            walletName
-          ].sol !== null
-        ) {
 
-          setSolBalance(
-            wallet,
-            lastKnownBalances[
-              walletName
-            ].sol
-          );
-
-        }
+        return false;
 
       }
-
-
-      /*
-       * $GWAR
-       */
-
-      try {
-
-        const result =
-          getRpcResult(
-            responses,
-            walletName + "-gwar"
-          );
-
-
-        const balance =
-          parseGwarBalance(
-            result
-          );
-
-
-        lastKnownBalances[
-          walletName
-        ].gwar =
-          balance;
-
-
-        setGwarBalance(
-          wallet,
-          balance
-        );
-
-
-        gwarSuccess =
-          true;
-
-      }
-
-      catch (error) {
-
-        console.warn(
-          walletName +
-          " $GWAR RPC error:",
-          error
-        );
-
-
-        /*
-         * IMPORTANT:
-         * Do NOT erase the last successful value.
-         */
-
-        if (
-          lastKnownBalances[
-            walletName
-          ].gwar !== null
-        ) {
-
-          setGwarBalance(
-            wallet,
-            lastKnownBalances[
-              walletName
-            ].gwar
-          );
-
-        }
-
-      }
-
-
-      return {
-        solSuccess,
-        gwarSuccess
-      };
 
     }
 
 
     /* =========================================
-       STATUS
+       UPDATE ONE WALLET
+       
+       IMPORTANT:
+       SOL and GWAR are executed separately.
+       
+       One failure does NOT erase the other
+       successful balance.
     ========================================= */
 
-    function updateWalletStatus(
-      walletName,
-      result,
-      endpoint
+    async function updateWallet(
+      wallet
     ) {
-
-      const wallet =
-        WALLETS[walletName];
-
 
       const statusElement =
         document.getElementById(
           wallet.statusElement
         );
+
+
+      statusElement.classList.remove(
+        "error"
+      );
+
+
+      statusElement.textContent =
+        "Updating live balances...";
+
+
+      /*
+       * Run independently.
+       */
+
+      const solPromise =
+        updateSol(
+          wallet
+        );
+
+
+      const gwarPromise =
+        updateGwar(
+          wallet
+        );
+
+
+      const results =
+        await Promise.all([
+          solPromise,
+          gwarPromise
+        ]);
+
+
+      const solSuccess =
+        results[0];
+
+
+      const gwarSuccess =
+        results[1];
 
 
       const time =
@@ -2664,272 +2570,83 @@
         );
 
 
-      statusElement.classList.remove(
-        "error"
-      );
-
-
       if (
-        result.solSuccess &&
-        result.gwarSuccess
+        solSuccess &&
+        gwarSuccess
       ) {
+
+        statusElement.classList.remove(
+          "error"
+        );
 
         statusElement.textContent =
           "Updated " +
           time;
 
-        return;
-
       }
 
-
-      if (
-        result.solSuccess &&
-        !result.gwarSuccess
+      else if (
+        solSuccess &&
+        !gwarSuccess
       ) {
 
         statusElement.classList.add(
           "error"
         );
 
-
         statusElement.textContent =
-          "SOL updated • $GWAR refresh failed";
-
-        return;
+          "SOL updated • $GWAR temporarily unavailable";
 
       }
 
-
-      if (
-        !result.solSuccess &&
-        result.gwarSuccess
+      else if (
+        !solSuccess &&
+        gwarSuccess
       ) {
 
         statusElement.classList.add(
           "error"
         );
 
-
         statusElement.textContent =
-          "$GWAR updated • SOL refresh failed";
-
-        return;
+          "$GWAR updated • SOL temporarily unavailable";
 
       }
 
+      else {
 
-      /*
-       * Both failed.
-       *
-       * If old values exist, tell the user
-       * that those values are retained.
-       */
+        statusElement.classList.add(
+          "error"
+        );
 
-      const hasCachedData =
-        lastKnownBalances[
-          walletName
-        ].sol !== null ||
-        lastKnownBalances[
-          walletName
-        ].gwar !== null;
+        statusElement.textContent =
+          "Unable to reach Solana RPC • Retrying...";
 
-
-      statusElement.classList.add(
-        "error"
-      );
-
-
-      statusElement.textContent =
-        hasCachedData
-          ? "RPC unavailable • showing last known balance"
-          : "RPC unavailable • retrying...";
+      }
 
     }
 
 
     /* =========================================
        UPDATE ALL WALLETS
+       
+       IMPORTANT:
+       Wallets are updated SEQUENTIALLY.
+       
+       This avoids hitting public RPCs with
+       four simultaneous requests every refresh.
     ========================================= */
 
     async function updateAllWallets() {
 
-      /*
-       * Rotate starting RPC.
-       */
-
-      const startIndex =
-        rpcIndex;
+      await updateWallet(
+        WALLETS.dev
+      );
 
 
-      rpcIndex =
-        (
-          rpcIndex + 1
-        ) %
-        RPC_ENDPOINTS.length;
-
-
-      /*
-       * Try each RPC endpoint.
-       *
-       * We send ONE BATCH request containing
-       * all four balance requests.
-       */
-
-      for (
-        let attempt = 0;
-        attempt <
-        RPC_ENDPOINTS.length;
-        attempt++
-      ) {
-
-        const endpointIndex =
-          (
-            startIndex +
-            attempt
-          ) %
-          RPC_ENDPOINTS.length;
-
-
-        const endpoint =
-          RPC_ENDPOINTS[
-            endpointIndex
-          ];
-
-
-        console.log(
-          "Trying Solana RPC:",
-          endpoint
-        );
-
-
-        try {
-
-          const requests =
-            buildBalanceRequests();
-
-
-          const responses =
-            await rpcBatch(
-              endpoint,
-              requests
-            );
-
-
-          /*
-           * Process each wallet independently.
-           *
-           * Even if one item in the batch fails,
-           * successful items are still kept.
-           */
-
-          const devResult =
-            processWalletResults(
-              "dev",
-              responses
-            );
-
-
-          const rewardResult =
-            processWalletResults(
-              "reward",
-              responses
-            );
-
-
-          updateWalletStatus(
-            "dev",
-            devResult,
-            endpoint
-          );
-
-
-          updateWalletStatus(
-            "reward",
-            rewardResult,
-            endpoint
-          );
-
-
-          /*
-           * If at least one balance succeeded,
-           * this endpoint is usable.
-           *
-           * Stop rotating.
-           */
-
-          if (
-            (
-              devResult.solSuccess ||
-              devResult.gwarSuccess ||
-              rewardResult.solSuccess ||
-              rewardResult.gwarSuccess
-            )
-          ) {
-
-            return;
-
-          }
-
-        }
-
-        catch (error) {
-
-          console.error(
-            "RPC endpoint failed:",
-            endpoint,
-            error
-          );
-
-        }
-
-      }
-
-
-      /*
-       * ALL RPCs failed.
-       *
-       * Do NOT overwrite existing balances.
-       */
-
-      for (
-        const walletName
-        of [
-          "dev",
-          "reward"
-        ]
-      ) {
-
-        const wallet =
-          WALLETS[walletName];
-
-
-        const statusElement =
-          document.getElementById(
-            wallet.statusElement
-          );
-
-
-        const hasCachedData =
-          lastKnownBalances[
-            walletName
-          ].sol !== null ||
-          lastKnownBalances[
-            walletName
-          ].gwar !== null;
-
-
-        statusElement.classList.add(
-          "error"
-        );
-
-
-        statusElement.textContent =
-          hasCachedData
-            ? "RPC temporarily unavailable • showing last known balance"
-            : "Unable to reach Solana RPC • retrying...";
-
-      }
+      await updateWallet(
+        WALLETS.reward
+      );
 
     }
 
@@ -2954,7 +2671,11 @@
     ========================================= */
 
     setInterval(
-      updateAllWallets,
+      () => {
+
+        updateAllWallets();
+
+      },
       30000
     );
 
