@@ -1,137 +1,664 @@
-<!-- =========================
-     TRANSPARENCY
-========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<section class="section">
+  <title>PH 0 — Foundation | Gentle Warrior</title>
 
-  <p class="section-label">
-    TRANSPARENCY
-  </p>
+  <meta
+    name="description"
+    content="Gentle Warrior PH 0 — Foundation."
+  >
 
-  <h2>
-    Public Wallets
-  </h2>
+  <style>
+    :root {
+      --bg: #032d20;
+      --bg-deep: #012419;
+      --card: #043b2a;
+      --lime: #a8ef70;
+      --gold: #ead58a;
+      --text: #f2f6ed;
+      --muted: #a9b9ae;
+      --border: rgba(168, 239, 112, 0.22);
+    }
 
-  <p class="section-intro">
-    Gentle Warrior keeps its project wallets publicly visible
-    so the community can independently verify their activity.
-  </p>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(126, 202, 94, 0.16),
+          transparent 36%
+        ),
+        linear-gradient(
+          180deg,
+          #043b29 0%,
+          var(--bg) 42%,
+          var(--bg-deep) 100%
+        );
+
+      color: var(--text);
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(900px, calc(100% - 20px));
+      margin: 0 auto;
+      padding: 10px 0 40px;
+    }
 
 
-  <!-- DEV WALLET -->
+    /* =========================
+       HEADER
+    ========================= */
 
-  <div class="wallet-card">
+    .hero {
+      position: relative;
+      overflow: hidden;
 
-    <div class="wallet-header">
+      display: flex;
+      align-items: center;
+      gap: 18px;
 
-      <div>
-        <p class="wallet-label">
-          DEV WALLET
-        </p>
+      padding: 22px;
 
-        <h3>
-          Development Wallet
-        </h3>
+      border: 1px solid var(--border);
+      border-radius: 28px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(5, 61, 42, 0.96),
+          rgba(2, 43, 30, 0.92)
+        );
+
+      box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.24);
+    }
+
+    .hero::after {
+      content: "";
+
+      position: absolute;
+
+      width: 280px;
+      height: 280px;
+
+      right: -100px;
+      top: -150px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(168, 239, 112, 0.07);
+    }
+
+    .hero-icon {
+      position: relative;
+      z-index: 1;
+
+      flex: 0 0 auto;
+
+      width: 70px;
+      height: 70px;
+
+      padding: 4px;
+
+      border-radius: 50%;
+
+      background: var(--lime);
+
+      box-shadow:
+        0 0 0 7px rgba(168, 239, 112, 0.06),
+        0 0 28px rgba(168, 239, 112, 0.24);
+
+      overflow: hidden;
+    }
+
+    .hero-icon img {
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+    }
+
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+
+      margin: 0 0 6px;
+
+      color: var(--lime);
+
+      font-size: 11px;
+      font-weight: 900;
+
+      letter-spacing: 0.15em;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+
+      margin: 0;
+
+      font-size: clamp(30px, 7vw, 48px);
+
+      line-height: 1;
+
+      letter-spacing: -0.04em;
+    }
+
+    .tagline {
+      position: relative;
+      z-index: 1;
+
+      margin: 8px 0 0;
+
+      color: var(--muted);
+
+      font-size: 16px;
+    }
+
+
+    /* =========================
+       BACK
+    ========================= */
+
+    .back {
+      display: inline-block;
+
+      margin: 18px 4px 0;
+
+      color: var(--lime);
+
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+
+    /* =========================
+       PHASE TITLE
+    ========================= */
+
+    .phase-header {
+      margin-top: 18px;
+
+      padding: 26px;
+
+      border: 1px solid
+        rgba(168, 239, 112, 0.42);
+
+      border-radius: 25px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #06462f,
+          #043324
+        );
+    }
+
+    .phase-label {
+      margin: 0 0 7px;
+
+      color: var(--gold);
+
+      font-size: 13px;
+      font-weight: 900;
+
+      letter-spacing: 0.14em;
+    }
+
+    .phase-header h2 {
+      margin: 0;
+
+      font-size: clamp(30px, 7vw, 44px);
+
+      letter-spacing: -0.03em;
+    }
+
+    .phase-header p {
+      margin: 10px 0 0;
+
+      color: #c0d0c5;
+
+      line-height: 1.65;
+    }
+
+
+    /* =========================
+       SECTION 01
+    ========================= */
+
+    .section {
+      margin-top: 18px;
+
+      padding: 25px;
+
+      border: 1px solid var(--border);
+      border-radius: 24px;
+
+      background:
+        rgba(3, 49, 35, 0.86);
+    }
+
+    .section-number {
+      margin: 0 0 7px;
+
+      color: var(--gold);
+
+      font-size: 12px;
+      font-weight: 900;
+
+      letter-spacing: 0.14em;
+    }
+
+    .section h3 {
+      margin: 0 0 20px;
+
+      font-size: clamp(25px, 6vw, 34px);
+
+      letter-spacing: -0.025em;
+    }
+
+
+    /* =========================
+       ORIGIN CONTENT
+    ========================= */
+
+    .content-block {
+      margin-top: 22px;
+    }
+
+    .content-block:first-of-type {
+      margin-top: 0;
+    }
+
+    .content-block h4 {
+      margin: 0 0 8px;
+
+      color: var(--lime);
+
+      font-size: 18px;
+    }
+
+    .content-block p {
+      margin: 0;
+
+      color: #d1ddd4;
+
+      line-height: 1.75;
+    }
+
+    .quote {
+      margin-top: 20px;
+
+      padding: 17px 18px;
+
+      border-left: 4px solid var(--lime);
+
+      border-radius: 0 14px 14px 0;
+
+      background:
+        rgba(0, 27, 18, 0.65);
+
+      color: #e5eee7;
+
+      line-height: 1.7;
+    }
+
+
+    /* =========================
+       CHARACTER
+    ========================= */
+
+    .character-card {
+      margin-top: 22px;
+
+      padding: 20px;
+
+      border: 1px solid
+        rgba(168, 239, 112, 0.18);
+
+      border-radius: 20px;
+
+      background:
+        rgba(2, 41, 29, 0.85);
+    }
+
+    .character-title {
+      margin: 0 0 10px;
+
+      color: var(--gold);
+
+      font-size: 12px;
+      font-weight: 900;
+
+      letter-spacing: 0.13em;
+    }
+
+    .character-card h4 {
+      margin: 0 0 9px;
+
+      font-size: 22px;
+    }
+
+    .character-card p {
+      margin: 0;
+
+      color: #c6d4ca;
+
+      line-height: 1.75;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+      padding: 25px 4px 0;
+
+      color: #71877a;
+
+      font-size: 12px;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      .page {
+        width: min(100% - 14px, 900px);
+      }
+
+      .hero {
+        padding: 18px;
+
+        gap: 14px;
+      }
+
+      .hero-icon {
+        width: 58px;
+        height: 58px;
+      }
+
+      .eyebrow {
+        font-size: 9px;
+      }
+
+      .tagline {
+        font-size: 14px;
+      }
+
+      .phase-header,
+      .section {
+        padding: 21px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <main class="page">
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="hero">
+
+      <div class="hero-icon">
+
+        <img
+          src="https://raw.githubusercontent.com/OfficialGentleWarrior/gentlewarrior-universe/main/avatar.png"
+          alt="Gentle Warrior"
+        >
+
       </div>
 
-      <span class="wallet-status">
-        PUBLIC
-      </span>
-
-    </div>
-
-    <div class="wallet-address">
-      7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL
-    </div>
-
-    <div class="wallet-actions">
-
-      <button
-        class="copy-btn"
-        onclick="copyWallet('7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL', this)"
-      >
-        Copy Address
-      </button>
-
-      <a
-        href="https://solscan.io/account/7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="explorer-btn"
-      >
-        View on Solscan →
-      </a>
-
-    </div>
-
-  </div>
-
-
-  <!-- REWARDS WALLET -->
-
-  <div class="wallet-card">
-
-    <div class="wallet-header">
-
       <div>
-        <p class="wallet-label">
-          REWARDS WALLET
+
+        <p class="eyebrow">
+          GENTLE WARRIOR UNIVERSE
         </p>
 
-        <h3>
-          Community Rewards
-        </h3>
+        <h1>
+          PH 0 — Foundation
+        </h1>
+
+        <p class="tagline">
+          Soft Heart. Strong Spirit.
+        </p>
+
       </div>
 
-      <span class="wallet-status">
-        PUBLIC
+    </header>
+
+
+    <!-- =========================
+         BACK
+    ========================= -->
+
+    <a
+      href="index.html"
+      class="back"
+    >
+      ← Back to Master Roadmap
+    </a>
+
+
+    <!-- =========================
+         PHASE INTRO
+    ========================= -->
+
+    <section class="phase-header">
+
+      <p class="phase-label">
+        PHASE 0
+      </p>
+
+      <h2>
+        Foundation
+      </h2>
+
+      <p>
+        Establish who Gentle Warrior is,
+        why it exists, where the community lives,
+        and how the project operates transparently.
+      </p>
+
+    </section>
+
+
+    <!-- =========================
+         01 — ORIGIN
+    ========================= -->
+
+    <section class="section">
+
+      <p class="section-number">
+        01
+      </p>
+
+      <h3>
+        Gentle Warrior Origin
+      </h3>
+
+
+      <!-- WHAT IS GENTLE WARRIOR -->
+
+      <div class="content-block">
+
+        <h4>
+          What is Gentle Warrior?
+        </h4>
+
+        <p>
+          Gentle Warrior is a world created to raise awareness
+          for children with cerebral palsy.
+        </p>
+
+        <p style="margin-top: 12px;">
+          <strong>Soft Heart. Strong Spirit.</strong>
+        </p>
+
+        <div class="quote">
+          Gentle Warrior represents children with cerebral palsy
+          — gentle in body, strong in spirit, and surrounded by care.
+        </div>
+
+      </div>
+
+
+      <!-- WHY CREATED -->
+
+      <div class="content-block">
+
+        <h4>
+          Why was it created?
+        </h4>
+
+        <p>
+          Gentle Warrior was created to give children with
+          cerebral palsy a hero who looks like effort —
+          not perfection.
+        </p>
+
+        <p style="margin-top: 12px;">
+          Cerebral palsy affects movement, coordination,
+          and muscle control. For many children, everyday
+          actions take energy and focus that others never see.
+        </p>
+
+        <div class="quote">
+          You are not broken.<br>
+          You are not behind.<br>
+          You are not invisible.
+        </div>
+
+        <p style="margin-top: 16px;">
+          You are moving through your own path —
+          and that path matters.
+        </p>
+
+      </div>
+
+
+      <!-- STORY -->
+
+      <div class="content-block">
+
+        <h4>
+          The story behind the project
+        </h4>
+
+        <p>
+          Gentle Warrior was born from a real family's journey
+          through cerebral palsy, therapy, patience, resilience,
+          and hope.
+        </p>
+
+        <p style="margin-top: 12px;">
+          This world exists to honor resilience, patience,
+          and quiet courage through storytelling, symbols,
+          and play.
+        </p>
+
+      </div>
+
+
+      <!-- CHARACTER -->
+
+      <div class="character-card">
+
+        <p class="character-title">
+          GENTLE WARRIOR CHARACTER
+        </p>
+
+        <h4>
+          The Heart of This World
+        </h4>
+
+        <p>
+          This is Baby Leam —
+          our very own Gentle Warrior.
+        </p>
+
+        <p style="margin-top: 12px;">
+          From his earliest days to his therapy sessions,
+          every moment you see here is real.
+        </p>
+
+        <p style="margin-top: 12px;">
+          He is the inspiration, the heart,
+          and the reason this project exists.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer>
+
+      <span>
+        Gentle Warrior
       </span>
 
-    </div>
+      <span>
+        Soft Heart. Strong Spirit.
+      </span>
 
-    <div class="wallet-address">
-      2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf
-    </div>
+    </footer>
 
-    <div class="wallet-actions">
+  </main>
 
-      <button
-        class="copy-btn"
-        onclick="copyWallet('2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf', this)"
-      >
-        Copy Address
-      </button>
-
-      <a
-        href="https://solscan.io/account/2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="explorer-btn"
-      >
-        View on Solscan →
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<script>
-
-function copyWallet(address, button) {
-
-  navigator.clipboard.writeText(address);
-
-  const originalText = button.textContent;
-
-  button.textContent = "Copied ✓";
-
-  setTimeout(() => {
-    button.textContent = originalText;
-  }, 1800);
-
-}
-
-</script>
+</body>
+</html>
