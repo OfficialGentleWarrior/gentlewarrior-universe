@@ -1,0 +1,214 @@
+/* =========================
+   WALLET / TRANSPARENCY
+========================= */
+
+.section {
+  margin-top: 18px;
+
+  padding: 25px;
+
+  border: 1px solid var(--border);
+  border-radius: 24px;
+
+  background:
+    rgba(3, 49, 35, 0.86);
+}
+
+.section-label {
+  margin: 0 0 8px;
+
+  color: var(--gold);
+
+  font-size: 12px;
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+.section h2 {
+  margin: 0 0 9px;
+
+  font-size: clamp(26px, 5vw, 36px);
+}
+
+.section-intro {
+  margin: 0 0 20px;
+
+  max-width: 760px;
+
+  color: #b9c9be;
+
+  line-height: 1.7;
+}
+
+
+/* WALLET CARD */
+
+.wallet-card {
+  margin-top: 14px;
+
+  padding: 20px;
+
+  border: 1px solid
+    rgba(168, 239, 112, 0.16);
+
+  border-radius: 20px;
+
+  background:
+    rgba(2, 41, 29, 0.9);
+}
+
+.wallet-header {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+.wallet-label {
+  margin: 0 0 5px;
+
+  color: var(--gold);
+
+  font-size: 11px;
+  font-weight: 900;
+
+  letter-spacing: 0.12em;
+}
+
+.wallet-card h3 {
+  margin: 0;
+
+  font-size: 20px;
+}
+
+.wallet-status {
+  padding: 6px 10px;
+
+  border: 1px solid
+    rgba(168, 239, 112, 0.22);
+
+  border-radius: 999px;
+
+  background:
+    rgba(168, 239, 112, 0.08);
+
+  color: var(--lime);
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+}
+
+
+/* ADDRESS */
+
+.wallet-address {
+  margin-top: 16px;
+
+  padding: 13px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(0, 20, 14, 0.7);
+
+  color: #dce8df;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  word-break: break-all;
+}
+
+
+/* BUTTONS */
+
+.wallet-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+.copy-btn,
+.explorer-btn {
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.copy-btn {
+  border: 1px solid
+    rgba(168, 239, 112, 0.25);
+
+  background:
+    rgba(168, 239, 112, 0.10);
+
+  color: var(--lime);
+}
+
+.explorer-btn {
+  border: 1px solid
+    rgba(168, 239, 112, 0.15);
+
+  background:
+    rgba(3, 48, 34, 0.8);
+
+  color: #c5d4ca;
+}
+
+.copy-btn:hover,
+.explorer-btn:hover {
+  border-color:
+    rgba(168, 239, 112, 0.5);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .section {
+    padding: 21px;
+  }
+
+  .wallet-card {
+    padding: 17px;
+  }
+
+  .wallet-address {
+    font-size: 11px;
+  }
+
+  .wallet-actions {
+    flex-direction: column;
+  }
+
+  .copy-btn,
+  .explorer-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+}
