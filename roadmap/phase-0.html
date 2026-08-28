@@ -15,7 +15,6 @@
     :root {
       --bg: #032d20;
       --bg-deep: #012419;
-      --card: #043b2a;
       --lime: #a8ef70;
       --gold: #ead58a;
       --text: #f2f6ed;
@@ -64,11 +63,16 @@
       text-decoration: none;
     }
 
+    button {
+      font-family: inherit;
+    }
+
     .page {
       width: min(1080px, calc(100% - 28px));
       margin: 0 auto;
       padding: 22px 0 42px;
     }
+
 
     /* =========================
        HEADER
@@ -115,6 +119,11 @@
         rgba(168, 239, 112, 0.07);
     }
 
+
+    /* =========================
+       AVATAR
+    ========================= */
+
     .hero-icon {
       position: relative;
       z-index: 1;
@@ -147,6 +156,7 @@
 
       border-radius: 50%;
     }
+
 
     .eyebrow {
       position: relative;
@@ -187,6 +197,7 @@
       font-size: 15px;
     }
 
+
     /* =========================
        BACK
     ========================= */
@@ -201,6 +212,7 @@
       font-size: 12px;
       font-weight: 800;
     }
+
 
     /* =========================
        PHASE INTRO
@@ -246,18 +258,24 @@
       font-size: 14px;
     }
 
+
     /* =========================
-       SECTION CARD
+       SECTIONS
     ========================= */
 
     .sections {
+      display: grid;
+
+      gap: 16px;
+
       margin-top: 18px;
     }
 
     .section-card {
       overflow: hidden;
 
-      border: 1px solid
+      border:
+        1px solid
         rgba(168, 239, 112, 0.18);
 
       border-radius: 23px;
@@ -267,7 +285,24 @@
 
       box-shadow:
         0 12px 30px rgba(0, 0, 0, 0.18);
+
+      transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
     }
+
+    .section-card.open {
+      border-color:
+        rgba(168, 239, 112, 0.30);
+
+      background:
+        rgba(3, 52, 37, 0.94);
+    }
+
+
+    /* =========================
+       CLICKABLE SECTION HEADER
+    ========================= */
 
     .section-toggle {
       width: 100%;
@@ -279,7 +314,7 @@
 
       gap: 15px;
 
-      padding: 24px;
+      padding: 23px;
 
       border: 0;
 
@@ -289,14 +324,19 @@
 
       text-align: left;
 
-      font: inherit;
-
       cursor: pointer;
+
+      -webkit-tap-highlight-color: transparent;
     }
 
     .section-toggle:hover {
       background:
         rgba(168, 239, 112, 0.04);
+    }
+
+    .section-info {
+      min-width: 0;
+      flex: 1;
     }
 
     .section-number {
@@ -313,7 +353,10 @@
     .section-title {
       margin: 0;
 
+      color: var(--text);
+
       font-size: 23px;
+
       line-height: 1.15;
     }
 
@@ -325,23 +368,29 @@
       font-size: 13px;
     }
 
+
+    /* =========================
+       ARROW
+    ========================= */
+
     .arrow {
       flex: 0 0 auto;
 
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
 
       display: grid;
       place-items: center;
 
-      border: 1px solid
+      border:
+        1px solid
         rgba(168, 239, 112, 0.20);
 
       border-radius: 50%;
 
       color: var(--lime);
 
-      font-size: 20px;
+      font-size: 22px;
 
       transition:
         transform 0.25s ease,
@@ -355,14 +404,15 @@
         rgba(168, 239, 112, 0.08);
     }
 
+
     /* =========================
-       SECTION CONTENT
+       CONTENT
     ========================= */
 
     .section-content {
       display: none;
 
-      padding: 0 24px 27px;
+      padding: 0 23px 27px;
     }
 
     .section-card.open .section-content {
@@ -387,11 +437,11 @@
     }
 
     .content-block h3 {
-      margin: 0 0 7px;
+      margin: 0 0 8px;
 
       color: var(--lime);
 
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .content-block p {
@@ -403,6 +453,15 @@
 
       line-height: 1.75;
     }
+
+    .content-block p + p {
+      margin-top: 14px;
+    }
+
+
+    /* =========================
+       QUOTE
+    ========================= */
 
     .quote {
       margin-top: 15px;
@@ -423,12 +482,18 @@
       line-height: 1.75;
     }
 
+
+    /* =========================
+       CHARACTER
+    ========================= */
+
     .character {
       margin-top: 5px;
 
       padding: 18px;
 
-      border: 1px solid
+      border:
+        1px solid
         rgba(168, 239, 112, 0.16);
 
       border-radius: 17px;
@@ -456,6 +521,21 @@
       font-size: 19px;
     }
 
+    .character p {
+      margin: 0;
+
+      color: #c3d1c7;
+
+      font-size: 13px;
+
+      line-height: 1.75;
+    }
+
+    .character p + p {
+      margin-top: 13px;
+    }
+
+
     /* =========================
        FOOTER
     ========================= */
@@ -476,6 +556,7 @@
       font-size: 11px;
     }
 
+
     /* =========================
        MOBILE
     ========================= */
@@ -483,7 +564,11 @@
     @media (max-width: 700px) {
 
       .page {
-        width: min(100% - 20px, 1080px);
+        width:
+          min(
+            100% - 20px,
+            1080px
+          );
 
         padding-top: 10px;
       }
@@ -505,15 +590,28 @@
         padding:
           0 21px 24px;
       }
+
+      .section-title {
+        font-size: 22px;
+      }
+
+      .arrow {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
+
 
 <body>
 
   <main class="page">
 
-    <!-- HEADER -->
+
+    <!-- =========================
+         HEADER
+    ========================= -->
 
     <header class="hero">
 
@@ -545,7 +643,9 @@
     </header>
 
 
-    <!-- BACK -->
+    <!-- =========================
+         BACK
+    ========================= -->
 
     <a
       href="index.html"
@@ -555,7 +655,9 @@
     </a>
 
 
-    <!-- PHASE INTRO -->
+    <!-- =========================
+         PHASE INTRO
+    ========================= -->
 
     <section class="phase-intro">
 
@@ -576,12 +678,19 @@
     </section>
 
 
-    <!-- SECTIONS -->
+    <!-- =========================
+         FOUNDATION SECTIONS
+    ========================= -->
 
-    <section class="sections">
+    <section
+      class="sections"
+      aria-label="Phase 0 Foundation sections"
+    >
 
 
-      <!-- SECTION 01 -->
+      <!-- =========================
+           SECTION 01
+      ========================= -->
 
       <article class="section-card">
 
@@ -592,7 +701,7 @@
           onclick="toggleSection(this)"
         >
 
-          <div>
+          <div class="section-info">
 
             <p class="section-number">
               01
@@ -657,7 +766,7 @@
               effort — not perfection.
             </p>
 
-            <p style="margin-top: 14px;">
+            <p>
               Cerebral palsy affects movement,
               coordination, and muscle control. For many
               children, everyday actions take energy and
@@ -670,7 +779,7 @@
               You are not invisible.
             </div>
 
-            <p style="margin-top: 14px;">
+            <p>
               You are moving through your own path —
               and that path matters.
             </p>
@@ -690,7 +799,7 @@
               patience, resilience, and hope.
             </p>
 
-            <p style="margin-top: 14px;">
+            <p>
               This world exists to honor resilience,
               patience, and quiet courage through
               storytelling, symbols, and play.
@@ -714,12 +823,12 @@
               Gentle Warrior.
             </p>
 
-            <p style="margin-top: 13px;">
+            <p>
               From his earliest days to his therapy
               sessions, every moment you see here is real.
             </p>
 
-            <p style="margin-top: 13px;">
+            <p>
               He is the inspiration, the heart, and the
               reason this project exists.
             </p>
@@ -730,305 +839,118 @@
 
       </article>
 
+
+      <!-- =========================
+           SECTION 02
+      ========================= -->
+
+      <article class="section-card">
+
+        <button
+          class="section-toggle"
+          type="button"
+          aria-expanded="false"
+          onclick="toggleSection(this)"
+        >
+
+          <div class="section-info">
+
+            <p class="section-number">
+              02
+            </p>
+
+            <h2 class="section-title">
+              Mission &amp; Vision
+            </h2>
+
+            <p class="section-hint">
+              What Gentle Warrior aims to do and become.
+            </p>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <div class="section-content">
+
+          <div class="divider"></div>
+
+
+          <div class="content-block">
+
+            <h3>
+              Mission
+            </h3>
+
+            <p>
+              To raise awareness for children with
+              cerebral palsy, share real stories of
+              resilience, and create meaningful
+              experiences that encourage understanding,
+              kindness, and support.
+            </p>
+
+            <p>
+              Gentle Warrior aims to turn awareness into
+              connection — helping families, caregivers,
+              and communities feel seen, understood,
+              and supported.
+            </p>
+
+          </div>
+
+
+          <div class="content-block">
+
+            <h3>
+              Vision
+            </h3>
+
+            <p>
+              A world where children with cerebral palsy
+              are seen beyond their limitations —
+              recognized for their strength,
+              individuality, potential, and humanity.
+            </p>
+
+            <p>
+              Gentle Warrior envisions a growing community
+              where awareness leads to empathy, empathy
+              leads to action, and every little win is
+              worth celebrating.
+            </p>
+
+          </div>
+
+
+          <div class="quote">
+
+            <strong>
+              Soft Heart. Strong Spirit.
+            </strong>
+
+            <br>
+
+            Every child deserves to be seen,
+            understood, and valued.
+
+          </div>
+
+        </div>
+
+      </article>
+
     </section>
 
+
     <!-- =========================
-     SECTION 02 — MISSION & VISION
-========================= -->
-
-<section class="foundation-section">
-
-  <button
-    class="section-toggle"
-    type="button"
-    onclick="toggleSection(this)"
-    aria-expanded="false"
-  >
-
-    <div class="section-number">
-      02
-    </div>
-
-    <div class="section-title">
-      <h2>Mission &amp; Vision</h2>
-      <p>What Gentle Warrior aims to do and become.</p>
-    </div>
-
-    <span class="section-arrow">
-      →
-    </span>
-
-  </button>
-
-
-  <div class="section-content">
-
-    <div class="content-block">
-
-      <h3>Mission</h3>
-
-      <p>
-        To raise awareness for children with cerebral palsy,
-        share real stories of resilience, and create meaningful
-        experiences that encourage understanding, kindness,
-        and support.
-      </p>
-
-      <p>
-        Gentle Warrior aims to turn awareness into connection —
-        helping families, caregivers, and communities feel seen,
-        understood, and supported.
-      </p>
-
-    </div>
-
-
-    <div class="content-block">
-
-      <h3>Vision</h3>
-
-      <p>
-        A world where children with cerebral palsy are seen
-        beyond their limitations — recognized for their strength,
-        individuality, potential, and humanity.
-      </p>
-
-      <p>
-        Gentle Warrior envisions a growing community where
-        awareness leads to empathy, empathy leads to action,
-        and every little win is worth celebrating.
-      </p>
-
-    </div>
-
-
-    <div class="content-quote">
-
-      <p>
-        Soft Heart. Strong Spirit.
-      </p>
-
-      <span>
-        Every child deserves to be seen, understood, and valued.
-      </span>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<style>
-
-  /* =========================
-     FOUNDATION SECTION
-  ========================= */
-
-  .foundation-section {
-    margin-top: 16px;
-
-    border: 1px solid rgba(168, 239, 112, 0.16);
-    border-radius: 22px;
-
-    background: rgba(3, 48, 34, 0.88);
-
-    overflow: hidden;
-  }
-
-
-  /* =========================
-     CLICKABLE HEADER
-  ========================= */
-
-  .section-toggle {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-
-    gap: 16px;
-
-    padding: 22px;
-
-    border: 0;
-
-    background: transparent;
-
-    color: inherit;
-
-    text-align: left;
-
-    cursor: pointer;
-  }
-
-  .section-toggle:active {
-    background: rgba(168, 239, 112, 0.04);
-  }
-
-
-  .section-number {
-    flex: 0 0 auto;
-
-    color: var(--gold);
-
-    font-size: 12px;
-    font-weight: 900;
-
-    letter-spacing: 0.12em;
-  }
-
-
-  .section-title {
-    flex: 1;
-  }
-
-  .section-title h2 {
-    margin: 0;
-
-    color: var(--text);
-
-    font-size: 22px;
-    line-height: 1.2;
-  }
-
-  .section-title p {
-    margin: 5px 0 0;
-
-    color: var(--muted);
-
-    font-size: 13px;
-
-    line-height: 1.5;
-  }
-
-
-  /* =========================
-     ARROW
-  ========================= */
-
-  .section-arrow {
-    flex: 0 0 auto;
-
-    color: var(--lime);
-
-    font-size: 22px;
-    font-weight: 800;
-
-    transition:
-      transform 0.25s ease;
-  }
-
-
-  .section-toggle[aria-expanded="true"] .section-arrow {
-    transform: rotate(90deg);
-  }
-
-
-  /* =========================
-     HIDDEN CONTENT
-  ========================= */
-
-  .section-content {
-    display: none;
-
-    padding: 0 22px 24px;
-
-    border-top: 1px solid
-      rgba(168, 239, 112, 0.10);
-  }
-
-
-  .section-content.open {
-    display: block;
-  }
-
-
-  /* =========================
-     CONTENT
-  ========================= */
-
-  .content-block {
-    padding-top: 22px;
-  }
-
-  .content-block h3 {
-    margin: 0 0 9px;
-
-    color: var(--lime);
-
-    font-size: 16px;
-  }
-
-  .content-block p {
-    margin: 0 0 14px;
-
-    color: #c3d0c7;
-
-    font-size: 14px;
-
-    line-height: 1.75;
-  }
-
-
-  /* =========================
-     QUOTE
-  ========================= */
-
-  .content-quote {
-    margin-top: 22px;
-
-    padding: 18px;
-
-    border-left: 3px solid var(--lime);
-
-    border-radius: 0 12px 12px 0;
-
-    background: rgba(1, 36, 25, 0.72);
-  }
-
-  .content-quote p {
-    margin: 0 0 6px;
-
-    color: var(--lime);
-
-    font-weight: 800;
-  }
-
-  .content-quote span {
-    color: #aebdb3;
-
-    font-size: 13px;
-
-    line-height: 1.6;
-  }
-
-</style>
-
-
-<script>
-
-  function toggleSection(button) {
-
-    const content =
-      button.parentElement.querySelector(".section-content");
-
-    const isOpen =
-      content.classList.contains("open");
-
-    content.classList.toggle("open");
-
-    button.setAttribute(
-      "aria-expanded",
-      String(!isOpen)
-    );
-
-  }
-
-</script>
-
-
-    <!-- FOOTER -->
+         FOOTER
+    ========================= -->
 
     <footer>
 
@@ -1045,6 +967,10 @@
   </main>
 
 
+  <!-- =========================
+       SECTION TOGGLE
+  ========================= -->
+
   <script>
 
     function toggleSection(button) {
@@ -1057,7 +983,7 @@
 
       button.setAttribute(
         "aria-expanded",
-        isOpen
+        String(isOpen)
       );
 
     }
