@@ -117,30 +117,44 @@
         rgba(168, 239, 112, 0.07);
     }
 
+
+    /* =========================
+       GENTLE WARRIOR AVATAR
+    ========================= */
+
     .hero-icon {
       position: relative;
       z-index: 1;
 
       flex: 0 0 auto;
 
-      width: 72px;
-      height: 72px;
+      width: 82px;
+      height: 82px;
 
-      display: grid;
-      place-items: center;
+      padding: 4px;
 
       border-radius: 50%;
 
       background: var(--lime);
 
-      color: #18371e;
-
-      font-size: 34px;
-
       box-shadow:
         0 0 0 8px rgba(168, 239, 112, 0.06),
-        0 0 28px rgba(168, 239, 112, 0.22);
+        0 0 30px rgba(168, 239, 112, 0.25);
+
+      overflow: hidden;
     }
+
+    .hero-icon img {
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+    }
+
 
     .eyebrow {
       position: relative;
@@ -258,6 +272,11 @@
 
       box-shadow:
         0 12px 30px rgba(0, 0, 0, 0.18);
+
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
     }
 
     .phase.active {
@@ -270,6 +289,13 @@
           #06462f,
           #043324
         );
+    }
+
+    .phase.active:hover {
+      transform: translateY(-3px);
+
+      border-color:
+        rgba(168, 239, 112, 0.75);
     }
 
     .phase-top {
@@ -397,14 +423,12 @@
       .hero {
         padding: 22px;
 
-        align-items: flex-start;
+        align-items: center;
       }
 
       .hero-icon {
-        width: 58px;
-        height: 58px;
-
-        font-size: 27px;
+        width: 64px;
+        height: 64px;
       }
 
       .roadmap {
@@ -427,7 +451,12 @@
     <header class="hero">
 
       <div class="hero-icon">
-        ♥
+
+        <img
+          src="https://raw.githubusercontent.com/OfficialGentleWarrior/gentlewarrior-universe/main/avatar.png"
+          alt="Gentle Warrior"
+        >
+
       </div>
 
       <div>
