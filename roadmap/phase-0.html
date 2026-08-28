@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="Gentle Warrior PH 0 — Foundation."
+    content="Gentle Warrior Phase 0 — Foundation."
   >
 
   <style>
@@ -65,11 +65,10 @@
     }
 
     .page {
-      width: min(900px, calc(100% - 20px));
+      width: min(1080px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 10px 0 40px;
+      padding: 22px 0 42px;
     }
-
 
     /* =========================
        HEADER
@@ -83,10 +82,10 @@
       align-items: center;
       gap: 18px;
 
-      padding: 22px;
+      padding: 24px;
 
       border: 1px solid var(--border);
-      border-radius: 28px;
+      border-radius: 30px;
 
       background:
         linear-gradient(
@@ -107,8 +106,8 @@
       width: 280px;
       height: 280px;
 
-      right: -100px;
-      top: -150px;
+      right: -110px;
+      top: -140px;
 
       border-radius: 50%;
 
@@ -122,8 +121,8 @@
 
       flex: 0 0 auto;
 
-      width: 70px;
-      height: 70px;
+      width: 68px;
+      height: 68px;
 
       padding: 4px;
 
@@ -153,11 +152,11 @@
       position: relative;
       z-index: 1;
 
-      margin: 0 0 6px;
+      margin: 0 0 5px;
 
       color: var(--lime);
 
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
 
       letter-spacing: 0.15em;
@@ -169,7 +168,8 @@
 
       margin: 0;
 
-      font-size: clamp(30px, 7vw, 48px);
+      font-size:
+        clamp(30px, 7vw, 52px);
 
       line-height: 1;
 
@@ -184,9 +184,8 @@
 
       color: var(--muted);
 
-      font-size: 16px;
+      font-size: 15px;
     }
-
 
     /* =========================
        BACK
@@ -195,72 +194,19 @@
     .back {
       display: inline-block;
 
-      margin: 18px 4px 0;
+      margin: 15px 4px 18px;
 
       color: var(--lime);
 
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
     }
 
-
     /* =========================
-       PHASE TITLE
+       PHASE INTRO
     ========================= */
 
-    .phase-header {
-      margin-top: 18px;
-
-      padding: 26px;
-
-      border: 1px solid
-        rgba(168, 239, 112, 0.42);
-
-      border-radius: 25px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #06462f,
-          #043324
-        );
-    }
-
-    .phase-label {
-      margin: 0 0 7px;
-
-      color: var(--gold);
-
-      font-size: 13px;
-      font-weight: 900;
-
-      letter-spacing: 0.14em;
-    }
-
-    .phase-header h2 {
-      margin: 0;
-
-      font-size: clamp(30px, 7vw, 44px);
-
-      letter-spacing: -0.03em;
-    }
-
-    .phase-header p {
-      margin: 10px 0 0;
-
-      color: #c0d0c5;
-
-      line-height: 1.65;
-    }
-
-
-    /* =========================
-       SECTION 01
-    ========================= */
-
-    .section {
-      margin-top: 18px;
-
+    .phase-intro {
       padding: 25px;
 
       border: 1px solid var(--border);
@@ -270,115 +216,245 @@
         rgba(3, 49, 35, 0.86);
     }
 
-    .section-number {
+    .section-label {
       margin: 0 0 7px;
 
       color: var(--gold);
 
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
 
       letter-spacing: 0.14em;
     }
 
-    .section h3 {
-      margin: 0 0 20px;
+    .phase-intro h2 {
+      margin: 0 0 9px;
 
-      font-size: clamp(25px, 6vw, 34px);
+      font-size:
+        clamp(27px, 6vw, 38px);
 
-      letter-spacing: -0.025em;
+      letter-spacing: -0.03em;
     }
 
+    .phase-intro p {
+      margin: 0;
+
+      color: #c8d6cc;
+
+      line-height: 1.7;
+
+      font-size: 14px;
+    }
 
     /* =========================
-       ORIGIN CONTENT
+       SECTION CARD
     ========================= */
 
-    .content-block {
-      margin-top: 22px;
+    .sections {
+      margin-top: 18px;
     }
 
-    .content-block:first-of-type {
-      margin-top: 0;
+    .section-card {
+      overflow: hidden;
+
+      border: 1px solid
+        rgba(168, 239, 112, 0.18);
+
+      border-radius: 23px;
+
+      background:
+        rgba(3, 48, 34, 0.90);
+
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.18);
     }
 
-    .content-block h4 {
-      margin: 0 0 8px;
+    .section-toggle {
+      width: 100%;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding: 24px;
+
+      border: 0;
+
+      background: transparent;
+
+      color: var(--text);
+
+      text-align: left;
+
+      font: inherit;
+
+      cursor: pointer;
+    }
+
+    .section-toggle:hover {
+      background:
+        rgba(168, 239, 112, 0.04);
+    }
+
+    .section-number {
+      margin: 0 0 6px;
+
+      color: var(--gold);
+
+      font-size: 11px;
+      font-weight: 900;
+
+      letter-spacing: 0.14em;
+    }
+
+    .section-title {
+      margin: 0;
+
+      font-size: 23px;
+      line-height: 1.15;
+    }
+
+    .section-hint {
+      margin: 8px 0 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    .arrow {
+      flex: 0 0 auto;
+
+      width: 38px;
+      height: 38px;
+
+      display: grid;
+      place-items: center;
+
+      border: 1px solid
+        rgba(168, 239, 112, 0.20);
+
+      border-radius: 50%;
 
       color: var(--lime);
 
-      font-size: 18px;
+      font-size: 20px;
+
+      transition:
+        transform 0.25s ease,
+        background 0.25s ease;
+    }
+
+    .section-card.open .arrow {
+      transform: rotate(90deg);
+
+      background:
+        rgba(168, 239, 112, 0.08);
+    }
+
+    /* =========================
+       SECTION CONTENT
+    ========================= */
+
+    .section-content {
+      display: none;
+
+      padding: 0 24px 27px;
+    }
+
+    .section-card.open .section-content {
+      display: block;
+    }
+
+    .divider {
+      height: 1px;
+
+      margin-bottom: 24px;
+
+      background:
+        rgba(168, 239, 112, 0.13);
+    }
+
+    .content-block {
+      margin-bottom: 25px;
+    }
+
+    .content-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .content-block h3 {
+      margin: 0 0 7px;
+
+      color: var(--lime);
+
+      font-size: 14px;
     }
 
     .content-block p {
       margin: 0;
 
-      color: #d1ddd4;
+      color: #c3d1c7;
+
+      font-size: 13px;
 
       line-height: 1.75;
     }
 
     .quote {
-      margin-top: 20px;
+      margin-top: 15px;
 
-      padding: 17px 18px;
+      padding: 17px;
 
-      border-left: 4px solid var(--lime);
+      border-left: 3px solid var(--lime);
 
-      border-radius: 0 14px 14px 0;
-
-      background:
-        rgba(0, 27, 18, 0.65);
-
-      color: #e5eee7;
-
-      line-height: 1.7;
-    }
-
-
-    /* =========================
-       CHARACTER
-    ========================= */
-
-    .character-card {
-      margin-top: 22px;
-
-      padding: 20px;
-
-      border: 1px solid
-        rgba(168, 239, 112, 0.18);
-
-      border-radius: 20px;
+      border-radius: 0 12px 12px 0;
 
       background:
-        rgba(2, 41, 29, 0.85);
-    }
+        rgba(0, 27, 19, 0.55);
 
-    .character-title {
-      margin: 0 0 10px;
+      color: #dce8df;
 
-      color: var(--gold);
-
-      font-size: 12px;
-      font-weight: 900;
-
-      letter-spacing: 0.13em;
-    }
-
-    .character-card h4 {
-      margin: 0 0 9px;
-
-      font-size: 22px;
-    }
-
-    .character-card p {
-      margin: 0;
-
-      color: #c6d4ca;
+      font-size: 13px;
 
       line-height: 1.75;
     }
 
+    .character {
+      margin-top: 5px;
+
+      padding: 18px;
+
+      border: 1px solid
+        rgba(168, 239, 112, 0.16);
+
+      border-radius: 17px;
+
+      background:
+        rgba(2, 38, 27, 0.72);
+    }
+
+    .character-label {
+      margin: 0 0 5px;
+
+      color: var(--gold);
+
+      font-size: 9px;
+      font-weight: 900;
+
+      letter-spacing: 0.14em;
+    }
+
+    .character h3 {
+      margin: 0 0 9px;
+
+      color: var(--text);
+
+      font-size: 19px;
+    }
 
     /* =========================
        FOOTER
@@ -393,28 +469,27 @@
 
       flex-wrap: wrap;
 
-      padding: 25px 4px 0;
+      padding: 24px 4px 0;
 
       color: #71877a;
 
-      font-size: 12px;
+      font-size: 11px;
     }
-
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
 
       .page {
-        width: min(100% - 14px, 900px);
+        width: min(100% - 20px, 1080px);
+
+        padding-top: 10px;
       }
 
       .hero {
-        padding: 18px;
-
-        gap: 14px;
+        padding: 20px;
       }
 
       .hero-icon {
@@ -422,31 +497,23 @@
         height: 58px;
       }
 
-      .eyebrow {
-        font-size: 9px;
-      }
-
-      .tagline {
-        font-size: 14px;
-      }
-
-      .phase-header,
-      .section {
+      .section-toggle {
         padding: 21px;
+      }
+
+      .section-content {
+        padding:
+          0 21px 24px;
       }
     }
   </style>
 </head>
 
-
 <body>
 
   <main class="page">
 
-
-    <!-- =========================
-         HEADER
-    ========================= -->
+    <!-- HEADER -->
 
     <header class="hero">
 
@@ -478,9 +545,7 @@
     </header>
 
 
-    <!-- =========================
-         BACK
-    ========================= -->
+    <!-- BACK -->
 
     <a
       href="index.html"
@@ -490,13 +555,11 @@
     </a>
 
 
-    <!-- =========================
-         PHASE INTRO
-    ========================= -->
+    <!-- PHASE INTRO -->
 
-    <section class="phase-header">
+    <section class="phase-intro">
 
-      <p class="phase-label">
+      <p class="section-label">
         PHASE 0
       </p>
 
@@ -513,138 +576,164 @@
     </section>
 
 
-    <!-- =========================
-         01 — ORIGIN
-    ========================= -->
+    <!-- SECTIONS -->
 
-    <section class="section">
-
-      <p class="section-number">
-        01
-      </p>
-
-      <h3>
-        Gentle Warrior Origin
-      </h3>
+    <section class="sections">
 
 
-      <!-- WHAT IS GENTLE WARRIOR -->
+      <!-- SECTION 01 -->
 
-      <div class="content-block">
+      <article class="section-card">
 
-        <h4>
-          What is Gentle Warrior?
-        </h4>
+        <button
+          class="section-toggle"
+          type="button"
+          aria-expanded="false"
+          onclick="toggleSection(this)"
+        >
 
-        <p>
-          Gentle Warrior is a world created to raise awareness
-          for children with cerebral palsy.
-        </p>
+          <div>
 
-        <p style="margin-top: 12px;">
-          <strong>Soft Heart. Strong Spirit.</strong>
-        </p>
+            <p class="section-number">
+              01
+            </p>
 
-        <div class="quote">
-          Gentle Warrior represents children with cerebral palsy
-          — gentle in body, strong in spirit, and surrounded by care.
+            <h2 class="section-title">
+              Gentle Warrior Origin
+            </h2>
+
+            <p class="section-hint">
+              Tap to explore →
+            </p>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <div class="section-content">
+
+          <div class="divider"></div>
+
+
+          <div class="content-block">
+
+            <h3>
+              What is Gentle Warrior?
+            </h3>
+
+            <p>
+              Gentle Warrior is a world created to
+              raise awareness for children with
+              cerebral palsy.
+            </p>
+
+            <div class="quote">
+              Soft Heart. Strong Spirit.
+            </div>
+
+            <div class="quote">
+              Gentle Warrior represents children with
+              cerebral palsy — gentle in body, strong in
+              spirit, and surrounded by care.
+            </div>
+
+          </div>
+
+
+          <div class="content-block">
+
+            <h3>
+              Why was it created?
+            </h3>
+
+            <p>
+              Gentle Warrior was created to give children
+              with cerebral palsy a hero who looks like
+              effort — not perfection.
+            </p>
+
+            <p style="margin-top: 14px;">
+              Cerebral palsy affects movement,
+              coordination, and muscle control. For many
+              children, everyday actions take energy and
+              focus that others never see.
+            </p>
+
+            <div class="quote">
+              You are not broken.<br>
+              You are not behind.<br>
+              You are not invisible.
+            </div>
+
+            <p style="margin-top: 14px;">
+              You are moving through your own path —
+              and that path matters.
+            </p>
+
+          </div>
+
+
+          <div class="content-block">
+
+            <h3>
+              The story behind the project
+            </h3>
+
+            <p>
+              Gentle Warrior was born from a real family's
+              journey through cerebral palsy, therapy,
+              patience, resilience, and hope.
+            </p>
+
+            <p style="margin-top: 14px;">
+              This world exists to honor resilience,
+              patience, and quiet courage through
+              storytelling, symbols, and play.
+            </p>
+
+          </div>
+
+
+          <div class="character">
+
+            <p class="character-label">
+              GENTLE WARRIOR CHARACTER
+            </p>
+
+            <h3>
+              The Heart of This World
+            </h3>
+
+            <p>
+              Baby Leam — our very own
+              Gentle Warrior.
+            </p>
+
+            <p style="margin-top: 13px;">
+              From his earliest days to his therapy
+              sessions, every moment you see here is real.
+            </p>
+
+            <p style="margin-top: 13px;">
+              He is the inspiration, the heart, and the
+              reason this project exists.
+            </p>
+
+          </div>
+
         </div>
 
-      </div>
-
-
-      <!-- WHY CREATED -->
-
-      <div class="content-block">
-
-        <h4>
-          Why was it created?
-        </h4>
-
-        <p>
-          Gentle Warrior was created to give children with
-          cerebral palsy a hero who looks like effort —
-          not perfection.
-        </p>
-
-        <p style="margin-top: 12px;">
-          Cerebral palsy affects movement, coordination,
-          and muscle control. For many children, everyday
-          actions take energy and focus that others never see.
-        </p>
-
-        <div class="quote">
-          You are not broken.<br>
-          You are not behind.<br>
-          You are not invisible.
-        </div>
-
-        <p style="margin-top: 16px;">
-          You are moving through your own path —
-          and that path matters.
-        </p>
-
-      </div>
-
-
-      <!-- STORY -->
-
-      <div class="content-block">
-
-        <h4>
-          The story behind the project
-        </h4>
-
-        <p>
-          Gentle Warrior was born from a real family's journey
-          through cerebral palsy, therapy, patience, resilience,
-          and hope.
-        </p>
-
-        <p style="margin-top: 12px;">
-          This world exists to honor resilience, patience,
-          and quiet courage through storytelling, symbols,
-          and play.
-        </p>
-
-      </div>
-
-
-      <!-- CHARACTER -->
-
-      <div class="character-card">
-
-        <p class="character-title">
-          GENTLE WARRIOR CHARACTER
-        </p>
-
-        <h4>
-          The Heart of This World
-        </h4>
-
-        <p>
-          Baby Leam —
-          our very own Gentle Warrior.
-        </p>
-
-        <p style="margin-top: 12px;">
-          From his earliest days to his therapy sessions,
-          every moment you see here is real.
-        </p>
-
-        <p style="margin-top: 12px;">
-          He is the inspiration, the heart,
-          and the reason this project exists.
-        </p>
-
-      </div>
+      </article>
 
     </section>
 
 
-    <!-- =========================
-         FOOTER
-    ========================= -->
+    <!-- FOOTER -->
 
     <footer>
 
@@ -659,6 +748,26 @@
     </footer>
 
   </main>
+
+
+  <script>
+
+    function toggleSection(button) {
+
+      const card =
+        button.closest(".section-card");
+
+      const isOpen =
+        card.classList.toggle("open");
+
+      button.setAttribute(
+        "aria-expanded",
+        isOpen
+      );
+
+    }
+
+  </script>
 
 </body>
 </html>
