@@ -1824,16 +1824,19 @@
     ];
 
 
+    /*
+     * OFFICIAL $GWAR MINT
+     */
+
     const GWAR_MINT =
       "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
 
 
     /*
-     * IMPORTANT:
+     * $GWAR uses Token-2022.
      *
-     * $GWAR uses the Token-2022 program.
-     *
-     * This is NOT the legacy SPL Token Program.
+     * We query the Token-2022 program directly
+     * using getProgramAccounts.
      */
 
     const TOKEN_2022_PROGRAM =
@@ -2155,7 +2158,7 @@
     /* =========================================
        GET $GWAR BALANCE
        
-       TOKEN-2022
+       DIRECT TOKEN-2022 QUERY
     ========================================= */
 
     async function getGwarBalance(
@@ -2163,8 +2166,13 @@
     ) {
 
       /*
-       * Query Token-2022 accounts owned
-       * by this wallet.
+       * Token account layout:
+       *
+       * 0  - 31   = mint
+       * 32 - 63   = owner
+       * 64 - 71   = amount
+       *
+       * We query the Token-2022 program directly.
        */
 
       const result =
@@ -2172,26 +2180,82 @@
 
           () =>
             solanaRpc(
-              "getTokenAccountsByOwner",
+              "getProgramAccounts",
               [
 
-                address,
+                TOKEN_2022_PROGRAM,
 
                 {
-                  programId:
-                    TOKEN_2022_PROGRAM
-                },
 
-                {
                   encoding:
-                    "jsonParsed",
+                    "base64",
 
                   commitment:
-                    "confirmed"
+                    "confirmed",
+
+                  filters: [
+
+                    /*
+                     * Filter #1
+                     *
+                     * Token account must belong
+                     * to the official GWAR mint.
+                     */
+
+                    {
+                      memcmp: {
+
+                        offset: 0,
+
+                        bytes:
+                          GWAR_MINT
+
+                      }
+
+                    },
+
+
+                    /*
+                     * Filter #2
+                     *
+                     * Token account owner must
+                     * equal the wallet address.
+                     */
+
+                    {
+                      memcmp: {
+
+                        offset: 32,
+
+                        bytes:
+                          address
+
+                      }
+
+                    }
+
+                  ],
+
+                  /*
+                   * We only need the 8-byte
+                   * token amount.
+                   *
+                   * No need to download
+                   * the complete account data.
+                   */
+
+                  dataSlice: {
+
+                    offset: 64,
+
+                    length: 8
+
+                  }
 
                 }
 
               ]
+
             ),
 
           2
@@ -2200,126 +2264,128 @@
 
 
       if (
-        !result ||
-        !Array.isArray(
-          result.value
-        )
+        !Array.isArray(result)
       ) {
 
         throw new Error(
-          "Invalid Token-2022 response"
+          "Invalid Token-2022 account response"
         );
 
       }
 
 
       /*
-       * Use BigInt because token raw amounts
-       * can be larger than JavaScript's safe integer.
+       * Sum all matching GWAR token accounts.
        */
 
       let totalRaw =
         0n;
 
 
-      let decimals =
-        6;
-
-
-      let foundGwar =
-        false;
-
-
       for (
         const account
-        of result.value
+        of result
       ) {
 
-        try {
-
-          const info =
-            account
-              ?.account
-              ?.data
-              ?.parsed
-              ?.info;
+        const data =
+          account
+            ?.account
+            ?.data;
 
 
-          if (
-            !info
-          ) {
+        if (
+          !Array.isArray(data)
+        ) {
 
-            continue;
+          continue;
 
-          }
-
-
-          /*
-           * Only count the actual GWAR mint.
-           */
-
-          if (
-            info.mint !==
-            GWAR_MINT
-          ) {
-
-            continue;
-
-          }
+        }
 
 
-          const tokenAmount =
-            info.tokenAmount;
+        /*
+         * Expected format:
+         *
+         * [
+         *   "BASE64_DATA",
+         *   "base64"
+         * ]
+         */
+
+        const encoded =
+          data[0];
 
 
-          if (
-            !tokenAmount
-          ) {
+        if (
+          typeof encoded !==
+          "string"
+        ) {
 
-            continue;
+          continue;
 
-          }
+        }
 
 
-          totalRaw +=
+        /*
+         * Decode base64.
+         */
+
+        const binary =
+          atob(encoded);
+
+
+        /*
+         * Amount must be exactly
+         * 8 bytes.
+         */
+
+        if (
+          binary.length !== 8
+        ) {
+
+          continue;
+
+        }
+
+
+        /*
+         * SPL / Token-2022 token amounts
+         * are unsigned 64-bit little-endian.
+         */
+
+        let rawAmount =
+          0n;
+
+
+        for (
+          let i = 0;
+          i < 8;
+          i++
+        ) {
+
+          rawAmount |=
+
             BigInt(
-              String(
-                tokenAmount.amount
-              )
+              binary.charCodeAt(i)
+            )
+
+            <<
+
+            (
+              8n *
+              BigInt(i)
             );
-
-
-          decimals =
-            Number(
-              tokenAmount.decimals ??
-              6
-            );
-
-
-          foundGwar =
-            true;
 
         }
 
-        catch (error) {
 
-          console.warn(
-            "Skipping malformed Token-2022 account:",
-            error
-          );
-
-        }
+        totalRaw +=
+          rawAmount;
 
       }
 
 
       /*
-       * IMPORTANT:
-       *
-       * If no GWAR token account exists,
-       * that means the wallet has 0 GWAR.
-       *
-       * It is NOT an RPC failure.
+       * $GWAR has 6 decimals.
        */
 
       return {
@@ -2328,10 +2394,7 @@
           totalRaw,
 
         decimals:
-          decimals,
-
-        found:
-          foundGwar
+          6
 
       };
 
@@ -2372,12 +2435,6 @@
       rawAmount,
       decimals
     ) {
-
-      /*
-       * Convert BigInt raw amount into a
-       * display string without converting
-       * the full raw amount to Number.
-       */
 
       const raw =
         rawAmount.toString();
@@ -2421,6 +2478,10 @@
         );
 
 
+      /*
+       * Remove trailing zeros.
+       */
+
       fraction =
         fraction.replace(
           /0+$/,
@@ -2429,8 +2490,8 @@
 
 
       /*
-       * Display maximum of 2 decimal
-       * places after the token amount.
+       * Maximum 2 decimal places
+       * on the UI.
        */
 
       if (
@@ -2564,8 +2625,11 @@
 
 
         /*
-         * No GWAR token account means
-         * zero balance.
+         * No matching token account =
+         * 0 GWAR.
+         *
+         * This is a valid result,
+         * NOT an RPC error.
          */
 
         element.innerHTML =
@@ -2775,4 +2839,4 @@
   </script>
 
 </body>
-</html>
+            </html>
