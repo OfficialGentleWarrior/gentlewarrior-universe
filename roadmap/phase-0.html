@@ -1824,13 +1824,17 @@
     ];
 
 
+    /*
+     * OFFICIAL $GWAR TOKEN MINT
+     */
+
     const GWAR_MINT =
       "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
 
 
-    const SPL_TOKEN_PROGRAM =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-
+    /* =========================================
+       WALLET CONFIGURATION
+    ========================================= */
 
     const WALLETS = {
 
@@ -1915,11 +1919,14 @@
 
                   jsonrpc: "2.0",
 
-                  id: Date.now(),
+                  id:
+                    Date.now(),
 
-                  method: method,
+                  method:
+                    method,
 
-                  params: params
+                  params:
+                    params
 
                 }),
 
@@ -1936,7 +1943,8 @@
           if (!response.ok) {
 
             throw new Error(
-              "HTTP " + response.status
+              "HTTP " +
+              response.status
             );
 
           }
@@ -1951,6 +1959,23 @@
             throw new Error(
               data.error.message ||
               "RPC error"
+            );
+
+          }
+
+
+          /*
+           * Make sure we actually received
+           * a result before returning it.
+           */
+
+          if (
+            typeof data.result ===
+            "undefined"
+          ) {
+
+            throw new Error(
+              "Empty RPC response"
             );
 
           }
@@ -1977,7 +2002,9 @@
 
       throw (
         lastError ||
-        new Error("All RPC endpoints failed")
+        new Error(
+          "All RPC endpoints failed"
+        )
       );
 
     }
@@ -2010,7 +2037,8 @@
 
         catch (error) {
 
-          lastError = error;
+          lastError =
+            error;
 
 
           if (
@@ -2022,7 +2050,8 @@
               resolve =>
                 setTimeout(
                   resolve,
-                  delay * (i + 1)
+                  delay *
+                  (i + 1)
                 )
             );
 
@@ -2053,12 +2082,15 @@
               "getBalance",
               [
                 address,
+
                 {
                   commitment:
                     "confirmed"
                 }
+
               ]
             ),
+
           3
         );
 
@@ -2066,7 +2098,7 @@
       if (
         !result ||
         typeof result.value !==
-          "number"
+        "number"
       ) {
 
         throw new Error(
@@ -2087,10 +2119,15 @@
     /* =========================================
        GET $GWAR BALANCE
        
-       IMPORTANT:
-       We intentionally use programId
-       instead of mint filter here.
-       ========================================= */
+       FIX:
+       Query ONLY the official GWAR mint.
+
+       OLD:
+       getTokenAccountsByOwner + programId
+
+       NEW:
+       getTokenAccountsByOwner + mint
+    ========================================= */
 
     async function getGwarBalance(
       address
@@ -2106,8 +2143,8 @@
                 address,
 
                 {
-                  programId:
-                    SPL_TOKEN_PROGRAM
+                  mint:
+                    GWAR_MINT
                 },
 
                 {
@@ -2121,6 +2158,7 @@
 
               ]
             ),
+
           3
         );
 
@@ -2133,16 +2171,40 @@
       ) {
 
         throw new Error(
-          "Invalid token account response"
+          "Invalid $GWAR token account response"
         );
 
       }
 
 
-      let totalRaw = 0;
+      /*
+       * No GWAR token account means
+       * the wallet has 0 GWAR.
+       *
+       * This is NOT an error.
+       */
 
-      let decimals = 0;
+      if (
+        result.value.length === 0
+      ) {
 
+        return 0;
+
+      }
+
+
+      let totalRaw =
+        0n;
+
+      let decimals =
+        null;
+
+
+      /*
+       * There can theoretically be more
+       * than one token account for the
+       * same mint, so sum them all.
+       */
 
       for (
         const account
@@ -2153,20 +2215,13 @@
 
           const info =
             account
-              .account
-              .data
-              .parsed
-              .info;
+              ?.account
+              ?.data
+              ?.parsed
+              ?.info;
 
 
-          const mint =
-            info.mint;
-
-
-          if (
-            mint !==
-            GWAR_MINT
-          ) {
+          if (!info) {
 
             continue;
 
@@ -2178,19 +2233,35 @@
 
 
           if (
-            tokenAmount &&
-            tokenAmount.amount
+            !tokenAmount ||
+            typeof tokenAmount.amount !==
+            "string"
           ) {
 
-            totalRaw +=
-              Number(
-                tokenAmount.amount
-              );
+            continue;
+
+          }
+
+
+          /*
+           * Keep raw token amount as BigInt
+           * to avoid precision loss.
+           */
+
+          totalRaw +=
+            BigInt(
+              tokenAmount.amount
+            );
+
+
+          if (
+            decimals === null &&
+            typeof tokenAmount.decimals ===
+            "number"
+          ) {
 
             decimals =
-              Number(
-                tokenAmount.decimals
-              );
+              tokenAmount.decimals;
 
           }
 
@@ -2199,7 +2270,7 @@
         catch (error) {
 
           console.warn(
-            "Skipping malformed token account",
+            "Skipping malformed $GWAR account:",
             error
           );
 
@@ -2208,13 +2279,45 @@
       }
 
 
-      return (
-        totalRaw /
-        Math.pow(
-          10,
-          decimals
-        )
-      );
+      /*
+       * If no usable token account was found,
+       * treat it as zero.
+       */
+
+      if (
+        decimals === null
+      ) {
+
+        return 0;
+
+      }
+
+
+      /*
+       * Convert raw amount to display amount.
+       */
+
+      const divisor =
+        10 ** decimals;
+
+
+      const balance =
+        Number(totalRaw) /
+        divisor;
+
+
+      if (
+        !Number.isFinite(balance)
+      ) {
+
+        throw new Error(
+          "Invalid calculated $GWAR balance"
+        );
+
+      }
+
+
+      return balance;
 
     }
 
@@ -2231,11 +2334,13 @@
       return new Intl.NumberFormat(
         "en-US",
         {
+
           maximumFractionDigits:
             maximumFractionDigits,
 
           minimumFractionDigits:
             0
+
         }
       ).format(number);
 
@@ -2244,7 +2349,7 @@
 
     /* =========================================
        UPDATE SOL ONLY
-       ========================================= */
+    ========================================= */
 
     async function updateSol(
       wallet
@@ -2298,7 +2403,7 @@
 
     /* =========================================
        UPDATE $GWAR ONLY
-       ========================================= */
+    ========================================= */
 
     async function updateGwar(
       wallet
@@ -2352,7 +2457,7 @@
 
     /* =========================================
        UPDATE ONE WALLET
-       ========================================= */
+    ========================================= */
 
     async function updateWallet(
       wallet
@@ -2374,19 +2479,22 @@
 
 
       /*
-       * IMPORTANT:
-       * Run SOL and GWAR separately.
+       * Run SOL and GWAR independently.
        *
-       * If one fails, the other
-       * can still display correctly.
+       * If one fails, the other still
+       * displays its balance.
        */
 
       const solPromise =
-        updateSol(wallet);
+        updateSol(
+          wallet
+        );
 
 
       const gwarPromise =
-        updateGwar(wallet);
+        updateGwar(
+          wallet
+        );
 
 
       const [
@@ -2403,9 +2511,14 @@
         new Date().toLocaleTimeString(
           [],
           {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
+            hour:
+              "2-digit",
+
+            minute:
+              "2-digit",
+
+            second:
+              "2-digit"
           }
         );
 
@@ -2420,7 +2533,8 @@
         );
 
         statusElement.textContent =
-          "Updated " + time;
+          "Updated " +
+          time;
 
       }
 
@@ -2468,7 +2582,7 @@
 
     /* =========================================
        UPDATE ALL WALLETS
-       ========================================= */
+    ========================================= */
 
     async function updateAllWallets() {
 
@@ -2489,7 +2603,7 @@
 
     /* =========================================
        INITIAL LOAD
-       ========================================= */
+    ========================================= */
 
     document.addEventListener(
       "DOMContentLoaded",
@@ -2504,7 +2618,7 @@
     /* =========================================
        AUTO REFRESH
        EVERY 30 SECONDS
-       ========================================= */
+    ========================================= */
 
     setInterval(
       updateAllWallets,
@@ -2514,4 +2628,4 @@
   </script>
 
 </body>
-</html>
+  </html>
