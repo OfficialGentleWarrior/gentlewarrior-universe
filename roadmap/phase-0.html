@@ -20,6 +20,7 @@
       --text: #f2f6ed;
       --muted: #a9b9ae;
       --border: rgba(168, 239, 112, 0.22);
+      --danger: #ff8f8f;
     }
 
     * {
@@ -632,6 +633,234 @@
     }
 
     /* =========================
+       TRANSPARENCY
+    ========================= */
+
+    .contract-box {
+      padding: 17px;
+
+      border:
+        1px solid
+        rgba(168, 239, 112, 0.16);
+
+      border-radius: 17px;
+
+      background:
+        rgba(2, 38, 27, 0.72);
+    }
+
+    .contract-label {
+      margin: 0 0 8px;
+
+      color: var(--gold);
+
+      font-size: 10px;
+      font-weight: 900;
+
+      letter-spacing: 0.13em;
+    }
+
+    .contract-address {
+      display: block;
+
+      overflow-wrap: anywhere;
+
+      color: var(--lime);
+
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+
+      font-size: 12px;
+
+      line-height: 1.6;
+    }
+
+    .wallet-list {
+      display: grid;
+
+      gap: 18px;
+
+      margin-top: 18px;
+    }
+
+    .wallet-card {
+      padding: 18px;
+
+      border:
+        1px solid
+        rgba(168, 239, 112, 0.16);
+
+      border-radius: 18px;
+
+      background:
+        rgba(2, 38, 27, 0.72);
+    }
+
+    .wallet-header {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 12px;
+    }
+
+    .wallet-name {
+      margin: 0;
+
+      color: var(--text);
+
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .live-badge {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      padding: 5px 9px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(168, 239, 112, 0.08);
+
+      color: var(--lime);
+
+      font-size: 9px;
+      font-weight: 900;
+
+      letter-spacing: 0.08em;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+
+      border-radius: 50%;
+
+      background: var(--lime);
+
+      box-shadow:
+        0 0 8px rgba(168, 239, 112, 0.7);
+    }
+
+    .wallet-address {
+      display: block;
+
+      overflow-wrap: anywhere;
+
+      margin-bottom: 16px;
+
+      color: var(--muted);
+
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+
+      font-size: 11px;
+
+      line-height: 1.6;
+    }
+
+    .balance-grid {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 10px;
+    }
+
+    .balance-box {
+      padding: 14px;
+
+      border:
+        1px solid
+        rgba(168, 239, 112, 0.12);
+
+      border-radius: 14px;
+
+      background:
+        rgba(0, 27, 19, 0.48);
+    }
+
+    .balance-label {
+      margin: 0 0 7px;
+
+      color: var(--muted);
+
+      font-size: 10px;
+      font-weight: 800;
+
+      letter-spacing: 0.08em;
+
+      text-transform: uppercase;
+    }
+
+    .balance-value {
+      margin: 0;
+
+      color: var(--text);
+
+      font-size: 17px;
+      font-weight: 900;
+
+      overflow-wrap: anywhere;
+    }
+
+    .balance-unit {
+      color: var(--lime);
+
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .wallet-status {
+      margin: 12px 0 0;
+
+      color: #7f9789;
+
+      font-size: 10px;
+    }
+
+    .wallet-status.error {
+      color: var(--danger);
+    }
+
+    .refresh-info {
+      margin-top: 18px;
+
+      padding: 13px 15px;
+
+      border-left: 3px solid var(--gold);
+
+      border-radius: 0 12px 12px 0;
+
+      background:
+        rgba(0, 27, 19, 0.55);
+
+      color: #aebeb4;
+
+      font-size: 11px;
+
+      line-height: 1.7;
+    }
+
+    /* =========================
        FOOTER
     ========================= */
 
@@ -701,6 +930,14 @@
       .social-button {
         margin-top: 1px;
       }
+
+      .balance-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wallet-header {
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -710,7 +947,10 @@
 
   <main class="page">
 
-    <!-- HEADER -->
+
+    <!-- =========================
+         HEADER
+    ========================= -->
 
     <header class="hero">
 
@@ -742,7 +982,9 @@
     </header>
 
 
-    <!-- BACK -->
+    <!-- =========================
+         BACK
+    ========================= -->
 
     <a
       href="index.html"
@@ -752,7 +994,9 @@
     </a>
 
 
-    <!-- PHASE INTRO -->
+    <!-- =========================
+         PHASE INTRO
+    ========================= -->
 
     <section class="phase-intro">
 
@@ -773,7 +1017,9 @@
     </section>
 
 
-    <!-- FOUNDATION SECTIONS -->
+    <!-- =========================
+         FOUNDATION SECTIONS
+    ========================= -->
 
     <section
       class="sections"
@@ -1165,10 +1411,6 @@
               <div class="social-info">
 
                 <p class="social-name">
-                  X
-                </p>
-
-                <p class="social-description">
                   @GentleWarrior02
                 </p>
 
@@ -1270,11 +1512,266 @@
 
           <div class="social-note">
 
-            Official links are provided here as part of
-            the Gentle Warrior Foundation.
-            Community and follower counts are not
-            displayed for now and may be introduced
-            automatically in a future update.
+            These are the official Gentle Warrior
+            community channels.
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================
+           SECTION 04
+           TRANSPARENCY
+      ========================= -->
+
+      <article class="section-card">
+
+        <button
+          class="section-toggle"
+          type="button"
+          aria-expanded="false"
+          onclick="toggleSection(this)"
+        >
+
+          <div class="section-info">
+
+            <p class="section-number">
+              04
+            </p>
+
+            <h2 class="section-title">
+              Transparency
+            </h2>
+
+            <p class="section-hint">
+              Contract &amp; live wallet balances →
+            </p>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <div class="section-content">
+
+          <div class="divider"></div>
+
+
+          <!-- CONTRACT -->
+
+          <div class="content-block">
+
+            <h3>
+              $GWAR Contract
+            </h3>
+
+            <div class="contract-box">
+
+              <p class="contract-label">
+                SOLANA TOKEN MINT
+              </p>
+
+              <a
+                class="contract-address"
+                href="https://solscan.io/token/Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump
+              </a>
+
+            </div>
+
+          </div>
+
+
+          <!-- WALLETS -->
+
+          <div class="content-block">
+
+            <h3>
+              Official Wallets
+            </h3>
+
+
+            <div class="wallet-list">
+
+
+              <!-- DEV WALLET -->
+
+              <div class="wallet-card">
+
+                <div class="wallet-header">
+
+                  <h4 class="wallet-name">
+                    Dev Wallet
+                  </h4>
+
+                  <span class="live-badge">
+
+                    <span class="live-dot"></span>
+
+                    LIVE
+
+                  </span>
+
+                </div>
+
+
+                <a
+                  class="wallet-address"
+                  href="https://solscan.io/account/7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL
+                </a>
+
+
+                <div class="balance-grid">
+
+
+                  <div class="balance-box">
+
+                    <p class="balance-label">
+                      SOL Balance
+                    </p>
+
+                    <p
+                      class="balance-value"
+                      id="dev-sol"
+                    >
+                      Loading...
+                    </p>
+
+                  </div>
+
+
+                  <div class="balance-box">
+
+                    <p class="balance-label">
+                      $GWAR Balance
+                    </p>
+
+                    <p
+                      class="balance-value"
+                      id="dev-gwar"
+                    >
+                      Loading...
+                    </p>
+
+                  </div>
+
+
+                </div>
+
+
+                <p
+                  class="wallet-status"
+                  id="dev-status"
+                >
+                  Connecting to Solana...
+                </p>
+
+              </div>
+
+
+              <!-- REWARD WALLET -->
+
+              <div class="wallet-card">
+
+                <div class="wallet-header">
+
+                  <h4 class="wallet-name">
+                    Reward Wallet
+                  </h4>
+
+                  <span class="live-badge">
+
+                    <span class="live-dot"></span>
+
+                    LIVE
+
+                  </span>
+
+                </div>
+
+
+                <a
+                  class="wallet-address"
+                  href="https://solscan.io/account/2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf
+                </a>
+
+
+                <div class="balance-grid">
+
+
+                  <div class="balance-box">
+
+                    <p class="balance-label">
+                      SOL Balance
+                    </p>
+
+                    <p
+                      class="balance-value"
+                      id="reward-sol"
+                    >
+                      Loading...
+                    </p>
+
+                  </div>
+
+
+                  <div class="balance-box">
+
+                    <p class="balance-label">
+                      $GWAR Balance
+                    </p>
+
+                    <p
+                      class="balance-value"
+                      id="reward-gwar"
+                    >
+                      Loading...
+                    </p>
+
+                  </div>
+
+
+                </div>
+
+
+                <p
+                  class="wallet-status"
+                  id="reward-status"
+                >
+                  Connecting to Solana...
+                </p>
+
+              </div>
+
+
+            </div>
+
+
+            <div class="refresh-info">
+
+              Wallet balances are retrieved directly
+              from the Solana network and automatically
+              refreshed every 30 seconds.
+
+            </div>
 
           </div>
 
@@ -1286,7 +1783,9 @@
     </section>
 
 
-    <!-- FOOTER -->
+    <!-- =========================
+         FOOTER
+    ========================= -->
 
     <footer>
 
@@ -1304,10 +1803,14 @@
 
 
   <!-- =========================
-       SECTION TOGGLE
+       JAVASCRIPT
   ========================= -->
 
   <script>
+
+    /* =========================================
+       SECTION TOGGLE
+    ========================================= */
 
     function toggleSection(button) {
 
@@ -1323,6 +1826,356 @@
       );
 
     }
+
+
+    /* =========================================
+       SOLANA CONFIGURATION
+    ========================================= */
+
+    const SOLANA_RPC =
+      "https://api.mainnet-beta.solana.com";
+
+    const GWAR_MINT =
+      "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
+
+
+    const WALLETS = {
+
+      dev: {
+        address:
+          "7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL",
+
+        solElement:
+          "dev-sol",
+
+        gwarElement:
+          "dev-gwar",
+
+        statusElement:
+          "dev-status"
+      },
+
+      reward: {
+        address:
+          "2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf",
+
+        solElement:
+          "reward-sol",
+
+        gwarElement:
+          "reward-gwar",
+
+        statusElement:
+          "reward-status"
+      }
+
+    };
+
+
+    /* =========================================
+       RPC HELPER
+    ========================================= */
+
+    async function solanaRpc(
+      method,
+      params
+    ) {
+
+      const response =
+        await fetch(
+          SOLANA_RPC,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: 1,
+              method: method,
+              params: params
+            })
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Solana RPC request failed"
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      if (data.error) {
+
+        throw new Error(
+          data.error.message ||
+          "Solana RPC error"
+        );
+
+      }
+
+
+      return data.result;
+
+    }
+
+
+    /* =========================================
+       GET SOL BALANCE
+    ========================================= */
+
+    async function getSolBalance(address) {
+
+      const result =
+        await solanaRpc(
+          "getBalance",
+          [
+            address,
+            {
+              commitment: "confirmed"
+            }
+          ]
+        );
+
+
+      const lamports =
+        result.value;
+
+
+      return lamports / 1000000000;
+
+    }
+
+
+    /* =========================================
+       GET $GWAR BALANCE
+    ========================================= */
+
+    async function getGwarBalance(address) {
+
+      const result =
+        await solanaRpc(
+          "getTokenAccountsByOwner",
+          [
+            address,
+
+            {
+              mint: GWAR_MINT
+            },
+
+            {
+              encoding:
+                "jsonParsed",
+
+              commitment:
+                "confirmed"
+            }
+
+          ]
+        );
+
+
+      let total = 0;
+
+
+      for (
+        const account
+        of result.value
+      ) {
+
+        const tokenAmount =
+          account
+            .account
+            .data
+            .parsed
+            .info
+            .tokenAmount;
+
+
+        total +=
+          Number(
+            tokenAmount.uiAmountString ||
+            tokenAmount.uiAmount ||
+            0
+          );
+
+      }
+
+
+      return total;
+
+    }
+
+
+    /* =========================================
+       FORMAT NUMBER
+    ========================================= */
+
+    function formatNumber(
+      number,
+      maximumFractionDigits = 6
+    ) {
+
+      return new Intl.NumberFormat(
+        "en-US",
+        {
+          maximumFractionDigits:
+            maximumFractionDigits
+        }
+      ).format(number);
+
+    }
+
+
+    /* =========================================
+       UPDATE WALLET
+    ========================================= */
+
+    async function updateWallet(
+      wallet
+    ) {
+
+      const solElement =
+        document.getElementById(
+          wallet.solElement
+        );
+
+      const gwarElement =
+        document.getElementById(
+          wallet.gwarElement
+        );
+
+      const statusElement =
+        document.getElementById(
+          wallet.statusElement
+        );
+
+
+      try {
+
+        statusElement.classList.remove(
+          "error"
+        );
+
+        statusElement.textContent =
+          "Updating live balance...";
+
+
+        const [
+          solBalance,
+          gwarBalance
+        ] =
+          await Promise.all([
+            getSolBalance(
+              wallet.address
+            ),
+
+            getGwarBalance(
+              wallet.address
+            )
+          ]);
+
+
+        solElement.innerHTML =
+          formatNumber(
+            solBalance,
+            6
+          )
+          +
+          ' <span class="balance-unit">SOL</span>';
+
+
+        gwarElement.innerHTML =
+          formatNumber(
+            gwarBalance,
+            2
+          )
+          +
+          ' <span class="balance-unit">$GWAR</span>';
+
+
+        const time =
+          new Date().toLocaleTimeString(
+            [],
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          );
+
+
+        statusElement.textContent =
+          "Updated " + time;
+
+
+      } catch (error) {
+
+        console.error(
+          "Wallet balance error:",
+          error
+        );
+
+
+        solElement.textContent =
+          "Unavailable";
+
+        gwarElement.textContent =
+          "Unavailable";
+
+
+        statusElement.classList.add(
+          "error"
+        );
+
+        statusElement.textContent =
+          "Unable to load live balance. Retrying...";
+
+      }
+
+    }
+
+
+    /* =========================================
+       UPDATE ALL WALLETS
+    ========================================= */
+
+    async function updateAllWallets() {
+
+      await Promise.all([
+        updateWallet(WALLETS.dev),
+        updateWallet(WALLETS.reward)
+      ]);
+
+    }
+
+
+    /* =========================================
+       INITIAL LOAD
+    ========================================= */
+
+    updateAllWallets();
+
+
+    /* =========================================
+       AUTO REFRESH
+       EVERY 30 SECONDS
+    ========================================= */
+
+    setInterval(
+      updateAllWallets,
+      30000
+    );
 
   </script>
 
