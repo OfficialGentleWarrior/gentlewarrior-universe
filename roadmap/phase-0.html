@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>PH 0 — Foundation | Gentle Warrior</title>
 
@@ -12,6 +18,7 @@
   >
 
   <style>
+
     :root {
       --bg: #032d20;
       --bg-deep: #012419;
@@ -21,7 +28,6 @@
       --muted: #a9b9ae;
       --border: rgba(168, 239, 112, 0.22);
       --danger: #ff8f8f;
-      --success: #a8ef70;
     }
 
     * {
@@ -75,6 +81,7 @@
       padding: 22px 0 42px;
     }
 
+
     /* =========================
        HEADER
     ========================= */
@@ -119,6 +126,7 @@
       background:
         rgba(168, 239, 112, 0.07);
     }
+
 
     /* =========================
        AVATAR
@@ -196,6 +204,7 @@
       font-size: 15px;
     }
 
+
     /* =========================
        BACK
     ========================= */
@@ -210,6 +219,7 @@
       font-size: 12px;
       font-weight: 800;
     }
+
 
     /* =========================
        PHASE INTRO
@@ -255,6 +265,7 @@
       font-size: 14px;
     }
 
+
     /* =========================
        SECTIONS
     ========================= */
@@ -295,8 +306,9 @@
         rgba(3, 52, 37, 0.94);
     }
 
+
     /* =========================
-       CLICKABLE SECTION HEADER
+       SECTION HEADER
     ========================= */
 
     .section-toggle {
@@ -363,6 +375,7 @@
       font-size: 13px;
     }
 
+
     /* =========================
        ARROW
     ========================= */
@@ -397,6 +410,7 @@
       background:
         rgba(168, 239, 112, 0.08);
     }
+
 
     /* =========================
        CONTENT
@@ -451,6 +465,7 @@
       margin-top: 14px;
     }
 
+
     /* =========================
        QUOTE
     ========================= */
@@ -473,6 +488,7 @@
 
       line-height: 1.75;
     }
+
 
     /* =========================
        CHARACTER
@@ -526,8 +542,9 @@
       margin-top: 13px;
     }
 
+
     /* =========================
-       SOCIAL CHANNELS
+       SOCIAL
     ========================= */
 
     .social-list {
@@ -633,8 +650,9 @@
       line-height: 1.7;
     }
 
+
     /* =========================
-       TRANSPARENCY
+       CONTRACT
     ========================= */
 
     .contract-box {
@@ -680,6 +698,11 @@
 
       line-height: 1.6;
     }
+
+
+    /* =========================
+       WALLETS
+    ========================= */
 
     .wallet-list {
       display: grid;
@@ -778,6 +801,11 @@
       line-height: 1.6;
     }
 
+
+    /* =========================
+       BALANCES
+    ========================= */
+
     .balance-grid {
       display: grid;
 
@@ -836,15 +864,22 @@
       color: #7f9789;
 
       font-size: 10px;
-    }
 
-    .wallet-status.success {
-      color: var(--success);
+      line-height: 1.5;
     }
 
     .wallet-status.error {
       color: var(--danger);
     }
+
+    .wallet-status.success {
+      color: var(--lime);
+    }
+
+
+    /* =========================
+       REFRESH
+    ========================= */
 
     .refresh-info {
       margin-top: 18px;
@@ -865,6 +900,7 @@
       line-height: 1.7;
     }
 
+
     /* =========================
        FOOTER
     ========================= */
@@ -884,6 +920,7 @@
 
       font-size: 11px;
     }
+
 
     /* =========================
        MOBILE
@@ -943,1475 +980,1658 @@
       .wallet-header {
         align-items: flex-start;
       }
+
     }
+
   </style>
+
 </head>
 
 
 <body>
 
-  <main class="page">
-
-
-    <!-- =========================
-         HEADER
-    ========================= -->
-
-    <header class="hero">
-
-      <div class="hero-icon">
-
-        <img
-          src="https://raw.githubusercontent.com/OfficialGentleWarrior/gentlewarrior-universe/main/avatar.png"
-          alt="Gentle Warrior"
-        >
-
-      </div>
-
-      <div>
-
-        <p class="eyebrow">
-          GENTLE WARRIOR UNIVERSE
-        </p>
-
-        <h1>
-          PH 0 — Foundation
-        </h1>
-
-        <p class="tagline">
-          Soft Heart. Strong Spirit.
-        </p>
-
-      </div>
-
-    </header>
-
-
-    <!-- =========================
-         BACK
-    ========================= -->
-
-    <a
-      href="index.html"
-      class="back"
-    >
-      ← Back to Master Roadmap
-    </a>
-
-
-    <!-- =========================
-         PHASE INTRO
-    ========================= -->
-
-    <section class="phase-intro">
-
-      <p class="section-label">
-        PHASE 0
-      </p>
-
-      <h2>
-        Foundation
-      </h2>
-
-      <p>
-        Establish who Gentle Warrior is,
-        why it exists, where the community lives,
-        and how the project operates transparently.
-      </p>
-
-    </section>
-
-
-    <!-- =========================
-         FOUNDATION SECTIONS
-    ========================= -->
-
-    <section
-      class="sections"
-      aria-label="Phase 0 Foundation sections"
-    >
-
-
-      <!-- =========================
-           SECTION 01
-      ========================= -->
-
-      <article class="section-card">
-
-        <button
-          class="section-toggle"
-          type="button"
-          aria-expanded="false"
-          onclick="toggleSection(this)"
-        >
-
-          <div class="section-info">
-
-            <p class="section-number">
-              01
-            </p>
-
-            <h2 class="section-title">
-              Gentle Warrior Origin
-            </h2>
-
-            <p class="section-hint">
-              Tap to explore →
-            </p>
-
-          </div>
-
-          <span class="arrow">
-            →
-          </span>
-
-        </button>
-
-
-        <div class="section-content">
-
-          <div class="divider"></div>
-
-
-          <div class="content-block">
-
-            <h3>
-              What is Gentle Warrior?
-            </h3>
-
-            <p>
-              Gentle Warrior is a world created to
-              raise awareness for children with
-              cerebral palsy.
-            </p>
-
-            <div class="quote">
-              Soft Heart. Strong Spirit.
-            </div>
-
-            <div class="quote">
-              Gentle Warrior represents children with
-              cerebral palsy — gentle in body, strong in
-              spirit, and surrounded by care.
-            </div>
-
-          </div>
-
-
-          <div class="content-block">
-
-            <h3>
-              Why was it created?
-            </h3>
-
-            <p>
-              Gentle Warrior was created to give children
-              with cerebral palsy a hero who looks like
-              effort — not perfection.
-            </p>
-
-            <p>
-              Cerebral palsy affects movement,
-              coordination, and muscle control. For many
-              children, everyday actions take energy and
-              focus that others never see.
-            </p>
-
-            <div class="quote">
-              You are not broken.<br>
-              You are not behind.<br>
-              You are not invisible.
-            </div>
-
-            <p>
-              You are moving through your own path —
-              and that path matters.
-            </p>
-
-          </div>
-
-
-          <div class="content-block">
-
-            <h3>
-              The story behind the project
-            </h3>
-
-            <p>
-              Gentle Warrior was born from a real family's
-              journey through cerebral palsy, therapy,
-              patience, resilience, and hope.
-            </p>
-
-            <p>
-              This world exists to honor resilience,
-              patience, and quiet courage through
-              storytelling, symbols, and play.
-            </p>
-
-          </div>
-
-
-          <div class="character">
-
-            <p class="character-label">
-              GENTLE WARRIOR CHARACTER
-            </p>
-
-            <h3>
-              The Heart of This World
-            </h3>
-
-            <p>
-              Baby Leam — our very own
-              Gentle Warrior.
-            </p>
-
-            <p>
-              From his earliest days to his therapy
-              sessions, every moment you see here is real.
-            </p>
-
-            <p>
-              He is the inspiration, the heart, and the
-              reason this project exists.
-            </p>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-      <!-- =========================
-           SECTION 02
-      ========================= -->
-
-      <article class="section-card">
-
-        <button
-          class="section-toggle"
-          type="button"
-          aria-expanded="false"
-          onclick="toggleSection(this)"
-        >
-
-          <div class="section-info">
-
-            <p class="section-number">
-              02
-            </p>
-
-            <h2 class="section-title">
-              Mission &amp; Vision
-            </h2>
-
-            <p class="section-hint">
-              What Gentle Warrior aims to do and become.
-            </p>
-
-          </div>
-
-          <span class="arrow">
-            →
-          </span>
-
-        </button>
-
-
-        <div class="section-content">
-
-          <div class="divider"></div>
-
-
-          <div class="content-block">
-
-            <h3>
-              Mission
-            </h3>
-
-            <p>
-              To raise awareness for children with
-              cerebral palsy, share real stories of
-              resilience, and create meaningful
-              experiences that encourage understanding,
-              kindness, and support.
-            </p>
-
-            <p>
-              Gentle Warrior aims to turn awareness into
-              connection — helping families, caregivers,
-              and communities feel seen, understood,
-              and supported.
-            </p>
-
-          </div>
-
-
-          <div class="content-block">
-
-            <h3>
-              Vision
-            </h3>
-
-            <p>
-              A world where children with cerebral palsy
-              are seen beyond their limitations —
-              recognized for their strength,
-              individuality, potential, and humanity.
-            </p>
-
-            <p>
-              Gentle Warrior envisions a growing community
-              where awareness leads to empathy, empathy
-              leads to action, and every little win is
-              worth celebrating.
-            </p>
-
-          </div>
-
-
-          <div class="quote">
-
-            <strong>
-              Soft Heart. Strong Spirit.
-            </strong>
-
-            <br>
-
-            Every child deserves to be seen,
-            understood, and valued.
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-      <!-- =========================
-           SECTION 03
-      ========================= -->
-
-      <article class="section-card">
-
-        <button
-          class="section-toggle"
-          type="button"
-          aria-expanded="false"
-          onclick="toggleSection(this)"
-        >
-
-          <div class="section-info">
-
-            <p class="section-number">
-              03
-            </p>
-
-            <h2 class="section-title">
-              Official Social Channels
-            </h2>
-
-            <p class="section-hint">
-              Connect with Gentle Warrior →
-            </p>
-
-          </div>
-
-          <span class="arrow">
-            →
-          </span>
-
-        </button>
-
-
-        <div class="section-content">
-
-          <div class="divider"></div>
-
-
-          <div class="content-block">
-
-            <h3>
-              Official Community Channels
-            </h3>
-
-            <p>
-              Follow Gentle Warrior through our official
-              social channels and join the community.
-            </p>
-
-          </div>
-
-
-          <div class="social-list">
-
-
-            <!-- FACEBOOK -->
-
-            <a
-              class="social-item"
-              href="https://facebook.com/GentleWarriorOfficial"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  Facebook
-                </p>
-
-                <p class="social-description">
-                  Gentle Warrior Official
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Visit →
-              </span>
-
-            </a>
-
-
-            <!-- TIKTOK -->
-
-            <a
-              class="social-item"
-              href="https://www.tiktok.com/@officialgentlewarrior"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  TikTok
-                </p>
-
-                <p class="social-description">
-                  @officialgentlewarrior
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Visit →
-              </span>
-
-            </a>
-
-
-            <!-- X -->
-
-            <a
-              class="social-item"
-              href="https://x.com/GentleWarrior02"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  @GentleWarrior02
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Visit →
-              </span>
-
-            </a>
-
-
-            <!-- X COMMUNITY -->
-
-            <a
-              class="social-item"
-              href="https://x.com/i/communities/1991734527128137859"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  X Community
-                </p>
-
-                <p class="social-description">
-                  Official Gentle Warrior Community
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Join →
-              </span>
-
-            </a>
-
-
-            <!-- TELEGRAM -->
-
-            <a
-              class="social-item"
-              href="https://t.me/OfficialGentleWarriorHQ/632"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  Telegram
-                </p>
-
-                <p class="social-description">
-                  Official Gentle Warrior HQ
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Join →
-              </span>
-
-            </a>
-
-
-            <!-- MESSENGER -->
-
-            <a
-              class="social-item"
-              href="https://m.me/j/AbYNtC1uuP4G7bLe/?send_source=gc%3Acopy_invite_link_c"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <div class="social-info">
-
-                <p class="social-name">
-                  Messenger
-                </p>
-
-                <p class="social-description">
-                  Connect with the Gentle Warrior community
-                </p>
-
-              </div>
-
-              <span class="social-button">
-                Open →
-              </span>
-
-            </a>
-
-
-          </div>
-
-
-          <div class="social-note">
-
-            These are the official Gentle Warrior
-            community channels.
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-      <!-- =========================
-           SECTION 04
-           TRANSPARENCY
-      ========================= -->
-
-      <article class="section-card">
-
-        <button
-          class="section-toggle"
-          type="button"
-          aria-expanded="false"
-          onclick="toggleSection(this)"
-        >
-
-          <div class="section-info">
-
-            <p class="section-number">
-              04
-            </p>
-
-            <h2 class="section-title">
-              Transparency
-            </h2>
-
-            <p class="section-hint">
-              Contract &amp; live wallet balances →
-            </p>
-
-          </div>
-
-          <span class="arrow">
-            →
-          </span>
-
-        </button>
-
-
-        <div class="section-content">
-
-          <div class="divider"></div>
-
-
-          <!-- CONTRACT -->
-
-          <div class="content-block">
-
-            <h3>
-              $GWAR Contract
-            </h3>
-
-            <div class="contract-box">
-
-              <p class="contract-label">
-                SOLANA TOKEN MINT
-              </p>
-
-              <a
-                class="contract-address"
-                href="https://solscan.io/token/Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump
-              </a>
-
-            </div>
-
-          </div>
-
-
-          <!-- WALLETS -->
-
-          <div class="content-block">
-
-            <h3>
-              Official Wallets
-            </h3>
-
-
-            <div class="wallet-list">
-
-
-              <!-- DEV WALLET -->
-
-              <div class="wallet-card">
-
-                <div class="wallet-header">
-
-                  <h4 class="wallet-name">
-                    Dev Wallet
-                  </h4>
-
-                  <span class="live-badge">
-
-                    <span class="live-dot"></span>
-
-                    LIVE
-
-                  </span>
-
-                </div>
-
-
-                <a
-                  class="wallet-address"
-                  href="https://solscan.io/account/7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL
-                </a>
-
-
-                <div class="balance-grid">
-
-
-                  <div class="balance-box">
-
-                    <p class="balance-label">
-                      SOL Balance
-                    </p>
-
-                    <p
-                      class="balance-value"
-                      id="dev-sol"
-                    >
-                      Loading...
-                    </p>
-
-                  </div>
-
-
-                  <div class="balance-box">
-
-                    <p class="balance-label">
-                      $GWAR Balance
-                    </p>
-
-                    <p
-                      class="balance-value"
-                      id="dev-gwar"
-                    >
-                      Loading...
-                    </p>
-
-                  </div>
-
-
-                </div>
-
-
-                <p
-                  class="wallet-status"
-                  id="dev-status"
-                >
-                  Connecting to Solana...
-                </p>
-
-              </div>
-
-
-              <!-- REWARD WALLET -->
-
-              <div class="wallet-card">
-
-                <div class="wallet-header">
-
-                  <h4 class="wallet-name">
-                    Reward Wallet
-                  </h4>
-
-                  <span class="live-badge">
-
-                    <span class="live-dot"></span>
-
-                    LIVE
-
-                  </span>
-
-                </div>
-
-
-                <a
-                  class="wallet-address"
-                  href="https://solscan.io/account/2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf
-                </a>
-
-
-                <div class="balance-grid">
-
-
-                  <div class="balance-box">
-
-                    <p class="balance-label">
-                      SOL Balance
-                    </p>
-
-                    <p
-                      class="balance-value"
-                      id="reward-sol"
-                    >
-                      Loading...
-                    </p>
-
-                  </div>
-
-
-                  <div class="balance-box">
-
-                    <p class="balance-label">
-                      $GWAR Balance
-                    </p>
-
-                    <p
-                      class="balance-value"
-                      id="reward-gwar"
-                    >
-                      Loading...
-                    </p>
-
-                  </div>
-
-
-                </div>
-
-
-                <p
-                  class="wallet-status"
-                  id="reward-status"
-                >
-                  Connecting to Solana...
-                </p>
-
-              </div>
-
-
-            </div>
-
-
-            <div class="refresh-info">
-
-              Wallet balances are retrieved directly
-              from the Solana network and automatically
-              refreshed every 30 seconds.
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-    </section>
-
-
-    <!-- =========================
-         FOOTER
-    ========================= -->
-
-    <footer>
-
-      <span>
-        Gentle Warrior
-      </span>
-
-      <span>
-        Soft Heart. Strong Spirit.
-      </span>
-
-    </footer>
-
-  </main>
+<main class="page">
 
 
   <!-- =========================
-       JAVASCRIPT
+       HEADER
   ========================= -->
 
-  <script>
+  <header class="hero">
 
-    /* =========================================
-       SECTION TOGGLE
-    ========================================= */
+    <div class="hero-icon">
 
-    function toggleSection(button) {
+      <img
+        src="https://raw.githubusercontent.com/OfficialGentleWarrior/gentlewarrior-universe/main/avatar.png"
+        alt="Gentle Warrior"
+      >
 
-      const card =
-        button.closest(".section-card");
+    </div>
 
-      const isOpen =
-        card.classList.toggle("open");
+    <div>
 
-      button.setAttribute(
-        "aria-expanded",
-        String(isOpen)
+      <p class="eyebrow">
+        GENTLE WARRIOR UNIVERSE
+      </p>
+
+      <h1>
+        PH 0 — Foundation
+      </h1>
+
+      <p class="tagline">
+        Soft Heart. Strong Spirit.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       BACK
+  ========================= -->
+
+  <a
+    href="index.html"
+    class="back"
+  >
+    ← Back to Master Roadmap
+  </a>
+
+
+  <!-- =========================
+       PHASE INTRO
+  ========================= -->
+
+  <section class="phase-intro">
+
+    <p class="section-label">
+      PHASE 0
+    </p>
+
+    <h2>
+      Foundation
+    </h2>
+
+    <p>
+      Establish who Gentle Warrior is,
+      why it exists, where the community lives,
+      and how the project operates transparently.
+    </p>
+
+  </section>
+
+
+  <!-- =========================
+       FOUNDATION SECTIONS
+  ========================= -->
+
+  <section
+    class="sections"
+    aria-label="Phase 0 Foundation sections"
+  >
+
+
+    <!-- =========================
+         SECTION 01
+    ========================= -->
+
+    <article class="section-card">
+
+      <button
+        class="section-toggle"
+        type="button"
+        aria-expanded="false"
+        onclick="toggleSection(this)"
+      >
+
+        <div class="section-info">
+
+          <p class="section-number">
+            01
+          </p>
+
+          <h2 class="section-title">
+            Gentle Warrior Origin
+          </h2>
+
+          <p class="section-hint">
+            Tap to explore →
+          </p>
+
+        </div>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <div class="section-content">
+
+        <div class="divider"></div>
+
+
+        <div class="content-block">
+
+          <h3>
+            What is Gentle Warrior?
+          </h3>
+
+          <p>
+            Gentle Warrior is a world created to
+            raise awareness for children with
+            cerebral palsy.
+          </p>
+
+          <div class="quote">
+            Soft Heart. Strong Spirit.
+          </div>
+
+          <div class="quote">
+            Gentle Warrior represents children with
+            cerebral palsy — gentle in body, strong in
+            spirit, and surrounded by care.
+          </div>
+
+        </div>
+
+
+        <div class="content-block">
+
+          <h3>
+            Why was it created?
+          </h3>
+
+          <p>
+            Gentle Warrior was created to give children
+            with cerebral palsy a hero who looks like
+            effort — not perfection.
+          </p>
+
+          <p>
+            Cerebral palsy affects movement,
+            coordination, and muscle control. For many
+            children, everyday actions take energy and
+            focus that others never see.
+          </p>
+
+          <div class="quote">
+            You are not broken.<br>
+            You are not behind.<br>
+            You are not invisible.
+          </div>
+
+          <p>
+            You are moving through your own path —
+            and that path matters.
+          </p>
+
+        </div>
+
+
+        <div class="content-block">
+
+          <h3>
+            The story behind the project
+          </h3>
+
+          <p>
+            Gentle Warrior was born from a real family's
+            journey through cerebral palsy, therapy,
+            patience, resilience, and hope.
+          </p>
+
+          <p>
+            This world exists to honor resilience,
+            patience, and quiet courage through
+            storytelling, symbols, and play.
+          </p>
+
+        </div>
+
+
+        <div class="character">
+
+          <p class="character-label">
+            GENTLE WARRIOR CHARACTER
+          </p>
+
+          <h3>
+            The Heart of This World
+          </h3>
+
+          <p>
+            Baby Leam — our very own
+            Gentle Warrior.
+          </p>
+
+          <p>
+            From his earliest days to his therapy
+            sessions, every moment you see here is real.
+          </p>
+
+          <p>
+            He is the inspiration, the heart, and the
+            reason this project exists.
+          </p>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =========================
+         SECTION 02
+    ========================= -->
+
+    <article class="section-card">
+
+      <button
+        class="section-toggle"
+        type="button"
+        aria-expanded="false"
+        onclick="toggleSection(this)"
+      >
+
+        <div class="section-info">
+
+          <p class="section-number">
+            02
+          </p>
+
+          <h2 class="section-title">
+            Mission &amp; Vision
+          </h2>
+
+          <p class="section-hint">
+            What Gentle Warrior aims to do and become.
+          </p>
+
+        </div>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <div class="section-content">
+
+        <div class="divider"></div>
+
+
+        <div class="content-block">
+
+          <h3>
+            Mission
+          </h3>
+
+          <p>
+            To raise awareness for children with
+            cerebral palsy, share real stories of
+            resilience, and create meaningful
+            experiences that encourage understanding,
+            kindness, and support.
+          </p>
+
+          <p>
+            Gentle Warrior aims to turn awareness into
+            connection — helping families, caregivers,
+            and communities feel seen, understood,
+            and supported.
+          </p>
+
+        </div>
+
+
+        <div class="content-block">
+
+          <h3>
+            Vision
+          </h3>
+
+          <p>
+            A world where children with cerebral palsy
+            are seen beyond their limitations —
+            recognized for their strength,
+            individuality, potential, and humanity.
+          </p>
+
+          <p>
+            Gentle Warrior envisions a growing community
+            where awareness leads to empathy, empathy
+            leads to action, and every little win is
+            worth celebrating.
+          </p>
+
+        </div>
+
+
+        <div class="quote">
+
+          <strong>
+            Soft Heart. Strong Spirit.
+          </strong>
+
+          <br>
+
+          Every child deserves to be seen,
+          understood, and valued.
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =========================
+         SECTION 03
+    ========================= -->
+
+    <article class="section-card">
+
+      <button
+        class="section-toggle"
+        type="button"
+        aria-expanded="false"
+        onclick="toggleSection(this)"
+      >
+
+        <div class="section-info">
+
+          <p class="section-number">
+            03
+          </p>
+
+          <h2 class="section-title">
+            Official Social Channels
+          </h2>
+
+          <p class="section-hint">
+            Connect with Gentle Warrior →
+          </p>
+
+        </div>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <div class="section-content">
+
+        <div class="divider"></div>
+
+
+        <div class="content-block">
+
+          <h3>
+            Official Community Channels
+          </h3>
+
+          <p>
+            Follow Gentle Warrior through our official
+            social channels and join the community.
+          </p>
+
+        </div>
+
+
+        <div class="social-list">
+
+
+          <a
+            class="social-item"
+            href="https://facebook.com/GentleWarriorOfficial"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                Facebook
+              </p>
+
+              <p class="social-description">
+                Gentle Warrior Official
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Visit →
+            </span>
+
+          </a>
+
+
+          <a
+            class="social-item"
+            href="https://www.tiktok.com/@officialgentlewarrior"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                TikTok
+              </p>
+
+              <p class="social-description">
+                @officialgentlewarrior
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Visit →
+            </span>
+
+          </a>
+
+
+          <a
+            class="social-item"
+            href="https://x.com/GentleWarrior02"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                @GentleWarrior02
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Visit →
+            </span>
+
+          </a>
+
+
+          <a
+            class="social-item"
+            href="https://x.com/i/communities/1991734527128137859"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                X Community
+              </p>
+
+              <p class="social-description">
+                Official Gentle Warrior Community
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Join →
+            </span>
+
+          </a>
+
+
+          <a
+            class="social-item"
+            href="https://t.me/OfficialGentleWarriorHQ/632"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                Telegram
+              </p>
+
+              <p class="social-description">
+                Official Gentle Warrior HQ
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Join →
+            </span>
+
+          </a>
+
+
+          <a
+            class="social-item"
+            href="https://m.me/j/AbYNtC1uuP4G7bLe/?send_source=gc%3Acopy_invite_link_c"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="social-info">
+
+              <p class="social-name">
+                Messenger
+              </p>
+
+              <p class="social-description">
+                Connect with the Gentle Warrior community
+              </p>
+
+            </div>
+
+            <span class="social-button">
+              Open →
+            </span>
+
+          </a>
+
+
+        </div>
+
+
+        <div class="social-note">
+
+          These are the official Gentle Warrior
+          community channels.
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =========================
+         SECTION 04
+         TRANSPARENCY
+    ========================= -->
+
+    <article class="section-card">
+
+      <button
+        class="section-toggle"
+        type="button"
+        aria-expanded="false"
+        onclick="toggleSection(this)"
+      >
+
+        <div class="section-info">
+
+          <p class="section-number">
+            04
+          </p>
+
+          <h2 class="section-title">
+            Transparency
+          </h2>
+
+          <p class="section-hint">
+            Contract &amp; live wallet balances →
+          </p>
+
+        </div>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <div class="section-content">
+
+        <div class="divider"></div>
+
+
+        <!-- CONTRACT -->
+
+        <div class="content-block">
+
+          <h3>
+            $GWAR Contract
+          </h3>
+
+          <div class="contract-box">
+
+            <p class="contract-label">
+              SOLANA TOKEN MINT
+            </p>
+
+            <a
+              class="contract-address"
+              href="https://solscan.io/token/Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- WALLETS -->
+
+        <div class="content-block">
+
+          <h3>
+            Official Wallets
+          </h3>
+
+
+          <div class="wallet-list">
+
+
+            <!-- DEV WALLET -->
+
+            <div class="wallet-card">
+
+              <div class="wallet-header">
+
+                <h4 class="wallet-name">
+                  Dev Wallet
+                </h4>
+
+                <span class="live-badge">
+
+                  <span class="live-dot"></span>
+
+                  LIVE
+
+                </span>
+
+              </div>
+
+
+              <a
+                class="wallet-address"
+                href="https://solscan.io/account/7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL
+              </a>
+
+
+              <div class="balance-grid">
+
+
+                <div class="balance-box">
+
+                  <p class="balance-label">
+                    SOL Balance
+                  </p>
+
+                  <p
+                    class="balance-value"
+                    id="dev-sol"
+                  >
+                    Loading...
+                  </p>
+
+                </div>
+
+
+                <div class="balance-box">
+
+                  <p class="balance-label">
+                    $GWAR Balance
+                  </p>
+
+                  <p
+                    class="balance-value"
+                    id="dev-gwar"
+                  >
+                    Loading...
+                  </p>
+
+                </div>
+
+
+              </div>
+
+
+              <p
+                class="wallet-status"
+                id="dev-status"
+              >
+                Connecting to Solana...
+              </p>
+
+            </div>
+
+
+            <!-- REWARD WALLET -->
+
+            <div class="wallet-card">
+
+              <div class="wallet-header">
+
+                <h4 class="wallet-name">
+                  Reward Wallet
+                </h4>
+
+                <span class="live-badge">
+
+                  <span class="live-dot"></span>
+
+                  LIVE
+
+                </span>
+
+              </div>
+
+
+              <a
+                class="wallet-address"
+                href="https://solscan.io/account/2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf
+              </a>
+
+
+              <div class="balance-grid">
+
+
+                <div class="balance-box">
+
+                  <p class="balance-label">
+                    SOL Balance
+                  </p>
+
+                  <p
+                    class="balance-value"
+                    id="reward-sol"
+                  >
+                    Loading...
+                  </p>
+
+                </div>
+
+
+                <div class="balance-box">
+
+                  <p class="balance-label">
+                    $GWAR Balance
+                  </p>
+
+                  <p
+                    class="balance-value"
+                    id="reward-gwar"
+                  >
+                    Loading...
+                  </p>
+
+                </div>
+
+
+              </div>
+
+
+              <p
+                class="wallet-status"
+                id="reward-status"
+              >
+                Connecting to Solana...
+              </p>
+
+            </div>
+
+
+          </div>
+
+
+          <div class="refresh-info">
+
+            Wallet balances are retrieved directly
+            from the Solana network and automatically
+            refreshed every 30 seconds.
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <span>
+      Gentle Warrior
+    </span>
+
+    <span>
+      Soft Heart. Strong Spirit.
+    </span>
+
+  </footer>
+
+</main>
+
+
+<script>
+
+
+  /* =========================================
+     SECTION TOGGLE
+  ========================================= */
+
+  function toggleSection(button) {
+
+    const card =
+      button.closest(".section-card");
+
+    const isOpen =
+      card.classList.toggle("open");
+
+    button.setAttribute(
+      "aria-expanded",
+      String(isOpen)
+    );
+
+  }
+
+
+  /* =========================================
+     SOLANA CONFIGURATION
+  ========================================= */
+
+  const RPC_ENDPOINTS = [
+
+    /*
+      PRIMARY
+      PublicNode Solana Mainnet
+    */
+
+    "https://solana-rpc.publicnode.com",
+
+    /*
+      SECONDARY
+      Official Solana public RPC
+    */
+
+    "https://api.mainnet-beta.solana.com"
+
+  ];
+
+
+  const GWAR_MINT =
+    "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
+
+
+  const WALLETS = {
+
+    dev: {
+
+      address:
+        "7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL",
+
+      solElement:
+        "dev-sol",
+
+      gwarElement:
+        "dev-gwar",
+
+      statusElement:
+        "dev-status"
+
+    },
+
+
+    reward: {
+
+      address:
+        "2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf",
+
+      solElement:
+        "reward-sol",
+
+      gwarElement:
+        "reward-gwar",
+
+      statusElement:
+        "reward-status"
+
+    }
+
+  };
+
+
+  /*
+     Currently selected RPC.
+     We start from the first endpoint.
+  */
+
+  let currentRpcIndex = 0;
+
+
+  /*
+     Prevent multiple refreshes
+     from running simultaneously.
+  */
+
+  let refreshRunning = false;
+
+
+  /* =========================================
+     DELAY
+  ========================================= */
+
+  function sleep(ms) {
+
+    return new Promise(
+      resolve => setTimeout(resolve, ms)
+    );
+
+  }
+
+
+  /* =========================================
+     RPC REQUEST WITH TIMEOUT
+  ========================================= */
+
+  async function rpcRequest(
+    endpoint,
+    method,
+    params
+  ) {
+
+    const controller =
+      new AbortController();
+
+
+    const timeout =
+      setTimeout(
+        () => controller.abort(),
+        12000
       );
 
-    }
 
+    try {
 
-    /* =========================================
-       SOLANA CONFIGURATION
-       
-       IMPORTANT:
-       We use multiple RPC endpoints because
-       public Solana RPC endpoints can be
-       rate-limited.
-    ========================================= */
+      const response =
+        await fetch(
+          endpoint,
+          {
 
-    const SOLANA_RPCS = [
+            method: "POST",
 
-      "https://api.mainnet.solana.com",
-
-      "https://solana-rpc.publicnode.com",
-
-      "https://solana.drpc.org",
-
-      "https://api.mainnet-beta.solana.com"
-
-    ];
-
-
-    const GWAR_MINT =
-      "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
-
-
-    const WALLETS = {
-
-      dev: {
-
-        address:
-          "7LQ6zDLucRhgdZobDMNbeQXoWLZ8H96yLunmwbMyD5eL",
-
-        solElement:
-          "dev-sol",
-
-        gwarElement:
-          "dev-gwar",
-
-        statusElement:
-          "dev-status"
-
-      },
-
-
-      reward: {
-
-        address:
-          "2TLGnWDx6C3SucGevJCSDtfLhc7HSGXtGShdijeC4Baf",
-
-        solElement:
-          "reward-sol",
-
-        gwarElement:
-          "reward-gwar",
-
-        statusElement:
-          "reward-status"
-
-      }
-
-    };
-
-
-    /* =========================================
-       RPC REQUEST WITH TIMEOUT
-    ========================================= */
-
-    async function rpcRequest(
-      endpoint,
-      method,
-      params
-    ) {
-
-      const controller =
-        new AbortController();
-
-
-      const timeout =
-        setTimeout(
-          () => controller.abort(),
-          10000
-        );
-
-
-      try {
-
-        const response =
-          await fetch(
-            endpoint,
-            {
-
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                jsonrpc: "2.0",
-
-                id:
-                  Date.now(),
-
-                method:
-                  method,
-
-                params:
-                  params
-
-              }),
-
-              signal:
-                controller.signal
-
-            }
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "HTTP " +
-            response.status
-          );
-
-        }
-
-
-        const data =
-          await response.json();
-
-
-        if (data.error) {
-
-          throw new Error(
-            data.error.message ||
-            "RPC error"
-          );
-
-        }
-
-
-        return data.result;
-
-      }
-
-      finally {
-
-        clearTimeout(timeout);
-
-      }
-
-    }
-
-
-    /* =========================================
-       RPC FALLBACK
-       
-       Try every RPC until one works.
-    ========================================= */
-
-    async function solanaRpc(
-      method,
-      params
-    ) {
-
-      let lastError =
-        null;
-
-
-      for (
-        const endpoint
-        of SOLANA_RPCS
-      ) {
-
-        try {
-
-          const result =
-            await rpcRequest(
-              endpoint,
-              method,
-              params
-            );
-
-
-          return result;
-
-        }
-
-        catch (error) {
-
-          console.warn(
-            "RPC failed:",
-            endpoint,
-            error
-          );
-
-
-          lastError =
-            error;
-
-        }
-
-      }
-
-
-      throw (
-        lastError ||
-        new Error(
-          "All Solana RPC endpoints failed."
-        )
-      );
-
-    }
-
-
-    /* =========================================
-       GET SOL BALANCE
-    ========================================= */
-
-    async function getSolBalance(
-      address
-    ) {
-
-      const result =
-        await solanaRpc(
-
-          "getBalance",
-
-          [
-
-            address,
-
-            {
-              commitment:
-                "confirmed"
-            }
-
-          ]
-
-        );
-
-
-      const lamports =
-        result.value;
-
-
-      return (
-        lamports /
-        1000000000
-      );
-
-    }
-
-
-    /* =========================================
-       GET $GWAR BALANCE
-    ========================================= */
-
-    async function getGwarBalance(
-      address
-    ) {
-
-      const result =
-        await solanaRpc(
-
-          "getTokenAccountsByOwner",
-
-          [
-
-            address,
-
-            {
-              mint:
-                GWAR_MINT
+            headers: {
+              "Content-Type":
+                "application/json"
             },
 
-            {
-              encoding:
-                "jsonParsed",
+            body: JSON.stringify({
 
-              commitment:
-                "confirmed"
-            }
+              jsonrpc: "2.0",
 
-          ]
+              id:
+                Date.now(),
 
+              method:
+                method,
+
+              params:
+                params
+
+            }),
+
+            signal:
+              controller.signal
+
+          }
         );
 
 
-      let total = 0;
+      if (!response.ok) {
 
-
-      for (
-        const account
-        of result.value
-      ) {
-
-        const tokenAmount =
-          account
-            .account
-            .data
-            .parsed
-            .info
-            .tokenAmount;
-
-
-        /*
-         * uiAmountString is preferred
-         * because it avoids floating
-         * point precision issues.
-         */
-
-        const amount =
-          Number(
-            tokenAmount.uiAmountString ||
-            tokenAmount.uiAmount ||
-            0
-          );
-
-
-        total += amount;
+        throw new Error(
+          "HTTP " +
+          response.status
+        );
 
       }
 
 
-      return total;
+      const data =
+        await response.json();
+
+
+      if (data.error) {
+
+        throw new Error(
+          data.error.message ||
+          "RPC error"
+        );
+
+      }
+
+
+      return data.result;
 
     }
 
+    finally {
 
-    /* =========================================
-       FORMAT NUMBER
-    ========================================= */
-
-    function formatNumber(
-      number,
-      maximumFractionDigits = 6
-    ) {
-
-      return new Intl.NumberFormat(
-
-        "en-US",
-
-        {
-
-          maximumFractionDigits:
-            maximumFractionDigits,
-
-          minimumFractionDigits:
-            0
-
-        }
-
-      ).format(number);
+      clearTimeout(timeout);
 
     }
 
+  }
 
-    /* =========================================
-       UPDATE WALLET
-       
-       IMPORTANT:
-       If refresh fails, we DO NOT erase
-       the last successful balance.
-    ========================================= */
 
-    async function updateWallet(
-      wallet
+  /* =========================================
+     RPC WITH AUTOMATIC FAILOVER
+  ========================================= */
+
+  async function solanaRpc(
+    method,
+    params
+  ) {
+
+    let lastError = null;
+
+
+    /*
+       Try every available RPC.
+    */
+
+    for (
+      let attempt = 0;
+      attempt < RPC_ENDPOINTS.length;
+      attempt++
     ) {
 
-      const solElement =
-        document.getElementById(
-          wallet.solElement
-        );
+      const index =
+        (
+          currentRpcIndex +
+          attempt
+        ) %
+        RPC_ENDPOINTS.length;
 
 
-      const gwarElement =
-        document.getElementById(
-          wallet.gwarElement
-        );
-
-
-      const statusElement =
-        document.getElementById(
-          wallet.statusElement
-        );
+      const endpoint =
+        RPC_ENDPOINTS[index];
 
 
       try {
 
-        statusElement.classList.remove(
-          "error"
-        );
-
-        statusElement.classList.remove(
-          "success"
-        );
-
-
-        statusElement.textContent =
-          "Updating live balance...";
+        const result =
+          await rpcRequest(
+            endpoint,
+            method,
+            params
+          );
 
 
         /*
-         * Fetch both balances.
-         */
+           Remember the working RPC.
+        */
 
-        const [
-          solBalance,
-          gwarBalance
-        ] =
-          await Promise.all([
-
-            getSolBalance(
-              wallet.address
-            ),
-
-            getGwarBalance(
-              wallet.address
-            )
-
-          ]);
+        currentRpcIndex =
+          index;
 
 
-        /*
-         * Update SOL.
-         */
-
-        solElement.innerHTML =
-
-          formatNumber(
-            solBalance,
-            6
-          )
-
-          +
-
-          ' <span class="balance-unit">SOL</span>';
-
-
-        /*
-         * Update $GWAR.
-         */
-
-        gwarElement.innerHTML =
-
-          formatNumber(
-            gwarBalance,
-            2
-          )
-
-          +
-
-          ' <span class="balance-unit">$GWAR</span>';
-
-
-        /*
-         * Timestamp.
-         */
-
-        const time =
-          new Date()
-            .toLocaleTimeString(
-              [],
-              {
-
-                hour:
-                  "2-digit",
-
-                minute:
-                  "2-digit",
-
-                second:
-                  "2-digit"
-
-              }
-            );
-
-
-        statusElement.classList.add(
-          "success"
-        );
-
-
-        statusElement.textContent =
-          "Live • Updated " +
-          time;
-
+        return result;
 
       }
 
       catch (error) {
 
-        console.error(
-          "Wallet balance error:",
-          wallet.address,
+        lastError =
+          error;
+
+        console.warn(
+          "RPC failed:",
+          endpoint,
           error
         );
 
+      }
 
-        /*
-         * IMPORTANT:
-         *
-         * Do NOT replace existing
-         * successful balances with
-         * "Unavailable".
-         *
-         * This prevents the UI from
-         * flashing Unavailable whenever
-         * one RPC temporarily fails.
-         */
+    }
 
-        statusElement.classList.add(
+
+    throw (
+      lastError ||
+      new Error(
+        "All Solana RPC endpoints failed"
+      )
+    );
+
+  }
+
+
+  /* =========================================
+     GET SOL BALANCE
+  ========================================= */
+
+  async function getSolBalance(
+    address
+  ) {
+
+    const result =
+      await solanaRpc(
+
+        "getBalance",
+
+        [
+          address,
+
+          {
+            commitment:
+              "confirmed"
+          }
+
+        ]
+
+      );
+
+
+    const lamports =
+      Number(
+        result.value
+      );
+
+
+    return (
+      lamports /
+      1000000000
+    );
+
+  }
+
+
+  /* =========================================
+     GET GWAR BALANCE
+  ========================================= */
+
+  async function getGwarBalance(
+    address
+  ) {
+
+    const result =
+      await solanaRpc(
+
+        "getTokenAccountsByOwner",
+
+        [
+
+          address,
+
+          {
+            mint:
+              GWAR_MINT
+          },
+
+          {
+            encoding:
+              "jsonParsed",
+
+            commitment:
+              "confirmed"
+          }
+
+        ]
+
+      );
+
+
+    let total =
+      0;
+
+
+    /*
+       A wallet can theoretically have
+       multiple token accounts for the
+       same mint.
+
+       Add all of them together.
+    */
+
+    for (
+      const account
+      of result.value || []
+    ) {
+
+      const parsed =
+        account
+          ?.account
+          ?.data
+          ?.parsed
+          ?.info
+          ?.tokenAmount;
+
+
+      if (!parsed) {
+
+        continue;
+
+      }
+
+
+      /*
+         uiAmountString is preferred
+         because it avoids precision
+         problems for large token values.
+      */
+
+      const amount =
+        parsed.uiAmountString;
+
+
+      if (
+        amount !== null &&
+        amount !== undefined
+      ) {
+
+        total +=
+          Number(amount);
+
+      }
+
+      else if (
+        parsed.uiAmount !== null &&
+        parsed.uiAmount !== undefined
+      ) {
+
+        total +=
+          Number(
+            parsed.uiAmount
+          );
+
+      }
+
+    }
+
+
+    return total;
+
+  }
+
+
+  /* =========================================
+     FORMAT NUMBER
+  ========================================= */
+
+  function formatNumber(
+    number,
+    maximumFractionDigits
+  ) {
+
+    return new Intl.NumberFormat(
+      "en-US",
+      {
+
+        maximumFractionDigits:
+          maximumFractionDigits,
+
+        minimumFractionDigits:
+          0
+
+      }
+    ).format(number);
+
+  }
+
+
+  /* =========================================
+     SET STATUS
+  ========================================= */
+
+  function setStatus(
+    element,
+    message,
+    type
+  ) {
+
+    element.classList.remove(
+      "error",
+      "success"
+    );
+
+
+    if (type) {
+
+      element.classList.add(
+        type
+      );
+
+    }
+
+
+    element.textContent =
+      message;
+
+  }
+
+
+  /* =========================================
+     UPDATE WALLET
+  ========================================= */
+
+  async function updateWallet(
+    wallet
+  ) {
+
+    const solElement =
+      document.getElementById(
+        wallet.solElement
+      );
+
+
+    const gwarElement =
+      document.getElementById(
+        wallet.gwarElement
+      );
+
+
+    const statusElement =
+      document.getElementById(
+        wallet.statusElement
+      );
+
+
+    /*
+       Do NOT clear existing values.
+
+       This is important because if a refresh
+       temporarily fails, the last known balance
+       remains visible instead of changing to
+       "Unavailable".
+    */
+
+    setStatus(
+      statusElement,
+      "Updating live balance...",
+      null
+    );
+
+
+    try {
+
+      /*
+         Load SOL and GWAR independently.
+
+         This prevents one failed request from
+         destroying the other successful result.
+      */
+
+      const solPromise =
+        getSolBalance(
+          wallet.address
+        );
+
+
+      const gwarPromise =
+        getGwarBalance(
+          wallet.address
+        );
+
+
+      const results =
+        await Promise.allSettled([
+          solPromise,
+          gwarPromise
+        ]);
+
+
+      const solResult =
+        results[0];
+
+
+      const gwarResult =
+        results[1];
+
+
+      let successCount =
+        0;
+
+
+      /*
+         SOL
+      */
+
+      if (
+        solResult.status ===
+        "fulfilled"
+      ) {
+
+        solElement.innerHTML =
+          formatNumber(
+            solResult.value,
+            6
+          )
+          +
+          ' <span class="balance-unit">SOL</span>';
+
+        successCount++;
+
+      }
+
+
+      /*
+         GWAR
+      */
+
+      if (
+        gwarResult.status ===
+        "fulfilled"
+      ) {
+
+        gwarElement.innerHTML =
+          formatNumber(
+            gwarResult.value,
+            2
+          )
+          +
+          ' <span class="balance-unit">$GWAR</span>';
+
+        successCount++;
+
+      }
+
+
+      /*
+         Both successful
+      */
+
+      if (
+        successCount === 2
+      ) {
+
+        const time =
+          new Date().toLocaleTimeString(
+            [],
+            {
+
+              hour:
+                "2-digit",
+
+              minute:
+                "2-digit",
+
+              second:
+                "2-digit"
+
+            }
+          );
+
+
+        setStatus(
+          statusElement,
+
+          "Live • Updated " +
+          time,
+
+          "success"
+        );
+
+
+        return;
+
+      }
+
+
+      /*
+         Partial success
+      */
+
+      if (
+        successCount === 1
+      ) {
+
+        setStatus(
+          statusElement,
+
+          "Partial RPC response. Retrying...",
+
           "error"
         );
 
 
-        statusElement.textContent =
-          "Temporary RPC issue. Retrying...";
+        return;
 
       }
+
+
+      /*
+         Complete failure
+      */
+
+      throw new Error(
+        "Unable to retrieve wallet data"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Wallet update failed:",
+        wallet.address,
+        error
+      );
+
+
+      setStatus(
+        statusElement,
+
+        "Temporary RPC issue. Retrying...",
+
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================
+     UPDATE ALL WALLETS
+  ========================================= */
+
+  async function updateAllWallets() {
+
+    /*
+       Prevent overlapping refresh cycles.
+    */
+
+    if (refreshRunning) {
+
+      return;
 
     }
 
 
-    /* =========================================
-       UPDATE ALL WALLETS
-    ========================================= */
+    refreshRunning =
+      true;
 
-    async function updateAllWallets() {
 
-      await Promise.all([
+    try {
 
-        updateWallet(
-          WALLETS.dev
-        ),
+      /*
+         Do wallets sequentially.
 
-        updateWallet(
-          WALLETS.reward
-        )
+         This reduces the chance of hitting
+         public RPC rate limits.
+      */
 
-      ]);
+      await updateWallet(
+        WALLETS.dev
+      );
+
+
+      await sleep(300);
+
+
+      await updateWallet(
+        WALLETS.reward
+      );
 
     }
 
+    finally {
 
-    /* =========================================
-       INITIAL LOAD
-    ========================================= */
+      refreshRunning =
+        false;
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      function () {
+    }
 
-        updateAllWallets();
-
-      }
-    );
+  }
 
 
-    /* =========================================
-       AUTO REFRESH
-       
-       Every 30 seconds
-    ========================================= */
+  /* =========================================
+     INITIAL LOAD
+  ========================================= */
 
-    setInterval(
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-      updateAllWallets,
+      updateAllWallets();
 
-      30000
+    }
+  );
 
-    );
 
-  </script>
+  /* =========================================
+     AUTO REFRESH
+     EVERY 30 SECONDS
+  ========================================= */
+
+  setInterval(
+    updateAllWallets,
+    30000
+  );
+
+
+</script>
 
 </body>
+
 </html>
