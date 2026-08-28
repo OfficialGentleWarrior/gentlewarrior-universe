@@ -1342,7 +1342,6 @@
 
           <div class="social-list">
 
-
             <a
               class="social-item"
               href="https://facebook.com/GentleWarriorOfficial"
@@ -1493,7 +1492,6 @@
               </span>
 
             </a>
-
 
           </div>
 
@@ -1825,16 +1823,12 @@
 
 
     /*
-     * OFFICIAL $GWAR TOKEN MINT
+     * $GWAR TOKEN MINT
      */
 
     const GWAR_MINT =
       "Fczgz91jYK6HEQmRhBhUBtAaBabLnyi8RtujacN3pump";
 
-
-    /* =========================================
-       WALLET CONFIGURATION
-    ========================================= */
 
     const WALLETS = {
 
@@ -1875,8 +1869,8 @@
 
 
     /* =========================================
-       RPC REQUEST WITH FALLBACK
-    ========================================= */
+       RPC REQUEST
+       ========================================= */
 
     async function solanaRpc(
       method,
@@ -1886,21 +1880,30 @@
       let lastError = null;
 
 
+      /*
+       * Try every endpoint.
+       */
+
       for (
         const endpoint
         of RPC_ENDPOINTS
       ) {
 
+        let controller = null;
+
+        let timeoutId = null;
+
+
         try {
 
-          const controller =
+          controller =
             new AbortController();
 
 
-          const timeout =
+          timeoutId =
             setTimeout(
               () => controller.abort(),
-              10000
+              12000
             );
 
 
@@ -1908,6 +1911,7 @@
             await fetch(
               endpoint,
               {
+
                 method: "POST",
 
                 headers: {
@@ -1920,12 +1924,15 @@
                   jsonrpc: "2.0",
 
                   id:
-                    Date.now(),
+                    Date.now() +
+                    Math.random(),
 
                   method:
+
                     method,
 
                   params:
+
                     params
 
                 }),
@@ -1937,10 +1944,9 @@
             );
 
 
-          clearTimeout(timeout);
-
-
-          if (!response.ok) {
+          if (
+            !response.ok
+          ) {
 
             throw new Error(
               "HTTP " +
@@ -1954,20 +1960,17 @@
             await response.json();
 
 
-          if (data.error) {
+          if (
+            data.error
+          ) {
 
             throw new Error(
               data.error.message ||
-              "RPC error"
+              "Solana RPC error"
             );
 
           }
 
-
-          /*
-           * Make sure we actually received
-           * a result before returning it.
-           */
 
           if (
             typeof data.result ===
@@ -1975,7 +1978,7 @@
           ) {
 
             throw new Error(
-              "Empty RPC response"
+              "Empty RPC result"
             );
 
           }
@@ -1987,13 +1990,28 @@
 
         catch (error) {
 
-          lastError = error;
+          lastError =
+            error;
 
           console.warn(
-            "RPC failed:",
+            "Solana RPC failed:",
             endpoint,
             error
           );
+
+        }
+
+        finally {
+
+          if (
+            timeoutId
+          ) {
+
+            clearTimeout(
+              timeoutId
+            );
+
+          }
 
         }
 
@@ -2003,7 +2021,7 @@
       throw (
         lastError ||
         new Error(
-          "All RPC endpoints failed"
+          "All Solana RPC endpoints failed"
         )
       );
 
@@ -2011,22 +2029,22 @@
 
 
     /* =========================================
-       RETRY HELPER
-    ========================================= */
+       RETRY WITH BACKOFF
+       ========================================= */
 
     async function withRetry(
       fn,
       attempts = 3,
-      delay = 1200
+      delay = 1000
     ) {
 
       let lastError;
 
 
       for (
-        let i = 0;
-        i < attempts;
-        i++
+        let attempt = 0;
+        attempt < attempts;
+        attempt++
       ) {
 
         try {
@@ -2042,7 +2060,7 @@
 
 
           if (
-            i <
+            attempt <
             attempts - 1
           ) {
 
@@ -2051,7 +2069,7 @@
                 setTimeout(
                   resolve,
                   delay *
-                  (i + 1)
+                  (attempt + 1)
                 )
             );
 
@@ -2069,7 +2087,7 @@
 
     /* =========================================
        GET SOL BALANCE
-    ========================================= */
+       ========================================= */
 
     async function getSolBalance(
       address
@@ -2077,9 +2095,11 @@
 
       const result =
         await withRetry(
+
           () =>
             solanaRpc(
               "getBalance",
+
               [
                 address,
 
@@ -2091,14 +2111,17 @@
               ]
             ),
 
-          3
+          3,
+
+          1000
+
         );
 
 
       if (
         !result ||
         typeof result.value !==
-        "number"
+          "number"
       ) {
 
         throw new Error(
@@ -2119,15 +2142,23 @@
     /* =========================================
        GET $GWAR BALANCE
        
-       FIX:
-       Query ONLY the official GWAR mint.
+       IMPORTANT FIX:
+       
+       We now query the $GWAR MINT directly.
 
        OLD:
-       getTokenAccountsByOwner + programId
+       {
+         programId: Token Program
+       }
 
        NEW:
-       getTokenAccountsByOwner + mint
-    ========================================= */
+       {
+         mint: GWAR_MINT
+       }
+
+       This prevents the RPC from returning
+       every SPL token owned by the wallet.
+       ========================================= */
 
     async function getGwarBalance(
       address
@@ -2135,9 +2166,12 @@
 
       const result =
         await withRetry(
+
           () =>
             solanaRpc(
+
               "getTokenAccountsByOwner",
+
               [
 
                 address,
@@ -2157,9 +2191,13 @@
                 }
 
               ]
+
             ),
 
-          3
+          3,
+
+          1200
+
         );
 
 
@@ -2171,24 +2209,25 @@
       ) {
 
         throw new Error(
-          "Invalid $GWAR token account response"
+          "Invalid $GWAR token response"
         );
 
       }
 
 
       /*
-       * No GWAR token account means
-       * the wallet has 0 GWAR.
-       *
-       * This is NOT an error.
+       * No token account means
+       * the wallet owns 0 GWAR.
        */
 
       if (
         result.value.length === 0
       ) {
 
-        return 0;
+        return {
+          amount: 0,
+          decimals: 0
+        };
 
       }
 
@@ -2196,14 +2235,15 @@
       let totalRaw =
         0n;
 
+
       let decimals =
         null;
 
 
       /*
-       * There can theoretically be more
-       * than one token account for the
-       * same mint, so sum them all.
+       * A wallet can theoretically have
+       * more than one token account for
+       * the same mint, so sum all of them.
        */
 
       for (
@@ -2211,68 +2251,70 @@
         of result.value
       ) {
 
+        const info =
+          account
+            ?.account
+            ?.data
+            ?.parsed
+            ?.info;
+
+
+        const tokenAmount =
+          info
+            ?.tokenAmount;
+
+
+        if (
+          !tokenAmount
+        ) {
+
+          continue;
+
+        }
+
+
+        if (
+          typeof tokenAmount.amount !==
+          "string"
+        ) {
+
+          continue;
+
+        }
+
+
         try {
-
-          const info =
-            account
-              ?.account
-              ?.data
-              ?.parsed
-              ?.info;
-
-
-          if (!info) {
-
-            continue;
-
-          }
-
-
-          const tokenAmount =
-            info.tokenAmount;
-
-
-          if (
-            !tokenAmount ||
-            typeof tokenAmount.amount !==
-            "string"
-          ) {
-
-            continue;
-
-          }
-
-
-          /*
-           * Keep raw token amount as BigInt
-           * to avoid precision loss.
-           */
 
           totalRaw +=
             BigInt(
               tokenAmount.amount
             );
 
-
-          if (
-            decimals === null &&
-            typeof tokenAmount.decimals ===
-            "number"
-          ) {
-
-            decimals =
-              tokenAmount.decimals;
-
-          }
-
         }
 
         catch (error) {
 
           console.warn(
-            "Skipping malformed $GWAR account:",
-            error
+            "Invalid GWAR raw amount:",
+            tokenAmount.amount
           );
+
+        }
+
+
+        if (
+          decimals === null &&
+          Number.isFinite(
+            Number(
+              tokenAmount.decimals
+            )
+          )
+        ) {
+
+          decimals =
+            Number(
+              tokenAmount.decimals
+            );
 
         }
 
@@ -2280,55 +2322,39 @@
 
 
       /*
-       * If no usable token account was found,
-       * treat it as zero.
+       * If accounts existed but no valid
+       * token amount was found, fail properly
+       * instead of displaying a fake 0.
        */
 
       if (
         decimals === null
       ) {
 
-        return 0;
-
-      }
-
-
-      /*
-       * Convert raw amount to display amount.
-       */
-
-      const divisor =
-        10 ** decimals;
-
-
-      const balance =
-        Number(totalRaw) /
-        divisor;
-
-
-      if (
-        !Number.isFinite(balance)
-      ) {
-
         throw new Error(
-          "Invalid calculated $GWAR balance"
+          "GWAR token amount unavailable"
         );
 
       }
 
 
-      return balance;
+      return {
+        amount:
+          totalRaw,
+
+        decimals:
+          decimals
+      };
 
     }
 
 
     /* =========================================
-       FORMAT NUMBER
-    ========================================= */
+       FORMAT SOL
+       ========================================= */
 
-    function formatNumber(
-      number,
-      maximumFractionDigits = 6
+    function formatSol(
+      number
     ) {
 
       return new Intl.NumberFormat(
@@ -2336,7 +2362,7 @@
         {
 
           maximumFractionDigits:
-            maximumFractionDigits,
+            8,
 
           minimumFractionDigits:
             0
@@ -2348,8 +2374,105 @@
 
 
     /* =========================================
-       UPDATE SOL ONLY
-    ========================================= */
+       FORMAT GWAR
+       
+       Uses BigInt so we don't lose precision
+       on large token balances.
+       ========================================= */
+
+    function formatGwar(
+      rawAmount,
+      decimals
+    ) {
+
+      const raw =
+        BigInt(rawAmount);
+
+
+      const divisor =
+        10n **
+        BigInt(decimals);
+
+
+      const whole =
+        raw /
+        divisor;
+
+
+      const fraction =
+        raw %
+        divisor;
+
+
+      if (
+        fraction === 0n
+      ) {
+
+        return new Intl.NumberFormat(
+          "en-US"
+        ).format(
+          Number(whole)
+        );
+
+      }
+
+
+      let fractionText =
+        fraction
+          .toString()
+          .padStart(
+            decimals,
+            "0"
+          );
+
+
+      /*
+       * Remove unnecessary trailing zeros.
+       */
+
+      fractionText =
+        fractionText.replace(
+          /0+$/,
+          ""
+        );
+
+
+      /*
+       * For normal GWAR display,
+       * show up to 6 decimals.
+       */
+
+      if (
+        fractionText.length >
+        6
+      ) {
+
+        fractionText =
+          fractionText.substring(
+            0,
+            6
+          );
+
+      }
+
+
+      return (
+        new Intl.NumberFormat(
+          "en-US"
+        ).format(
+          Number(whole)
+        )
+        +
+        "." +
+        fractionText
+      );
+
+    }
+
+
+    /* =========================================
+       UPDATE SOL
+       ========================================= */
 
     async function updateSol(
       wallet
@@ -2370,9 +2493,8 @@
 
 
         element.innerHTML =
-          formatNumber(
-            balance,
-            8
+          formatSol(
+            balance
           )
           +
           ' <span class="balance-unit">SOL</span>';
@@ -2402,8 +2524,8 @@
 
 
     /* =========================================
-       UPDATE $GWAR ONLY
-    ========================================= */
+       UPDATE GWAR
+       ========================================= */
 
     async function updateGwar(
       wallet
@@ -2417,16 +2539,16 @@
 
       try {
 
-        const balance =
+        const result =
           await getGwarBalance(
             wallet.address
           );
 
 
         element.innerHTML =
-          formatNumber(
-            balance,
-            2
+          formatGwar(
+            result.amount,
+            result.decimals
           )
           +
           ' <span class="balance-unit">$GWAR</span>';
@@ -2457,7 +2579,16 @@
 
     /* =========================================
        UPDATE ONE WALLET
-    ========================================= */
+       
+       IMPORTANT:
+       SOL and GWAR are intentionally
+       fetched SEQUENTIALLY.
+
+       This reduces simultaneous RPC
+       requests and helps prevent the
+       public RPC from returning partial
+       responses.
+       ========================================= */
 
     async function updateWallet(
       wallet
@@ -2479,38 +2610,49 @@
 
 
       /*
-       * Run SOL and GWAR independently.
-       *
-       * If one fails, the other still
-       * displays its balance.
+       * STEP 1
+       * Get SOL first.
        */
 
-      const solPromise =
-        updateSol(
+      const solSuccess =
+        await updateSol(
           wallet
         );
 
 
-      const gwarPromise =
-        updateGwar(
+      /*
+       * Small delay before GWAR request.
+       */
+
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            250
+          )
+      );
+
+
+      /*
+       * STEP 2
+       * Get GWAR.
+       */
+
+      const gwarSuccess =
+        await updateGwar(
           wallet
         );
 
 
-      const [
-        solSuccess,
-        gwarSuccess
-      ] =
-        await Promise.all([
-          solPromise,
-          gwarPromise
-        ]);
-
+      /*
+       * Status
+       */
 
       const time =
         new Date().toLocaleTimeString(
           [],
           {
+
             hour:
               "2-digit",
 
@@ -2519,6 +2661,7 @@
 
             second:
               "2-digit"
+
           }
         );
 
@@ -2582,28 +2725,39 @@
 
     /* =========================================
        UPDATE ALL WALLETS
-    ========================================= */
+       
+       IMPORTANT:
+       Wallets are also processed one after
+       another instead of firing 4 requests
+       simultaneously.
+       ========================================= */
 
     async function updateAllWallets() {
 
-      await Promise.all([
+      await updateWallet(
+        WALLETS.dev
+      );
 
-        updateWallet(
-          WALLETS.dev
-        ),
 
-        updateWallet(
-          WALLETS.reward
-        )
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            500
+          )
+      );
 
-      ]);
+
+      await updateWallet(
+        WALLETS.reward
+      );
 
     }
 
 
     /* =========================================
        INITIAL LOAD
-    ========================================= */
+       ========================================= */
 
     document.addEventListener(
       "DOMContentLoaded",
@@ -2618,14 +2772,18 @@
     /* =========================================
        AUTO REFRESH
        EVERY 30 SECONDS
-    ========================================= */
+       ========================================= */
 
     setInterval(
-      updateAllWallets,
+      () => {
+
+        updateAllWallets();
+
+      },
       30000
     );
 
   </script>
 
 </body>
-  </html>
+              </html>
