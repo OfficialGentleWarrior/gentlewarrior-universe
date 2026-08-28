@@ -1342,7 +1342,6 @@
 
           <div class="social-list">
 
-
             <a
               class="social-item"
               href="https://facebook.com/GentleWarriorOfficial"
@@ -1493,7 +1492,6 @@
               </span>
 
             </a>
-
 
           </div>
 
@@ -1815,26 +1813,22 @@
        SOLANA CONFIGURATION
     ========================================= */
 
-    /*
-     * IMPORTANT:
-     *
-     * The previous version queried ALL SPL token
-     * accounts using programId and then searched
-     * for the GWAR mint in JavaScript.
-     *
-     * This version queries the GWAR mint directly.
-     *
-     * This dramatically reduces the amount of data
-     * requested from the RPC.
-     */
-
     const RPC_ENDPOINTS = [
 
+      /*
+       * Official Solana Mainnet RPC
+       */
       "https://api.mainnet.solana.com",
 
-      "https://api.mainnet-beta.solana.com",
+      /*
+       * PublicNode Solana Mainnet
+       */
+      "https://solana-rpc.publicnode.com",
 
-      "https://solana-rpc.publicnode.com"
+      /*
+       * dRPC public Solana endpoint
+       */
+      "https://solana.drpc.org"
 
     ];
 
@@ -1881,240 +1875,296 @@
     };
 
 
-    /* =========================================
-       RPC REQUEST
-       ========================================= */
+    /*
+     * Start from a different RPC on each refresh.
+     *
+     * This prevents the page from hammering
+     * the same public RPC every 30 seconds.
+     */
 
-    async function solanaRpc(
-      method,
-      params
+    let rpcIndex = 0;
+
+
+    /*
+     * Keep the last successful values.
+     *
+     * If an RPC temporarily fails, we do NOT
+     * replace a valid balance with "Unavailable".
+     */
+
+    const lastKnownBalances = {
+
+      dev: {
+        sol: null,
+        gwar: null
+      },
+
+      reward: {
+        sol: null,
+        gwar: null
+      }
+
+    };
+
+
+    /* =========================================
+       JSON-RPC BATCH REQUEST
+    ========================================= */
+
+    async function rpcBatch(
+      endpoint,
+      requests
     ) {
 
-      let lastError = null;
+      const controller =
+        new AbortController();
 
 
-      for (
-        const endpoint
-        of RPC_ENDPOINTS
-      ) {
-
-        let controller = null;
-        let timeoutId = null;
+      const timeout =
+        setTimeout(
+          () => controller.abort(),
+          12000
+        );
 
 
-        try {
+      try {
 
-          controller =
-            new AbortController();
-
-
-          timeoutId =
-            setTimeout(
-              () => controller.abort(),
-              8000
-            );
-
-
-          const response =
-            await fetch(
-              endpoint,
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body: JSON.stringify({
-
-                  jsonrpc: "2.0",
-
-                  id:
-                    Date.now() +
-                    Math.random(),
-
-                  method:
-                    method,
-
-                  params:
-                    params
-
-                }),
-
-                signal:
-                  controller.signal,
-
-                cache: "no-store"
-
-              }
-            );
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              "HTTP " +
-              response.status
-            );
-
-          }
-
-
-          const data =
-            await response.json();
-
-
-          if (data.error) {
-
-            throw new Error(
-              data.error.message ||
-              "RPC error"
-            );
-
-          }
-
-
-          if (
-            typeof data.result ===
-            "undefined"
-          ) {
-
-            throw new Error(
-              "RPC returned no result"
-            );
-
-          }
-
-
-          return data.result;
-
-        }
-
-        catch (error) {
-
-          lastError =
-            error;
-
-          console.warn(
-            "Solana RPC failed:",
+        const response =
+          await fetch(
             endpoint,
-            error
+            {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Accept":
+                  "application/json"
+              },
+
+              body:
+                JSON.stringify(requests),
+
+              signal:
+                controller.signal
+
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "HTTP " +
+            response.status
           );
 
         }
 
-        finally {
 
-          if (timeoutId) {
+        const data =
+          await response.json();
 
-            clearTimeout(
-              timeoutId
-            );
 
-          }
+        if (!Array.isArray(data)) {
+
+          throw new Error(
+            "Invalid RPC batch response"
+          );
 
         }
 
+
+        return data;
+
       }
 
+      finally {
 
-      throw (
-        lastError ||
-        new Error(
-          "All Solana RPC endpoints failed"
-        )
-      );
+        clearTimeout(timeout);
+
+      }
 
     }
 
 
     /* =========================================
-       RETRY HELPER
-       ========================================= */
+       BUILD BALANCE REQUESTS
+    ========================================= */
 
-    async function withRetry(
-      fn,
-      attempts = 2,
-      delay = 1000
-    ) {
+    function buildBalanceRequests() {
 
-      let lastError = null;
+      return [
+
+        /* DEV SOL */
+
+        {
+          jsonrpc: "2.0",
+
+          id: "dev-sol",
+
+          method:
+            "getBalance",
+
+          params: [
+
+            WALLETS.dev.address,
+
+            {
+              commitment:
+                "confirmed"
+            }
+
+          ]
+
+        },
 
 
-      for (
-        let i = 0;
-        i < attempts;
-        i++
-      ) {
+        /* DEV GWAR */
 
-        try {
+        {
+          jsonrpc: "2.0",
 
-          return await fn();
+          id: "dev-gwar",
+
+          method:
+            "getTokenAccountsByOwner",
+
+          params: [
+
+            WALLETS.dev.address,
+
+            {
+              mint:
+                GWAR_MINT
+            },
+
+            {
+              encoding:
+                "jsonParsed",
+
+              commitment:
+                "confirmed"
+
+            }
+
+          ]
+
+        },
+
+
+        /* REWARD SOL */
+
+        {
+          jsonrpc: "2.0",
+
+          id: "reward-sol",
+
+          method:
+            "getBalance",
+
+          params: [
+
+            WALLETS.reward.address,
+
+            {
+              commitment:
+                "confirmed"
+            }
+
+          ]
+
+        },
+
+
+        /* REWARD GWAR */
+
+        {
+          jsonrpc: "2.0",
+
+          id: "reward-gwar",
+
+          method:
+            "getTokenAccountsByOwner",
+
+          params: [
+
+            WALLETS.reward.address,
+
+            {
+              mint:
+                GWAR_MINT
+            },
+
+            {
+              encoding:
+                "jsonParsed",
+
+              commitment:
+                "confirmed"
+
+            }
+
+          ]
 
         }
 
-        catch (error) {
-
-          lastError =
-            error;
-
-
-          if (
-            i <
-            attempts - 1
-          ) {
-
-            await new Promise(
-              resolve =>
-                setTimeout(
-                  resolve,
-                  delay *
-                  (i + 1)
-                )
-            );
-
-          }
-
-        }
-
-      }
-
-
-      throw (
-        lastError ||
-        new Error(
-          "Request failed"
-        )
-      );
+      ];
 
     }
 
 
     /* =========================================
-       GET SOL BALANCE
-       ========================================= */
+       FIND RPC RESULT
+    ========================================= */
 
-    async function getSolBalance(
-      address
+    function getRpcResult(
+      responses,
+      id
     ) {
 
-      const result =
-        await withRetry(
-          () =>
-            solanaRpc(
-              "getBalance",
-              [
-                address,
-                {
-                  commitment:
-                    "confirmed"
-                }
-              ]
-            ),
-          2
+      const item =
+        responses.find(
+          response =>
+            String(response.id) ===
+            String(id)
         );
 
+
+      if (!item) {
+
+        throw new Error(
+          "Missing RPC response: " +
+          id
+        );
+
+      }
+
+
+      if (item.error) {
+
+        throw new Error(
+          item.error.message ||
+          "RPC error"
+        );
+
+      }
+
+
+      return item.result;
+
+    }
+
+
+    /* =========================================
+       SOL BALANCE PARSER
+    ========================================= */
+
+    function parseSolBalance(
+      result
+    ) {
 
       if (
         !result ||
@@ -2123,7 +2173,7 @@
       ) {
 
         throw new Error(
-          "Invalid SOL balance response"
+          "Invalid SOL balance"
         );
 
       }
@@ -2138,47 +2188,12 @@
 
 
     /* =========================================
-       GET $GWAR BALANCE
-       
-       FIX:
-       USE MINT FILTER DIRECTLY.
-       
-       This avoids requesting every SPL token
-       account owned by the wallet.
-       ========================================= */
+       GWAR BALANCE PARSER
+    ========================================= */
 
-    async function getGwarBalance(
-      address
+    function parseGwarBalance(
+      result
     ) {
-
-      const result =
-        await withRetry(
-          () =>
-            solanaRpc(
-              "getTokenAccountsByOwner",
-              [
-
-                address,
-
-                {
-                  mint:
-                    GWAR_MINT
-                },
-
-                {
-                  encoding:
-                    "jsonParsed",
-
-                  commitment:
-                    "confirmed"
-
-                }
-
-              ]
-            ),
-          2
-        );
-
 
       if (
         !result ||
@@ -2188,42 +2203,24 @@
       ) {
 
         throw new Error(
-          "Invalid $GWAR token response"
+          "Invalid $GWAR response"
         );
 
       }
 
 
       /*
-       * No GWAR token account means
-       * the wallet simply has 0 GWAR.
-       *
-       * That is NOT an RPC error.
-       */
-
-      if (
-        result.value.length === 0
-      ) {
-
-        return {
-          raw: "0",
-          decimals: 0
-        };
-
-      }
-
-
-      /*
-       * Use BigInt for raw token amounts
-       * so large $GWAR balances do not
-       * lose precision.
+       * Because the request is already filtered
+       * by the GWAR mint, every returned account
+       * belongs to $GWAR.
        */
 
       let totalRaw =
         0n;
 
+
       let decimals =
-        null;
+        0;
 
 
       for (
@@ -2231,29 +2228,23 @@
         of result.value
       ) {
 
-        const info =
-          account &&
-          account.account &&
-          account.account.data &&
-          account.account.data.parsed &&
-          account.account.data.parsed.info;
+        const tokenAmount =
+          account
+            ?.account
+            ?.data
+            ?.parsed
+            ?.info
+            ?.tokenAmount;
 
 
-        if (!info) {
-
+        if (!tokenAmount) {
           continue;
-
         }
 
 
-        const tokenAmount =
-          info.tokenAmount;
-
-
         if (
-          !tokenAmount ||
           typeof tokenAmount.amount !==
-            "string"
+          "string"
         ) {
 
           continue;
@@ -2273,49 +2264,24 @@
         catch (error) {
 
           console.warn(
-            "Invalid GWAR raw amount:",
-            tokenAmount.amount
+            "Invalid token amount:",
+            error
           );
 
         }
 
 
-        if (
-          decimals === null &&
-          Number.isInteger(
-            Number(
-              tokenAmount.decimals
-            )
-          )
-        ) {
-
-          decimals =
-            Number(
-              tokenAmount.decimals
-            );
-
-        }
-
-      }
-
-
-      if (
-        decimals === null
-      ) {
-
-        decimals = 0;
+        decimals =
+          Number(
+            tokenAmount.decimals
+          );
 
       }
 
 
       return {
-
-        raw:
-          totalRaw.toString(),
-
-        decimals:
-          decimals
-
+        raw: totalRaw,
+        decimals: decimals
       };
 
     }
@@ -2323,7 +2289,7 @@
 
     /* =========================================
        FORMAT SOL
-       ========================================= */
+    ========================================= */
 
     function formatSol(
       number
@@ -2332,11 +2298,13 @@
       return new Intl.NumberFormat(
         "en-US",
         {
-          maximumFractionDigits:
-            8,
 
           minimumFractionDigits:
-            0
+            0,
+
+          maximumFractionDigits:
+            8
+
         }
       ).format(number);
 
@@ -2344,32 +2312,17 @@
 
 
     /* =========================================
-       FORMAT TOKEN RAW BALANCE
-       ========================================= */
+       FORMAT TOKEN BIGINT
+    ========================================= */
 
-    function formatTokenBalance(
+    function formatTokenAmount(
       raw,
-      decimals
+      decimals,
+      maximumDecimals = 2
     ) {
 
-      let rawBig;
-
-      try {
-
-        rawBig =
-          BigInt(raw);
-
-      }
-
-      catch (error) {
-
-        return "0";
-
-      }
-
-
       if (
-        rawBig === 0n
+        typeof raw !== "bigint"
       ) {
 
         return "0";
@@ -2378,108 +2331,99 @@
 
 
       if (
-        decimals <= 0
+        decimals === 0
       ) {
 
-        return rawBig.toString();
+        return new Intl.NumberFormat(
+          "en-US"
+        ).format(
+          Number(raw)
+        );
 
       }
-
-
-      const negative =
-        rawBig < 0n;
-
-
-      const absolute =
-        negative
-          ? -rawBig
-          : rawBig;
 
 
       const rawString =
-        absolute.toString();
+        raw
+          .toString()
+          .padStart(
+            decimals + 1,
+            "0"
+          );
 
 
-      const padded =
-        rawString.padStart(
-          decimals + 1,
-          "0"
-        );
+      const splitIndex =
+        rawString.length -
+        decimals;
 
 
-      const integerPart =
-        padded.slice(
+      let whole =
+        rawString.slice(
           0,
-          -decimals
+          splitIndex
         );
 
 
-      let decimalPart =
-        padded.slice(
-          -decimals
+      let fraction =
+        rawString.slice(
+          splitIndex
         );
 
 
       /*
-       * Remove unnecessary trailing zeros.
+       * Remove trailing zeroes.
        */
 
-      decimalPart =
-        decimalPart.replace(
+      fraction =
+        fraction.replace(
           /0+$/,
           ""
         );
 
 
-      let result =
-        decimalPart
-          ? integerPart +
-            "." +
-            decimalPart
-          : integerPart;
-
-
       /*
-       * Add thousands separators
-       * to the integer portion.
+       * Limit displayed decimals.
        */
 
-      const parts =
-        result.split(".");
+      if (
+        fraction.length >
+        maximumDecimals
+      ) {
 
-
-      parts[0] =
-        Number(
-          parts[0]
-        ).toLocaleString(
-          "en-US"
-        );
-
-
-      result =
-        parts.join(".");
-
-
-      if (negative) {
-
-        result =
-          "-" +
-          result;
+        fraction =
+          fraction.slice(
+            0,
+            maximumDecimals
+          );
 
       }
 
 
-      return result;
+      /*
+       * Add commas to whole number.
+       */
+
+      whole =
+        whole.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+
+
+      return fraction
+        ? whole + "." + fraction
+        : whole;
 
     }
 
 
     /* =========================================
-       UPDATE SOL ONLY
-       ========================================= */
+       UPDATE DOM
+    ========================================= */
 
-    async function updateSol(
-      wallet
+    function setSolBalance(
+      wallet,
+      balance
     ) {
 
       const element =
@@ -2488,51 +2432,17 @@
         );
 
 
-      try {
-
-        const balance =
-          await getSolBalance(
-            wallet.address
-          );
-
-
-        element.innerHTML =
-          formatSol(
-            balance
-          )
-          +
-          ' <span class="balance-unit">SOL</span>';
-
-
-        return true;
-
-      }
-
-      catch (error) {
-
-        console.error(
-          "SOL balance error:",
-          error
-        );
-
-
-        element.textContent =
-          "Unavailable";
-
-
-        return false;
-
-      }
+      element.innerHTML =
+        formatSol(balance)
+        +
+        ' <span class="balance-unit">SOL</span>';
 
     }
 
 
-    /* =========================================
-       UPDATE $GWAR ONLY
-       ========================================= */
-
-    async function updateGwar(
-      wallet
+    function setGwarBalance(
+      wallet,
+      balance
     ) {
 
       const element =
@@ -2541,65 +2451,216 @@
         );
 
 
-      try {
-
-        const result =
-          await getGwarBalance(
-            wallet.address
-          );
-
-
-        const formatted =
-          formatTokenBalance(
-            result.raw,
-            result.decimals
-          );
-
-
-        element.innerHTML =
-          formatted +
-          ' <span class="balance-unit">$GWAR</span>';
-
-
-        return true;
-
-      }
-
-      catch (error) {
-
-        console.error(
-          "$GWAR balance error:",
-          error
-        );
-
-
-        element.textContent =
-          "Unavailable";
-
-
-        return false;
-
-      }
+      element.innerHTML =
+        formatTokenAmount(
+          balance.raw,
+          balance.decimals,
+          2
+        )
+        +
+        ' <span class="balance-unit">$GWAR</span>';
 
     }
 
 
     /* =========================================
-       UPDATE ONE WALLET
-       
-       IMPORTANT:
-       SOL + GWAR are requested sequentially.
-       This avoids firing 4 RPC requests at
-       exactly the same time.
-       ========================================= */
+       UPDATE WALLET FROM BATCH RESULTS
+    ========================================= */
 
-    async function updateWallet(
-      wallet
+    function processWalletResults(
+      walletName,
+      responses
     ) {
+
+      const wallet =
+        WALLETS[walletName];
+
+
+      let solSuccess =
+        false;
+
+
+      let gwarSuccess =
+        false;
+
+
+      /*
+       * SOL
+       */
+
+      try {
+
+        const result =
+          getRpcResult(
+            responses,
+            walletName + "-sol"
+          );
+
+
+        const balance =
+          parseSolBalance(
+            result
+          );
+
+
+        lastKnownBalances[
+          walletName
+        ].sol =
+          balance;
+
+
+        setSolBalance(
+          wallet,
+          balance
+        );
+
+
+        solSuccess =
+          true;
+
+      }
+
+      catch (error) {
+
+        console.warn(
+          walletName +
+          " SOL RPC error:",
+          error
+        );
+
+
+        /*
+         * IMPORTANT:
+         * Do NOT erase the last successful value.
+         */
+
+        if (
+          lastKnownBalances[
+            walletName
+          ].sol !== null
+        ) {
+
+          setSolBalance(
+            wallet,
+            lastKnownBalances[
+              walletName
+            ].sol
+          );
+
+        }
+
+      }
+
+
+      /*
+       * $GWAR
+       */
+
+      try {
+
+        const result =
+          getRpcResult(
+            responses,
+            walletName + "-gwar"
+          );
+
+
+        const balance =
+          parseGwarBalance(
+            result
+          );
+
+
+        lastKnownBalances[
+          walletName
+        ].gwar =
+          balance;
+
+
+        setGwarBalance(
+          wallet,
+          balance
+        );
+
+
+        gwarSuccess =
+          true;
+
+      }
+
+      catch (error) {
+
+        console.warn(
+          walletName +
+          " $GWAR RPC error:",
+          error
+        );
+
+
+        /*
+         * IMPORTANT:
+         * Do NOT erase the last successful value.
+         */
+
+        if (
+          lastKnownBalances[
+            walletName
+          ].gwar !== null
+        ) {
+
+          setGwarBalance(
+            wallet,
+            lastKnownBalances[
+              walletName
+            ].gwar
+          );
+
+        }
+
+      }
+
+
+      return {
+        solSuccess,
+        gwarSuccess
+      };
+
+    }
+
+
+    /* =========================================
+       STATUS
+    ========================================= */
+
+    function updateWalletStatus(
+      walletName,
+      result,
+      endpoint
+    ) {
+
+      const wallet =
+        WALLETS[walletName];
+
 
       const statusElement =
         document.getElementById(
           wallet.statusElement
+        );
+
+
+      const time =
+        new Date().toLocaleTimeString(
+          [],
+          {
+            hour:
+              "2-digit",
+
+            minute:
+              "2-digit",
+
+            second:
+              "2-digit"
+          }
         );
 
 
@@ -2608,150 +2669,274 @@
       );
 
 
-      statusElement.textContent =
-        "Updating live balances...";
-
-
-      /*
-       * SOL first.
-       */
-
-      const solSuccess =
-        await updateSol(
-          wallet
-        );
-
-
-      /*
-       * Small gap between RPC requests.
-       */
-
-      await new Promise(
-        resolve =>
-          setTimeout(
-            resolve,
-            150
-          )
-      );
-
-
-      /*
-       * GWAR second.
-       */
-
-      const gwarSuccess =
-        await updateGwar(
-          wallet
-        );
-
-
-      const time =
-        new Date().toLocaleTimeString(
-          [],
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-          }
-        );
-
-
       if (
-        solSuccess &&
-        gwarSuccess
+        result.solSuccess &&
+        result.gwarSuccess
       ) {
-
-        statusElement.classList.remove(
-          "error"
-        );
 
         statusElement.textContent =
           "Updated " +
           time;
 
+        return;
+
       }
 
-      else if (
-        solSuccess &&
-        !gwarSuccess
+
+      if (
+        result.solSuccess &&
+        !result.gwarSuccess
       ) {
 
         statusElement.classList.add(
           "error"
         );
 
+
         statusElement.textContent =
-          "SOL updated • $GWAR temporarily unavailable";
+          "SOL updated • $GWAR refresh failed";
+
+        return;
 
       }
 
-      else if (
-        !solSuccess &&
-        gwarSuccess
+
+      if (
+        !result.solSuccess &&
+        result.gwarSuccess
       ) {
 
         statusElement.classList.add(
           "error"
         );
 
+
         statusElement.textContent =
-          "$GWAR updated • SOL temporarily unavailable";
+          "$GWAR updated • SOL refresh failed";
+
+        return;
 
       }
 
-      else {
 
-        statusElement.classList.add(
-          "error"
-        );
+      /*
+       * Both failed.
+       *
+       * If old values exist, tell the user
+       * that those values are retained.
+       */
 
-        statusElement.textContent =
-          "Temporary RPC issue • Retrying...";
+      const hasCachedData =
+        lastKnownBalances[
+          walletName
+        ].sol !== null ||
+        lastKnownBalances[
+          walletName
+        ].gwar !== null;
 
-      }
+
+      statusElement.classList.add(
+        "error"
+      );
+
+
+      statusElement.textContent =
+        hasCachedData
+          ? "RPC unavailable • showing last known balance"
+          : "RPC unavailable • retrying...";
 
     }
 
 
     /* =========================================
        UPDATE ALL WALLETS
-       
-       IMPORTANT:
-       Process wallets one after another
-       instead of sending 4 RPC requests
-       simultaneously.
-       ========================================= */
+    ========================================= */
 
     async function updateAllWallets() {
 
-      await updateWallet(
-        WALLETS.dev
-      );
+      /*
+       * Rotate starting RPC.
+       */
+
+      const startIndex =
+        rpcIndex;
+
+
+      rpcIndex =
+        (
+          rpcIndex + 1
+        ) %
+        RPC_ENDPOINTS.length;
 
 
       /*
-       * Small gap before the second wallet.
+       * Try each RPC endpoint.
+       *
+       * We send ONE BATCH request containing
+       * all four balance requests.
        */
 
-      await new Promise(
-        resolve =>
-          setTimeout(
-            resolve,
-            250
-          )
-      );
+      for (
+        let attempt = 0;
+        attempt <
+        RPC_ENDPOINTS.length;
+        attempt++
+      ) {
+
+        const endpointIndex =
+          (
+            startIndex +
+            attempt
+          ) %
+          RPC_ENDPOINTS.length;
 
 
-      await updateWallet(
-        WALLETS.reward
-      );
+        const endpoint =
+          RPC_ENDPOINTS[
+            endpointIndex
+          ];
+
+
+        console.log(
+          "Trying Solana RPC:",
+          endpoint
+        );
+
+
+        try {
+
+          const requests =
+            buildBalanceRequests();
+
+
+          const responses =
+            await rpcBatch(
+              endpoint,
+              requests
+            );
+
+
+          /*
+           * Process each wallet independently.
+           *
+           * Even if one item in the batch fails,
+           * successful items are still kept.
+           */
+
+          const devResult =
+            processWalletResults(
+              "dev",
+              responses
+            );
+
+
+          const rewardResult =
+            processWalletResults(
+              "reward",
+              responses
+            );
+
+
+          updateWalletStatus(
+            "dev",
+            devResult,
+            endpoint
+          );
+
+
+          updateWalletStatus(
+            "reward",
+            rewardResult,
+            endpoint
+          );
+
+
+          /*
+           * If at least one balance succeeded,
+           * this endpoint is usable.
+           *
+           * Stop rotating.
+           */
+
+          if (
+            (
+              devResult.solSuccess ||
+              devResult.gwarSuccess ||
+              rewardResult.solSuccess ||
+              rewardResult.gwarSuccess
+            )
+          ) {
+
+            return;
+
+          }
+
+        }
+
+        catch (error) {
+
+          console.error(
+            "RPC endpoint failed:",
+            endpoint,
+            error
+          );
+
+        }
+
+      }
+
+
+      /*
+       * ALL RPCs failed.
+       *
+       * Do NOT overwrite existing balances.
+       */
+
+      for (
+        const walletName
+        of [
+          "dev",
+          "reward"
+        ]
+      ) {
+
+        const wallet =
+          WALLETS[walletName];
+
+
+        const statusElement =
+          document.getElementById(
+            wallet.statusElement
+          );
+
+
+        const hasCachedData =
+          lastKnownBalances[
+            walletName
+          ].sol !== null ||
+          lastKnownBalances[
+            walletName
+          ].gwar !== null;
+
+
+        statusElement.classList.add(
+          "error"
+        );
+
+
+        statusElement.textContent =
+          hasCachedData
+            ? "RPC temporarily unavailable • showing last known balance"
+            : "Unable to reach Solana RPC • retrying...";
+
+      }
 
     }
 
 
     /* =========================================
        INITIAL LOAD
-       ========================================= */
+    ========================================= */
 
     document.addEventListener(
       "DOMContentLoaded",
@@ -2766,7 +2951,7 @@
     /* =========================================
        AUTO REFRESH
        EVERY 30 SECONDS
-       ========================================= */
+    ========================================= */
 
     setInterval(
       updateAllWallets,
