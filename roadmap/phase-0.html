@@ -73,7 +73,6 @@
       padding: 22px 0 42px;
     }
 
-
     /* =========================
        HEADER
     ========================= */
@@ -119,7 +118,6 @@
         rgba(168, 239, 112, 0.07);
     }
 
-
     /* =========================
        AVATAR
     ========================= */
@@ -156,7 +154,6 @@
 
       border-radius: 50%;
     }
-
 
     .eyebrow {
       position: relative;
@@ -197,7 +194,6 @@
       font-size: 15px;
     }
 
-
     /* =========================
        BACK
     ========================= */
@@ -212,7 +208,6 @@
       font-size: 12px;
       font-weight: 800;
     }
-
 
     /* =========================
        PHASE INTRO
@@ -258,7 +253,6 @@
       font-size: 14px;
     }
 
-
     /* =========================
        SECTIONS
     ========================= */
@@ -298,7 +292,6 @@
       background:
         rgba(3, 52, 37, 0.94);
     }
-
 
     /* =========================
        CLICKABLE SECTION HEADER
@@ -368,7 +361,6 @@
       font-size: 13px;
     }
 
-
     /* =========================
        ARROW
     ========================= */
@@ -403,7 +395,6 @@
       background:
         rgba(168, 239, 112, 0.08);
     }
-
 
     /* =========================
        CONTENT
@@ -458,7 +449,6 @@
       margin-top: 14px;
     }
 
-
     /* =========================
        QUOTE
     ========================= */
@@ -481,7 +471,6 @@
 
       line-height: 1.75;
     }
-
 
     /* =========================
        CHARACTER
@@ -535,6 +524,112 @@
       margin-top: 13px;
     }
 
+    /* =========================
+       SOCIAL CHANNELS
+    ========================= */
+
+    .social-list {
+      display: grid;
+
+      gap: 12px;
+    }
+
+    .social-item {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding: 15px 16px;
+
+      border:
+        1px solid
+        rgba(168, 239, 112, 0.13);
+
+      border-radius: 15px;
+
+      background:
+        rgba(2, 38, 27, 0.72);
+
+      transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .social-item:hover {
+      border-color:
+        rgba(168, 239, 112, 0.32);
+
+      background:
+        rgba(3, 55, 38, 0.82);
+
+      transform: translateY(-1px);
+    }
+
+    .social-info {
+      min-width: 0;
+    }
+
+    .social-name {
+      margin: 0;
+
+      color: var(--text);
+
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .social-description {
+      margin: 4px 0 0;
+
+      color: var(--muted);
+
+      font-size: 12px;
+
+      line-height: 1.5;
+    }
+
+    .social-button {
+      flex: 0 0 auto;
+
+      padding: 9px 13px;
+
+      border:
+        1px solid
+        rgba(168, 239, 112, 0.20);
+
+      border-radius: 999px;
+
+      color: var(--lime);
+
+      font-size: 11px;
+      font-weight: 800;
+
+      background:
+        rgba(168, 239, 112, 0.06);
+    }
+
+    .social-note {
+      margin-top: 18px;
+
+      padding: 15px 16px;
+
+      border-left: 3px solid var(--gold);
+
+      border-radius: 0 12px 12px 0;
+
+      background:
+        rgba(0, 27, 19, 0.55);
+
+      color: #b9c9be;
+
+      font-size: 12px;
+
+      line-height: 1.7;
+    }
 
     /* =========================
        FOOTER
@@ -555,7 +650,6 @@
 
       font-size: 11px;
     }
-
 
     /* =========================
        MOBILE
@@ -599,6 +693,14 @@
         width: 40px;
         height: 40px;
       }
+
+      .social-item {
+        align-items: flex-start;
+      }
+
+      .social-button {
+        margin-top: 1px;
+      }
     }
   </style>
 </head>
@@ -608,10 +710,7 @@
 
   <main class="page">
 
-
-    <!-- =========================
-         HEADER
-    ========================= -->
+    <!-- HEADER -->
 
     <header class="hero">
 
@@ -643,9 +742,7 @@
     </header>
 
 
-    <!-- =========================
-         BACK
-    ========================= -->
+    <!-- BACK -->
 
     <a
       href="index.html"
@@ -655,9 +752,7 @@
     </a>
 
 
-    <!-- =========================
-         PHASE INTRO
-    ========================= -->
+    <!-- PHASE INTRO -->
 
     <section class="phase-intro">
 
@@ -678,9 +773,7 @@
     </section>
 
 
-    <!-- =========================
-         FOUNDATION SECTIONS
-    ========================= -->
+    <!-- FOUNDATION SECTIONS -->
 
     <section
       class="sections"
@@ -945,12 +1038,255 @@
 
       </article>
 
+
+      <!-- =========================
+           SECTION 03
+      ========================= -->
+
+      <article class="section-card">
+
+        <button
+          class="section-toggle"
+          type="button"
+          aria-expanded="false"
+          onclick="toggleSection(this)"
+        >
+
+          <div class="section-info">
+
+            <p class="section-number">
+              03
+            </p>
+
+            <h2 class="section-title">
+              Official Social Channels
+            </h2>
+
+            <p class="section-hint">
+              Connect with Gentle Warrior →
+            </p>
+
+          </div>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <div class="section-content">
+
+          <div class="divider"></div>
+
+
+          <div class="content-block">
+
+            <h3>
+              Official Community Channels
+            </h3>
+
+            <p>
+              Follow Gentle Warrior through our official
+              social channels and join the community.
+            </p>
+
+          </div>
+
+
+          <div class="social-list">
+
+
+            <!-- FACEBOOK -->
+
+            <a
+              class="social-item"
+              href="https://facebook.com/GentleWarriorOfficial"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  Facebook
+                </p>
+
+                <p class="social-description">
+                  Gentle Warrior Official
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Visit →
+              </span>
+
+            </a>
+
+
+            <!-- TIKTOK -->
+
+            <a
+              class="social-item"
+              href="https://www.tiktok.com/@officialgentlewarrior"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  TikTok
+                </p>
+
+                <p class="social-description">
+                  @officialgentlewarrior
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Visit →
+              </span>
+
+            </a>
+
+
+            <!-- X -->
+
+            <a
+              class="social-item"
+              href="https://x.com/GentleWarrior02"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  X
+                </p>
+
+                <p class="social-description">
+                  @GentleWarrior02
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Visit →
+              </span>
+
+            </a>
+
+
+            <!-- X COMMUNITY -->
+
+            <a
+              class="social-item"
+              href="https://x.com/i/communities/1991734527128137859"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  X Community
+                </p>
+
+                <p class="social-description">
+                  Official Gentle Warrior Community
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Join →
+              </span>
+
+            </a>
+
+
+            <!-- TELEGRAM -->
+
+            <a
+              class="social-item"
+              href="https://t.me/OfficialGentleWarriorHQ/632"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  Telegram
+                </p>
+
+                <p class="social-description">
+                  Official Gentle Warrior HQ
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Join →
+              </span>
+
+            </a>
+
+
+            <!-- MESSENGER -->
+
+            <a
+              class="social-item"
+              href="https://m.me/j/AbYNtC1uuP4G7bLe/?send_source=gc%3Acopy_invite_link_c"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <div class="social-info">
+
+                <p class="social-name">
+                  Messenger
+                </p>
+
+                <p class="social-description">
+                  Connect with the Gentle Warrior community
+                </p>
+
+              </div>
+
+              <span class="social-button">
+                Open →
+              </span>
+
+            </a>
+
+
+          </div>
+
+
+          <div class="social-note">
+
+            Official links are provided here as part of
+            the Gentle Warrior Foundation.
+            Community and follower counts are not
+            displayed for now and may be introduced
+            automatically in a future update.
+
+          </div>
+
+        </div>
+
+      </article>
+
+
     </section>
 
 
-    <!-- =========================
-         FOOTER
-    ========================= -->
+    <!-- FOOTER -->
 
     <footer>
 
