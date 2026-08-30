@@ -1,7 +1,8 @@
 /* =========================================
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
-   UPDATED SCRIPT
+   SCRIPT.JS
+   FIXED LIVE GOOGLE SHEET CONNECTION
    ========================================= */
 
 "use strict";
@@ -11,35 +12,16 @@
    CONFIG
    ========================================= */
 
-const CONFIG = window.GW_CONFIG || window.CONFIG || {};
+const CONFIG = {
+  sheetId: "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
 
-const SHEET_URL =
-  CONFIG.sheetUrl ||
-  CONFIG.SHEET_URL ||
-  CONFIG.webAppUrl ||
-  CONFIG.WEB_APP_URL ||
-  "";
-
-const SPREADSHEET_ID =
-  CONFIG.spreadsheetId ||
-  CONFIG.SPREADSHEET_ID ||
-  "";
-
-const SHEET_GIDS =
-  CONFIG.sheetGids ||
-  CONFIG.SHEET_GIDS ||
-  {};
-
-const SHEET_NAMES = {
-  claimed: "Claimed",
-  redeemed: "Redeemed",
-  expenses: "Expenses",
-  allocation: "Allocation"
+  rewardSheet: "REWARD",
+  allocationSheet: "ALLOCATION"
 };
 
 
 /* =========================================
-   HELPERS
+   DOM
    ========================================= */
 
 function $(id) {
@@ -47,7 +29,120 @@ function $(id) {
 }
 
 
+/* =========================================
+   FORMATTING
+   ========================================= */
+
+function numberValue(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  if (
+    typeof value === "number" &&
+    Number.isFinite(value)
+  ) {
+    return value;
+  }
+
+  let text = String(value)
+    .trim()
+    .replace(/₱/g, "")
+    .replace(/\$/g, "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "");
+
+  if (!text) {
+    return null;
+  }
+
+  if (text.endsWith("%")) {
+    text = text.slice(0, -1);
+  }
+
+  const valueNumber = Number(text);
+
+  return Number.isFinite(valueNumber)
+    ? valueNumber
+    : null;
+}
+
+
+function money(value) {
+
+  const n = Number(value) || 0;
+
+  return (
+    "₱" +
+    n.toLocaleString("en-PH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  );
+}
+
+
+function sol(value) {
+
+  const n = Number(value) || 0;
+
+  return (
+    n.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) +
+    " SOL"
+  );
+}
+
+
+function usd(value) {
+
+  const n = Number(value) || 0;
+
+  return (
+    "$" +
+    n.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  );
+}
+
+
+function num(value) {
+
+  const n = Number(value) || 0;
+
+  return n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+
+/* =========================================
+   TEXT
+   ========================================= */
+
+function normalizeText(value) {
+
+  return String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/[._-]+/g, " ")
+    .trim();
+}
+
+
 function escapeHTML(value) {
+
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -57,1183 +152,1195 @@ function escapeHTML(value) {
 }
 
 
-function toNumber(value) {
+/* =========================================
+   DATE
+   ========================================= */
 
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
+function cleanDate(value) {
+
+  if (!value) {
+    return null;
   }
+
+  if (value instanceof Date) {
+    return value;
+  }
+
+  const text = String(value).trim();
+
+  const match = text.match(
+    /Date\((\d+),(\d+),(\d+)/
+  );
+
+  if (match) {
+
+    return new Date(
+      Number(match[1]),
+      Number(match[2]),
+      Number(match[3])
+    );
+  }
+
+  const date = new Date(text);
 
   if (
-    value === null ||
-    value === undefined ||
-    value === ""
+    Number.isNaN(
+      date.getTime()
+    )
   ) {
-    return 0;
+    return null;
   }
 
-  const cleaned = String(value)
-    .replace(/₱/g, "")
-    .replace(/\$/g, "")
-    .replace(/,/g, "")
-    .replace(/SOL/gi, "")
-    .replace(/PHP/gi, "")
-    .trim();
-
-  const number = parseFloat(cleaned);
-
-  return Number.isFinite(number) ? number : 0;
+  return date;
 }
 
 
-function formatSOL(value) {
-  return `${toNumber(value).toFixed(2)} SOL`;
-}
+function dateText(value) {
 
+  const date = cleanDate(value);
 
-function formatPeso(value) {
-  return `₱${toNumber(value).toLocaleString("en-PH", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
-}
-
-
-function formatUSD(value) {
-  return `$${toNumber(value).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
-}
-
-
-function formatRate(value) {
-
-  const number = toNumber(value);
-
-  if (!number) {
+  if (!date) {
     return "—";
   }
 
-  return `$${number.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
-}
-
-
-function normalizeKey(value) {
-
-  return String(value ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .replace(/[_-]/g, " ");
-}
-
-
-function getField(row, names) {
-
-  const keys = Object.keys(row || {});
-
-  for (const name of names) {
-
-    const target = normalizeKey(name);
-
-    const key = keys.find(
-      key => normalizeKey(key) === target
-    );
-
-    if (key !== undefined) {
-      return row[key];
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
     }
-  }
-
-  return "";
-}
-
-
-function getDate(row) {
-
-  return getField(row, [
-    "Date",
-    "date",
-    "DATE",
-    "Timestamp",
-    "timestamp"
-  ]);
-}
-
-
-function getDescription(row) {
-
-  return getField(row, [
-    "Description",
-    "description",
-    "DESCRIPTION",
-    "Item",
-    "item",
-    "Purpose",
-    "purpose"
-  ]);
-}
-
-
-function getRemarks(row) {
-
-  return getField(row, [
-    "Remarks",
-    "remarks",
-    "REMARKS",
-    "Remark",
-    "remark",
-    "Notes",
-    "notes",
-    "Note",
-    "note"
-  ]);
-}
-
-
-/* =========================================
-   STATE
-   ========================================= */
-
-const state = {
-
-  claimed: [],
-
-  redeemed: [],
-
-  expenses: [],
-
-  allocation: {
-    leam: [],
-    cp: [],
-    project: []
-  },
-
-  note: "",
-
-  loaded: false,
-
-  sourceErrors: []
-
-};
-
-
-/* =========================================
-   CSV PARSER
-   ========================================= */
-
-function parseCSV(text) {
-
-  const rows = [];
-
-  let row = [];
-  let cell = "";
-  let insideQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-
-    const char = text[i];
-    const next = text[i + 1];
-
-    if (
-      char === '"' &&
-      insideQuotes &&
-      next === '"'
-    ) {
-
-      cell += '"';
-      i++;
-
-      continue;
-    }
-
-    if (char === '"') {
-
-      insideQuotes = !insideQuotes;
-
-      continue;
-    }
-
-    if (
-      char === "," &&
-      !insideQuotes
-    ) {
-
-      row.push(cell);
-
-      cell = "";
-
-      continue;
-    }
-
-    if (
-      (
-        char === "\n" ||
-        char === "\r"
-      ) &&
-      !insideQuotes
-    ) {
-
-      if (
-        char === "\r" &&
-        next === "\n"
-      ) {
-        i++;
-      }
-
-      row.push(cell);
-
-      cell = "";
-
-      if (
-        row.length > 1 ||
-        row.some(
-          value =>
-            String(value ?? "").trim() !== ""
-        )
-      ) {
-
-        rows.push(row);
-      }
-
-      row = [];
-
-      continue;
-    }
-
-    cell += char;
-  }
-
-  row.push(cell);
-
-  if (
-    row.length > 1 ||
-    row.some(
-      value =>
-        String(value ?? "").trim() !== ""
-    )
-  ) {
-
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-
-/* =========================================
-   ROWS → OBJECTS
-   ========================================= */
-
-function rowsToObjects(rows) {
-
-  if (
-    !Array.isArray(rows) ||
-    rows.length < 2
-  ) {
-    return [];
-  }
-
-  const headers =
-    rows[0].map(
-      header =>
-        String(header ?? "").trim()
-    );
-
-  return rows
-    .slice(1)
-    .filter(row =>
-      row.some(
-        value =>
-          String(value ?? "").trim() !== ""
-      )
-    )
-    .map(row => {
-
-      const object = {};
-
-      headers.forEach(
-        (header, index) => {
-
-          if (header) {
-
-            object[header] =
-              row[index] ?? "";
-          }
-        }
-      );
-
-      return object;
-    });
-}
-
-
-/* =========================================
-   JSON NORMALIZER
-   ========================================= */
-
-function normalizeResponseData(data) {
-
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if (!data || typeof data !== "object") {
-    return [];
-  }
-
-  if (Array.isArray(data.rows)) {
-    return data.rows;
-  }
-
-  if (Array.isArray(data.data)) {
-    return data.data;
-  }
-
-  if (Array.isArray(data.values)) {
-
-    return rowsToObjects(
-      data.values
-    );
-  }
-
-  if (Array.isArray(data.records)) {
-    return data.records;
-  }
-
-  return [];
-}
-
-
-/* =========================================
-   FETCH WITH TIMEOUT
-   ========================================= */
-
-async function fetchWithTimeout(
-  url,
-  options = {},
-  timeout = 15000
-) {
-
-  const controller =
-    new AbortController();
-
-  const timer =
-    setTimeout(
-      () => controller.abort(),
-      timeout
-    );
-
-  try {
-
-    return await fetch(
-      url,
-      {
-        ...options,
-        signal: controller.signal,
-        cache: "no-store"
-      }
-    );
-
-  } finally {
-
-    clearTimeout(timer);
-  }
-}
-
-
-/* =========================================
-   GOOGLE SHEET / WEB APP FETCH
-   ========================================= */
-
-async function fetchSheet(sheetName) {
-
-  const errors = [];
-
-  /*
-   * METHOD 1
-   * Existing Gentle Warrior web-app endpoint.
-   */
-
-  if (SHEET_URL) {
-
-    const parameterSets = [
-
-      {
-        sheet: sheetName
-      },
-
-      {
-        tab: sheetName
-      },
-
-      {
-        sheetName: sheetName
-      }
-
-    ];
-
-    for (
-      const params of parameterSets
-    ) {
-
-      try {
-
-        const separator =
-          SHEET_URL.includes("?")
-            ? "&"
-            : "?";
-
-        const query =
-          new URLSearchParams(params);
-
-        const url =
-          `${SHEET_URL}${separator}${query.toString()}`;
-
-        const response =
-          await fetchWithTimeout(url);
-
-        if (!response.ok) {
-
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-        }
-
-        const text =
-          await response.text();
-
-        if (!text.trim()) {
-
-          throw new Error(
-            "Empty response"
-          );
-        }
-
-        /*
-         * Try JSON first.
-         */
-
-        try {
-
-          const json =
-            JSON.parse(text);
-
-          const data =
-            normalizeResponseData(json);
-
-          if (data.length) {
-            return data;
-          }
-
-        } catch (_) {
-          /*
-           * Not JSON.
-           * Continue with CSV.
-           */
-        }
-
-        /*
-         * Try CSV.
-         */
-
-        const rows =
-          parseCSV(text);
-
-        const data =
-          rowsToObjects(rows);
-
-        if (data.length) {
-          return data;
-        }
-
-        /*
-         * Some Apps Script endpoints
-         * return a single row.
-         */
-
-        if (
-          rows.length === 1 &&
-          rows[0].length
-        ) {
-
-          const headers =
-            rows[0];
-
-          if (
-            headers.some(
-              value =>
-                String(value)
-                  .toLowerCase()
-                  .includes("date")
-            )
-          ) {
-
-            return [];
-          }
-        }
-
-        throw new Error(
-          "No usable records returned"
-        );
-
-      } catch (error) {
-
-        errors.push(
-          `${sheetName}: ${error.message}`
-        );
-      }
-    }
-  }
-
-
-  /*
-   * METHOD 2
-   * Direct Google Sheets CSV export.
-   *
-   * This only activates when
-   * spreadsheetId + sheetGids are configured.
-   */
-
-  if (SPREADSHEET_ID) {
-
-    const gid =
-      SHEET_GIDS[sheetName] ??
-      SHEET_GIDS[
-        sheetName.toLowerCase()
-      ];
-
-    if (
-      gid !== undefined &&
-      gid !== null &&
-      String(gid) !== ""
-    ) {
-
-      try {
-
-        return await fetchSheetDirect(
-          SPREADSHEET_ID,
-          gid
-        );
-
-      } catch (error) {
-
-        errors.push(
-          `${sheetName} direct: ${error.message}`
-        );
-      }
-    }
-  }
-
-
-  throw new Error(
-    errors.join(" | ") ||
-    `Unable to load ${sheetName}.`
   );
 }
 
 
 /* =========================================
-   DIRECT GOOGLE SHEETS CSV
+   GOOGLE SHEETS GVIZ
    ========================================= */
 
-async function fetchSheetDirect(
-  sheetId,
-  gid
-) {
+async function fetchSheet(sheetName) {
+
+  if (!CONFIG.sheetId) {
+    throw new Error(
+      "Google Sheet ID is missing."
+    );
+  }
 
   const url =
-    `https://docs.google.com/spreadsheets/d/${encodeURIComponent(
-      sheetId
-    )}/export?format=csv&gid=${encodeURIComponent(
-      gid
-    )}`;
+    "https://docs.google.com/spreadsheets/d/" +
+    CONFIG.sheetId +
+    "/gviz/tq" +
+    "?tqx=out:json" +
+    "&sheet=" +
+    encodeURIComponent(sheetName) +
+    "&cachebust=" +
+    Date.now();
 
-  const response =
-    await fetchWithTimeout(url);
+  console.log(
+    "[GWAR] Fetching:",
+    sheetName,
+    url
+  );
+
+  const response = await fetch(
+    url,
+    {
+      cache: "no-store"
+    }
+  );
 
   if (!response.ok) {
 
     throw new Error(
-      `Google Sheets HTTP ${response.status}`
+      "Google Sheet request failed: " +
+      response.status
     );
   }
 
   const text =
     await response.text();
 
-  const rows =
-    parseCSV(text);
-
-  const data =
-    rowsToObjects(rows);
-
-  if (!data.length) {
-
-    throw new Error(
-      "Google Sheet returned no records"
-    );
-  }
-
-  return data;
+  return parseGViz(text);
 }
 
 
 /* =========================================
-   CLAIMED
+   GVIZ PARSER
    ========================================= */
 
-function normalizeClaimed(rows) {
+function parseGViz(text) {
 
-  return (rows || [])
-    .map(row => ({
+  const start =
+    text.indexOf("{");
 
-      date:
-        getDate(row),
-
-      sol:
-        toNumber(
-          getField(row, [
-            "SOL Claimed",
-            "SOL CLAIMED",
-            "SOL",
-            "Claimed",
-            "CLAIMED",
-            "Amount",
-            "amount"
-          ])
-        )
-
-    }))
-    .filter(row =>
-      row.date ||
-      row.sol !== 0
-    );
-}
-
-
-function renderClaimed() {
-
-  const table =
-    $("claimsTable");
-
-  if (!table) return;
-
-  const rows =
-    state.claimed;
-
-  const total =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.sol,
-      0
-    );
-
-  if (!rows.length) {
-
-    table.innerHTML = `
-      <tr>
-        <td colspan="2">
-          No Creator Reward claims recorded yet.
-        </td>
-      </tr>
-    `;
-
-  } else {
-
-    table.innerHTML =
-      rows.map(row => `
-        <tr>
-
-          <td>
-            ${escapeHTML(row.date)}
-          </td>
-
-          <td class="num">
-            ${formatSOL(row.sol)}
-          </td>
-
-        </tr>
-      `).join("");
-  }
-
-  if ($("claimsTotal")) {
-
-    $("claimsTotal").textContent =
-      formatSOL(total);
-  }
-
-  if ($("claimedCount")) {
-
-    $("claimedCount").textContent =
-      `${rows.length} ${
-        rows.length === 1
-          ? "record"
-          : "records"
-      }`;
-  }
-
-  if ($("totalClaimed")) {
-
-    $("totalClaimed").textContent =
-      formatSOL(total);
-  }
-}
-
-
-/* =========================================
-   REDEEMED
-   ========================================= */
-
-function normalizeRedeemed(rows) {
-
-  return (rows || [])
-    .map(row => ({
-
-      date:
-        getDate(row),
-
-      sol:
-        toNumber(
-          getField(row, [
-            "Sold SOL",
-            "SOLD SOL",
-            "SOL Sold",
-            "SOL SOLD",
-            "Sold",
-            "SOLD",
-            "SOL"
-          ])
-        ),
-
-      rate:
-        toNumber(
-          getField(row, [
-            "Rate",
-            "RATE",
-            "SOL Rate",
-            "SOL RATE",
-            "USD Rate",
-            "USD RATE"
-          ])
-        ),
-
-      usd:
-        toNumber(
-          getField(row, [
-            "$",
-            "USD",
-            "USD Amount",
-            "USD AMOUNT",
-            "Dollar",
-            "Dollars"
-          ])
-        ),
-
-      peso:
-        toNumber(
-          getField(row, [
-            "In Peso",
-            "IN PESO",
-            "Peso",
-            "PESO",
-            "PHP",
-            "PHP Amount",
-            "PHP AMOUNT"
-          ])
-        )
-
-    }))
-    .filter(row =>
-      row.date ||
-      row.sol !== 0 ||
-      row.usd !== 0 ||
-      row.peso !== 0
-    );
-}
-
-
-function renderRedeemed() {
-
-  const table =
-    $("redeemedTable");
-
-  const empty =
-    $("redeemedEmpty");
-
-  const wrap =
-    $("redeemedWrap");
+  const end =
+    text.lastIndexOf("}");
 
   if (
-    !table ||
-    !empty ||
-    !wrap
+    start === -1 ||
+    end === -1
   ) {
+    throw new Error(
+      "Invalid Google Sheets response."
+    );
+  }
+
+  const json =
+    JSON.parse(
+      text.substring(
+        start,
+        end + 1
+      )
+    );
+
+  if (
+    !json.table
+  ) {
+    throw new Error(
+      "No Google Sheets table returned."
+    );
+  }
+
+  const rows =
+    json.table.rows || [];
+
+  return rows.map(row => {
+
+    const cells =
+      row.c || [];
+
+    const result = [];
+
+    /*
+      Keep enough columns for:
+      REWARD:
+      A:N
+
+      ALLOCATION:
+      A:N
+    */
+
+    for (
+      let i = 0;
+      i < 14;
+      i++
+    ) {
+
+      const cell =
+        cells[i];
+
+      if (!cell) {
+
+        result.push("");
+
+        continue;
+      }
+
+      if (
+        cell.f !== undefined &&
+        cell.f !== null
+      ) {
+
+        result.push(cell.f);
+
+      } else if (
+        cell.v !== undefined &&
+        cell.v !== null
+      ) {
+
+        result.push(cell.v);
+
+      } else {
+
+        result.push("");
+      }
+    }
+
+    return result;
+  });
+}
+
+
+/* =========================================
+   HEADER HELPERS
+   ========================================= */
+
+function isDateHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "DATE"
+  );
+}
+
+
+function isRemarkHeader(value) {
+
+  const text =
+    normalizeText(value);
+
+  return (
+    text === "REMARK" ||
+    text === "REMARKS"
+  );
+}
+
+
+function isInHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "IN"
+  );
+}
+
+
+function isOutHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "OUT"
+  );
+}
+
+
+function findRowWithHeaders(
+  rows,
+  headers
+) {
+
+  const wanted =
+    headers.map(normalizeText);
+
+  for (
+    let r = 0;
+    r < rows.length;
+    r++
+  ) {
+
+    const row =
+      rows[r] || [];
+
+    const normalized =
+      row.map(normalizeText);
+
+    const found =
+      wanted.every(
+        item =>
+          normalized.includes(item)
+      );
+
+    if (found) {
+      return r;
+    }
+  }
+
+  return -1;
+}
+
+
+function findColumn(
+  row,
+  matcher
+) {
+
+  for (
+    let i = 0;
+    i < row.length;
+    i++
+  ) {
+
+    if (
+      matcher(row[i])
+    ) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+
+function findSequence(
+  row,
+  matchers
+) {
+
+  for (
+    let start = 0;
+    start <=
+      row.length -
+      matchers.length;
+    start++
+  ) {
+
+    let found = true;
+
+    for (
+      let i = 0;
+      i < matchers.length;
+      i++
+    ) {
+
+      if (
+        !matchers[i](
+          row[start + i]
+        )
+      ) {
+
+        found = false;
+
+        break;
+      }
+    }
+
+    if (found) {
+      return start;
+    }
+  }
+
+  return -1;
+}
+
+
+/* =========================================
+   REWARD PARSER
+   ========================================= */
+
+function parseReward(rows) {
+
+  const claims = [];
+  const redeemed = [];
+  const expenses = [];
+
+
+  /* =======================================
+     CLAIMED
+     ======================================= */
+
+  let claimHeaderRow =
+    findRowWithHeaders(
+      rows,
+      [
+        "DATE",
+        "SOL CLAIMED"
+      ]
+    );
+
+  if (
+    claimHeaderRow === -1
+  ) {
+    claimHeaderRow = 1;
+  }
+
+
+  const claimHeader =
+    rows[claimHeaderRow] || [];
+
+
+  let claimDateCol =
+    findColumn(
+      claimHeader,
+      isDateHeader
+    );
+
+
+  let claimSolCol =
+    findColumn(
+      claimHeader,
+      value =>
+        normalizeText(value) ===
+        "SOL CLAIMED"
+    );
+
+
+  /*
+    Original layout:
+    A = DATE
+    B = SOL CLAIMED
+  */
+
+  if (
+    claimDateCol === -1
+  ) {
+    claimDateCol = 0;
+  }
+
+  if (
+    claimSolCol === -1
+  ) {
+    claimSolCol = 1;
+  }
+
+
+  for (
+    let i =
+      claimHeaderRow + 1;
+    i < rows.length;
+    i++
+  ) {
+
+    const row =
+      rows[i] || [];
+
+    const dateValue =
+      row[claimDateCol];
+
+    const solValue =
+      numberValue(
+        row[claimSolCol]
+      );
+
+    if (
+      dateValue !== "" &&
+      solValue !== null
+    ) {
+
+      const date =
+        cleanDate(
+          dateValue
+        );
+
+      if (date) {
+
+        claims.push([
+          date,
+          solValue
+        ]);
+      }
+    }
+  }
+
+
+  /* =======================================
+     REDEEMED / SOLD
+     ======================================= */
+
+  let redeemedHeaderRow =
+    findRowWithHeaders(
+      rows,
+      [
+        "DATE",
+        "SOLD SOL"
+      ]
+    );
+
+  if (
+    redeemedHeaderRow === -1
+  ) {
+    redeemedHeaderRow = 1;
+  }
+
+
+  const redeemedHeader =
+    rows[redeemedHeaderRow] || [];
+
+
+  let redeemedDateCol =
+    findColumn(
+      redeemedHeader,
+      isDateHeader
+    );
+
+
+  let soldSolCol =
+    findColumn(
+      redeemedHeader,
+      value =>
+        normalizeText(value) ===
+        "SOLD SOL"
+    );
+
+
+  let rateCol =
+    findColumn(
+      redeemedHeader,
+      value =>
+        normalizeText(value) ===
+        "RATE"
+    );
+
+
+  let usdCol =
+    findColumn(
+      redeemedHeader,
+      value => {
+
+        const text =
+          normalizeText(value);
+
+        return (
+          text === "$" ||
+          text === "USD"
+        );
+      }
+    );
+
+
+  let pesoCol =
+    findColumn(
+      redeemedHeader,
+      value =>
+        normalizeText(value) ===
+        "IN PESO"
+    );
+
+
+  /*
+    Original layout:
+
+    D = DATE
+    E = SOLD SOL
+    F = RATE
+    G = $
+    H = IN PESO
+  */
+
+  if (
+    redeemedDateCol === -1
+  ) {
+    redeemedDateCol = 3;
+  }
+
+  if (
+    soldSolCol === -1
+  ) {
+    soldSolCol = 4;
+  }
+
+  if (
+    rateCol === -1
+  ) {
+    rateCol = 5;
+  }
+
+  if (
+    usdCol === -1
+  ) {
+    usdCol = 6;
+  }
+
+  if (
+    pesoCol === -1
+  ) {
+    pesoCol = 7;
+  }
+
+
+  for (
+    let i =
+      redeemedHeaderRow + 1;
+    i < rows.length;
+    i++
+  ) {
+
+    const row =
+      rows[i] || [];
+
+    const dateValue =
+      row[redeemedDateCol];
+
+    const soldSol =
+      numberValue(
+        row[soldSolCol]
+      );
+
+    if (
+      dateValue !== "" &&
+      soldSol !== null &&
+      soldSol > 0
+    ) {
+
+      const date =
+        cleanDate(
+          dateValue
+        );
+
+      if (date) {
+
+        redeemed.push([
+          date,
+          soldSol,
+          numberValue(
+            row[rateCol]
+          ),
+          numberValue(
+            row[usdCol]
+          ),
+          numberValue(
+            row[pesoCol]
+          ) || 0
+        ]);
+      }
+    }
+  }
+
+
+  /* =======================================
+     EXPENSES
+     ======================================= */
+
+  let expenseHeaderRow =
+    findRowWithHeaders(
+      rows,
+      [
+        "DATE",
+        "DESCRIPTION",
+        "AMOUNT"
+      ]
+    );
+
+  if (
+    expenseHeaderRow === -1
+  ) {
+    expenseHeaderRow = 1;
+  }
+
+
+  const expenseHeader =
+    rows[expenseHeaderRow] || [];
+
+
+  let expenseDateCol =
+    findColumn(
+      expenseHeader,
+      isDateHeader
+    );
+
+
+  let descriptionCol =
+    findColumn(
+      expenseHeader,
+      value =>
+        normalizeText(value) ===
+        "DESCRIPTION"
+    );
+
+
+  let amountCol =
+    findColumn(
+      expenseHeader,
+      value =>
+        normalizeText(value) ===
+        "AMOUNT"
+    );
+
+
+  let remarksCol =
+    findColumn(
+      expenseHeader,
+      isRemarkHeader
+    );
+
+
+  /*
+    Original layout:
+
+    J = DATE
+    K = DESCRIPTION
+    L = AMOUNT
+    M = REMARKS
+  */
+
+  if (
+    expenseDateCol === -1
+  ) {
+    expenseDateCol = 9;
+  }
+
+  if (
+    descriptionCol === -1
+  ) {
+    descriptionCol = 10;
+  }
+
+  if (
+    amountCol === -1
+  ) {
+    amountCol = 11;
+  }
+
+  if (
+    remarksCol === -1
+  ) {
+    remarksCol = 12;
+  }
+
+
+  for (
+    let i =
+      expenseHeaderRow + 1;
+    i < rows.length;
+    i++
+  ) {
+
+    const row =
+      rows[i] || [];
+
+    const dateValue =
+      row[expenseDateCol];
+
+    const description =
+      row[descriptionCol];
+
+    const amount =
+      numberValue(
+        row[amountCol]
+      );
+
+    const remarks =
+      row[remarksCol];
+
+
+    if (
+      dateValue !== "" &&
+      description !== "" &&
+      amount !== null
+    ) {
+
+      const date =
+        cleanDate(
+          dateValue
+        );
+
+      if (date) {
+
+        expenses.push([
+          date,
+          String(description),
+          amount,
+          String(
+            remarks || ""
+          )
+        ]);
+      }
+    }
+  }
+
+
+  return {
+    claims,
+    redeemed,
+    expenses
+  };
+}
+
+
+/* =========================================
+   ALLOCATION PARSER
+   ========================================= */
+
+function parseAllocation(rows) {
+
+  let note =
+    rows[1]?.[0] ||
+    "";
+
+
+  /*
+    Find:
+
+    DATE | REMARK | IN | OUT
+  */
+
+  let headerRowIndex = -1;
+
+  for (
+    let r = 0;
+    r < rows.length;
+    r++
+  ) {
+
+    const row =
+      rows[r] || [];
+
+    if (
+      findSequence(
+        row,
+        [
+          isDateHeader,
+          isRemarkHeader,
+          isInHeader,
+          isOutHeader
+        ]
+      ) !== -1
+    ) {
+
+      headerRowIndex = r;
+
+      break;
+    }
+  }
+
+
+  /*
+    Original layout:
+    Header = row 6
+  */
+
+  if (
+    headerRowIndex === -1
+  ) {
+    headerRowIndex = 5;
+  }
+
+
+  const header =
+    rows[headerRowIndex] || [];
+
+
+  /*
+    Blocks:
+
+    LEAM
+    A B C D
+
+    CP KIDS
+    F G H I
+
+    PROJECT
+    K L M N
+  */
+
+  const blocks = [];
+
+  let searchFrom = 0;
+
+
+  while (
+    searchFrom <
+    header.length
+  ) {
+
+    const relative =
+      findSequence(
+        header.slice(
+          searchFrom
+        ),
+        [
+          isDateHeader,
+          isRemarkHeader,
+          isInHeader,
+          isOutHeader
+        ]
+      );
+
+
+    if (
+      relative === -1
+    ) {
+      break;
+    }
+
+
+    const start =
+      searchFrom +
+      relative;
+
+
+    blocks.push(start);
+
+
+    searchFrom =
+      start + 4;
+  }
+
+
+  const starts =
+    blocks.length >= 3
+      ? blocks.slice(0, 3)
+      : [0, 5, 10];
+
+
+  const names = [
+    "leam",
+    "cp",
+    "project"
+  ];
+
+
+  const percentages = {
+    leam: 30,
+    cp: 30,
+    project: 40
+  };
+
+
+  const result = {
+
+    note: String(note || ""),
+
+    leam: {
+      pct: 30,
+      in: 0,
+      out: 0,
+      records: []
+    },
+
+    cp: {
+      pct: 30,
+      in: 0,
+      out: 0,
+      records: []
+    },
+
+    project: {
+      pct: 40,
+      in: 0,
+      out: 0,
+      records: []
+    }
+  };
+
+
+  /*
+    Find percentage labels
+    above each block.
+  */
+
+  for (
+    let b = 0;
+    b < 3;
+    b++
+  ) {
+
+    const start =
+      starts[b];
+
+    const name =
+      names[b];
+
+
+    for (
+      let r =
+        headerRowIndex - 1;
+      r >= 0;
+      r--
+    ) {
+
+      const value =
+        rows[r]?.[start];
+
+      const parsed =
+        numberValue(value);
+
+
+      if (
+        parsed !== null &&
+        String(value).includes("%")
+      ) {
+
+        percentages[name] =
+          parsed;
+
+        break;
+      }
+    }
+
+
+    result[name].pct =
+      percentages[name];
+  }
+
+
+  /*
+    Read transactions.
+  */
+
+  for (
+    let rowIndex =
+      headerRowIndex + 1;
+    rowIndex < rows.length;
+    rowIndex++
+  ) {
+
+    const row =
+      rows[rowIndex] || [];
+
+
+    for (
+      let b = 0;
+      b < 3;
+      b++
+    ) {
+
+      const start =
+        starts[b];
+
+      const name =
+        names[b];
+
+
+      const dateValue =
+        row[start];
+
+      const remarksValue =
+        row[start + 1];
+
+      const inValue =
+        numberValue(
+          row[start + 2]
+        );
+
+      const outValue =
+        numberValue(
+          row[start + 3]
+        );
+
+
+      const hasData =
+        dateValue !== "" ||
+        remarksValue !== "" ||
+        inValue !== null ||
+        outValue !== null;
+
+
+      if (!hasData) {
+        continue;
+      }
+
+
+      const date =
+        cleanDate(
+          dateValue
+        );
+
+
+      const incoming =
+        inValue === null
+          ? 0
+          : inValue;
+
+
+      const outgoing =
+        outValue === null
+          ? 0
+          : outValue;
+
+
+      result[name].in +=
+        incoming;
+
+
+      result[name].out +=
+        outgoing;
+
+
+      if (
+        date ||
+        remarksValue !== "" ||
+        inValue !== null ||
+        outValue !== null
+      ) {
+
+        result[name].records.push({
+          date,
+          remarks:
+            String(
+              remarksValue || ""
+            ),
+          in: incoming,
+          out: outgoing
+        });
+      }
+    }
+  }
+
+
+  return result;
+}
+
+
+/* =========================================
+   SET TEXT
+   ========================================= */
+
+function setText(
+  id,
+  value
+) {
+
+  const element =
+    $(id);
+
+  if (element) {
+    element.textContent =
+      value;
+  }
+}
+
+
+/* =========================================
+   ALLOCATION RENDER
+   ========================================= */
+
+function renderAllocation(
+  prefix,
+  data
+) {
+
+  if (!data) {
     return;
   }
 
-  const rows =
-    state.redeemed;
 
-  const totalSOL =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.sol,
-      0
-    );
+  const incoming =
+    Number(data.in) || 0;
 
-  const totalPeso =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.peso,
-      0
-    );
-
-  if ($("redeemedCount")) {
-
-    $("redeemedCount").textContent =
-      `${rows.length} ${
-        rows.length === 1
-          ? "record"
-          : "records"
-      }`;
-  }
-
-  if (!rows.length) {
-
-    empty.classList.remove(
-      "hidden"
-    );
-
-    wrap.classList.add(
-      "hidden"
-    );
-
-    empty.innerHTML = `
-      <div class="empty-icon">—</div>
-
-      <strong>
-        No Creator Rewards redeemed yet.
-      </strong>
-
-      <p>
-        When a reward is sold,
-        the transaction will be recorded here.
-      </p>
-    `;
-
-  } else {
-
-    empty.classList.add(
-      "hidden"
-    );
-
-    wrap.classList.remove(
-      "hidden"
-    );
-
-    table.innerHTML =
-      rows.map(row => `
-        <tr>
-
-          <td>
-            ${escapeHTML(row.date)}
-          </td>
-
-          <td class="num">
-            ${formatSOL(row.sol)}
-          </td>
-
-          <td class="num">
-            ${formatRate(row.rate)}
-          </td>
-
-          <td class="num">
-            ${formatUSD(row.usd)}
-          </td>
-
-          <td class="num">
-            ${formatPeso(row.peso)}
-          </td>
-
-        </tr>
-      `).join("");
-  }
-
-  if ($("redeemedTotal")) {
-
-    $("redeemedTotal").textContent =
-      formatSOL(totalSOL);
-  }
-
-  if ($("proceedsTotal")) {
-
-    $("proceedsTotal").textContent =
-      formatPeso(totalPeso);
-  }
-
-  if ($("totalRedeemed")) {
-
-    $("totalRedeemed").textContent =
-      formatSOL(totalSOL);
-  }
-
-  if ($("totalProceeds")) {
-
-    $("totalProceeds").textContent =
-      formatPeso(totalPeso);
-  }
-}
-
-
-/* =========================================
-   EXPENSES
-   ========================================= */
-
-function normalizeExpenses(rows) {
-
-  return (rows || [])
-    .map(row => ({
-
-      date:
-        getDate(row),
-
-      description:
-        getDescription(row),
-
-      amount:
-        toNumber(
-          getField(row, [
-            "Amount",
-            "AMOUNT",
-            "Expense",
-            "EXPENSE",
-            "PHP",
-            "PHP Amount",
-            "PHP AMOUNT",
-            "Cost",
-            "COST"
-          ])
-        ),
-
-      remarks:
-        getRemarks(row)
-
-    }))
-    .filter(row =>
-      row.date ||
-      row.description ||
-      row.amount !== 0 ||
-      row.remarks
-    );
-}
-
-
-function renderExpenses() {
-
-  const table =
-    $("expensesTable");
-
-  if (!table) return;
-
-  const rows =
-    state.expenses;
-
-  const total =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.amount,
-      0
-    );
-
-  if ($("expenseCount")) {
-
-    $("expenseCount").textContent =
-      `${rows.length} ${
-        rows.length === 1
-          ? "record"
-          : "records"
-      }`;
-  }
-
-  if (!rows.length) {
-
-    table.innerHTML = `
-      <tr>
-        <td colspan="4">
-          No expenses recorded yet.
-        </td>
-      </tr>
-    `;
-
-  } else {
-
-    table.innerHTML =
-      rows.map(row => `
-        <tr>
-
-          <td>
-            ${escapeHTML(row.date)}
-          </td>
-
-          <td>
-            ${escapeHTML(row.description)}
-          </td>
-
-          <td class="num">
-            ${formatPeso(row.amount)}
-          </td>
-
-          <td>
-            ${escapeHTML(row.remarks)}
-          </td>
-
-        </tr>
-      `).join("");
-  }
-
-  if ($("expensesTotal")) {
-
-    $("expensesTotal").textContent =
-      formatPeso(total);
-  }
-
-  if ($("totalExpenses")) {
-
-    $("totalExpenses").textContent =
-      formatPeso(total);
-  }
-}
-
-
-/* =========================================
-   ALLOCATION
-   ========================================= */
-
-function normalizeAllocation(rows) {
-
-  return (rows || [])
-    .map(row => ({
-
-      date:
-        getDate(row),
-
-      fund:
-        normalizeKey(
-          getField(row, [
-            "Fund",
-            "FUND",
-            "Allocation",
-            "ALLOCATION",
-            "Category",
-            "CATEGORY",
-            "Account",
-            "ACCOUNT"
-          ])
-        ),
-
-      remarks:
-        getRemarks(row),
-
-      in:
-        toNumber(
-          getField(row, [
-            "IN",
-            "In",
-            "Amount In",
-            "AMOUNT IN",
-            "Incoming",
-            "INCOMING"
-          ])
-        ),
-
-      out:
-        toNumber(
-          getField(row, [
-            "OUT",
-            "Out",
-            "Amount Out",
-            "AMOUNT OUT",
-            "Outgoing",
-            "OUTGOING"
-          ])
-        )
-
-    }))
-    .filter(row =>
-      row.date ||
-      row.fund ||
-      row.in !== 0 ||
-      row.out !== 0 ||
-      row.remarks
-    );
-}
-
-
-function resolveAllocationFund(fund) {
-
-  const value =
-    normalizeKey(fund);
-
-  if (
-    value.includes("leam")
-  ) {
-    return "leam";
-  }
-
-  if (
-    value === "cp" ||
-    value.includes("cp kid") ||
-    value.includes("cp kids") ||
-    value.includes("cerebral palsy")
-  ) {
-    return "cp";
-  }
-
-  if (
-    value.includes("project") ||
-    value.includes("gentle warrior")
-  ) {
-    return "project";
-  }
-
-  return null;
-}
-
-
-function renderAllocationCard(key) {
-
-  const rows =
-    state.allocation[key] || [];
-
-  const prefix =
-    key;
-
-  const inTotal =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.in,
-      0
-    );
-
-  const outTotal =
-    rows.reduce(
-      (sum, row) =>
-        sum + row.out,
-      0
-    );
+  const outgoing =
+    Number(data.out) || 0;
 
   const balance =
-    inTotal - outTotal;
+    incoming - outgoing;
+
+
+  setText(
+    prefix + "In",
+    money(incoming)
+  );
+
+  setText(
+    prefix + "Out",
+    money(outgoing)
+  );
+
+  setText(
+    prefix + "Balance",
+    money(balance)
+  );
+
+
+  setText(
+    prefix + "Percentage",
+    `${data.pct}%`
+  );
+
+
+  const percentage =
+    document.querySelector(
+      `[data-allocation="${prefix}"]`
+    );
+
+
+  if (percentage) {
+
+    percentage.textContent =
+      `${data.pct}%`;
+  }
+
 
   const records =
-    $(`${prefix}Records`);
+    $(
+      prefix +
+      "Records"
+    );
 
   const noRecords =
-    $(`${prefix}NoRecords`);
+    $(
+      prefix +
+      "NoRecords"
+    );
+
 
   if (
     !records ||
@@ -1242,27 +1349,14 @@ function renderAllocationCard(key) {
     return;
   }
 
-  if ($(`${prefix}In`)) {
 
-    $(`${prefix}In`).textContent =
-      formatPeso(inTotal);
-  }
+  if (
+    !data.records ||
+    !data.records.length
+  ) {
 
-  if ($(`${prefix}Out`)) {
-
-    $(`${prefix}Out`).textContent =
-      formatPeso(outTotal);
-  }
-
-  if ($(`${prefix}Balance`)) {
-
-    $(`${prefix}Balance`).textContent =
-      formatPeso(balance);
-  }
-
-  if (!rows.length) {
-
-    records.innerHTML = "";
+    records.innerHTML =
+      "";
 
     noRecords.style.display =
       "block";
@@ -1270,431 +1364,614 @@ function renderAllocationCard(key) {
     return;
   }
 
+
   noRecords.style.display =
     "none";
 
+
   records.innerHTML =
-    rows.map(row => `
-      <div class="allocation-record">
+    data.records
+      .map(record => {
 
-        <span>
-          ${escapeHTML(row.date)}
-        </span>
+        return `
+          <div class="allocation-record">
 
-        <span>
-          ${escapeHTML(row.remarks)}
-        </span>
+            <span>
+              ${escapeHTML(
+                dateText(
+                  record.date
+                )
+              )}
+            </span>
 
-        <strong>
-          ${
-            row.in
-              ? formatPeso(row.in)
-              : "—"
-          }
-        </strong>
+            <span>
+              ${escapeHTML(
+                record.remarks
+              )}
+            </span>
 
-        <strong>
-          ${
-            row.out
-              ? formatPeso(row.out)
-              : "—"
-          }
-        </strong>
+            <strong>
+              ${
+                record.in
+                  ? money(record.in)
+                  : "—"
+              }
+            </strong>
 
-      </div>
-    `).join("");
-}
+            <strong>
+              ${
+                record.out
+                  ? money(record.out)
+                  : "—"
+              }
+            </strong>
 
-
-function renderAllocation() {
-
-  renderAllocationCard("leam");
-  renderAllocationCard("cp");
-  renderAllocationCard("project");
-
-  const percentages = {
-
-    leam: 30,
-
-    cp: 30,
-
-    project: 40
-
-  };
-
-  if ($("leamPercentage")) {
-
-    $("leamPercentage").textContent =
-      `${percentages.leam}%`;
-  }
-
-  if ($("cpPercentage")) {
-
-    $("cpPercentage").textContent =
-      `${percentages.cp}%`;
-  }
-
-  if ($("projectPercentage")) {
-
-    $("projectPercentage").textContent =
-      `${percentages.project}%`;
-  }
-
-  if ($("allocationTotalPercentage")) {
-
-    $("allocationTotalPercentage").textContent =
-      `${
-        percentages.leam +
-        percentages.cp +
-        percentages.project
-      }%`;
-  }
-
-  if ($("allocationNote")) {
-
-    $("allocationNote").textContent =
-      state.note ||
-      "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
-  }
-}
-
-
-function processAllocation(rows) {
-
-  const normalized =
-    normalizeAllocation(rows);
-
-  state.allocation.leam = [];
-  state.allocation.cp = [];
-  state.allocation.project = [];
-
-  normalized.forEach(row => {
-
-    const key =
-      resolveAllocationFund(
-        row.fund
-      );
-
-    if (!key) return;
-
-    state.allocation[key].push(
-      row
-    );
-  });
+          </div>
+        `;
+      })
+      .join("");
 }
 
 
 /* =========================================
-   TOTALS
+   RENDER PAGE
    ========================================= */
 
-function updateOverviewTotals() {
+function renderPage(
+  reward,
+  allocation
+) {
 
-  const claimedTotal =
-    state.claimed.reduce(
+  const totalClaimed =
+    reward.claims.reduce(
       (sum, row) =>
-        sum + row.sol,
+        sum +
+        Number(row[1] || 0),
       0
     );
 
-  const redeemedTotal =
-    state.redeemed.reduce(
+
+  const totalRedeemed =
+    reward.redeemed.reduce(
       (sum, row) =>
-        sum + row.sol,
+        sum +
+        Number(row[1] || 0),
       0
     );
 
-  const proceedsTotal =
-    state.redeemed.reduce(
+
+  const totalProceeds =
+    reward.redeemed.reduce(
       (sum, row) =>
-        sum + row.peso,
+        sum +
+        Number(row[4] || 0),
       0
     );
 
-  const expenseTotal =
-    state.expenses.reduce(
+
+  const totalExpenses =
+    reward.expenses.reduce(
       (sum, row) =>
-        sum + row.amount,
+        sum +
+        Number(row[2] || 0),
       0
     );
 
-  if ($("totalClaimed")) {
 
-    $("totalClaimed").textContent =
-      formatSOL(claimedTotal);
+  /* =====================================
+     SUMMARY
+     ===================================== */
+
+  setText(
+    "totalClaimed",
+    sol(totalClaimed)
+  );
+
+  setText(
+    "totalRedeemed",
+    sol(totalRedeemed)
+  );
+
+  setText(
+    "totalProceeds",
+    money(totalProceeds)
+  );
+
+  setText(
+    "totalExpenses",
+    money(totalExpenses)
+  );
+
+
+  setText(
+    "claimsTotal",
+    sol(totalClaimed)
+  );
+
+  setText(
+    "redeemedTotal",
+    sol(totalRedeemed)
+  );
+
+  setText(
+    "proceedsTotal",
+    money(totalProceeds)
+  );
+
+  setText(
+    "expensesTotal",
+    money(totalExpenses)
+  );
+
+
+  /* =====================================
+     COUNTS
+     ===================================== */
+
+  setText(
+    "claimedCount",
+    `${reward.claims.length} ${
+      reward.claims.length === 1
+        ? "record"
+        : "records"
+    }`
+  );
+
+
+  setText(
+    "redeemedCount",
+    `${reward.redeemed.length} ${
+      reward.redeemed.length === 1
+        ? "record"
+        : "records"
+    }`
+  );
+
+
+  setText(
+    "expenseCount",
+    `${reward.expenses.length} ${
+      reward.expenses.length === 1
+        ? "record"
+        : "records"
+    }`
+  );
+
+
+  /* =====================================
+     CLAIMED TABLE
+     ===================================== */
+
+  const claimsTable =
+    $("claimsTable");
+
+
+  if (claimsTable) {
+
+    claimsTable.innerHTML =
+      reward.claims
+        .map(row => {
+
+          return `
+            <tr>
+
+              <td>
+                ${escapeHTML(
+                  dateText(row[0])
+                )}
+              </td>
+
+              <td class="num">
+                ${num(row[1])} SOL
+              </td>
+
+            </tr>
+          `;
+        })
+        .join("");
   }
 
-  if ($("totalRedeemed")) {
 
-    $("totalRedeemed").textContent =
-      formatSOL(redeemedTotal);
+  /* =====================================
+     REDEEMED TABLE
+     ===================================== */
+
+  const redeemedTable =
+    $("redeemedTable");
+
+
+  if (redeemedTable) {
+
+    redeemedTable.innerHTML =
+      reward.redeemed
+        .map(row => {
+
+          return `
+            <tr>
+
+              <td>
+                ${escapeHTML(
+                  dateText(row[0])
+                )}
+              </td>
+
+              <td class="num">
+                ${num(row[1])} SOL
+              </td>
+
+              <td class="num">
+                ${
+                  row[2] === null
+                    ? "—"
+                    : usd(row[2])
+                }
+              </td>
+
+              <td class="num">
+                ${
+                  row[3] === null
+                    ? "—"
+                    : usd(row[3])
+                }
+              </td>
+
+              <td class="num">
+                ${money(row[4])}
+              </td>
+
+            </tr>
+          `;
+        })
+        .join("");
   }
 
-  if ($("totalProceeds")) {
 
-    $("totalProceeds").textContent =
-      formatPeso(proceedsTotal);
-  }
+  /* =====================================
+     REDEEMED EMPTY STATE
+     ===================================== */
 
-  if ($("totalExpenses")) {
+  const redeemedEmpty =
+    $("redeemedEmpty");
 
-    $("totalExpenses").textContent =
-      formatPeso(expenseTotal);
-  }
-}
+  const redeemedWrap =
+    $("redeemedWrap");
 
-
-/* =========================================
-   RENDER ALL
-   ========================================= */
-
-function renderAll() {
-
-  renderClaimed();
-
-  renderRedeemed();
-
-  renderExpenses();
-
-  renderAllocation();
-
-  updateOverviewTotals();
-}
-
-
-/* =========================================
-   STATUS
-   ========================================= */
-
-function setStatus(text) {
-
-  const element =
-    $("dataStatus");
-
-  if (!element) return;
-
-  element.textContent =
-    text;
 
   if (
-    text === "Data unavailable"
+    reward.redeemed.length === 0
   ) {
 
-    element.classList.add(
-      "data-error"
+    if (redeemedEmpty) {
+      redeemedEmpty.classList.remove(
+        "hidden"
+      );
+    }
+
+    if (redeemedWrap) {
+      redeemedWrap.classList.add(
+        "hidden"
+      );
+    }
+
+  } else {
+
+    if (redeemedEmpty) {
+      redeemedEmpty.classList.add(
+        "hidden"
+      );
+    }
+
+    if (redeemedWrap) {
+      redeemedWrap.classList.remove(
+        "hidden"
+      );
+    }
+  }
+
+
+  /* =====================================
+     EXPENSES
+     ===================================== */
+
+  const expensesTable =
+    $("expensesTable");
+
+
+  if (expensesTable) {
+
+    expensesTable.innerHTML =
+      reward.expenses
+        .map(row => {
+
+          return `
+            <tr>
+
+              <td>
+                ${escapeHTML(
+                  dateText(row[0])
+                )}
+              </td>
+
+              <td>
+                ${escapeHTML(
+                  row[1]
+                )}
+              </td>
+
+              <td class="num">
+                ${money(row[2])}
+              </td>
+
+              <td>
+                ${escapeHTML(
+                  row[3]
+                )}
+              </td>
+
+            </tr>
+          `;
+        })
+        .join("");
+  }
+
+
+  /* =====================================
+     ALLOCATION
+     ===================================== */
+
+  renderAllocation(
+    "leam",
+    allocation.leam
+  );
+
+  renderAllocation(
+    "cp",
+    allocation.cp
+  );
+
+  renderAllocation(
+    "project",
+    allocation.project
+  );
+
+
+  setText(
+    "allocationNote",
+    allocation.note ||
+    "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects."
+  );
+
+
+  /* =====================================
+     ALLOCATION TOTAL
+     ===================================== */
+
+  const totalPercentage =
+    Number(
+      allocation.leam.pct
+    ) +
+    Number(
+      allocation.cp.pct
+    ) +
+    Number(
+      allocation.project.pct
+    );
+
+
+  setText(
+    "allocationTotalPercentage",
+    `${totalPercentage}%`
+  );
+
+
+  /* =====================================
+     LATEST ACTIVITY
+     ===================================== */
+
+  const dates = [
+
+    ...reward.claims.map(
+      row => row[0]
+    ),
+
+    ...reward.redeemed.map(
+      row => row[0]
+    ),
+
+    ...reward.expenses.map(
+      row => row[0]
+    ),
+
+    ...allocation.leam.records.map(
+      row => row.date
+    ),
+
+    ...allocation.cp.records.map(
+      row => row.date
+    ),
+
+    ...allocation.project.records.map(
+      row => row.date
+    )
+
+  ]
+    .filter(Boolean)
+    .map(cleanDate)
+    .filter(Boolean)
+    .sort(
+      (a, b) =>
+        a.getTime() -
+        b.getTime()
+    );
+
+
+  if (dates.length) {
+
+    setText(
+      "latestEntry",
+      "Latest recorded activity: " +
+      dateText(
+        dates[
+          dates.length - 1
+        ]
+      )
     );
 
   } else {
 
-    element.classList.remove(
-      "data-error"
+    setText(
+      "latestEntry",
+      "No records available yet."
     );
+  }
+
+
+  /* =====================================
+     STATUS
+     ===================================== */
+
+  const status =
+    $("dataStatus");
+
+
+  if (status) {
+
+    status.className =
+      "status live";
+
+    status.textContent =
+      "● Live Google Sheet data";
   }
 }
 
 
 /* =========================================
-   ERROR DISPLAY
+   ERROR
    ========================================= */
 
-function showDataError() {
+function showError(error) {
 
-  /*
-   * IMPORTANT:
-   * Do NOT erase already-loaded data.
-   */
+  console.error(
+    "[GWAR] Transparency error:",
+    error
+  );
 
-  if (
-    state.claimed.length ||
-    state.redeemed.length ||
-    state.expenses.length ||
-    state.allocation.leam.length ||
-    state.allocation.cp.length ||
-    state.allocation.project.length
-  ) {
 
-    return;
+  const status =
+    $("dataStatus");
+
+
+  if (status) {
+
+    status.className =
+      "status fallback";
+
+    status.textContent =
+      "Data unavailable";
   }
 
-  if ($("claimsTable")) {
 
-    $("claimsTable").innerHTML = `
-      <tr>
-        <td colspan="2" class="data-error">
-          Unable to load transparency data.
-        </td>
-      </tr>
-    `;
-  }
-
-  if ($("expensesTable")) {
-
-    $("expensesTable").innerHTML = `
-      <tr>
-        <td colspan="4" class="data-error">
-          Unable to load transparency data.
-        </td>
-      </tr>
-    `;
-  }
-
-  if ($("redeemedEmpty")) {
-
-    $("redeemedEmpty").classList.remove(
-      "hidden"
-    );
-
-    $("redeemedEmpty").innerHTML = `
-      <div class="empty-icon">!</div>
-
-      <strong>
-        Unable to load reward sales.
-      </strong>
-
-      <p>
-        Please check the live data source.
-      </p>
-    `;
-  }
+  setText(
+    "latestEntry",
+    "Unable to load live transparency data."
+  );
 }
 
 
 /* =========================================
-   LATEST ENTRY
+   LOAD
    ========================================= */
 
-function parseFlexibleDate(value) {
+async function loadData() {
 
-  if (!value) {
-    return null;
+  const status =
+    $("dataStatus");
+
+
+  if (status) {
+
+    status.className =
+      "status";
+
+    status.textContent =
+      "Loading...";
   }
 
-  const text =
-    String(value).trim();
 
-  /*
-   * Standard JS date.
-   */
+  try {
 
-  let date =
-    new Date(text);
-
-  if (
-    !Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return date;
-  }
-
-  /*
-   * Handle:
-   * Aug 8, 2026
-   * Aug 08 2026
-   */
-
-  const match =
-    text.match(
-      /^([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})$/
+    console.log(
+      "[GWAR] Loading REWARD..."
     );
 
-  if (match) {
 
-    date =
-      new Date(
-        `${match[1]} ${match[2]}, ${match[3]}`
+    console.log(
+      "[GWAR] Loading ALLOCATION..."
+    );
+
+
+    const [
+      rewardRows,
+      allocationRows
+    ] = await Promise.all([
+
+      fetchSheet(
+        CONFIG.rewardSheet
+      ),
+
+      fetchSheet(
+        CONFIG.allocationSheet
+      )
+
+    ]);
+
+
+    console.log(
+      "[GWAR] Reward rows:",
+      rewardRows
+    );
+
+
+    console.log(
+      "[GWAR] Allocation rows:",
+      allocationRows
+    );
+
+
+    const reward =
+      parseReward(
+        rewardRows
       );
 
-    if (
-      !Number.isNaN(
-        date.getTime()
-      )
-    ) {
 
-      return date;
-    }
-  }
-
-  return null;
-}
+    const allocation =
+      parseAllocation(
+        allocationRows
+      );
 
 
-function updateLatestEntry() {
-
-  const element =
-    $("latestEntry");
-
-  if (!element) return;
-
-  const dates = [
-
-    ...state.claimed.map(
-      row => row.date
-    ),
-
-    ...state.redeemed.map(
-      row => row.date
-    ),
-
-    ...state.expenses.map(
-      row => row.date
-    ),
-
-    ...state.allocation.leam.map(
-      row => row.date
-    ),
-
-    ...state.allocation.cp.map(
-      row => row.date
-    ),
-
-    ...state.allocation.project.map(
-      row => row.date
-    )
-
-  ].filter(Boolean);
-
-  if (!dates.length) {
-
-    element.textContent =
-      "No records available yet.";
-
-    return;
-  }
-
-  const parsedDates =
-    dates
-      .map(parseFlexibleDate)
-      .filter(Boolean);
-
-  if (!parsedDates.length) {
-
-    element.textContent =
-      "Latest transparency records available.";
-
-    return;
-  }
-
-  const latest =
-    new Date(
-      Math.max(
-        ...parsedDates.map(
-          date =>
-            date.getTime()
-        )
-      )
+    console.log(
+      "[GWAR] Parsed reward:",
+      reward
     );
 
-  element.textContent =
-    `Latest recorded activity: ${latest.toLocaleDateString(
-      "en-PH",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
-    )}`;
+
+    console.log(
+      "[GWAR] Parsed allocation:",
+      allocation
+    );
+
+
+    renderPage(
+      reward,
+      allocation
+    );
+
+
+  } catch (error) {
+
+    showError(error);
+  }
 }
 
 
@@ -1709,6 +1986,7 @@ function setupAccordion() {
       "[data-accordion]"
     );
 
+
   sections.forEach(section => {
 
     const heading =
@@ -1716,30 +1994,38 @@ function setupAccordion() {
         ".section-heading"
       );
 
-    if (!heading) return;
+
+    if (!heading) {
+      return;
+    }
+
 
     function toggle() {
 
-      const isOpen =
+      const open =
         section.classList.contains(
           "open"
         );
 
+
       section.classList.toggle(
         "open",
-        !isOpen
+        !open
       );
+
 
       heading.setAttribute(
         "aria-expanded",
-        String(!isOpen)
+        String(!open)
       );
     }
+
 
     heading.addEventListener(
       "click",
       toggle
     );
+
 
     heading.addEventListener(
       "keydown",
@@ -1756,7 +2042,6 @@ function setupAccordion() {
         }
       }
     );
-
   });
 }
 
@@ -1772,33 +2057,42 @@ function setupNavigation() {
       ".pill-nav .pill"
     );
 
+
   pills.forEach(pill => {
 
     pill.addEventListener(
       "click",
       () => {
 
-        pills.forEach(item =>
+        pills.forEach(item => {
+
           item.classList.remove(
             "active"
-          )
-        );
+          );
+        });
+
 
         pill.classList.add(
           "active"
         );
+
 
         const targetId =
           pill.getAttribute(
             "href"
           );
 
-        if (!targetId) return;
+
+        if (!targetId) {
+          return;
+        }
+
 
         const section =
           document.querySelector(
             targetId
           );
+
 
         if (
           section &&
@@ -1809,10 +2103,12 @@ function setupNavigation() {
             "open"
           );
 
+
           const heading =
             section.querySelector(
               ".section-heading"
             );
+
 
           if (heading) {
 
@@ -1829,7 +2125,7 @@ function setupNavigation() {
 
 
 /* =========================================
-   DESKTOP / MOBILE
+   ACCORDION STATE
    ========================================= */
 
 function syncAccordionState() {
@@ -1838,6 +2134,7 @@ function syncAccordionState() {
     document.querySelectorAll(
       "[data-accordion]"
     );
+
 
   if (
     window.innerWidth > 600
@@ -1849,10 +2146,12 @@ function syncAccordionState() {
         "open"
       );
 
+
       const heading =
         section.querySelector(
           ".section-heading"
         );
+
 
       if (heading) {
 
@@ -1867,189 +2166,7 @@ function syncAccordionState() {
 
 
 /* =========================================
-   LOAD ONE SOURCE SAFELY
-   ========================================= */
-
-async function loadSource(
-  sheetName
-) {
-
-  try {
-
-    return await fetchSheet(
-      sheetName
-    );
-
-  } catch (error) {
-
-    console.error(
-      `[Transparency] ${sheetName}:`,
-      error
-    );
-
-    state.sourceErrors.push({
-      sheet: sheetName,
-      error: error.message
-    });
-
-    return [];
-  }
-}
-
-
-/* =========================================
-   DATA LOADING
-   ========================================= */
-
-async function loadData() {
-
-  setStatus("Loading...");
-
-  state.sourceErrors = [];
-
-  try {
-
-    /*
-     * IMPORTANT:
-     *
-     * Promise.allSettled-style loading.
-     *
-     * One broken sheet no longer
-     * destroys all the other data.
-     */
-
-    const [
-      claimed,
-      redeemed,
-      expenses,
-      allocation
-    ] = await Promise.all([
-
-      loadSource(
-        SHEET_NAMES.claimed
-      ),
-
-      loadSource(
-        SHEET_NAMES.redeemed
-      ),
-
-      loadSource(
-        SHEET_NAMES.expenses
-      ),
-
-      loadSource(
-        SHEET_NAMES.allocation
-      )
-
-    ]);
-
-
-    /*
-     * Normalize each source independently.
-     */
-
-    state.claimed =
-      normalizeClaimed(
-        claimed
-      );
-
-    state.redeemed =
-      normalizeRedeemed(
-        redeemed
-      );
-
-    state.expenses =
-      normalizeExpenses(
-        expenses
-      );
-
-    processAllocation(
-      allocation
-    );
-
-
-    /*
-     * Render whatever successfully
-     * loaded.
-     */
-
-    renderAll();
-
-    state.loaded = true;
-
-    updateLatestEntry();
-
-
-    /*
-     * Status:
-     *
-     * All sources loaded:
-     * Live
-     *
-     * Some sources loaded:
-     * Partial data
-     *
-     * Nothing loaded:
-     * Data unavailable
-     */
-
-    const totalRecords =
-      state.claimed.length +
-      state.redeemed.length +
-      state.expenses.length +
-      state.allocation.leam.length +
-      state.allocation.cp.length +
-      state.allocation.project.length;
-
-    if (
-      state.sourceErrors.length === 0
-    ) {
-
-      setStatus("Live");
-
-    } else if (
-      totalRecords > 0
-    ) {
-
-      setStatus("Live");
-
-      console.warn(
-        "[Transparency] Some sources failed:",
-        state.sourceErrors
-      );
-
-    } else {
-
-      setStatus(
-        "Data unavailable"
-      );
-
-      showDataError();
-
-      console.error(
-        "[Transparency] All data sources failed:",
-        state.sourceErrors
-      );
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Creator Reward Transparency:",
-      error
-    );
-
-    setStatus(
-      "Data unavailable"
-    );
-
-    showDataError();
-  }
-}
-
-
-/* =========================================
-   INITIALIZATION
+   INITIALIZE
    ========================================= */
 
 document.addEventListener(
@@ -2063,7 +2180,6 @@ document.addEventListener(
     syncAccordionState();
 
     loadData();
-
   }
 );
 
@@ -2074,6 +2190,7 @@ document.addEventListener(
 
 let resizeTimer;
 
+
 window.addEventListener(
   "resize",
   () => {
@@ -2082,37 +2199,11 @@ window.addEventListener(
       resizeTimer
     );
 
+
     resizeTimer =
       setTimeout(
         syncAccordionState,
         100
       );
-
   }
 );
-
-
-/* =========================================
-   OPTIONAL REFRESH
-   ========================================= */
-
-window.GWTransparency = {
-
-  reload: loadData,
-
-  getState: () => ({
-    ...state,
-    allocation: {
-      leam: [
-        ...state.allocation.leam
-      ],
-      cp: [
-        ...state.allocation.cp
-      ],
-      project: [
-        ...state.allocation.project
-      ]
-    }
-  })
-
-};
