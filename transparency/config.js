@@ -4,60 +4,48 @@
    CONFIG.JS
    ========================================= */
 
-const TRANSPARENCY_CONFIG = {
+"use strict";
+
+
+/* =========================================
+   GOOGLE SHEET CONFIG
+   ========================================= */
+
+const GWAR_CONFIG = {
 
   /* =======================================
-     GOOGLE SHEETS
+     GOOGLE SHEET ID
      ======================================= */
 
-  spreadsheetId:
+  sheetId:
     "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
 
-  /*
-   * Public Google Sheet
-   *
-   * Current tabs:
-   * 1. REWARD
-   * 2. ALLOCATION
-   */
 
-  sheets: {
+  /* =======================================
+     SHEET NAMES
+     ======================================= */
 
-    reward: {
-      name: "REWARD"
-    },
+  rewardSheet:
+    "reward",
 
-    allocation: {
-      name: "ALLOCATION"
-    }
-
-  },
+  allocationSheet:
+    "allocation",
 
 
   /* =======================================
-     GOOGLE SHEETS DATA ACCESS
+     LOCKED ALLOCATION LABELS
+     
+     IMPORTANT:
+     These are LABELS only.
+     They are NOT taken from
+     transaction rows.
      ======================================= */
 
-  /*
-   * We use the published/exportable Sheet
-   * endpoint so the transparency page can
-   * read the spreadsheet without exposing
-   * any editing credentials.
-   */
-
-  endpoint:
-    "https://docs.google.com/spreadsheets/d/",
-
-
-  /* =======================================
-     CREATOR REWARD ALLOCATION
-     ======================================= */
-
-  allocationPercent: {
+  allocationLabels: {
 
     leam: 30,
 
-    cpKids: 30,
+    cp: 30,
 
     project: 40
 
@@ -65,84 +53,59 @@ const TRANSPARENCY_CONFIG = {
 
 
   /* =======================================
-     CURRENCY
+     FALLBACK
+     
+     Used only if Google Sheets
+     temporarily fails to load.
+     
+     Live Google Sheet remains
+     the primary source.
      ======================================= */
 
-  currency: {
+  fallback: {
 
-    php: "₱",
+    claims: [],
 
-    sol: "SOL",
+    redeemed: [],
 
-    usd: "$"
+    expenses: [],
 
-  },
+    allocation: {
 
+      note: "",
 
-  /* =======================================
-     PAGE SETTINGS
-     ======================================= */
+      leam: {
 
-  page: {
+        pct: 30,
 
-    title:
-      "Creator Reward Transparency | Gentle Warrior",
+        in: 0,
 
-    brand:
-      "Gentle Warrior",
+        out: 0
 
-    tagline:
-      "Soft Heart. Strong Spirit.",
+      },
 
-    updateLabel:
-      "Last updated"
+      cp: {
 
-  },
+        pct: 30,
 
+        in: 0,
 
-  /* =======================================
-     DATA SETTINGS
-     ======================================= */
+        out: 0
 
-  data: {
+      },
 
-    /*
-     * Keep values coming from the spreadsheet.
-     * Do not hard-code reward transactions here.
-     */
+      project: {
 
-    useLiveSheet: true,
+        pct: 40,
 
-    showEmptyRedeemedMessage: true,
+        in: 0,
 
-    showAllocation: true,
+        out: 0
 
-    showExpenses: true
+      }
+
+    }
 
   }
 
 };
-
-
-/* =========================================
-   HELPER
-   ========================================= */
-
-function getTransparencySheetUrl(sheetName) {
-
-  const sheet =
-    TRANSPARENCY_CONFIG.sheets[sheetName];
-
-  if (!sheet) {
-    throw new Error(
-      `Unknown transparency sheet: ${sheetName}`
-    );
-  }
-
-  return (
-    TRANSPARENCY_CONFIG.endpoint +
-    TRANSPARENCY_CONFIG.spreadsheetId +
-    "/gviz/tq?tqx=out:json&sheet=" +
-    encodeURIComponent(sheet.name)
-  );
-}
