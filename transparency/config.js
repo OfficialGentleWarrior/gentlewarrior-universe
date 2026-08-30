@@ -1,133 +1,148 @@
 /* =========================================
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
-   CONFIGURATION
+   CONFIG.JS
    ========================================= */
 
-const GW_CONFIG = {
+const TRANSPARENCY_CONFIG = {
 
-  /*
-   =========================================
-   GOOGLE SHEETS
-   =========================================
-  */
+  /* =======================================
+     GOOGLE SHEETS
+     ======================================= */
 
   spreadsheetId:
     "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
 
+  /*
+   * Public Google Sheet
+   *
+   * Current tabs:
+   * 1. REWARD
+   * 2. ALLOCATION
+   */
+
   sheets: {
 
-    /*
-     Creator Reward claims and
-     redeemed / sold records
-    */
-    reward: "REWARD",
+    reward: {
+      name: "REWARD"
+    },
 
-    /*
-     Fund allocation records
-    */
-    allocation: "ALLOCATION"
+    allocation: {
+      name: "ALLOCATION"
+    }
 
   },
 
 
-  /*
-   =========================================
-   ALLOCATION
-   =========================================
-
-   Locked allocation structure:
-   LEAM     = 30%
-   CP KIDS  = 30%
-   PROJECT  = 40%
-  */
-
-  allocation: {
-
-    leam: 0.30,
-
-    cpKids: 0.30,
-
-    project: 0.40
-
-  },
-
+  /* =======================================
+     GOOGLE SHEETS DATA ACCESS
+     ======================================= */
 
   /*
-   =========================================
-   GOOGLE SHEETS API
-   =========================================
+   * We use the published/exportable Sheet
+   * endpoint so the transparency page can
+   * read the spreadsheet without exposing
+   * any editing credentials.
+   */
 
-   Uses Google's public Visualization API.
-
-   Your Sheet must remain:
-   "Anyone with the link → Viewer"
-  */
-
-  googleSheetsBase:
+  endpoint:
     "https://docs.google.com/spreadsheets/d/",
 
 
-  /*
-   =========================================
-   DATA FORMAT
-   =========================================
-  */
+  /* =======================================
+     CREATOR REWARD ALLOCATION
+     ======================================= */
 
-  currency: "PHP",
+  allocationPercent: {
 
-  rewardCurrency: "SOL",
+    leam: 30,
 
+    cpKids: 30,
 
-  /*
-   =========================================
-   DISPLAY
-   =========================================
-  */
+    project: 40
 
-  siteName:
-    "Gentle Warrior",
-
-  pageTitle:
-    "Creator Reward Transparency",
-
-  tagline:
-    "Soft Heart. Strong Spirit.",
+  },
 
 
-  /*
-   =========================================
-   FALLBACK
-   =========================================
+  /* =======================================
+     CURRENCY
+     ======================================= */
 
-   If Google Sheets temporarily fails,
-   script.js can use the last known
-   local snapshot instead of showing
-   a completely broken page.
-  */
+  currency: {
 
-  enableFallback:
-    true
+    php: "₱",
+
+    sol: "SOL",
+
+    usd: "$"
+
+  },
+
+
+  /* =======================================
+     PAGE SETTINGS
+     ======================================= */
+
+  page: {
+
+    title:
+      "Creator Reward Transparency | Gentle Warrior",
+
+    brand:
+      "Gentle Warrior",
+
+    tagline:
+      "Soft Heart. Strong Spirit.",
+
+    updateLabel:
+      "Last updated"
+
+  },
+
+
+  /* =======================================
+     DATA SETTINGS
+     ======================================= */
+
+  data: {
+
+    /*
+     * Keep values coming from the spreadsheet.
+     * Do not hard-code reward transactions here.
+     */
+
+    useLiveSheet: true,
+
+    showEmptyRedeemedMessage: true,
+
+    showAllocation: true,
+
+    showExpenses: true
+
+  }
 
 };
 
 
-/*
- =========================================
- HELPER
- =========================================
+/* =========================================
+   HELPER
+   ========================================= */
 
- Creates a Google Visualization API URL
- for a specific sheet/tab.
-*/
+function getTransparencySheetUrl(sheetName) {
 
-function getGoogleSheetUrl(sheetName) {
+  const sheet =
+    TRANSPARENCY_CONFIG.sheets[sheetName];
+
+  if (!sheet) {
+    throw new Error(
+      `Unknown transparency sheet: ${sheetName}`
+    );
+  }
 
   return (
-    GW_CONFIG.googleSheetsBase +
-    GW_CONFIG.spreadsheetId +
+    TRANSPARENCY_CONFIG.endpoint +
+    TRANSPARENCY_CONFIG.spreadsheetId +
     "/gviz/tq?tqx=out:json&sheet=" +
-    encodeURIComponent(sheetName)
+    encodeURIComponent(sheet.name)
   );
-
 }
