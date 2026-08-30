@@ -2,6 +2,7 @@
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
    SCRIPT.JS
+   FIXED VERSION
    ========================================= */
 
 "use strict";
@@ -33,6 +34,7 @@ function $(id) {
 
 
 function escapeHTML(value) {
+
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -52,27 +54,26 @@ function toNumber(value) {
     return 0;
   }
 
+
   if (typeof value === "number") {
+
     return Number.isFinite(value)
       ? value
       : 0;
   }
 
-  let cleaned = String(value)
-    .trim();
+
+  let cleaned =
+    String(value).trim();
+
 
   if (!cleaned) {
     return 0;
   }
 
-  /*
-    Ignore Google Sheets formula errors
-    such as:
 
-    #VALUE!
-    #REF!
-    #DIV/0!
-    #N/A
+  /*
+    Ignore Google Sheets errors.
   */
 
   if (
@@ -81,16 +82,20 @@ function toNumber(value) {
     return 0;
   }
 
-  cleaned = cleaned
-    .replace(/₱/g, "")
-    .replace(/\$/g, "")
-    .replace(/SOL/gi, "")
-    .replace(/,/g, "")
-    .replace(/%/g, "")
-    .trim();
+
+  cleaned =
+    cleaned
+      .replace(/₱/g, "")
+      .replace(/\$/g, "")
+      .replace(/SOL/gi, "")
+      .replace(/,/g, "")
+      .replace(/%/g, "")
+      .trim();
+
 
   const number =
     parseFloat(cleaned);
+
 
   return Number.isFinite(number)
     ? number
@@ -98,40 +103,79 @@ function toNumber(value) {
 }
 
 
+/* =========================================
+   FORMATTERS
+   ========================================= */
+
 function formatSOL(value) {
+
   return `${toNumber(value).toFixed(2)} SOL`;
 }
 
 
 function formatPeso(value) {
-  return `₱${toNumber(value).toLocaleString("en-PH", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+
+  return `₱${toNumber(value).toLocaleString(
+    "en-PH",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
 
+
+/*
+  IMPORTANT:
+
+  USD amount intentionally has NO $
+  because this column represents
+  the USD amount used for conversion.
+
+  Example:
+  62.50
+
+  NOT:
+  $62.50
+*/
 
 function formatUSD(value) {
-  return `$${toNumber(value).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+
+  return toNumber(value).toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  );
 }
 
+
+/*
+  SOL/USD rate keeps the $ sign.
+
+  Example:
+  $105.00
+*/
 
 function formatRate(value) {
 
   const number =
     toNumber(value);
 
+
   if (!number) {
     return "—";
   }
 
-  return `$${number.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+
+  return `$${number.toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
 
 
@@ -149,6 +193,7 @@ function parseDate(value) {
     return null;
   }
 
+
   if (value instanceof Date) {
 
     return Number.isNaN(
@@ -158,15 +203,18 @@ function parseDate(value) {
       : value;
   }
 
+
   const text =
     String(value).trim();
+
 
   if (!text) {
     return null;
   }
 
+
   /*
-    Google Sheets / GViz examples:
+    Supports:
 
     8/8/2026
     08/08/2026
@@ -179,6 +227,7 @@ function parseDate(value) {
       /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
     );
 
+
   if (match) {
 
     const first =
@@ -190,10 +239,10 @@ function parseDate(value) {
     const year =
       Number(match[3]);
 
+
     /*
-      Treat standard Philippine
-      date format as MM/DD/YYYY
-      when coming from Sheets.
+      Google Sheets / PH format:
+      MM/DD/YYYY
     */
 
     const month =
@@ -202,6 +251,7 @@ function parseDate(value) {
     const day =
       second;
 
+
     const date =
       new Date(
         year,
@@ -209,11 +259,13 @@ function parseDate(value) {
         day
       );
 
+
     if (
       date.getFullYear() === year &&
       date.getMonth() === month &&
       date.getDate() === day
     ) {
+
       return date;
     }
   }
@@ -222,13 +274,16 @@ function parseDate(value) {
   const date =
     new Date(text);
 
+
   if (
     !Number.isNaN(
       date.getTime()
     )
   ) {
+
     return date;
   }
+
 
   return null;
 }
@@ -239,12 +294,14 @@ function formatDate(value) {
   const date =
     parseDate(value);
 
+
   if (!date) {
 
     return escapeHTML(
       value || ""
     );
   }
+
 
   return date.toLocaleDateString(
     "en-PH",
@@ -267,7 +324,9 @@ function parseCSV(text) {
 
   let row = [];
   let cell = "";
-  let insideQuotes = false;
+
+  let insideQuotes =
+    false;
 
 
   for (
@@ -552,6 +611,11 @@ function processRewardSheet(rows) {
       toNumber(row[7]);
 
 
+    /*
+      A redeemed row exists if ANY
+      redeemed field contains data.
+    */
+
     if (
       soldDate ||
       soldSOL !== 0 ||
@@ -561,11 +625,17 @@ function processRewardSheet(rows) {
     ) {
 
       redeemed.push({
+
         date: soldDate,
+
         sol: soldSOL,
+
         rate: soldRate,
+
         usd: soldUSD,
+
         peso: soldPeso
+
       });
     }
 
@@ -599,10 +669,18 @@ function processRewardSheet(rows) {
     ) {
 
       expenses.push({
+
         date: expenseDate,
-        description: expenseDescription,
-        amount: expenseAmount,
-        remarks: expenseRemarks
+
+        description:
+          expenseDescription,
+
+        amount:
+          expenseAmount,
+
+        remarks:
+          expenseRemarks
+
       });
     }
 
@@ -627,11 +705,9 @@ function processRewardSheet(rows) {
    F:I  = CP KIDS
    K:N  = PROJECT
 
-   A2 = transparency note
+   A2 = TRANSPARENCY NOTE
 
-   Row 4 = allocation headers
-   Row 5 = percentages / balances
-   Row 6 = transaction headers
+   Row 5 = percentages
    Row 7+ = transactions
    ========================================= */
 
@@ -666,19 +742,16 @@ function processAllocationSheet(rows) {
 
   if (
     rows[1] &&
-    rows[1][0]
+    rows[1][0] !== undefined &&
+    rows[1][0] !== null
   ) {
 
     const note =
-      String(rows[1][0])
-        .trim();
+      String(rows[1][0]).trim();
 
-    /*
-      Ignore spreadsheet errors
-      accidentally appearing in note.
-    */
 
     if (
+      note &&
       !/^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(note)
     ) {
 
@@ -732,10 +805,18 @@ function processAllocationSheet(rows) {
     ) {
 
       result.leam.push({
+
         date: leamDate,
-        remarks: leamRemarks,
-        in: leamIn,
-        out: leamOut
+
+        remarks:
+          leamRemarks,
+
+        in:
+          leamIn,
+
+        out:
+          leamOut
+
       });
     }
 
@@ -769,10 +850,18 @@ function processAllocationSheet(rows) {
     ) {
 
       result.cp.push({
+
         date: cpDate,
-        remarks: cpRemarks,
-        in: cpIn,
-        out: cpOut
+
+        remarks:
+          cpRemarks,
+
+        in:
+          cpIn,
+
+        out:
+          cpOut
+
       });
     }
 
@@ -806,10 +895,19 @@ function processAllocationSheet(rows) {
     ) {
 
       result.project.push({
-        date: projectDate,
-        remarks: projectRemarks,
-        in: projectIn,
-        out: projectOut
+
+        date:
+          projectDate,
+
+        remarks:
+          projectRemarks,
+
+        in:
+          projectIn,
+
+        out:
+          projectOut
+
       });
     }
 
@@ -901,12 +999,14 @@ function renderClaimed() {
 
 
     if (totalElement) {
+
       totalElement.textContent =
         formatSOL(0);
     }
 
 
     if (summaryElement) {
+
       summaryElement.textContent =
         formatSOL(0);
     }
@@ -1000,15 +1100,34 @@ function renderRedeemed() {
   }
 
 
+  /* =====================================
+     NO REDEEMED RECORDS
+     ===================================== */
+
   if (!rows.length) {
+
+    /*
+      Force empty state visible.
+    */
 
     empty.classList.remove(
       "hidden"
     );
 
+    empty.style.display =
+      "flex";
+
+
+    /*
+      Force table hidden.
+    */
+
     wrap.classList.add(
       "hidden"
     );
+
+    wrap.style.display =
+      "none";
 
 
     if ($("redeemedTotal")) {
@@ -1043,14 +1162,40 @@ function renderRedeemed() {
   }
 
 
+  /* =====================================
+     HAS REDEEMED RECORDS
+     ===================================== */
+
+  /*
+    IMPORTANT:
+
+    When a redeemed record exists,
+    completely hide the empty state.
+  */
+
   empty.classList.add(
     "hidden"
   );
+
+  empty.style.display =
+    "none";
+
+
+  /*
+    Show the redeemed table.
+  */
 
   wrap.classList.remove(
     "hidden"
   );
 
+  wrap.style.display =
+    "block";
+
+
+  /* =====================================
+     RENDER TABLE
+     ===================================== */
 
   table.innerHTML =
     rows.map(row => `
@@ -1079,6 +1224,10 @@ function renderRedeemed() {
       </tr>
     `).join("");
 
+
+  /* =====================================
+     TOTALS
+     ===================================== */
 
   const totalSOL =
     rows.reduce(
@@ -1396,14 +1545,6 @@ function getAllocationPercentages(
   }
 
 
-  /*
-    Row 5:
-
-    A = LEAM %
-    F = CP %
-    K = PROJECT %
-  */
-
   let leam =
     toNumber(rows[4][0]);
 
@@ -1413,16 +1554,6 @@ function getAllocationPercentages(
   let project =
     toNumber(rows[4][10]);
 
-
-  /*
-    If Sheets gives:
-
-    30%
-    -> 30
-
-    0.30
-    -> 30
-  */
 
   if (
     leam > 0 &&
@@ -1452,6 +1583,7 @@ function getAllocationPercentages(
     leam <= 0 ||
     !Number.isFinite(leam)
   ) {
+
     leam =
       defaults.leam;
   }
@@ -1461,6 +1593,7 @@ function getAllocationPercentages(
     cp <= 0 ||
     !Number.isFinite(cp)
   ) {
+
     cp =
       defaults.cp;
   }
@@ -1470,16 +1603,86 @@ function getAllocationPercentages(
     project <= 0 ||
     !Number.isFinite(project)
   ) {
+
     project =
       defaults.project;
   }
 
 
   return {
+
     leam,
+
     cp,
+
     project
+
   };
+}
+
+
+/* =========================================
+   TRANSPARENCY NOTE
+   ========================================= */
+
+function renderTransparencyNote() {
+
+  const note =
+    state.note ||
+    "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
+
+
+  /*
+    Main allocation note.
+  */
+
+  const allocationNote =
+    $("allocationNote");
+
+
+  if (allocationNote) {
+
+    allocationNote.textContent =
+      note;
+  }
+
+
+  /*
+    Transparency statement note.
+
+    This supports the actual transparency
+    statement section if the HTML uses:
+
+    id="transparencyNote"
+  */
+
+  const transparencyNote =
+    $("transparencyNote");
+
+
+  if (transparencyNote) {
+
+    transparencyNote.textContent =
+      note;
+  }
+
+
+  /*
+    Additional compatibility IDs
+    in case the HTML uses another
+    transparency-note element.
+  */
+
+  const statementNote =
+    $("statementNote");
+
+
+  if (statementNote) {
+
+    statementNote.textContent =
+      note;
+  }
+
 }
 
 
@@ -1544,12 +1747,12 @@ function renderAllocation(
   }
 
 
-  if ($("allocationNote")) {
+  /*
+    Render transparency note
+    separately.
+  */
 
-    $("allocationNote").textContent =
-      state.note ||
-      "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
-  }
+  renderTransparencyNote();
 
 }
 
@@ -1761,6 +1964,9 @@ function showDataError(
       "hidden"
     );
 
+    $("redeemedEmpty").style.display =
+      "flex";
+
 
     $("redeemedEmpty").innerHTML = `
       <div class="empty-icon">!</div>
@@ -1773,6 +1979,17 @@ function showDataError(
         Please check the Google Sheet connection.
       </p>
     `;
+  }
+
+
+  if ($("redeemedWrap")) {
+
+    $("redeemedWrap").classList.add(
+      "hidden"
+    );
+
+    $("redeemedWrap").style.display =
+      "none";
   }
 
 }
@@ -1890,6 +2107,7 @@ async function loadData() {
     console.log(
       "Creator Reward Transparency loaded:",
       {
+
         claimed:
           state.claimed.length,
 
@@ -1906,7 +2124,11 @@ async function loadData() {
           state.allocation.cp.length,
 
         project:
-          state.allocation.project.length
+          state.allocation.project.length,
+
+        transparencyNote:
+          state.note
+
       }
     );
 
