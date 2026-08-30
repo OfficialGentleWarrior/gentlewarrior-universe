@@ -44,10 +44,6 @@ function escapeHTML(value) {
 
 function toNumber(value) {
 
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
-  }
-
   if (
     value === null ||
     value === undefined ||
@@ -56,7 +52,36 @@ function toNumber(value) {
     return 0;
   }
 
-  const cleaned = String(value)
+  if (typeof value === "number") {
+    return Number.isFinite(value)
+      ? value
+      : 0;
+  }
+
+  let cleaned = String(value)
+    .trim();
+
+  if (!cleaned) {
+    return 0;
+  }
+
+  /*
+    Ignore Google Sheets formula errors
+    such as:
+
+    #VALUE!
+    #REF!
+    #DIV/0!
+    #N/A
+  */
+
+  if (
+    /^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(cleaned)
+  ) {
+    return 0;
+  }
+
+  cleaned = cleaned
     .replace(/₱/g, "")
     .replace(/\$/g, "")
     .replace(/SOL/gi, "")
@@ -64,7 +89,8 @@ function toNumber(value) {
     .replace(/%/g, "")
     .trim();
 
-  const number = parseFloat(cleaned);
+  const number =
+    parseFloat(cleaned);
 
   return Number.isFinite(number)
     ? number
@@ -95,7 +121,8 @@ function formatUSD(value) {
 
 function formatRate(value) {
 
-  const number = toNumber(value);
+  const number =
+    toNumber(value);
 
   if (!number) {
     return "—";
@@ -123,19 +150,23 @@ function parseDate(value) {
   }
 
   if (value instanceof Date) {
-    return Number.isNaN(value.getTime())
+
+    return Number.isNaN(
+      value.getTime()
+    )
       ? null
       : value;
   }
 
-  const text = String(value).trim();
+  const text =
+    String(value).trim();
 
   if (!text) {
     return null;
   }
 
   /*
-    Google Sheets / gviz may return:
+    Google Sheets / GViz examples:
 
     8/8/2026
     08/08/2026
@@ -143,31 +174,60 @@ function parseDate(value) {
     Aug 8, 2026
   */
 
-  let date = new Date(text);
-
-  if (!Number.isNaN(date.getTime())) {
-    return date;
-  }
-
-  const match = text.match(
-    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
-  );
+  let match =
+    text.match(
+      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
+    );
 
   if (match) {
 
-    const month = Number(match[1]) - 1;
-    const day = Number(match[2]);
-    const year = Number(match[3]);
+    const first =
+      Number(match[1]);
 
-    date = new Date(
-      year,
-      month,
-      day
-    );
+    const second =
+      Number(match[2]);
 
-    if (!Number.isNaN(date.getTime())) {
+    const year =
+      Number(match[3]);
+
+    /*
+      Treat standard Philippine
+      date format as MM/DD/YYYY
+      when coming from Sheets.
+    */
+
+    const month =
+      first - 1;
+
+    const day =
+      second;
+
+    const date =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month &&
+      date.getDate() === day
+    ) {
       return date;
     }
+  }
+
+
+  const date =
+    new Date(text);
+
+  if (
+    !Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return date;
   }
 
   return null;
@@ -176,10 +236,14 @@ function parseDate(value) {
 
 function formatDate(value) {
 
-  const date = parseDate(value);
+  const date =
+    parseDate(value);
 
   if (!date) {
-    return escapeHTML(value || "");
+
+    return escapeHTML(
+      value || ""
+    );
   }
 
   return date.toLocaleDateString(
@@ -205,41 +269,59 @@ function parseCSV(text) {
   let cell = "";
   let insideQuotes = false;
 
+
   for (
     let i = 0;
     i < text.length;
     i++
   ) {
 
-    const char = text[i];
-    const next = text[i + 1];
+    const char =
+      text[i];
+
+    const next =
+      text[i + 1];
+
 
     if (
       char === '"' &&
       insideQuotes &&
       next === '"'
     ) {
+
       cell += '"';
+
       i++;
+
       continue;
     }
 
+
     if (char === '"') {
-      insideQuotes = !insideQuotes;
+
+      insideQuotes =
+        !insideQuotes;
+
       continue;
     }
+
 
     if (
       char === "," &&
       !insideQuotes
     ) {
+
       row.push(cell);
+
       cell = "";
+
       continue;
     }
 
+
     if (
-      (char === "\n" || char === "\r") &&
+      (char === "\n" ||
+       char === "\r") &&
       !insideQuotes
     ) {
 
@@ -250,7 +332,9 @@ function parseCSV(text) {
         i++;
       }
 
+
       row.push(cell);
+
       cell = "";
 
       rows.push(row);
@@ -260,16 +344,21 @@ function parseCSV(text) {
       continue;
     }
 
+
     cell += char;
   }
+
 
   if (
     cell !== "" ||
     row.length
   ) {
+
     row.push(cell);
+
     rows.push(row);
   }
+
 
   return rows;
 }
@@ -279,13 +368,17 @@ function parseCSV(text) {
    GOOGLE SHEETS FETCH
    ========================================= */
 
-async function fetchGoogleSheet(sheetName) {
+async function fetchGoogleSheet(
+  sheetName
+) {
 
   if (!SHEET_ID) {
+
     throw new Error(
       "Google Sheet ID is missing from config.js."
     );
   }
+
 
   const url =
     `https://docs.google.com/spreadsheets/d/${encodeURIComponent(
@@ -294,14 +387,17 @@ async function fetchGoogleSheet(sheetName) {
       sheetName
     )}&_=${Date.now()}`;
 
+
   const controller =
     new AbortController();
+
 
   const timeout =
     setTimeout(
       () => controller.abort(),
       12000
     );
+
 
   try {
 
@@ -315,40 +411,43 @@ async function fetchGoogleSheet(sheetName) {
         }
       );
 
+
     if (!response.ok) {
+
       throw new Error(
         `Google Sheets returned ${response.status}.`
       );
     }
 
+
     const text =
       await response.text();
+
 
     if (
       !text ||
       !text.trim()
     ) {
+
       throw new Error(
         `${sheetName} returned empty data.`
       );
     }
 
-    /*
-      If Google returns an HTML page
-      instead of CSV, the sheet is
-      probably not publicly accessible.
-    */
 
     if (
       text.includes("<html") ||
       text.includes("<!DOCTYPE")
     ) {
+
       throw new Error(
         `${sheetName} is not publicly accessible.`
       );
     }
 
+
     return parseCSV(text);
+
 
   } finally {
 
@@ -362,17 +461,16 @@ async function fetchGoogleSheet(sheetName) {
    REWARD SHEET
    =========================================
 
-   Actual REWARD structure:
+   REWARD:
 
-   A:B  = CLAIMED
-   D:H  = REDEEMED
-   J:M  = EXPENSES
+   A:B = CLAIMED
+   D:H = REDEEMED
+   J:M = EXPENSES
 
    Row 1 = totals
    Row 2 = headers
    Row 3+ = records
-*/
-
+   ========================================= */
 
 function processRewardSheet(rows) {
 
@@ -380,10 +478,12 @@ function processRewardSheet(rows) {
   const redeemed = [];
   const expenses = [];
 
+
   if (
     !Array.isArray(rows) ||
     !rows.length
   ) {
+
     return {
       claimed,
       redeemed,
@@ -391,14 +491,6 @@ function processRewardSheet(rows) {
     };
   }
 
-
-  /*
-    Start at row 3
-    because:
-
-    row 1 = summary
-    row 2 = headers
-  */
 
   for (
     let i = 2;
@@ -422,6 +514,7 @@ function processRewardSheet(rows) {
     const claimedSOL =
       toNumber(row[1]);
 
+
     if (
       claimedDate &&
       claimedSOL !== 0
@@ -431,7 +524,6 @@ function processRewardSheet(rows) {
         date: claimedDate,
         sol: claimedSOL
       });
-
     }
 
 
@@ -440,8 +532,8 @@ function processRewardSheet(rows) {
        D = DATE
        E = SOLD SOL
        F = RATE
-       G = $
-       H = IN PESO
+       G = USD
+       H = PHP
     ------------------------------------- */
 
     const soldDate =
@@ -459,30 +551,22 @@ function processRewardSheet(rows) {
     const soldPeso =
       toNumber(row[7]);
 
+
     if (
       soldDate ||
-      soldSOL ||
-      soldRate ||
-      soldUSD ||
-      soldPeso
+      soldSOL !== 0 ||
+      soldRate !== 0 ||
+      soldUSD !== 0 ||
+      soldPeso !== 0
     ) {
 
-      if (
-        soldDate ||
-        soldSOL ||
-        soldPeso
-      ) {
-
-        redeemed.push({
-          date: soldDate,
-          sol: soldSOL,
-          rate: soldRate,
-          usd: soldUSD,
-          peso: soldPeso
-        });
-
-      }
-
+      redeemed.push({
+        date: soldDate,
+        sol: soldSOL,
+        rate: soldRate,
+        usd: soldUSD,
+        peso: soldPeso
+      });
     }
 
 
@@ -506,10 +590,11 @@ function processRewardSheet(rows) {
     const expenseRemarks =
       row[12];
 
+
     if (
       expenseDate ||
       expenseDescription ||
-      expenseAmount ||
+      expenseAmount !== 0 ||
       expenseRemarks
     ) {
 
@@ -519,7 +604,6 @@ function processRewardSheet(rows) {
         amount: expenseAmount,
         remarks: expenseRemarks
       });
-
     }
 
   }
@@ -537,29 +621,32 @@ function processRewardSheet(rows) {
    ALLOCATION SHEET
    =========================================
 
-   Actual ALLOCATION structure:
+   ALLOCATION:
 
    A:D  = LEAM
    F:I  = CP KIDS
    K:N  = PROJECT
 
-   Row 2 = transparency note
+   A2 = transparency note
 
    Row 4 = allocation headers
-   Row 5 = percentage / balance data
-
+   Row 5 = percentages / balances
    Row 6 = transaction headers
    Row 7+ = transactions
-*/
-
+   ========================================= */
 
 function processAllocationSheet(rows) {
 
   const result = {
+
     leam: [],
+
     cp: [],
+
     project: [],
+
     note: ""
+
   };
 
 
@@ -567,6 +654,7 @@ function processAllocationSheet(rows) {
     !Array.isArray(rows) ||
     !rows.length
   ) {
+
     return result;
   }
 
@@ -580,15 +668,30 @@ function processAllocationSheet(rows) {
     rows[1] &&
     rows[1][0]
   ) {
-    result.note =
-      String(rows[1][0]).trim();
+
+    const note =
+      String(rows[1][0])
+        .trim();
+
+    /*
+      Ignore spreadsheet errors
+      accidentally appearing in note.
+    */
+
+    if (
+      !/^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(note)
+    ) {
+
+      result.note =
+        note;
+    }
   }
 
 
-  /*
-    Data starts at row 7
-    => array index 6
-  */
+  /* -------------------------------------
+     TRANSACTIONS
+     Row 7 = index 6
+  ------------------------------------- */
 
   for (
     let i = 6;
@@ -620,11 +723,12 @@ function processAllocationSheet(rows) {
     const leamOut =
       toNumber(row[3]);
 
+
     if (
       leamDate ||
       leamRemarks ||
-      leamIn ||
-      leamOut
+      leamIn !== 0 ||
+      leamOut !== 0
     ) {
 
       result.leam.push({
@@ -633,7 +737,6 @@ function processAllocationSheet(rows) {
         in: leamIn,
         out: leamOut
       });
-
     }
 
 
@@ -657,11 +760,12 @@ function processAllocationSheet(rows) {
     const cpOut =
       toNumber(row[8]);
 
+
     if (
       cpDate ||
       cpRemarks ||
-      cpIn ||
-      cpOut
+      cpIn !== 0 ||
+      cpOut !== 0
     ) {
 
       result.cp.push({
@@ -670,7 +774,6 @@ function processAllocationSheet(rows) {
         in: cpIn,
         out: cpOut
       });
-
     }
 
 
@@ -694,11 +797,12 @@ function processAllocationSheet(rows) {
     const projectOut =
       toNumber(row[13]);
 
+
     if (
       projectDate ||
       projectRemarks ||
-      projectIn ||
-      projectOut
+      projectIn !== 0 ||
+      projectOut !== 0
     ) {
 
       result.project.push({
@@ -707,7 +811,6 @@ function processAllocationSheet(rows) {
         in: projectIn,
         out: projectOut
       });
-
     }
 
   }
@@ -730,9 +833,13 @@ const state = {
   expenses: [],
 
   allocation: {
+
     leam: [],
+
     cp: [],
+
     project: []
+
   },
 
   note: "",
@@ -751,20 +858,35 @@ function renderClaimed() {
   const table =
     $("claimsTable");
 
+
   if (!table) {
     return;
   }
+
 
   const rows =
     state.claimed;
 
 
-  $("claimedCount").textContent =
-    `${rows.length} ${
-      rows.length === 1
-        ? "record"
-        : "records"
-    }`;
+  const count =
+    $("claimedCount");
+
+  const totalElement =
+    $("claimsTotal");
+
+  const summaryElement =
+    $("totalClaimed");
+
+
+  if (count) {
+
+    count.textContent =
+      `${rows.length} ${
+        rows.length === 1
+          ? "record"
+          : "records"
+      }`;
+  }
 
 
   if (!rows.length) {
@@ -777,11 +899,18 @@ function renderClaimed() {
       </tr>
     `;
 
-    $("claimsTotal").textContent =
-      formatSOL(0);
 
-    $("totalClaimed").textContent =
-      formatSOL(0);
+    if (totalElement) {
+      totalElement.textContent =
+        formatSOL(0);
+    }
+
+
+    if (summaryElement) {
+      summaryElement.textContent =
+        formatSOL(0);
+    }
+
 
     return;
   }
@@ -790,6 +919,7 @@ function renderClaimed() {
   table.innerHTML =
     rows.map(row => `
       <tr>
+
         <td>
           ${formatDate(row.date)}
         </td>
@@ -797,6 +927,7 @@ function renderClaimed() {
         <td class="num">
           ${formatSOL(row.sol)}
         </td>
+
       </tr>
     `).join("");
 
@@ -804,16 +935,23 @@ function renderClaimed() {
   const total =
     rows.reduce(
       (sum, row) =>
-        sum + row.sol,
+        sum + toNumber(row.sol),
       0
     );
 
 
-  $("claimsTotal").textContent =
-    formatSOL(total);
+  if (totalElement) {
 
-  $("totalClaimed").textContent =
-    formatSOL(total);
+    totalElement.textContent =
+      formatSOL(total);
+  }
+
+
+  if (summaryElement) {
+
+    summaryElement.textContent =
+      formatSOL(total);
+  }
 
 }
 
@@ -833,6 +971,7 @@ function renderRedeemed() {
   const wrap =
     $("redeemedWrap");
 
+
   if (
     !table ||
     !empty ||
@@ -846,12 +985,19 @@ function renderRedeemed() {
     state.redeemed;
 
 
-  $("redeemedCount").textContent =
-    `${rows.length} ${
-      rows.length === 1
-        ? "record"
-        : "records"
-    }`;
+  const count =
+    $("redeemedCount");
+
+
+  if (count) {
+
+    count.textContent =
+      `${rows.length} ${
+        rows.length === 1
+          ? "record"
+          : "records"
+      }`;
+  }
 
 
   if (!rows.length) {
@@ -864,17 +1010,34 @@ function renderRedeemed() {
       "hidden"
     );
 
-    $("redeemedTotal").textContent =
-      formatSOL(0);
 
-    $("proceedsTotal").textContent =
-      formatPeso(0);
+    if ($("redeemedTotal")) {
 
-    $("totalRedeemed").textContent =
-      formatSOL(0);
+      $("redeemedTotal").textContent =
+        formatSOL(0);
+    }
 
-    $("totalProceeds").textContent =
-      formatPeso(0);
+
+    if ($("proceedsTotal")) {
+
+      $("proceedsTotal").textContent =
+        formatPeso(0);
+    }
+
+
+    if ($("totalRedeemed")) {
+
+      $("totalRedeemed").textContent =
+        formatSOL(0);
+    }
+
+
+    if ($("totalProceeds")) {
+
+      $("totalProceeds").textContent =
+        formatPeso(0);
+    }
+
 
     return;
   }
@@ -920,7 +1083,7 @@ function renderRedeemed() {
   const totalSOL =
     rows.reduce(
       (sum, row) =>
-        sum + row.sol,
+        sum + toNumber(row.sol),
       0
     );
 
@@ -928,22 +1091,37 @@ function renderRedeemed() {
   const totalPeso =
     rows.reduce(
       (sum, row) =>
-        sum + row.peso,
+        sum + toNumber(row.peso),
       0
     );
 
 
-  $("redeemedTotal").textContent =
-    formatSOL(totalSOL);
+  if ($("redeemedTotal")) {
 
-  $("proceedsTotal").textContent =
-    formatPeso(totalPeso);
+    $("redeemedTotal").textContent =
+      formatSOL(totalSOL);
+  }
 
-  $("totalRedeemed").textContent =
-    formatSOL(totalSOL);
 
-  $("totalProceeds").textContent =
-    formatPeso(totalPeso);
+  if ($("proceedsTotal")) {
+
+    $("proceedsTotal").textContent =
+      formatPeso(totalPeso);
+  }
+
+
+  if ($("totalRedeemed")) {
+
+    $("totalRedeemed").textContent =
+      formatSOL(totalSOL);
+  }
+
+
+  if ($("totalProceeds")) {
+
+    $("totalProceeds").textContent =
+      formatPeso(totalPeso);
+  }
 
 }
 
@@ -957,6 +1135,7 @@ function renderExpenses() {
   const table =
     $("expensesTable");
 
+
   if (!table) {
     return;
   }
@@ -966,12 +1145,15 @@ function renderExpenses() {
     state.expenses;
 
 
-  $("expenseCount").textContent =
-    `${rows.length} ${
-      rows.length === 1
-        ? "record"
-        : "records"
-    }`;
+  if ($("expenseCount")) {
+
+    $("expenseCount").textContent =
+      `${rows.length} ${
+        rows.length === 1
+          ? "record"
+          : "records"
+      }`;
+  }
 
 
   if (!rows.length) {
@@ -984,11 +1166,20 @@ function renderExpenses() {
       </tr>
     `;
 
-    $("expensesTotal").textContent =
-      formatPeso(0);
 
-    $("totalExpenses").textContent =
-      formatPeso(0);
+    if ($("expensesTotal")) {
+
+      $("expensesTotal").textContent =
+        formatPeso(0);
+    }
+
+
+    if ($("totalExpenses")) {
+
+      $("totalExpenses").textContent =
+        formatPeso(0);
+    }
+
 
     return;
   }
@@ -1025,16 +1216,23 @@ function renderExpenses() {
   const total =
     rows.reduce(
       (sum, row) =>
-        sum + row.amount,
+        sum + toNumber(row.amount),
       0
     );
 
 
-  $("expensesTotal").textContent =
-    formatPeso(total);
+  if ($("expensesTotal")) {
 
-  $("totalExpenses").textContent =
-    formatPeso(total);
+    $("expensesTotal").textContent =
+      formatPeso(total);
+  }
+
+
+  if ($("totalExpenses")) {
+
+    $("totalExpenses").textContent =
+      formatPeso(total);
+  }
 
 }
 
@@ -1048,6 +1246,7 @@ function renderAllocationCard(key) {
   const rows =
     state.allocation[key] || [];
 
+
   const prefix =
     key;
 
@@ -1055,7 +1254,7 @@ function renderAllocationCard(key) {
   const inTotal =
     rows.reduce(
       (sum, row) =>
-        sum + row.in,
+        sum + toNumber(row.in),
       0
     );
 
@@ -1063,7 +1262,7 @@ function renderAllocationCard(key) {
   const outTotal =
     rows.reduce(
       (sum, row) =>
-        sum + row.out,
+        sum + toNumber(row.out),
       0
     );
 
@@ -1087,14 +1286,35 @@ function renderAllocationCard(key) {
   }
 
 
-  $(`${prefix}In`).textContent =
-    formatPeso(inTotal);
+  const inElement =
+    $(`${prefix}In`);
 
-  $(`${prefix}Out`).textContent =
-    formatPeso(outTotal);
+  const outElement =
+    $(`${prefix}Out`);
 
-  $(`${prefix}Balance`).textContent =
-    formatPeso(balance);
+  const balanceElement =
+    $(`${prefix}Balance`);
+
+
+  if (inElement) {
+
+    inElement.textContent =
+      formatPeso(inTotal);
+  }
+
+
+  if (outElement) {
+
+    outElement.textContent =
+      formatPeso(outTotal);
+  }
+
+
+  if (balanceElement) {
+
+    balanceElement.textContent =
+      formatPeso(balance);
+  }
 
 
   if (!rows.length) {
@@ -1128,7 +1348,7 @@ function renderAllocationCard(key) {
 
         <strong>
           ${
-            row.in
+            toNumber(row.in) !== 0
               ? formatPeso(row.in)
               : "—"
           }
@@ -1136,7 +1356,7 @@ function renderAllocationCard(key) {
 
         <strong>
           ${
-            row.out
+            toNumber(row.out) !== 0
               ? formatPeso(row.out)
               : "—"
           }
@@ -1157,9 +1377,13 @@ function getAllocationPercentages(
 ) {
 
   const defaults = {
+
     leam: 30,
+
     cp: 30,
+
     project: 40
+
   };
 
 
@@ -1167,51 +1391,94 @@ function getAllocationPercentages(
     !Array.isArray(rows) ||
     !rows[4]
   ) {
+
     return defaults;
   }
 
 
   /*
-    Row 5 in Google Sheet:
+    Row 5:
 
     A = LEAM %
     F = CP %
     K = PROJECT %
   */
 
-  const leam =
+  let leam =
     toNumber(rows[4][0]);
 
-  const cp =
+  let cp =
     toNumber(rows[4][5]);
 
-  const project =
+  let project =
     toNumber(rows[4][10]);
 
 
+  /*
+    If Sheets gives:
+
+    30%
+    -> 30
+
+    0.30
+    -> 30
+  */
+
+  if (
+    leam > 0 &&
+    leam <= 1
+  ) {
+    leam *= 100;
+  }
+
+
+  if (
+    cp > 0 &&
+    cp <= 1
+  ) {
+    cp *= 100;
+  }
+
+
+  if (
+    project > 0 &&
+    project <= 1
+  ) {
+    project *= 100;
+  }
+
+
+  if (
+    leam <= 0 ||
+    !Number.isFinite(leam)
+  ) {
+    leam =
+      defaults.leam;
+  }
+
+
+  if (
+    cp <= 0 ||
+    !Number.isFinite(cp)
+  ) {
+    cp =
+      defaults.cp;
+  }
+
+
+  if (
+    project <= 0 ||
+    !Number.isFinite(project)
+  ) {
+    project =
+      defaults.project;
+  }
+
+
   return {
-
-    leam:
-      leam > 0
-        ? leam <= 1
-          ? leam * 100
-          : leam
-        : defaults.leam,
-
-    cp:
-      cp > 0
-        ? cp <= 1
-          ? cp * 100
-          : cp
-        : defaults.cp,
-
-    project:
-      project > 0
-        ? project <= 1
-          ? project * 100
-          : project
-        : defaults.project
-
+    leam,
+    cp,
+    project
   };
 }
 
@@ -1224,9 +1491,17 @@ function renderAllocation(
   allocationRows
 ) {
 
-  renderAllocationCard("leam");
-  renderAllocationCard("cp");
-  renderAllocationCard("project");
+  renderAllocationCard(
+    "leam"
+  );
+
+  renderAllocationCard(
+    "cp"
+  );
+
+  renderAllocationCard(
+    "project"
+  );
 
 
   const percentages =
@@ -1235,14 +1510,25 @@ function renderAllocation(
     );
 
 
-  $("leamPercentage").textContent =
-    `${percentages.leam}%`;
+  if ($("leamPercentage")) {
 
-  $("cpPercentage").textContent =
-    `${percentages.cp}%`;
+    $("leamPercentage").textContent =
+      `${percentages.leam}%`;
+  }
 
-  $("projectPercentage").textContent =
-    `${percentages.project}%`;
+
+  if ($("cpPercentage")) {
+
+    $("cpPercentage").textContent =
+      `${percentages.cp}%`;
+  }
+
+
+  if ($("projectPercentage")) {
+
+    $("projectPercentage").textContent =
+      `${percentages.project}%`;
+  }
 
 
   const totalPercentage =
@@ -1251,8 +1537,11 @@ function renderAllocation(
     percentages.project;
 
 
-  $("allocationTotalPercentage").textContent =
-    `${totalPercentage}%`;
+  if ($("allocationTotalPercentage")) {
+
+    $("allocationTotalPercentage").textContent =
+      `${totalPercentage}%`;
+  }
 
 
   if ($("allocationNote")) {
@@ -1260,7 +1549,6 @@ function renderAllocation(
     $("allocationNote").textContent =
       state.note ||
       "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
-
   }
 
 }
@@ -1295,6 +1583,7 @@ function updateLatestEntry() {
 
   const element =
     $("latestEntry");
+
 
   if (!element) {
     return;
@@ -1374,7 +1663,6 @@ function updateLatestEntry() {
         year: "numeric"
       }
     )}`;
-
 }
 
 
@@ -1386,6 +1674,7 @@ function setStatus(text) {
 
   const element =
     $("dataStatus");
+
 
   if (!element) {
     return;
@@ -1433,7 +1722,6 @@ function showDataError(
 
     $("latestEntry").textContent =
       "Unable to load live transparency records.";
-
   }
 
 
@@ -1449,7 +1737,6 @@ function showDataError(
         </td>
       </tr>
     `;
-
   }
 
 
@@ -1465,7 +1752,6 @@ function showDataError(
         </td>
       </tr>
     `;
-
   }
 
 
@@ -1474,6 +1760,7 @@ function showDataError(
     $("redeemedEmpty").classList.remove(
       "hidden"
     );
+
 
     $("redeemedEmpty").innerHTML = `
       <div class="empty-icon">!</div>
@@ -1486,7 +1773,6 @@ function showDataError(
         Please check the Google Sheet connection.
       </p>
     `;
-
   }
 
 }
@@ -1510,12 +1796,11 @@ async function loadData() {
       throw new Error(
         "Missing sheetId in config.js."
       );
-
     }
 
 
     /*
-      Only TWO Google Sheet tabs:
+      ONLY TWO SHEETS:
 
       REWARD
       ALLOCATION
@@ -1524,26 +1809,23 @@ async function loadData() {
     const [
       rewardRows,
       allocationRows
-    ] = await Promise.all([
+    ] =
+      await Promise.all([
 
-      fetchGoogleSheet(
-        REWARD_SHEET
-      ),
+        fetchGoogleSheet(
+          REWARD_SHEET
+        ),
 
-      fetchGoogleSheet(
-        ALLOCATION_SHEET
-      )
+        fetchGoogleSheet(
+          ALLOCATION_SHEET
+        )
 
-    ]);
+      ]);
 
 
-    /*
-      Process REWARD
-
-      A:B = Claimed
-      D:H = Redeemed
-      J:M = Expenses
-    */
+    /* -------------------------------------
+       PROCESS REWARD
+    ------------------------------------- */
 
     const rewardData =
       processRewardSheet(
@@ -1561,13 +1843,9 @@ async function loadData() {
       rewardData.expenses;
 
 
-    /*
-      Process ALLOCATION
-
-      A:D = Leam
-      F:I = CP
-      K:N = Project
-    */
+    /* -------------------------------------
+       PROCESS ALLOCATION
+    ------------------------------------- */
 
     const allocationData =
       processAllocationSheet(
@@ -1587,6 +1865,10 @@ async function loadData() {
     state.note =
       allocationData.note;
 
+
+    /* -------------------------------------
+       RENDER
+    ------------------------------------- */
 
     renderAll(
       allocationRows
@@ -1634,9 +1916,11 @@ async function loadData() {
     state.loaded =
       false;
 
+
     setStatus(
       "Data unavailable"
     );
+
 
     showDataError(
       error
@@ -1713,7 +1997,6 @@ function setupAccordion() {
             event.preventDefault();
 
             toggle();
-
           }
 
         }
@@ -1796,7 +2079,6 @@ function setupNavigation() {
                 "aria-expanded",
                 "true"
               );
-
             }
 
           }
@@ -1846,7 +2128,6 @@ function syncAccordionState() {
             "aria-expanded",
             "false"
           );
-
         }
 
       }
