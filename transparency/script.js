@@ -248,7 +248,8 @@ function parseRewardSheet(rows) {
      A = DATE
      B = SOL CLAIMED
 
-     Starts at Sheet Row 3
+     Sheet Row 3 onward
+     JavaScript index 2
      ======================================= */
 
   for (
@@ -303,7 +304,8 @@ function parseRewardSheet(rows) {
      G = $
      H = IN PESO
 
-     Starts at Sheet Row 3
+     Sheet Row 3 onward
+     JavaScript index 2
      ======================================= */
 
   for (
@@ -378,7 +380,8 @@ function parseRewardSheet(rows) {
      L = AMOUNT
      M = REMARKS
 
-     Starts at Sheet Row 3
+     Sheet Row 3 onward
+     JavaScript index 2
      ======================================= */
 
   for (
@@ -448,117 +451,65 @@ function parseRewardSheet(rows) {
 function parseAllocationSheet(rows) {
 
   /*
-   * GOOGLE SHEET STRUCTURE
+   * =======================================
+   * SOURCE STRUCTURE
+   * =======================================
+   *
+   * NOTE
+   * A2 = allocation note
+   *
    *
    * LEAM
-   * A = percentage
-   * C = IN
-   * D = OUT
+   *
+   * A6 = DATE
+   * B6 = REMARKS
+   * C6 = IN
+   * D6 = OUT
+   *
+   * DATA STARTS ROW 7
+   * JavaScript index 6
+   *
    *
    * CP KIDS
-   * F = percentage
-   * H = IN
-   * I = OUT
+   *
+   * F6 = DATE
+   * G6 = REMARKS
+   * H6 = IN
+   * I6 = OUT
+   *
+   * DATA STARTS ROW 7
+   * JavaScript index 6
+   *
    *
    * PROJECT
-   * K = percentage
-   * M = IN
-   * N = OUT
    *
-   * Current data row:
-   * Sheet Row 5
+   * K6 = DATE
+   * L6 = REMARKS
+   * M6 = IN
+   * N6 = OUT
+   *
+   * DATA STARTS ROW 7
+   * JavaScript index 6
+   *
+   *
+   * IMPORTANT:
+   *
+   * The allocation percentages are NOT
+   * taken from the spreadsheet.
+   *
+   * They remain fixed:
+   *
+   * LEAM    = 30%
+   * CP KIDS = 30%
+   * PROJECT = 40%
+   *
+   * These labels are controlled by
+   * the HTML.
    */
-
-
-  const allocationRow =
-    rows[4] || [];
-
-
-  /* =======================================
-     LEAM
-     ======================================= */
-
-  transparencyData.allocation.leam = {
-
-    percentage:
-      getNumberOrDefault(
-        allocationRow[0],
-        30
-      ),
-
-    in:
-      getNumberOrDefault(
-        allocationRow[2],
-        0
-      ),
-
-    out:
-      getNumberOrDefault(
-        allocationRow[3],
-        0
-      )
-
-  };
-
-
-  /* =======================================
-     CP KIDS
-     ======================================= */
-
-  transparencyData.allocation.cpKids = {
-
-    percentage:
-      getNumberOrDefault(
-        allocationRow[5],
-        30
-      ),
-
-    in:
-      getNumberOrDefault(
-        allocationRow[7],
-        0
-      ),
-
-    out:
-      getNumberOrDefault(
-        allocationRow[8],
-        0
-      )
-
-  };
-
-
-  /* =======================================
-     PROJECT
-     ======================================= */
-
-  transparencyData.allocation.project = {
-
-    percentage:
-      getNumberOrDefault(
-        allocationRow[10],
-        40
-      ),
-
-    in:
-      getNumberOrDefault(
-        allocationRow[12],
-        0
-      ),
-
-    out:
-      getNumberOrDefault(
-        allocationRow[13],
-        0
-      )
-
-  };
 
 
   /* =======================================
      NOTE
-
-     A2
      ======================================= */
 
   transparencyData.note =
@@ -566,25 +517,178 @@ function parseAllocationSheet(rows) {
       ? String(rows[1][0])
       : "";
 
-}
+
+  /* =======================================
+     FIXED ALLOCATION PERCENTAGES
+     ======================================= */
+
+  transparencyData.allocation.leam.percentage =
+    30;
+
+  transparencyData.allocation.cpKids.percentage =
+    30;
+
+  transparencyData.allocation.project.percentage =
+    40;
 
 
-/* =========================================
-   NUMBER WITH DEFAULT
-   ========================================= */
+  /* =======================================
+     RESET TOTALS
+     ======================================= */
 
-function getNumberOrDefault(
-  value,
-  fallback
-) {
+  transparencyData.allocation.leam.in = 0;
 
-  const number =
-    toNumber(value);
+  transparencyData.allocation.leam.out = 0;
+
+  transparencyData.allocation.cpKids.in = 0;
+
+  transparencyData.allocation.cpKids.out = 0;
+
+  transparencyData.allocation.project.in = 0;
+
+  transparencyData.allocation.project.out = 0;
 
 
-  return number === null
-    ? fallback
-    : number;
+  /* =======================================
+     DATA STARTS AT SHEET ROW 7
+     ======================================= */
+
+  const startRow = 6;
+
+
+  /* =======================================
+     LEAM
+
+     A = DATE
+     B = REMARKS
+     C = IN
+     D = OUT
+     ======================================= */
+
+  for (
+    let row = startRow;
+    row < rows.length;
+    row++
+  ) {
+
+    const inValue =
+      toNumber(
+        rows[row]?.[2]
+      );
+
+
+    const outValue =
+      toNumber(
+        rows[row]?.[3]
+      );
+
+
+    if (inValue !== null) {
+
+      transparencyData.allocation.leam.in +=
+        inValue;
+
+    }
+
+
+    if (outValue !== null) {
+
+      transparencyData.allocation.leam.out +=
+        outValue;
+
+    }
+
+  }
+
+
+  /* =======================================
+     CP KIDS
+
+     F = DATE
+     G = REMARKS
+     H = IN
+     I = OUT
+     ======================================= */
+
+  for (
+    let row = startRow;
+    row < rows.length;
+    row++
+  ) {
+
+    const inValue =
+      toNumber(
+        rows[row]?.[7]
+      );
+
+
+    const outValue =
+      toNumber(
+        rows[row]?.[8]
+      );
+
+
+    if (inValue !== null) {
+
+      transparencyData.allocation.cpKids.in +=
+        inValue;
+
+    }
+
+
+    if (outValue !== null) {
+
+      transparencyData.allocation.cpKids.out +=
+        outValue;
+
+    }
+
+  }
+
+
+  /* =======================================
+     PROJECT
+
+     K = DATE
+     L = REMARKS
+     M = IN
+     N = OUT
+     ======================================= */
+
+  for (
+    let row = startRow;
+    row < rows.length;
+    row++
+  ) {
+
+    const inValue =
+      toNumber(
+        rows[row]?.[12]
+      );
+
+
+    const outValue =
+      toNumber(
+        rows[row]?.[13]
+      );
+
+
+    if (inValue !== null) {
+
+      transparencyData.allocation.project.in +=
+        inValue;
+
+    }
+
+
+    if (outValue !== null) {
+
+      transparencyData.allocation.project.out +=
+        outValue;
+
+    }
+
+  }
 
 }
 
@@ -1035,26 +1139,25 @@ function renderAllocation() {
 
 
   /*
-   * Update allocation percentage labels.
-   * Works even if HTML uses either
-   * data-allocation or known IDs/classes.
+   * Keep allocation labels synchronized
+   * with the fixed allocation percentages.
    */
 
   updateAllocationPercentage(
     "leam",
-    a.leam.percentage
+    30
   );
 
 
   updateAllocationPercentage(
     "cp",
-    a.cpKids.percentage
+    30
   );
 
 
   updateAllocationPercentage(
     "project",
-    a.project.percentage
+    40
   );
 
 }
@@ -1193,9 +1296,6 @@ function optimizeTablesForMobile() {
    *
    * The CSS file controls the actual
    * responsive layout.
-   *
-   * This class allows the CSS to switch
-   * tables into compact/mobile mode.
    */
 
   document
@@ -1742,4 +1842,4 @@ function escapeHTML(value) {
       "&#039;"
     );
 
-     }
+}
