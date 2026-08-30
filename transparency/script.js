@@ -205,15 +205,6 @@ function parseGViz(text) {
           }
 
 
-          /*
-           * GViz can return either
-           * formatted value (f)
-           * or raw value (v).
-           *
-           * Use formatted value when
-           * available for dates/text.
-           */
-
           return (
             cell.f ??
             cell.v ??
@@ -248,8 +239,7 @@ function parseRewardSheet(rows) {
      A = DATE
      B = SOL CLAIMED
 
-     Sheet Row 3 onward
-     JavaScript index 2
+     Starts at Sheet Row 3
      ======================================= */
 
   for (
@@ -304,8 +294,7 @@ function parseRewardSheet(rows) {
      G = $
      H = IN PESO
 
-     Sheet Row 3 onward
-     JavaScript index 2
+     Starts at Sheet Row 3
      ======================================= */
 
   for (
@@ -322,11 +311,6 @@ function parseRewardSheet(rows) {
         rows[row]?.[4]
       );
 
-
-    /*
-     * No SOLD SOL =
-     * no transaction record.
-     */
 
     if (
       date !== "" &&
@@ -380,8 +364,7 @@ function parseRewardSheet(rows) {
      L = AMOUNT
      M = REMARKS
 
-     Sheet Row 3 onward
-     JavaScript index 2
+     Starts at Sheet Row 3
      ======================================= */
 
   for (
@@ -448,247 +431,155 @@ function parseRewardSheet(rows) {
    ALLOCATION SHEET
    ========================================= */
 
+/*
+ * ACTUAL GOOGLE SHEET STRUCTURE
+ *
+ * DATA IS ON SHEET ROW 6
+ *
+ * LEAM
+ * A6 = DATE
+ * B6 = REMARKS
+ * C6 = IN
+ * D6 = OUT
+ *
+ * CP KIDS
+ * F6 = DATE
+ * G6 = REMARKS
+ * H6 = IN
+ * I6 = OUT
+ *
+ * PROJECT
+ * K6 = DATE
+ * L6 = REMARKS
+ * M6 = IN
+ * N6 = OUT
+ *
+ * PERCENTAGES ARE DISPLAY LABELS ONLY:
+ *
+ * LEAM     = 30%
+ * CP KIDS  = 30%
+ * PROJECT  = 40%
+ *
+ * IMPORTANT:
+ * rows[5] = Sheet Row 6
+ */
+
 function parseAllocationSheet(rows) {
 
   /*
-   * =======================================
-   * SOURCE STRUCTURE
-   * =======================================
+   * FIX:
    *
-   * NOTE
-   * A2 = allocation note
+   * Previous version used rows[4]
+   * which points to Sheet Row 5.
    *
-   *
-   * LEAM
-   *
-   * A6 = DATE
-   * B6 = REMARKS
-   * C6 = IN
-   * D6 = OUT
-   *
-   * DATA STARTS ROW 7
-   * JavaScript index 6
-   *
-   *
-   * CP KIDS
-   *
-   * F6 = DATE
-   * G6 = REMARKS
-   * H6 = IN
-   * I6 = OUT
-   *
-   * DATA STARTS ROW 7
-   * JavaScript index 6
-   *
-   *
-   * PROJECT
-   *
-   * K6 = DATE
-   * L6 = REMARKS
-   * M6 = IN
-   * N6 = OUT
-   *
-   * DATA STARTS ROW 7
-   * JavaScript index 6
-   *
-   *
-   * IMPORTANT:
-   *
-   * The allocation percentages are NOT
-   * taken from the spreadsheet.
-   *
-   * They remain fixed:
-   *
-   * LEAM    = 30%
-   * CP KIDS = 30%
-   * PROJECT = 40%
-   *
-   * These labels are controlled by
-   * the HTML.
+   * Actual allocation data is on
+   * Sheet Row 6, therefore rows[5].
    */
+
+  const allocationRow =
+    rows[5] || [];
 
 
   /* =======================================
-     NOTE
+     LEAM
      ======================================= */
+
+  transparencyData.allocation.leam = {
+
+    percentage: 30,
+
+    in:
+      getNumberOrDefault(
+        allocationRow[2],
+        0
+      ),
+
+    out:
+      getNumberOrDefault(
+        allocationRow[3],
+        0
+      )
+
+  };
+
+
+  /* =======================================
+     CP KIDS
+     ======================================= */
+
+  transparencyData.allocation.cpKids = {
+
+    percentage: 30,
+
+    in:
+      getNumberOrDefault(
+        allocationRow[7],
+        0
+      ),
+
+    out:
+      getNumberOrDefault(
+        allocationRow[8],
+        0
+      )
+
+  };
+
+
+  /* =======================================
+     PROJECT
+     ======================================= */
+
+  transparencyData.allocation.project = {
+
+    percentage: 40,
+
+    in:
+      getNumberOrDefault(
+        allocationRow[12],
+        0
+      ),
+
+    out:
+      getNumberOrDefault(
+        allocationRow[13],
+        0
+      )
+
+  };
+
+
+  /*
+   * Keep transparency note support.
+   *
+   * If A2 contains the note, use it.
+   * Otherwise leave it blank.
+   */
 
   transparencyData.note =
     rows[1]?.[0]
       ? String(rows[1][0])
       : "";
 
-
-  /* =======================================
-     FIXED ALLOCATION PERCENTAGES
-     ======================================= */
-
-  transparencyData.allocation.leam.percentage =
-    30;
-
-  transparencyData.allocation.cpKids.percentage =
-    30;
-
-  transparencyData.allocation.project.percentage =
-    40;
+}
 
 
-  /* =======================================
-     RESET TOTALS
-     ======================================= */
+/* =========================================
+   NUMBER WITH DEFAULT
+   ========================================= */
 
-  transparencyData.allocation.leam.in = 0;
+function getNumberOrDefault(
+  value,
+  fallback
+) {
 
-  transparencyData.allocation.leam.out = 0;
-
-  transparencyData.allocation.cpKids.in = 0;
-
-  transparencyData.allocation.cpKids.out = 0;
-
-  transparencyData.allocation.project.in = 0;
-
-  transparencyData.allocation.project.out = 0;
+  const number =
+    toNumber(value);
 
 
-  /* =======================================
-     DATA STARTS AT SHEET ROW 7
-     ======================================= */
-
-  const startRow = 6;
-
-
-  /* =======================================
-     LEAM
-
-     A = DATE
-     B = REMARKS
-     C = IN
-     D = OUT
-     ======================================= */
-
-  for (
-    let row = startRow;
-    row < rows.length;
-    row++
-  ) {
-
-    const inValue =
-      toNumber(
-        rows[row]?.[2]
-      );
-
-
-    const outValue =
-      toNumber(
-        rows[row]?.[3]
-      );
-
-
-    if (inValue !== null) {
-
-      transparencyData.allocation.leam.in +=
-        inValue;
-
-    }
-
-
-    if (outValue !== null) {
-
-      transparencyData.allocation.leam.out +=
-        outValue;
-
-    }
-
-  }
-
-
-  /* =======================================
-     CP KIDS
-
-     F = DATE
-     G = REMARKS
-     H = IN
-     I = OUT
-     ======================================= */
-
-  for (
-    let row = startRow;
-    row < rows.length;
-    row++
-  ) {
-
-    const inValue =
-      toNumber(
-        rows[row]?.[7]
-      );
-
-
-    const outValue =
-      toNumber(
-        rows[row]?.[8]
-      );
-
-
-    if (inValue !== null) {
-
-      transparencyData.allocation.cpKids.in +=
-        inValue;
-
-    }
-
-
-    if (outValue !== null) {
-
-      transparencyData.allocation.cpKids.out +=
-        outValue;
-
-    }
-
-  }
-
-
-  /* =======================================
-     PROJECT
-
-     K = DATE
-     L = REMARKS
-     M = IN
-     N = OUT
-     ======================================= */
-
-  for (
-    let row = startRow;
-    row < rows.length;
-    row++
-  ) {
-
-    const inValue =
-      toNumber(
-        rows[row]?.[12]
-      );
-
-
-    const outValue =
-      toNumber(
-        rows[row]?.[13]
-      );
-
-
-    if (inValue !== null) {
-
-      transparencyData.allocation.project.in +=
-        inValue;
-
-    }
-
-
-    if (outValue !== null) {
-
-      transparencyData.allocation.project.out +=
-        outValue;
-
-    }
-
-  }
+  return number === null
+    ? fallback
+    : number;
 
 }
 
@@ -886,10 +777,6 @@ function renderRedeemed() {
     transparencyData.redeemed;
 
 
-  /* =======================================
-     EMPTY
-     ======================================= */
-
   if (
     records.length === 0
   ) {
@@ -912,10 +799,6 @@ function renderRedeemed() {
 
   }
 
-
-  /* =======================================
-     HAS DATA
-     ======================================= */
 
   else {
 
@@ -979,10 +862,6 @@ function renderRedeemed() {
 
   }
 
-
-  /* =======================================
-     TOTALS
-     ======================================= */
 
   const totalSOL =
     records.reduce(
@@ -1139,8 +1018,12 @@ function renderAllocation() {
 
 
   /*
-   * Keep allocation labels synchronized
-   * with the fixed allocation percentages.
+   * Percentages are DISPLAY LABELS.
+   *
+   * They remain:
+   * LEAM = 30%
+   * CP KIDS = 30%
+   * PROJECT = 40%
    */
 
   updateAllocationPercentage(
@@ -1197,29 +1080,17 @@ function renderAllocationCard(
     safeOut;
 
 
-  /* =======================================
-     IN
-     ======================================= */
-
   setText(
     `${prefix}In`,
     formatPHP(safeIn)
   );
 
 
-  /* =======================================
-     OUT
-     ======================================= */
-
   setText(
     `${prefix}Out`,
     formatPHP(safeOut)
   );
 
-
-  /* =======================================
-     BALANCE
-     ======================================= */
 
   setText(
     `${prefix}Balance`,
@@ -1248,12 +1119,6 @@ function updateAllocationPercentage(
       : 0;
 
 
-  /*
-   * Preferred:
-   *
-   * [data-allocation="leam"]
-   */
-
   const dataElement =
     document.querySelector(
       `[data-allocation="${prefix}"]`
@@ -1268,14 +1133,6 @@ function updateAllocationPercentage(
   }
 
 
-  /*
-   * Also support IDs:
-   *
-   * leamPercentage
-   * cpPercentage
-   * projectPercentage
-   */
-
   setText(
     `${prefix}Percentage`,
     `${safePercentage}%`
@@ -1289,14 +1146,6 @@ function updateAllocationPercentage(
    ========================================= */
 
 function optimizeTablesForMobile() {
-
-  /*
-   * Do not force the page into a
-   * horizontally scrollable table.
-   *
-   * The CSS file controls the actual
-   * responsive layout.
-   */
 
   document
     .querySelectorAll(".table-scroll")
@@ -1471,11 +1320,6 @@ function toNumber(value) {
   }
 
 
-  /*
-   * Remove currency symbols,
-   * commas and spaces.
-   */
-
   stringValue =
     stringValue
       .replace(/₱/g, "")
@@ -1483,13 +1327,6 @@ function toNumber(value) {
       .replace(/,/g, "")
       .trim();
 
-
-  /*
-   * Handle percentage values.
-   *
-   * Example:
-   * "30%" -> 30
-   */
 
   if (
     stringValue.endsWith("%")
@@ -1544,14 +1381,6 @@ function parseSheetDate(value) {
       .trim();
 
 
-  /*
-   * Google GViz:
-   *
-   * Date(2026,7,8)
-   *
-   * Month is zero-based.
-   */
-
   const match =
     stringValue.match(
       /Date\((\d+),(\d+),(\d+)\)/
@@ -1568,14 +1397,6 @@ function parseSheetDate(value) {
 
   }
 
-
-  /*
-   * Also support:
-   *
-   * Aug 8
-   * Aug 8, 2026
-   * 2026-08-08
-   */
 
   const date =
     new Date(
@@ -1842,4 +1663,4 @@ function escapeHTML(value) {
       "&#039;"
     );
 
-}
+       }
