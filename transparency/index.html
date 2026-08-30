@@ -1,1645 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>
-    Gentle Warrior — Creator Reward Transparency
-  </title>
+  <title>Creator Reward Transparency | Gentle Warrior</title>
 
   <meta
     name="description"
-    content="A transparent public record of Gentle Warrior Creator Rewards, sales, expenses, and fund allocation."
+    content="Gentle Warrior Creator Reward Transparency"
   >
 
-  <style>
-
-    /* =========================================
-       RESET
-       ========================================= */
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-
-      margin: 0;
-
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      background: #f4f8f1;
-
-      color: #123d2b;
-
-      line-height: 1.5;
-
-    }
-
-
-    /* =========================================
-       PAGE
-       ========================================= */
-
-    .page {
-
-      width: 100%;
-
-      max-width: 1180px;
-
-      margin: 0 auto;
-
-      padding:
-        24px
-        18px
-        60px;
-
-    }
-
-
-    /* =========================================
-       HEADER
-       ========================================= */
-
-    .brand {
-
-      font-size: 14px;
-
-      font-weight: 700;
-
-      letter-spacing: 1px;
-
-      margin-bottom: 34px;
-
-      color: #123d2b;
-
-    }
-
-
-    .hero {
-
-      margin-bottom: 34px;
-
-    }
-
-
-    .hero h1 {
-
-      margin: 0 0 14px;
-
-      font-size: clamp(
-        34px,
-        6vw,
-        58px
-      );
-
-      line-height: 1.05;
-
-      letter-spacing: -1.5px;
-
-      color: #0b442e;
-
-    }
-
-
-    .hero p {
-
-      max-width: 720px;
-
-      margin: 0;
-
-      font-size: 16px;
-
-      color: #6b7c73;
-
-    }
-
-
-    /* =========================================
-       STATUS
-       ========================================= */
-
-    .status {
-
-      margin-top: 16px;
-
-      display: inline-block;
-
-      font-size: 13px;
-
-      font-weight: 700;
-
-    }
-
-
-    .status.live {
-
-      color: #12643f;
-
-    }
-
-
-    .status.error {
-
-      color: #b42318;
-
-    }
-
-
-    /* =========================================
-       SUMMARY
-       ========================================= */
-
-    .summary-grid {
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
-      gap: 14px;
-
-      margin-bottom: 54px;
-
-    }
-
-
-    .summary-card {
-
-      background: #ffffff;
-
-      border:
-        1px solid
-        #dce7df;
-
-      border-radius: 18px;
-
-      padding: 20px;
-
-      min-height: 120px;
-
-      box-shadow:
-        0 5px 20px
-        rgba(17, 61, 43, 0.04);
-
-    }
-
-
-    .summary-label {
-
-      font-size: 11px;
-
-      font-weight: 800;
-
-      letter-spacing: 1px;
-
-      color: #829088;
-
-      margin-bottom: 8px;
-
-    }
-
-
-    .summary-value {
-
-      font-size: 23px;
-
-      font-weight: 800;
-
-      color: #123d2b;
-
-      word-break: break-word;
-
-    }
-
-
-    .summary-sub {
-
-      margin-top: 6px;
-
-      font-size: 12px;
-
-      color: #829088;
-
-    }
-
-
-    /* =========================================
-       SECTION
-       ========================================= */
-
-    .section {
-
-      margin-top: 54px;
-
-    }
-
-
-    .section-header {
-
-      margin-bottom: 18px;
-
-    }
-
-
-    .section-title {
-
-      margin: 0;
-
-      font-size: 28px;
-
-      line-height: 1.1;
-
-      color: #123d2b;
-
-    }
-
-
-    .section-description {
-
-      margin: 8px 0 0;
-
-      color: #78877f;
-
-      font-size: 14px;
-
-    }
-
-
-    .record-count {
-
-      margin-top: 10px;
-
-      font-size: 13px;
-
-      color: #718078;
-
-    }
-
-
-    /* =========================================
-       TABLE CARD
-       ========================================= */
-
-    .table-card {
-
-      background: #ffffff;
-
-      border:
-        1px solid
-        #dce7df;
-
-      border-radius: 18px;
-
-      overflow: hidden;
-
-      box-shadow:
-        0 5px 20px
-        rgba(17, 61, 43, 0.04);
-
-    }
-
-
-    .table-scroll {
-
-      width: 100%;
-
-      overflow-x: auto;
-
-      -webkit-overflow-scrolling: touch;
-
-    }
-
-
-    table {
-
-      width: 100%;
-
-      min-width: 620px;
-
-      border-collapse: collapse;
-
-    }
-
-
-    th {
-
-      background: #f1f7ed;
-
-      color: #839087;
-
-      font-size: 10px;
-
-      font-weight: 800;
-
-      letter-spacing: 1px;
-
-      text-align: left;
-
-      padding: 13px 14px;
-
-      white-space: nowrap;
-
-    }
-
-
-    td {
-
-      padding: 14px;
-
-      border-top:
-        1px solid
-        #edf1ed;
-
-      font-size: 13px;
-
-      color: #29483a;
-
-      white-space: nowrap;
-
-    }
-
-
-    td.num,
-    th.num {
-
-      text-align: right;
-
-    }
-
-
-    .empty-row td {
-
-      text-align: center;
-
-      padding: 28px 14px;
-
-      color: #78877f;
-
-    }
-
-
-    .table-total td {
-
-      background: #eaf8df;
-
-      border-top:
-        1px solid
-        #d6e8ca;
-
-      font-weight: 800;
-
-      color: #123d2b;
-
-    }
-
-
-    /* =========================================
-       EMPTY REDEEMED
-       ========================================= */
-
-    #redeemedEmpty {
-
-      margin-bottom: 12px;
-
-    }
-
-
-    .empty-state {
-
-      padding: 38px 20px;
-
-      text-align: center;
-
-      background: #ffffff;
-
-      border:
-        1px solid
-        #dce7df;
-
-      border-radius: 18px;
-
-      color: #78877f;
-
-    }
-
-
-    .empty-icon {
-
-      width: 40px;
-
-      height: 40px;
-
-      margin:
-        0 auto
-        12px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      border-radius: 50%;
-
-      background: #eaf8df;
-
-      color: #23603e;
-
-      font-size: 22px;
-
-      font-weight: 700;
-
-    }
-
-
-    .empty-title {
-
-      font-size: 16px;
-
-      font-weight: 800;
-
-      color: #29483a;
-
-    }
-
-
-    .empty-text {
-
-      margin-top: 7px;
-
-      font-size: 12px;
-
-    }
-
-
-    .hidden {
-
-      display: none !important;
-
-    }
-
-
-    /* =========================================
-       ALLOCATION
-       ========================================= */
-
-    .allocation-note {
-
-      margin-bottom: 22px;
-
-      padding: 15px 17px;
-
-      border-left:
-        4px solid
-        #0a4a32;
-
-      background: #edf5e9;
-
-      border-radius: 10px;
-
-      font-size: 13px;
-
-      color: #5f7168;
-
-    }
-
-
-    .allocation-grid {
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-      gap: 18px;
-
-    }
-
-
-    .allocation-card {
-
-      overflow: hidden;
-
-      border-radius: 22px;
-
-      background: #ffffff;
-
-      border:
-        1px solid
-        #dce7df;
-
-      box-shadow:
-        0 5px 20px
-        rgba(17, 61, 43, 0.05);
-
-    }
-
-
-    .allocation-head {
-
-      position: relative;
-
-      min-height: 225px;
-
-      padding: 30px;
-
-      background: #06482f;
-
-      color: #ffffff;
-
-      display: flex;
-
-      flex-direction: column;
-
-      justify-content: center;
-
-    }
-
-
-    .allocation-name {
-
-      margin: 0;
-
-      font-size: 29px;
-
-      line-height: 1.1;
-
-      font-weight: 800;
-
-    }
-
-
-    .allocation-percent {
-
-      position: absolute;
-
-      top: 28px;
-
-      right: 28px;
-
-      font-size: 24px;
-
-      font-weight: 500;
-
-    }
-
-
-    .allocation-description {
-
-      margin-top: 42px;
-
-      font-size: 17px;
-
-      color: #ffffff;
-
-      opacity: 0.96;
-
-    }
-
-
-    .allocation-body {
-
-      background: #ffffff;
-
-    }
-
-
-    .allocation-row {
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      min-height: 80px;
-
-      padding:
-        18px
-        20px;
-
-      border-top:
-        1px solid
-        #e8ede9;
-
-    }
-
-
-    .allocation-label {
-
-      font-size: 12px;
-
-      font-weight: 800;
-
-      letter-spacing: 1px;
-
-      color: #8b9690;
-
-    }
-
-
-    .allocation-value {
-
-      font-size: 18px;
-
-      font-weight: 800;
-
-      color: #123d2b;
-
-      text-align: right;
-
-    }
-
-
-    /* =========================================
-       LATEST
-       ========================================= */
-
-    .latest {
-
-      margin-top: 28px;
-
-      font-size: 12px;
-
-      color: #7b8982;
-
-    }
-
-
-    /* =========================================
-       FOOTER
-       ========================================= */
-
-    footer {
-
-      margin-top: 70px;
-
-      padding-top: 25px;
-
-      border-top:
-        1px solid
-        #dce7df;
-
-      font-size: 12px;
-
-      color: #849089;
-
-    }
-
-
-    /* =========================================
-       MOBILE
-       ========================================= */
-
-    @media (
-      max-width: 900px
-    ) {
-
-      .summary-grid {
-
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-
-      }
-
-
-      .allocation-grid {
-
-        grid-template-columns:
-          1fr;
-
-      }
-
-    }
-
-
-    @media (
-      max-width: 600px
-    ) {
-
-      .page {
-
-        padding:
-          20px
-          12px
-          50px;
-
-      }
-
-
-      .brand {
-
-        margin-bottom: 28px;
-
-      }
-
-
-      .hero h1 {
-
-        font-size: 36px;
-
-      }
-
-
-      .hero p {
-
-        font-size: 14px;
-
-      }
-
-
-      .summary-grid {
-
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-
-        gap: 9px;
-
-        margin-bottom: 42px;
-
-      }
-
-
-      .summary-card {
-
-        padding: 15px;
-
-        min-height: 105px;
-
-        border-radius: 14px;
-
-      }
-
-
-      .summary-label {
-
-        font-size: 9px;
-
-      }
-
-
-      .summary-value {
-
-        font-size: 16px;
-
-      }
-
-
-      .section {
-
-        margin-top: 42px;
-
-      }
-
-
-      .section-title {
-
-        font-size: 25px;
-
-      }
-
-
-      .allocation-head {
-
-        min-height: 220px;
-
-        padding: 30px;
-
-      }
-
-
-      .allocation-name {
-
-        font-size: 28px;
-
-      }
-
-
-      .allocation-percent {
-
-        font-size: 22px;
-
-      }
-
-    }
-
-  </style>
-
+  <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
+<main class="page">
 
-  <main class="page">
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="site-header">
+
+    <div class="header-top">
+
+      <div class="brand">
+        <div class="brand-name">GENTLE WARRIOR</div>
+        <div class="brand-tagline">
+          Soft Heart. Strong Spirit.
+        </div>
+      </div>
+
+      <a href="../" class="home-button">
+        ← HOME
+      </a>
+
+    </div>
+
+    <nav class="nav">
+
+      <a href="#overview">Overview</a>
+      <a href="#claimed">Claimed</a>
+      <a href="#redeemed">Redeemed</a>
+      <a href="#expenses">Expenses</a>
+      <a href="#allocation">Allocation</a>
+
+    </nav>
+
+  </header>
 
 
-    <!-- =====================================
-         BRAND
-         ===================================== -->
+  <!-- =========================
+       HERO
+  ========================== -->
+  <section id="overview" class="hero">
 
-    <div class="brand">
+    <div class="eyebrow">
       GENTLE WARRIOR
     </div>
 
+    <h1>
+      Creator Reward<br>
+      Transparency
+    </h1>
 
-    <!-- =====================================
-         HERO
-         ===================================== -->
+    <p>
+      A clear public record of Creator Rewards —
+      from what was claimed, to what was sold,
+      what was spent, and where the funds are allocated.
+    </p>
 
-    <section class="hero">
+    <div id="dataStatus" class="status">
+      ● Loading Google Sheet data...
+    </div>
 
-      <h1>
-        Creator Reward<br>
-        Transparency
-      </h1>
+    <div id="latestEntry" class="latest-entry"></div>
+
+  </section>
+
+
+  <!-- =========================
+       SUMMARY
+  ========================== -->
+  <section class="summary">
+
+    <div class="summary-card">
+      <span>CLAIMED</span>
+      <strong id="totalClaimed">0.00 SOL</strong>
+      <small id="claimedCount">0 records</small>
+    </div>
+
+    <div class="summary-card">
+      <span>REDEEMED</span>
+      <strong id="totalRedeemed">0.00 SOL</strong>
+      <small id="redeemedCount">0 records</small>
+    </div>
+
+    <div class="summary-card">
+      <span>SALE PROCEEDS</span>
+      <strong id="totalProceeds">₱0.00</strong>
+      <small>IN PESO</small>
+    </div>
+
+    <div class="summary-card">
+      <span>EXPENSES</span>
+      <strong id="totalExpenses">₱0.00</strong>
+      <small id="expenseCount">0 records</small>
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       01 CLAIMED
+  ========================== -->
+  <section id="claimed" class="section">
+
+    <div class="section-title">
+      <span>01</span>
+      <h2>CLAIMED</h2>
+    </div>
+
+    <p class="section-description">
+      Recorded Creator Reward claims.
+    </p>
+
+    <div class="data-card">
+
+      <table class="data-table claimed-table">
+
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>SOL CLAIMED</th>
+          </tr>
+        </thead>
+
+        <tbody id="claimsTable"></tbody>
+
+        <tfoot>
+          <tr>
+            <th>TOTAL</th>
+            <th id="claimsTotal">0.00 SOL</th>
+          </tr>
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       02 REDEEMED
+  ========================== -->
+  <section id="redeemed" class="section">
+
+    <div class="section-title">
+      <span>02</span>
+      <h2>REDEEMED</h2>
+    </div>
+
+    <p class="section-description">
+      Recorded Creator Reward sales.
+    </p>
+
+    <div id="redeemedEmpty" class="empty-card">
+
+      <div class="empty-icon">—</div>
+
+      <strong>
+        No Creator Rewards redeemed yet.
+      </strong>
 
       <p>
-        A clear public record of Creator Rewards —
-        from what was claimed, to what was sold,
-        what was spent, and where the funds are allocated.
+        When a reward is sold, the transaction
+        will be recorded here.
       </p>
 
-      <div
-        id="dataStatus"
-        class="status"
-      >
-        Loading Google Sheet data...
+    </div>
+
+
+    <div id="redeemedWrap" class="data-card hidden">
+
+      <table class="data-table redeemed-table">
+
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>SOLD SOL</th>
+            <th>RATE</th>
+            <th>$</th>
+            <th>IN PESO</th>
+          </tr>
+        </thead>
+
+        <tbody id="redeemedTable"></tbody>
+
+        <tfoot>
+          <tr>
+            <th>TOTAL</th>
+            <th id="redeemedTotal">0.00 SOL</th>
+            <th></th>
+            <th></th>
+            <th id="proceedsTotal">₱0.00</th>
+          </tr>
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       03 EXPENSES
+  ========================== -->
+  <section id="expenses" class="section">
+
+    <div class="section-title">
+      <span>03</span>
+      <h2>EXPENSES</h2>
+    </div>
+
+    <p class="section-description">
+      Recorded expenses and their purpose.
+    </p>
+
+    <div class="data-card">
+
+      <table class="data-table expenses-table">
+
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>DESCRIPTION</th>
+            <th>AMOUNT</th>
+            <th>REMARKS</th>
+          </tr>
+        </thead>
+
+        <tbody id="expensesTable"></tbody>
+
+        <tfoot>
+          <tr>
+            <th colspan="2">TOTAL</th>
+            <th id="expensesTotal">₱0.00</th>
+            <th></th>
+          </tr>
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       04 FUND ALLOCATION
+  ========================== -->
+  <section id="allocation" class="section allocation-section">
+
+    <div class="section-title">
+      <span>04</span>
+      <h2>FUND ALLOCATION</h2>
+    </div>
+
+    <p class="section-description">
+      Current allocation of Creator Reward funds.
+    </p>
+
+
+    <!-- NOTE FROM A2 -->
+    <div class="allocation-note">
+
+      <div class="note-label">
+        TRANSPARENCY NOTE
       </div>
 
-    </section>
+      <p id="allocationNote">
+        —
+      </p>
+
+    </div>
 
 
-    <!-- =====================================
-         SUMMARY
-         ===================================== -->
+    <!-- =========================
+         LEAM
+    ========================== -->
+    <article class="allocation-card">
 
-    <section class="summary-grid">
+      <div class="allocation-header">
 
-
-      <!-- CLAIMED -->
-
-      <div class="summary-card">
-
-        <div class="summary-label">
-          CLAIMED
+        <div>
+          <h3>LEAM</h3>
+          <p>Direct support</p>
         </div>
 
-        <div
-          id="totalClaimed"
-          class="summary-value"
+        <strong
+          id="leamPercentage"
+          data-allocation="leam"
         >
-          0.00 SOL
+          30%
+        </strong>
+
+      </div>
+
+
+      <div class="allocation-summary">
+
+        <div>
+          <span>IN</span>
+          <strong id="leamIn">₱0.00</strong>
         </div>
 
-        <div class="summary-sub">
-          <span id="claimedCount">
-            0 records
-          </span>
+        <div>
+          <span>OUT</span>
+          <strong id="leamOut">₱0.00</strong>
+        </div>
+
+        <div>
+          <span>BALANCE</span>
+          <strong id="leamBalance">₱0.00</strong>
         </div>
 
       </div>
 
 
-      <!-- REDEEMED -->
+      <div class="allocation-records">
 
-      <div class="summary-card">
-
-        <div class="summary-label">
-          REDEEMED
+        <div class="allocation-record-header">
+          <span>DATE</span>
+          <span>REMARKS</span>
+          <span>IN</span>
+          <span>OUT</span>
         </div>
 
-        <div
-          id="totalRedeemed"
-          class="summary-value"
+        <div id="leamRecords"></div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =========================
+         CP KIDS
+    ========================== -->
+    <article class="allocation-card">
+
+      <div class="allocation-header">
+
+        <div>
+          <h3>CP KIDS</h3>
+          <p>Cerebral palsy support</p>
+        </div>
+
+        <strong
+          id="cpPercentage"
+          data-allocation="cp"
         >
-          0.00 SOL
+          30%
+        </strong>
+
+      </div>
+
+
+      <div class="allocation-summary">
+
+        <div>
+          <span>IN</span>
+          <strong id="cpIn">₱0.00</strong>
         </div>
 
-        <div class="summary-sub">
-          <span id="redeemedCount">
-            0 records
-          </span>
+        <div>
+          <span>OUT</span>
+          <strong id="cpOut">₱0.00</strong>
+        </div>
+
+        <div>
+          <span>BALANCE</span>
+          <strong id="cpBalance">₱0.00</strong>
         </div>
 
       </div>
 
 
-      <!-- SALE PROCEEDS -->
+      <div class="allocation-records">
 
-      <div class="summary-card">
-
-        <div class="summary-label">
-          SALE PROCEEDS
+        <div class="allocation-record-header">
+          <span>DATE</span>
+          <span>REMARKS</span>
+          <span>IN</span>
+          <span>OUT</span>
         </div>
 
-        <div
-          id="totalProceeds"
-          class="summary-value"
+        <div id="cpRecords"></div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =========================
+         PROJECT
+    ========================== -->
+    <article class="allocation-card">
+
+      <div class="allocation-header">
+
+        <div>
+          <h3>PROJECT</h3>
+          <p>Gentle Warrior projects</p>
+        </div>
+
+        <strong
+          id="projectPercentage"
+          data-allocation="project"
         >
-          ₱0.00
+          40%
+        </strong>
+
+      </div>
+
+
+      <div class="allocation-summary">
+
+        <div>
+          <span>IN</span>
+          <strong id="projectIn">₱0.00</strong>
         </div>
 
-        <div class="summary-sub">
-          IN PESO
+        <div>
+          <span>OUT</span>
+          <strong id="projectOut">₱0.00</strong>
+        </div>
+
+        <div>
+          <span>BALANCE</span>
+          <strong id="projectBalance">₱0.00</strong>
         </div>
 
       </div>
 
 
-      <!-- EXPENSES -->
+      <div class="allocation-records">
 
-      <div class="summary-card">
-
-        <div class="summary-label">
-          EXPENSES
+        <div class="allocation-record-header">
+          <span>DATE</span>
+          <span>REMARKS</span>
+          <span>IN</span>
+          <span>OUT</span>
         </div>
 
-        <div
-          id="totalExpenses"
-          class="summary-value"
-        >
-          ₱0.00
-        </div>
-
-        <div class="summary-sub">
-          <span id="expenseCount">
-            0 records
-          </span>
-        </div>
+        <div id="projectRecords"></div>
 
       </div>
 
+    </article>
 
-    </section>
+  </section>
 
 
-    <!-- =====================================
-         CLAIMED
-         ===================================== -->
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="footer">
 
-    <section class="section">
+    <strong>Gentle Warrior</strong>
 
-      <div class="section-header">
+    <span>
+      Creator Reward Transparency
+    </span>
 
-        <h2 class="section-title">
-          CLAIMED
-        </h2>
+    <small>
+      Soft Heart. Strong Spirit.
+    </small>
 
-        <p class="section-description">
-          Recorded Creator Reward claims.
-        </p>
+  </footer>
 
-      </div>
+</main>
 
 
-      <div class="table-card">
-
-        <div class="table-scroll">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  DATE
-                </th>
-
-                <th class="num">
-                  SOL CLAIMED
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody id="claimsTable">
-
-              <tr>
-                <td colspan="2">
-                  Loading...
-                </td>
-              </tr>
-
-            </tbody>
-
-
-            <tfoot>
-
-              <tr class="table-total">
-
-                <td>
-                  TOTAL
-                </td>
-
-                <td
-                  id="claimsTotal"
-                  class="num"
-                >
-                  0.00 SOL
-                </td>
-
-              </tr>
-
-            </tfoot>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================
-         REDEEMED
-         ===================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2 class="section-title">
-          REDEEMED
-        </h2>
-
-        <p class="section-description">
-          Recorded Creator Reward sales.
-        </p>
-
-        <div
-          id="redeemedCount"
-          class="record-count"
-        >
-          0 records
-        </div>
-
-      </div>
-
-
-      <!-- EMPTY STATE -->
-
-      <div
-        id="redeemedEmpty"
-        class="empty-state"
-      >
-
-        <div class="empty-icon">
-          −
-        </div>
-
-        <div class="empty-title">
-          No Creator Rewards redeemed yet.
-        </div>
-
-        <div class="empty-text">
-          When a reward is sold,
-          the transaction will be recorded here.
-        </div>
-
-      </div>
-
-
-      <!-- TABLE -->
-
-      <div
-        id="redeemedWrap"
-        class="table-card hidden"
-      >
-
-        <div class="table-scroll">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  DATE
-                </th>
-
-                <th class="num">
-                  SOLD SOL
-                </th>
-
-                <th class="num">
-                  RATE
-                </th>
-
-                <th class="num">
-                  $
-                </th>
-
-                <th class="num">
-                  IN PESO
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody id="redeemedTable">
-
-              <tr>
-                <td colspan="5">
-                  Loading...
-                </td>
-              </tr>
-
-            </tbody>
-
-
-            <tfoot>
-
-              <tr class="table-total">
-
-                <td>
-                  TOTAL
-                </td>
-
-                <td
-                  id="redeemedTotal"
-                  class="num"
-                >
-                  0.00 SOL
-                </td>
-
-                <td></td>
-
-                <td></td>
-
-                <td
-                  id="proceedsTotal"
-                  class="num"
-                >
-                  ₱0.00
-                </td>
-
-              </tr>
-
-            </tfoot>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================
-         EXPENSES
-         ===================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2 class="section-title">
-          EXPENSES
-        </h2>
-
-        <p class="section-description">
-          Recorded expenses and their purpose.
-        </p>
-
-        <div
-          id="expenseCount"
-          class="record-count"
-        >
-          0 records
-        </div>
-
-      </div>
-
-
-      <div class="table-card">
-
-        <div class="table-scroll">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  DATE
-                </th>
-
-                <th>
-                  DESCRIPTION
-                </th>
-
-                <th class="num">
-                  AMOUNT
-                </th>
-
-                <th>
-                  REMARKS
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody id="expensesTable">
-
-              <tr>
-
-                <td colspan="4">
-                  Loading...
-                </td>
-
-              </tr>
-
-            </tbody>
-
-
-            <tfoot>
-
-              <tr class="table-total">
-
-                <td colspan="2">
-                  TOTAL
-                </td>
-
-                <td
-                  id="expensesTotal"
-                  class="num"
-                >
-                  ₱0.00
-                </td>
-
-                <td></td>
-
-              </tr>
-
-            </tfoot>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================
-         FUND ALLOCATION
-         ===================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2 class="section-title">
-          FUND ALLOCATION
-        </h2>
-
-        <p class="section-description">
-          Current allocation of Creator Reward funds.
-        </p>
-
-      </div>
-
-
-      <!-- TRANSPARENCY NOTE -->
-
-      <div
-        id="allocationNote"
-        class="allocation-note"
-      >
-        Loading allocation note...
-      </div>
-
-
-      <!-- ALLOCATION CARDS -->
-
-      <div class="allocation-grid">
-
-
-        <!-- =================================
-             LEAM
-             ================================= -->
-
-        <article class="allocation-card">
-
-
-          <div class="allocation-head">
-
-            <h3 class="allocation-name">
-              LEAM
-            </h3>
-
-
-            <div
-              id="leamPercentage"
-              class="allocation-percent"
-            >
-              30%
-            </div>
-
-
-            <div class="allocation-description">
-              Direct support
-            </div>
-
-          </div>
-
-
-          <div class="allocation-body">
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                IN
-              </span>
-
-              <span
-                id="leamIn"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                OUT
-              </span>
-
-              <span
-                id="leamOut"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                BALANCE
-              </span>
-
-              <span
-                id="leamBalance"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-          </div>
-
-        </article>
-
-
-        <!-- =================================
-             CP KIDS
-             ================================= -->
-
-        <article class="allocation-card">
-
-
-          <div class="allocation-head">
-
-            <h3 class="allocation-name">
-              CP KIDS
-            </h3>
-
-
-            <div
-              id="cpPercentage"
-              class="allocation-percent"
-            >
-              30%
-            </div>
-
-
-            <div class="allocation-description">
-              Cerebral palsy support
-            </div>
-
-          </div>
-
-
-          <div class="allocation-body">
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                IN
-              </span>
-
-              <span
-                id="cpIn"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                OUT
-              </span>
-
-              <span
-                id="cpOut"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                BALANCE
-              </span>
-
-              <span
-                id="cpBalance"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-          </div>
-
-        </article>
-
-
-        <!-- =================================
-             PROJECT
-             ================================= -->
-
-        <article class="allocation-card">
-
-
-          <div class="allocation-head">
-
-            <h3 class="allocation-name">
-              PROJECT
-            </h3>
-
-
-            <div
-              id="projectPercentage"
-              class="allocation-percent"
-            >
-              40%
-            </div>
-
-
-            <div class="allocation-description">
-              Gentle Warrior projects
-            </div>
-
-          </div>
-
-
-          <div class="allocation-body">
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                IN
-              </span>
-
-              <span
-                id="projectIn"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                OUT
-              </span>
-
-              <span
-                id="projectOut"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span class="allocation-label">
-                BALANCE
-              </span>
-
-              <span
-                id="projectBalance"
-                class="allocation-value"
-              >
-                ₱0.00
-              </span>
-
-            </div>
-
-
-          </div>
-
-        </article>
-
-
-      </div>
-
-
-      <!-- =====================================
-           LATEST ACTIVITY
-           ===================================== -->
-
-      <div
-        id="latestEntry"
-        class="latest"
-      ></div>
-
-
-    </section>
-
-
-    <!-- =====================================
-         FOOTER
-         ===================================== -->
-
-    <footer>
-
-      Gentle Warrior · Creator Reward Transparency
-
-    </footer>
-
-
-  </main>
-
-
-  <!-- =========================================
-       JAVASCRIPT
-       ========================================= -->
-
-  <script src="config.js"></script>
-
-  <script src="script.js"></script>
-
+<script src="config.js"></script>
+<script src="script.js"></script>
 
 </body>
-
 </html>
