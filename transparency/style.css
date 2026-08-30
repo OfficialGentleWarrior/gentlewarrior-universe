@@ -156,9 +156,6 @@ img {
     0 10px 26px rgba(6, 59, 36, 0.11);
 }
 
-
-/* Logo */
-
 .brand-mark {
   width: 58px;
   height: 58px;
@@ -185,9 +182,6 @@ img {
   height: 100%;
   object-fit: cover;
 }
-
-
-/* Brand text */
 
 .brand-copy {
   min-width: 0;
@@ -220,9 +214,6 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-
-/* Home */
 
 .home-button {
   margin-left: auto;
@@ -1413,25 +1404,79 @@ tfoot th {
     background: var(--gw-lime);
   }
 
-  .section > .table-card,
-  .section > .empty-state,
-  .section > .allocation-grid,
-  .section > .allocation-note {
+
+  /* -----------------------------------------
+     FIXED ACCORDION CONTENT
+     ----------------------------------------- */
+
+  /*
+     IMPORTANT:
+     Hide ALL content belonging to a closed section.
+     This avoids depending on direct-child structure.
+  */
+
+  .section:not(.open) .table-card,
+  .section:not(.open) .empty-state,
+  .section:not(.open) .allocation-grid,
+  .section:not(.open) .allocation-note {
     display: none;
   }
 
-  .section.open > .table-card,
-  .section.open > .empty-state,
-  .section.open > .allocation-grid,
-  .section.open > .allocation-note {
+  /*
+     Show content only when section is open.
+  */
+
+  .section.open .table-card,
+  .section.open .empty-state,
+  .section.open .allocation-note {
     display: block;
   }
 
-  .section.open > .allocation-grid {
+  .section.open .allocation-grid {
     display: grid;
   }
 
-  .section.open > .table-card {
+
+  /* -----------------------------------------
+     ALLOCATION ACCORDION FIX
+     ----------------------------------------- */
+
+  /*
+     Explicitly handle Allocation section.
+     This is the important fix for
+     "Redeemed at Allocation".
+  */
+
+  .allocation-section:not(.open) .allocation-grid,
+  .allocation-section:not(.open) .allocation-note {
+    display: none;
+  }
+
+  .allocation-section.open .allocation-grid {
+    display: grid;
+  }
+
+  .allocation-section.open .allocation-note {
+    display: block;
+  }
+
+  .allocation-section.open .allocation-grid {
+    padding: 8px;
+
+    border-top:
+      1px solid var(--gw-border-soft);
+  }
+
+  .allocation-section.open .allocation-note {
+    margin: 0 10px 10px;
+  }
+
+
+  /* -----------------------------------------
+     TABLE OPEN STATE
+     ----------------------------------------- */
+
+  .section.open .table-card {
     border: 0;
 
     border-top:
@@ -1442,15 +1487,13 @@ tfoot th {
     box-shadow: none;
   }
 
-  .section.open > .allocation-grid {
-    padding: 8px;
+  .section.open .empty-state {
+    border: 0;
 
     border-top:
-      1px solid var(--gw-border-soft);
-  }
+      1px dashed #c8d9c5;
 
-  .section.open > .allocation-note {
-    margin: 0 10px 10px;
+    border-radius: 0;
   }
 
 
@@ -1508,13 +1551,6 @@ tfoot th {
     min-height: 125px;
 
     padding: 18px;
-
-    border: 0;
-
-    border-top:
-      1px dashed #c8d9c5;
-
-    border-radius: 0;
   }
 
   .empty-icon {
@@ -1795,4 +1831,4 @@ body,
 .allocation-grid,
 .allocation-card {
   max-width: 100%;
-}
+     }
