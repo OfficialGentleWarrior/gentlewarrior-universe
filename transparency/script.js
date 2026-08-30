@@ -1,7 +1,7 @@
 /* =========================================
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
-   SCRIPT.JS
+   SCRIPT.JS — FIXED LIVE SHEET PARSER
    ========================================= */
 
 "use strict";
@@ -11,7 +11,48 @@
    CONFIG
    ========================================= */
 
-const C = GWAR_CONFIG;
+const C = Object.assign(
+  {
+    sheetId:
+      "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
+
+    rewardSheet:
+      "REWARD",
+
+    allocationSheet:
+      "ALLOCATION",
+
+    fallback: {
+      claims: [],
+      redeemed: [],
+      expenses: [],
+
+      allocation: {
+        note: "",
+
+        leam: {
+          pct: 30,
+          in: 0,
+          out: 0
+        },
+
+        cp: {
+          pct: 30,
+          in: 0,
+          out: 0
+        },
+
+        project: {
+          pct: 40,
+          in: 0,
+          out: 0
+        }
+      }
+    }
+  },
+
+  window.GWAR_CONFIG || {}
+);
 
 
 /* =========================================
@@ -28,7 +69,8 @@ const $ = (id) =>
 
 function money(value) {
 
-  const n = Number(value) || 0;
+  const n =
+    Number(value) || 0;
 
   return (
     "₱" +
@@ -46,7 +88,8 @@ function money(value) {
 
 function sol(value) {
 
-  const n = Number(value) || 0;
+  const n =
+    Number(value) || 0;
 
   return (
     n.toLocaleString(
@@ -64,7 +107,8 @@ function sol(value) {
 
 function num(value) {
 
-  const n = Number(value) || 0;
+  const n =
+    Number(value) || 0;
 
   return n.toLocaleString(
     "en-US",
@@ -88,7 +132,9 @@ function toNumber(value) {
     value === undefined ||
     value === ""
   ) {
+
     return null;
+
   }
 
 
@@ -96,7 +142,9 @@ function toNumber(value) {
     typeof value === "number" &&
     Number.isFinite(value)
   ) {
+
     return value;
+
   }
 
 
@@ -106,30 +154,24 @@ function toNumber(value) {
 
 
   if (!text) {
+
     return null;
+
   }
 
-
-  /*
-   * Remove currency symbols,
-   * commas and spaces.
-   */
 
   text =
     text
       .replace(/₱/g, "")
       .replace(/\$/g, "")
       .replace(/,/g, "")
+      .replace(/\s/g, "")
       .trim();
 
 
-  /*
-   * Percentage values:
-   *
-   * 30% -> 30
-   */
-
-  if (text.endsWith("%")) {
+  if (
+    text.endsWith("%")
+  ) {
 
     text =
       text.slice(
@@ -152,20 +194,85 @@ function toNumber(value) {
 
 
 /* =========================================
+   TEXT NORMALIZER
+   ========================================= */
+
+function normalizeText(value) {
+
+  return String(
+    value ?? ""
+  )
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/[._-]+/g, " ")
+    .trim();
+
+}
+
+
+function isDateHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "DATE"
+  );
+
+}
+
+
+function isRemarkHeader(value) {
+
+  const text =
+    normalizeText(value);
+
+  return (
+    text === "REMARK" ||
+    text === "REMARKS"
+  );
+
+}
+
+
+function isInHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "IN"
+  );
+
+}
+
+
+function isOutHeader(value) {
+
+  return (
+    normalizeText(value) ===
+    "OUT"
+  );
+
+}
+
+
+/* =========================================
    DATE
    ========================================= */
 
 function cleanDate(value) {
 
   if (!value) {
+
     return "";
+
   }
 
 
   if (
     value instanceof Date
   ) {
+
     return value;
+
   }
 
 
@@ -175,25 +282,23 @@ function cleanDate(value) {
 
 
   /*
-   * Google Visualization date:
+   * Google Visualization:
    *
    * Date(2026,7,8)
-   *
-   * Month is zero based.
    */
 
-  const match =
+  const gvizMatch =
     text.match(
-      /Date\((\d+),(\d+),(\d+)\)/
+      /Date\((\d+),(\d+),(\d+)(?:,\d+,\d+,\d+,\d+)?\)/
     );
 
 
-  if (match) {
+  if (gvizMatch) {
 
     return new Date(
-      Number(match[1]),
-      Number(match[2]),
-      Number(match[3])
+      Number(gvizMatch[1]),
+      Number(gvizMatch[2]),
+      Number(gvizMatch[3])
     );
 
   }
@@ -208,7 +313,9 @@ function cleanDate(value) {
       date.getTime()
     )
   ) {
+
     return "";
+
   }
 
 
@@ -224,7 +331,9 @@ function dateText(value) {
 
 
   if (!date) {
+
     return "—";
+
   }
 
 
@@ -248,6 +357,7 @@ function parseGviz(text) {
 
   const start =
     text.indexOf("{");
+
 
   const end =
     text.lastIndexOf("}");
@@ -292,12 +402,13 @@ function parseGviz(text) {
 
 
   /*
-   * IMPORTANT
+   * Keep stable 14-column structure.
    *
-   * Google GViz may omit trailing empty
-   * cells. We pad every row to 14 columns
-   * so allocation column positions remain
-   * stable.
+   * Allocation:
+   *
+   * A-D = LEAM
+   * F-I = CP KIDS
+   * K-N = PROJECT
    */
 
   return rows.map(
@@ -330,21 +441,20 @@ function parseGviz(text) {
         }
 
 
-        /*
-         * Prefer formatted value.
-         *
-         * This is important for:
-         *
-         * dates
-         * formulas
-         * currency
-         * percentages
-         */
-
         result.push(
-          cell.f ??
-          cell.v ??
-          ""
+
+          cell.f !== undefined &&
+          cell.f !== null
+
+            ? cell.f
+
+            : cell.v !== undefined &&
+              cell.v !== null
+
+              ? cell.v
+
+              : ""
+
         );
 
       }
@@ -366,8 +476,24 @@ async function fetchSheet(
   sheetName
 ) {
 
+  if (!C.sheetId) {
+
+    throw new Error(
+      "Missing Google Sheet ID."
+    );
+
+  }
+
+
+  /*
+   * cachebust prevents browser/proxy
+   * from showing old spreadsheet data.
+   */
+
   const url =
-    `https://docs.google.com/spreadsheets/d/${C.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+    `https://docs.google.com/spreadsheets/d/${C.sheetId}/gviz/tq` +
+    `?tqx=out:json&sheet=${encodeURIComponent(sheetName)}` +
+    `&cachebust=${Date.now()}`;
 
 
   const response =
@@ -398,6 +524,139 @@ async function fetchSheet(
 
 
 /* =========================================
+   HEADER SEARCH HELPERS
+   ========================================= */
+
+function findRowWithText(
+  rows,
+  requiredTexts
+) {
+
+  const wanted =
+    requiredTexts.map(
+      normalizeText
+    );
+
+
+  for (
+    let r = 0;
+    r < rows.length;
+    r++
+  ) {
+
+    const row =
+      rows[r] || [];
+
+
+    const normalized =
+      row.map(
+        normalizeText
+      );
+
+
+    const found =
+      wanted.every(
+        item =>
+          normalized.includes(
+            item
+          )
+      );
+
+
+    if (found) {
+
+      return r;
+
+    }
+
+  }
+
+
+  return -1;
+
+}
+
+
+function findColumn(
+  row,
+  matcher,
+  startAt = 0
+) {
+
+  for (
+    let i = startAt;
+    i < row.length;
+    i++
+  ) {
+
+    if (
+      matcher(row[i])
+    ) {
+
+      return i;
+
+    }
+
+  }
+
+
+  return -1;
+
+}
+
+
+function findSequence(
+  row,
+  matchers
+) {
+
+  for (
+    let start = 0;
+    start <=
+      row.length -
+      matchers.length;
+    start++
+  ) {
+
+    let ok = true;
+
+
+    for (
+      let i = 0;
+      i < matchers.length;
+      i++
+    ) {
+
+      if (
+        !matchers[i](
+          row[start + i]
+        )
+      ) {
+
+        ok = false;
+
+        break;
+
+      }
+
+    }
+
+
+    if (ok) {
+
+      return start;
+
+    }
+
+  }
+
+
+  return -1;
+
+}
+
+
+/* =========================================
    REWARD SHEET
    ========================================= */
 
@@ -411,200 +670,513 @@ function parseReward(rows) {
 
 
   /*
-   * REWARD SHEET
-   *
-   * Row 1:
-   *
-   * A = CLAIMED
-   * D = REDEEMED
-   * J = EXPENSES
-   *
-   * Row 2:
-   *
-   * A = DATE
-   * B = SOL CLAIMED
-   *
-   * D = DATE
-   * E = SOLD SOL
-   * F = RATE
-   * G = $
-   * H = IN PESO
-   *
-   * J = DATE
-   * K = DESCRIPTION
-   * L = AMOUNT
-   * M = REMARKS
-   *
-   * Data starts Row 3.
+   * We locate the actual headers instead
+   * of assuming data always starts on
+   * one specific row.
    */
 
-  for (
-    let i = 2;
-    i < rows.length;
-    i++
+  let claimHeaderRow =
+    findRowWithText(
+      rows,
+      [
+        "DATE",
+        "SOL CLAIMED"
+      ]
+    );
+
+
+  let redeemedHeaderRow =
+    findRowWithText(
+      rows,
+      [
+        "DATE",
+        "SOLD SOL"
+      ]
+    );
+
+
+  let expenseHeaderRow =
+    findRowWithText(
+      rows,
+      [
+        "DATE",
+        "DESCRIPTION",
+        "AMOUNT"
+      ]
+    );
+
+
+  /*
+   * Original sheet layout fallback.
+   *
+   * Row 2 in the sheet = index 1.
+   */
+
+  if (
+    claimHeaderRow === -1
   ) {
 
-    const row =
-      rows[i] || [];
+    claimHeaderRow = 1;
+
+  }
 
 
-    /* =====================================
-       CLAIMED
-       A = DATE
-       B = SOL CLAIMED
-       ===================================== */
+  if (
+    redeemedHeaderRow === -1
+  ) {
 
-    const claimDate =
-      row[0];
+    redeemedHeaderRow = 1;
+
+  }
 
 
-    const claimSOL =
-      toNumber(
-        row[1]
+  if (
+    expenseHeaderRow === -1
+  ) {
+
+    expenseHeaderRow = 1;
+
+  }
+
+
+  /* =====================================
+     CLAIMED
+     ===================================== */
+
+  {
+
+    const header =
+      rows[claimHeaderRow] || [];
+
+
+    let dateCol =
+      findColumn(
+        header,
+        isDateHeader
       );
 
 
+    let solCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "SOL CLAIMED"
+      );
+
+
+    /*
+     * Original:
+     *
+     * A = DATE
+     * B = SOL CLAIMED
+     */
+
     if (
-      claimDate !== "" &&
-      claimSOL !== null
+      dateCol === -1
     ) {
 
-      const date =
-        cleanDate(
-          claimDate
+      dateCol = 0;
+
+    }
+
+
+    if (
+      solCol === -1
+    ) {
+
+      solCol = 1;
+
+    }
+
+
+    for (
+      let i =
+        claimHeaderRow + 1;
+      i < rows.length;
+      i++
+    ) {
+
+      const row =
+        rows[i] || [];
+
+
+      const claimDate =
+        row[dateCol];
+
+
+      const claimSOL =
+        toNumber(
+          row[solCol]
         );
 
 
-      if (date) {
+      if (
+        claimDate !== "" &&
+        claimSOL !== null
+      ) {
 
-        claims.push(
-          [
-            date,
-            claimSOL
-          ]
-        );
+        const date =
+          cleanDate(
+            claimDate
+          );
+
+
+        if (date) {
+
+          claims.push(
+            [
+              date,
+              claimSOL
+            ]
+          );
+
+        }
 
       }
 
     }
 
-
-    /* =====================================
-       REDEEMED / SOLD
-       D = DATE
-       E = SOLD SOL
-       F = RATE
-       G = $
-       H = IN PESO
-       ===================================== */
-
-    const soldDate =
-      row[3];
+  }
 
 
-    const soldSOL =
-      toNumber(
-        row[4]
+  /* =====================================
+     REDEEMED / SOLD
+     ===================================== */
+
+  {
+
+    const header =
+      rows[redeemedHeaderRow] ||
+      [];
+
+
+    let dateCol =
+      findColumn(
+        header,
+        isDateHeader
       );
 
 
+    let soldSolCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "SOLD SOL"
+      );
+
+
+    let rateCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "RATE"
+      );
+
+
+    let usdCol =
+      findColumn(
+        header,
+        value => {
+
+          const text =
+            normalizeText(
+              value
+            );
+
+
+          return (
+            text === "$" ||
+            text === "USD"
+          );
+
+        }
+      );
+
+
+    let phpCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "IN PESO"
+      );
+
+
+    /*
+     * Original:
+     *
+     * D = DATE
+     * E = SOLD SOL
+     * F = RATE
+     * G = $
+     * H = IN PESO
+     */
+
     if (
-      soldDate !== "" &&
-      soldSOL !== null &&
-      soldSOL > 0
+      dateCol === -1
     ) {
 
-      const date =
-        cleanDate(
-          soldDate
+      dateCol = 3;
+
+    }
+
+
+    if (
+      soldSolCol === -1
+    ) {
+
+      soldSolCol = 4;
+
+    }
+
+
+    if (
+      rateCol === -1
+    ) {
+
+      rateCol = 5;
+
+    }
+
+
+    if (
+      usdCol === -1
+    ) {
+
+      usdCol = 6;
+
+    }
+
+
+    if (
+      phpCol === -1
+    ) {
+
+      phpCol = 7;
+
+    }
+
+
+    for (
+      let i =
+        redeemedHeaderRow + 1;
+      i < rows.length;
+      i++
+    ) {
+
+      const row =
+        rows[i] || [];
+
+
+      const soldDate =
+        row[dateCol];
+
+
+      const soldSOL =
+        toNumber(
+          row[soldSolCol]
         );
 
 
-      if (date) {
+      if (
+        soldDate !== "" &&
+        soldSOL !== null &&
+        soldSOL > 0
+      ) {
 
-        const rate =
-          toNumber(
-            row[5]
+        const date =
+          cleanDate(
+            soldDate
           );
 
 
-        const usd =
-          toNumber(
-            row[6]
+        if (date) {
+
+          const rate =
+            toNumber(
+              row[rateCol]
+            );
+
+
+          const usd =
+            toNumber(
+              row[usdCol]
+            );
+
+
+          const php =
+            toNumber(
+              row[phpCol]
+            );
+
+
+          redeemed.push(
+            [
+              date,
+              soldSOL,
+              rate,
+              usd,
+              php
+            ]
           );
 
-
-        const php =
-          toNumber(
-            row[7]
-          );
-
-
-        redeemed.push(
-          [
-            date,
-            soldSOL,
-            rate,
-            usd,
-            php
-          ]
-        );
+        }
 
       }
 
     }
 
-
-    /* =====================================
-       EXPENSES
-       J = DATE
-       K = DESCRIPTION
-       L = AMOUNT
-       M = REMARKS
-       ===================================== */
-
-    const expenseDate =
-      row[9];
+  }
 
 
-    const description =
-      row[10];
+  /* =====================================
+     EXPENSES
+     ===================================== */
+
+  {
+
+    const header =
+      rows[expenseHeaderRow] ||
+      [];
 
 
-    const amount =
-      toNumber(
-        row[11]
+    let dateCol =
+      findColumn(
+        header,
+        isDateHeader
       );
 
 
-    const remarks =
-      row[12];
+    let descriptionCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "DESCRIPTION"
+      );
+
+
+    let amountCol =
+      findColumn(
+        header,
+        value =>
+          normalizeText(value) ===
+          "AMOUNT"
+      );
+
+
+    let remarksCol =
+      findColumn(
+        header,
+        isRemarkHeader
+      );
+
+
+    /*
+     * Original:
+     *
+     * J = DATE
+     * K = DESCRIPTION
+     * L = AMOUNT
+     * M = REMARKS
+     */
+
+    if (
+      dateCol === -1
+    ) {
+
+      dateCol = 9;
+
+    }
 
 
     if (
-      expenseDate !== "" &&
-      description !== "" &&
-      amount !== null
+      descriptionCol === -1
     ) {
 
-      const date =
-        cleanDate(
-          expenseDate
+      descriptionCol = 10;
+
+    }
+
+
+    if (
+      amountCol === -1
+    ) {
+
+      amountCol = 11;
+
+    }
+
+
+    if (
+      remarksCol === -1
+    ) {
+
+      remarksCol = 12;
+
+    }
+
+
+    for (
+      let i =
+        expenseHeaderRow + 1;
+      i < rows.length;
+      i++
+    ) {
+
+      const row =
+        rows[i] || [];
+
+
+      const expenseDate =
+        row[dateCol];
+
+
+      const description =
+        row[descriptionCol];
+
+
+      const amount =
+        toNumber(
+          row[amountCol]
         );
 
 
-      if (date) {
+      const remarks =
+        row[remarksCol];
 
-        expenses.push(
-          [
-            date,
-            String(description),
-            amount,
-            String(
-              remarks || ""
-            )
-          ]
-        );
+
+      if (
+        expenseDate !== "" &&
+        description !== "" &&
+        amount !== null
+      ) {
+
+        const date =
+          cleanDate(
+            expenseDate
+          );
+
+
+        if (date) {
+
+          expenses.push(
+            [
+              date,
+              String(
+                description
+              ),
+              amount,
+              String(
+                remarks || ""
+              )
+            ]
+          );
+
+        }
 
       }
 
@@ -614,9 +1186,13 @@ function parseReward(rows) {
 
 
   return {
+
     claims,
+
     redeemed,
+
     expenses
+
   };
 
 }
@@ -626,73 +1202,13 @@ function parseReward(rows) {
    ALLOCATION SHEET
    ========================================= */
 
-function parseAllocation(rows) {
-
-  /*
-   * EXACT ALLOCATION STRUCTURE
-   *
-   * =======================================
-   *
-   * LEAM
-   *
-   * A5 = percentage label
-   *
-   * A6 = DATE
-   * B6 = REMARKS
-   * C6 = IN
-   * D6 = OUT
-   *
-   * Data starts Row 7.
-   *
-   * =======================================
-   *
-   * CP KIDS
-   *
-   * F5 = percentage label
-   *
-   * F6 = DATE
-   * G6 = REMARKS
-   * H6 = IN
-   * I6 = OUT
-   *
-   * Data starts Row 7.
-   *
-   * =======================================
-   *
-   * PROJECT
-   *
-   * K5 = percentage label
-   *
-   * K6 = DATE
-   * L6 = REMARKS
-   * M6 = IN
-   * N6 = OUT
-   *
-   * Data starts Row 7.
-   *
-   * =======================================
-   *
-   * NOTE
-   *
-   * A2 = transparency note
-   *
-   * =======================================
-   *
-   * IMPORTANT:
-   *
-   * Row 5 is ONLY the percentage label.
-   *
-   * It is NOT IN.
-   * It is NOT OUT.
-   *
-   * Row 6 is ONLY the header.
-   *
-   * Transactions begin at Row 7.
-   */
-
+function parseAllocation(
+  rows
+) {
 
   const fallback =
-    C.fallback?.allocation || {};
+    C.fallback?.allocation ||
+    {};
 
 
   /* =====================================
@@ -709,331 +1225,439 @@ function parseAllocation(rows) {
     String(note);
 
 
+  /*
+   * EXACT REQUIRED LABELS:
+   *
+   * DATE
+   * REMARK / REMARKS
+   * IN
+   * OUT
+   *
+   * LEAM:
+   * A B C D
+   *
+   * CP KIDS:
+   * F G H I
+   *
+   * PROJECT:
+   * K L M N
+   */
+
+
+  let headerRowIndex =
+    -1;
+
+
+  /*
+   * Find the first row containing:
+   *
+   * DATE | REMARK | IN | OUT
+   *
+   */
+
+  for (
+    let r = 0;
+    r < rows.length;
+    r++
+  ) {
+
+    const row =
+      rows[r] || [];
+
+
+    if (
+      findSequence(
+        row,
+        [
+          isDateHeader,
+          isRemarkHeader,
+          isInHeader,
+          isOutHeader
+        ]
+      ) !== -1
+    ) {
+
+      headerRowIndex = r;
+
+      break;
+
+    }
+
+  }
+
+
+  /*
+   * Original spreadsheet:
+   *
+   * Row 6 = header
+   * Array index 5
+   */
+
+  if (
+    headerRowIndex === -1
+  ) {
+
+    headerRowIndex = 5;
+
+  }
+
+
+  const header =
+    rows[headerRowIndex] ||
+    [];
+
+
+  /*
+   * Find all three blocks.
+   *
+   * Expected:
+   *
+   * A-D
+   * F-I
+   * K-N
+   */
+
+  const blocks = [];
+
+
+  let searchFrom = 0;
+
+
+  while (
+    searchFrom <
+    header.length
+  ) {
+
+    const start =
+      findSequence(
+        header.slice(
+          searchFrom
+        ),
+        [
+          isDateHeader,
+          isRemarkHeader,
+          isInHeader,
+          isOutHeader
+        ]
+      );
+
+
+    if (
+      start === -1
+    ) {
+
+      break;
+
+    }
+
+
+    const actualStart =
+      searchFrom + start;
+
+
+    blocks.push(
+      actualStart
+    );
+
+
+    searchFrom =
+      actualStart + 4;
+
+  }
+
+
+  /*
+   * If detection doesn't find all 3,
+   * use the exact known spreadsheet
+   * positions.
+   */
+
+  const starts =
+    blocks.length >= 3
+      ? blocks.slice(0, 3)
+      : [
+          0,
+          5,
+          10
+        ];
+
+
+  const names = [
+    "leam",
+    "cp",
+    "project"
+  ];
+
+
+  const percentages = {};
+
+
   /* =====================================
      PERCENTAGES
      ===================================== */
 
-  const leamPercentage =
-    toNumber(
-      rows[4]?.[0]
-    );
+  for (
+    let b = 0;
+    b < 3;
+    b++
+  ) {
+
+    const start =
+      starts[b];
 
 
-  const cpPercentage =
-    toNumber(
-      rows[4]?.[5]
-    );
+    const name =
+      names[b];
 
 
-  const projectPercentage =
-    toNumber(
-      rows[4]?.[10]
-    );
+    let pct =
+      null;
+
+
+    /*
+     * Search upward for:
+     *
+     * 30%
+     * 30%
+     * 40%
+     */
+
+    for (
+      let r =
+        headerRowIndex - 1;
+      r >= 0;
+      r--
+    ) {
+
+      const value =
+        rows[r]?.[start];
+
+
+      const parsed =
+        toNumber(
+          value
+        );
+
+
+      if (
+        parsed !== null &&
+        String(value)
+          .includes("%")
+      ) {
+
+        pct = parsed;
+
+        break;
+
+      }
+
+    }
+
+
+    /*
+     * Locked defaults.
+     */
+
+    if (
+      pct === null
+    ) {
+
+      pct =
+        name === "leam"
+          ? 30
+          : name === "cp"
+            ? 30
+            : 40;
+
+    }
+
+
+    percentages[name] =
+      pct;
+
+  }
+
+
+  const result = {
+
+    note,
+
+    leam: {
+
+      pct:
+        percentages.leam,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records: []
+
+    },
+
+
+    cp: {
+
+      pct:
+        percentages.cp,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records: []
+
+    },
+
+
+    project: {
+
+      pct:
+        percentages.project,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records: []
+
+    }
+
+  };
 
 
   /*
-   * Use sheet percentages when available.
-   * Otherwise use locked defaults.
-   */
-
-  const leamPct =
-    leamPercentage !== null
-      ? leamPercentage
-      : 30;
-
-
-  const cpPct =
-    cpPercentage !== null
-      ? cpPercentage
-      : 30;
-
-
-  const projectPct =
-    projectPercentage !== null
-      ? projectPercentage
-      : 40;
-
-
-  /* =====================================
-     TOTALS
-     ===================================== */
-
-  let leamIn = 0;
-
-  let leamOut = 0;
-
-
-  let cpIn = 0;
-
-  let cpOut = 0;
-
-
-  let projectIn = 0;
-
-  let projectOut = 0;
-
-
-  /* =====================================
-     RECORDS
-     ===================================== */
-
-  const leamRecords = [];
-
-  const cpRecords = [];
-
-  const projectRecords = [];
-
-
-  /*
-   * START AT ARRAY INDEX 6
+   * Transactions start AFTER:
    *
-   * Sheet Row 7 = index 6
+   * DATE | REMARK | IN | OUT
+   *
+   * This means:
+   *
+   * header row + 1
    */
 
   for (
-    let rowIndex = 6;
+    let rowIndex =
+      headerRowIndex + 1;
     rowIndex < rows.length;
     rowIndex++
   ) {
 
     const row =
-      rows[rowIndex] || [];
+      rows[rowIndex] ||
+      [];
 
 
-    /* ===================================
-       LEAM
-       A = DATE
-       B = REMARKS
-       C = IN
-       D = OUT
-       =================================== */
+    for (
+      let b = 0;
+      b < 3;
+      b++
+    ) {
 
-    const leamDate =
-      row[0];
+      const start =
+        starts[b];
 
 
-    const leamRemarks =
-      row[1];
+      const name =
+        names[b];
 
 
-    const leamInValue =
-      toNumber(
-        row[2]
-      );
+      /*
+       * EXACT LABEL STRUCTURE:
+       *
+       * start
+       * start + 1
+       * start + 2
+       * start + 3
+       *
+       * DATE
+       * REMARK
+       * IN
+       * OUT
+       */
+
+      const dateValue =
+        row[start];
 
 
-    const leamOutValue =
-      toNumber(
-        row[3]
-      );
+      const remarksValue =
+        row[start + 1];
 
 
-    const hasLeamData =
-      leamDate !== "" ||
-      leamRemarks !== "" ||
-      leamInValue !== null ||
-      leamOutValue !== null;
+      const inValue =
+        toNumber(
+          row[start + 2]
+        );
 
 
-    if (hasLeamData) {
+      const outValue =
+        toNumber(
+          row[start + 3]
+        );
+
+
+      const hasData =
+        dateValue !== "" ||
+        remarksValue !== "" ||
+        inValue !== null ||
+        outValue !== null;
+
+
+      if (!hasData) {
+
+        continue;
+
+      }
+
 
       const date =
         cleanDate(
-          leamDate
+          dateValue
         );
 
 
       const safeIn =
-        leamInValue === null
+        inValue === null
           ? 0
-          : leamInValue;
+          : inValue;
 
 
       const safeOut =
-        leamOutValue === null
+        outValue === null
           ? 0
-          : leamOutValue;
+          : outValue;
 
 
-      leamIn +=
+      result[name].in +=
         safeIn;
 
 
-      leamOut +=
+      result[name].out +=
         safeOut;
 
 
-      leamRecords.push(
+      result[name].records.push(
         {
+
           date,
+
           remarks:
             String(
-              leamRemarks || ""
+              remarksValue || ""
             ),
+
           in:
             safeIn,
+
           out:
             safeOut
-        }
-      );
 
-    }
-
-
-    /* ===================================
-       CP KIDS
-       F = DATE
-       G = REMARKS
-       H = IN
-       I = OUT
-       =================================== */
-
-    const cpDate =
-      row[5];
-
-
-    const cpRemarks =
-      row[6];
-
-
-    const cpInValue =
-      toNumber(
-        row[7]
-      );
-
-
-    const cpOutValue =
-      toNumber(
-        row[8]
-      );
-
-
-    const hasCPData =
-      cpDate !== "" ||
-      cpRemarks !== "" ||
-      cpInValue !== null ||
-      cpOutValue !== null;
-
-
-    if (hasCPData) {
-
-      const date =
-        cleanDate(
-          cpDate
-        );
-
-
-      const safeIn =
-        cpInValue === null
-          ? 0
-          : cpInValue;
-
-
-      const safeOut =
-        cpOutValue === null
-          ? 0
-          : cpOutValue;
-
-
-      cpIn +=
-        safeIn;
-
-
-      cpOut +=
-        safeOut;
-
-
-      cpRecords.push(
-        {
-          date,
-          remarks:
-            String(
-              cpRemarks || ""
-            ),
-          in:
-            safeIn,
-          out:
-            safeOut
-        }
-      );
-
-    }
-
-
-    /* ===================================
-       PROJECT
-       K = DATE
-       L = REMARKS
-       M = IN
-       N = OUT
-       =================================== */
-
-    const projectDate =
-      row[10];
-
-
-    const projectRemarks =
-      row[11];
-
-
-    const projectInValue =
-      toNumber(
-        row[12]
-      );
-
-
-    const projectOutValue =
-      toNumber(
-        row[13]
-      );
-
-
-    const hasProjectData =
-      projectDate !== "" ||
-      projectRemarks !== "" ||
-      projectInValue !== null ||
-      projectOutValue !== null;
-
-
-    if (hasProjectData) {
-
-      const date =
-        cleanDate(
-          projectDate
-        );
-
-
-      const safeIn =
-        projectInValue === null
-          ? 0
-          : projectInValue;
-
-
-      const safeOut =
-        projectOutValue === null
-          ? 0
-          : projectOutValue;
-
-
-      projectIn +=
-        safeIn;
-
-
-      projectOut +=
-        safeOut;
-
-
-      projectRecords.push(
-        {
-          date,
-          remarks:
-            String(
-              projectRemarks || ""
-            ),
-          in:
-            safeIn,
-          out:
-            safeOut
         }
       );
 
@@ -1042,44 +1666,7 @@ function parseAllocation(rows) {
   }
 
 
-  return {
-
-    note,
-
-    leam: {
-      pct:
-        leamPct,
-      in:
-        leamIn,
-      out:
-        leamOut,
-      records:
-        leamRecords
-    },
-
-    cp: {
-      pct:
-        cpPct,
-      in:
-        cpIn,
-      out:
-        cpOut,
-      records:
-        cpRecords
-    },
-
-    project: {
-      pct:
-        projectPct,
-      in:
-        projectIn,
-      out:
-        projectOut,
-      records:
-        projectRecords
-    }
-
-  };
+  return result;
 
 }
 
@@ -1092,6 +1679,7 @@ function render(
   data,
   source
 ) {
+
 
   /* =====================================
      SUMMARY TOTALS
@@ -1159,25 +1747,33 @@ function render(
 
   setText(
     "totalClaimed",
-    sol(totalClaimed)
+    sol(
+      totalClaimed
+    )
   );
 
 
   setText(
     "totalRedeemed",
-    sol(totalRedeemed)
+    sol(
+      totalRedeemed
+    )
   );
 
 
   setText(
     "totalProceeds",
-    money(totalProceeds)
+    money(
+      totalProceeds
+    )
   );
 
 
   setText(
     "totalExpenses",
-    money(totalExpenses)
+    money(
+      totalExpenses
+    )
   );
 
 
@@ -1187,25 +1783,33 @@ function render(
 
   setText(
     "claimsTotal",
-    sol(totalClaimed)
+    sol(
+      totalClaimed
+    )
   );
 
 
   setText(
     "redeemedTotal",
-    sol(totalRedeemed)
+    sol(
+      totalRedeemed
+    )
   );
 
 
   setText(
     "proceedsTotal",
-    money(totalProceeds)
+    money(
+      totalProceeds
+    )
   );
 
 
   setText(
     "expensesTotal",
-    money(totalExpenses)
+    money(
+      totalExpenses
+    )
   );
 
 
@@ -1245,17 +1849,25 @@ function render(
       data.claims
         .map(
           row => `
+
             <tr>
+
               <td>
                 ${escapeHtml(
-                  dateText(row[0])
+                  dateText(
+                    row[0]
+                  )
                 )}
               </td>
 
               <td class="num">
-                ${num(row[1])} SOL
+                ${num(
+                  row[1]
+                )} SOL
               </td>
+
             </tr>
+
           `
         )
         .join("");
@@ -1277,39 +1889,60 @@ function render(
       data.redeemed
         .map(
           row => `
+
             <tr>
 
               <td>
                 ${escapeHtml(
-                  dateText(row[0])
+                  dateText(
+                    row[0]
+                  )
                 )}
               </td>
 
               <td class="num">
-                ${num(row[1])} SOL
+                ${num(
+                  row[1]
+                )} SOL
               </td>
 
               <td class="num">
+
                 ${
                   row[2] === null
+
                     ? "—"
-                    : money(row[2])
+
+                    : money(
+                        row[2]
+                      )
                 }
+
               </td>
 
               <td class="num">
+
                 ${
                   row[3] === null
+
                     ? "—"
-                    : "$" + num(row[3])
+
+                    : "$" +
+                      num(
+                        row[3]
+                      )
                 }
+
               </td>
 
               <td class="num">
-                ${money(row[4])}
+                ${money(
+                  row[4]
+                )}
               </td>
 
             </tr>
+
           `
         )
         .join("");
@@ -1331,11 +1964,14 @@ function render(
       data.expenses
         .map(
           row => `
+
             <tr>
 
               <td>
                 ${escapeHtml(
-                  dateText(row[0])
+                  dateText(
+                    row[0]
+                  )
                 )}
               </td>
 
@@ -1346,7 +1982,9 @@ function render(
               </td>
 
               <td class="num">
-                ${money(row[2])}
+                ${money(
+                  row[2]
+                )}
               </td>
 
               <td>
@@ -1356,6 +1994,7 @@ function render(
               </td>
 
             </tr>
+
           `
         )
         .join("");
@@ -1400,7 +2039,9 @@ function render(
 
     }
 
-  } else {
+  }
+
+  else {
 
     if (redeemedEmpty) {
 
@@ -1457,10 +2098,6 @@ function render(
     allocation.note
   );
 
-
-  /* =====================================
-     UPDATE PERCENTAGE LABELS ONLY
-     ===================================== */
 
   setAllocationPercentage(
     "leam",
@@ -1519,8 +2156,7 @@ function render(
   ]
     .filter(Boolean)
     .map(
-      value =>
-        cleanDate(value)
+      cleanDate
     )
     .filter(Boolean)
     .sort(
@@ -1533,16 +2169,22 @@ function render(
     );
 
 
-  if (dates.length) {
+  if (
+    dates.length
+  ) {
 
     setText(
       "latestEntry",
       `Latest recorded activity: ${dateText(
-        dates[dates.length - 1]
+        dates[
+          dates.length - 1
+        ]
       )}`
     );
 
-  } else {
+  }
+
+  else {
 
     setText(
       "latestEntry",
@@ -1572,7 +2214,9 @@ function render(
 
     status.textContent =
       source === "live"
+
         ? "● Live Google Sheet data"
+
         : "● Snapshot data";
 
   }
@@ -1608,19 +2252,25 @@ function setAllocation(
 
   setText(
     prefix + "In",
-    money(input)
+    money(
+      input
+    )
   );
 
 
   setText(
     prefix + "Out",
-    money(output)
+    money(
+      output
+    )
   );
 
 
   setText(
     prefix + "Balance",
-    money(balance)
+    money(
+      balance
+    )
   );
 
 }
@@ -1647,14 +2297,6 @@ function setAllocationPercentage(
       : 0;
 
 
-  /*
-   * Supports:
-   *
-   * data-allocation="leam"
-   * data-allocation="cp"
-   * data-allocation="project"
-   */
-
   const element =
     document.querySelector(
       `[data-allocation="${prefix}"]`
@@ -1668,14 +2310,6 @@ function setAllocationPercentage(
 
   }
 
-
-  /*
-   * Also supports:
-   *
-   * leamPercentage
-   * cpPercentage
-   * projectPercentage
-   */
 
   setText(
     prefix + "Percentage",
@@ -1751,12 +2385,25 @@ async function load() {
 
   try {
 
+    console.log(
+      "[GWAR] Loading Google Sheets:",
+      {
+        rewardSheet:
+          C.rewardSheet,
+
+        allocationSheet:
+          C.allocationSheet
+      }
+    );
+
+
     const [
       rewardRows,
       allocationRows
     ] =
       await Promise.all(
         [
+
           fetchSheet(
             C.rewardSheet
           ),
@@ -1764,8 +2411,21 @@ async function load() {
           fetchSheet(
             C.allocationSheet
           )
+
         ]
       );
+
+
+    console.log(
+      "[GWAR] Reward rows:",
+      rewardRows
+    );
+
+
+    console.log(
+      "[GWAR] Allocation rows:",
+      allocationRows
+    );
 
 
     const reward =
@@ -1780,8 +2440,21 @@ async function load() {
       );
 
 
+    console.log(
+      "[GWAR] Parsed reward:",
+      reward
+    );
+
+
+    console.log(
+      "[GWAR] Parsed allocation:",
+      allocation
+    );
+
+
     render(
       {
+
         claims:
           reward.claims,
 
@@ -1793,31 +2466,30 @@ async function load() {
 
         allocation:
           allocation
+
       },
+
       "live"
     );
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
-      "Live Google Sheet error:",
+      "[GWAR] Live Google Sheet error:",
       error
     );
 
 
-    /*
-     * If Google Sheets temporarily
-     * cannot be loaded, use the
-     * last known snapshot.
-     */
-
     const fallback =
-      C.fallback;
+      C.fallback || {};
 
 
     render(
       {
+
         claims:
           fallback.claims || [],
 
@@ -1831,7 +2503,9 @@ async function load() {
           normalizeFallbackAllocation(
             fallback.allocation
           )
+
       },
+
       "fallback"
     );
 
@@ -1859,7 +2533,9 @@ function normalizeFallbackAllocation(
         allocation.note || ""
       ),
 
+
     leam: {
+
       pct:
         Number(
           allocation.leam?.pct ??
@@ -1882,7 +2558,9 @@ function normalizeFallbackAllocation(
 
     },
 
+
     cp: {
+
       pct:
         Number(
           allocation.cp?.pct ??
@@ -1905,7 +2583,9 @@ function normalizeFallbackAllocation(
 
     },
 
+
     project: {
+
       pct:
         Number(
           allocation.project?.pct ??
