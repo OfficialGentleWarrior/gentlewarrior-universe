@@ -220,29 +220,7 @@ function parseDate(value) {
     08/08/2026
     2026-08-08
     Aug 8, 2026
-    Aug 8
-
-    IMPORTANT:
-    Google Sheets may export a date
-    using the cell's display format.
-
-    Example:
-
-    Aug 30
-
-    JavaScript can interpret
-    "Aug 30" as August 30, 2001.
-
-    FIX:
-    If the year is missing,
-    explicitly use the current year.
   */
-
-
-  /* -------------------------------------
-     MM/DD/YYYY
-     MM-DD-YYYY
-  ------------------------------------- */
 
   let match =
     text.match(
@@ -252,55 +230,26 @@ function parseDate(value) {
 
   if (match) {
 
-    const month =
-      Number(match[1]) - 1;
-
-    const day =
-      Number(match[2]);
-
-    const year =
-      Number(match[3]);
-
-
-    const date =
-      new Date(
-        year,
-        month,
-        day
-      );
-
-
-    if (
-      date.getFullYear() === year &&
-      date.getMonth() === month &&
-      date.getDate() === day
-    ) {
-
-      return date;
-    }
-  }
-
-
-  /* -------------------------------------
-     YYYY-MM-DD
-  ------------------------------------- */
-
-  match =
-    text.match(
-      /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/
-    );
-
-
-  if (match) {
-
-    const year =
+    const first =
       Number(match[1]);
 
+    const second =
+      Number(match[2]);
+
+    const year =
+      Number(match[3]);
+
+
+    /*
+      Google Sheets / PH format:
+      MM/DD/YYYY
+    */
+
     const month =
-      Number(match[2]) - 1;
+      first - 1;
 
     const day =
-      Number(match[3]);
+      second;
 
 
     const date =
@@ -321,97 +270,6 @@ function parseDate(value) {
     }
   }
 
-
-  /* -------------------------------------
-     MONTH DAY, YEAR
-     Example:
-
-     Aug 30, 2026
-  ------------------------------------- */
-
-  match =
-    text.match(
-      /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/
-    );
-
-
-  if (match) {
-
-    const monthName =
-      match[1];
-
-    const day =
-      Number(match[2]);
-
-    const year =
-      Number(match[3]);
-
-
-    const date =
-      new Date(
-        `${monthName} ${day}, ${year}`
-      );
-
-
-    if (
-      !Number.isNaN(
-        date.getTime()
-      )
-    ) {
-
-      return date;
-    }
-  }
-
-
-  /* -------------------------------------
-     MONTH DAY WITHOUT YEAR
-     
-     Example:
-     Aug 30
-
-     FIX:
-     Force current year.
-  ------------------------------------- */
-
-  match =
-    text.match(
-      /^([A-Za-z]+)\s+(\d{1,2})$/
-    );
-
-
-  if (match) {
-
-    const monthName =
-      match[1];
-
-    const day =
-      Number(match[2]);
-
-    const currentYear =
-      new Date().getFullYear();
-
-
-    const date =
-      new Date(
-        `${monthName} ${day}, ${currentYear}`
-      );
-
-
-    if (
-      !Number.isNaN(
-        date.getTime()
-      )
-    ) {
-
-      return date;
-    }
-  }
-
-
-  /* -------------------------------------
-     FINAL FALLBACK
-  ------------------------------------- */
 
   const date =
     new Date(text);
@@ -838,6 +696,198 @@ function processRewardSheet(rows) {
 
 
 /* =========================================
+   ALLOCATION HELPERS
+   ========================================= */
+
+/*
+  Find the actual header row instead of
+  assuming a fixed row number.
+
+  This makes the parser work even if
+  Google Sheets removes/changes leading
+  blank rows in the exported CSV.
+*/
+
+function findAllocationHeaderRow(
+  rows,
+  startColumn
+) {
+
+  if (!Array.isArray(rows)) {
+    return -1;
+  }
+
+
+  for (
+    let i = 0;
+    i < rows.length;
+    i++
+  ) {
+
+    const row =
+      rows[i] || [];
+
+
+    const date =
+      String(
+        row[startColumn] ?? ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    const remarks =
+      String(
+        row[startColumn + 1] ?? ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    const incoming =
+      String(
+        row[startColumn + 2] ?? ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    const outgoing =
+      String(
+        row[startColumn + 3] ?? ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    if (
+      date === "DATE" &&
+      remarks === "REMARKS" &&
+      incoming === "IN" &&
+      outgoing === "OUT"
+    ) {
+
+      return i;
+    }
+
+  }
+
+
+  return -1;
+}
+
+
+/*
+  Process one allocation block.
+
+  Example LEAM:
+
+  A = DATE
+  B = REMARKS
+  C = IN
+  D = OUT
+
+  CP:
+
+  F = DATE
+  G = REMARKS
+  H = IN
+  I = OUT
+
+  PROJECT:
+
+  K = DATE
+  L = REMARKS
+  M = IN
+  N = OUT
+*/
+
+function readAllocationBlock(
+  rows,
+  startColumn
+) {
+
+  const result = [];
+
+
+  const headerRow =
+    findAllocationHeaderRow(
+      rows,
+      startColumn
+    );
+
+
+  if (headerRow === -1) {
+
+    return result;
+  }
+
+
+  for (
+    let i = headerRow + 1;
+    i < rows.length;
+    i++
+  ) {
+
+    const row =
+      rows[i] || [];
+
+
+    const date =
+      row[startColumn];
+
+
+    const remarks =
+      row[startColumn + 1];
+
+
+    const inValue =
+      toNumber(
+        row[startColumn + 2]
+      );
+
+
+    const outValue =
+      toNumber(
+        row[startColumn + 3]
+      );
+
+
+    /*
+      Ignore completely empty rows.
+    */
+
+    if (
+      !date &&
+      !remarks &&
+      inValue === 0 &&
+      outValue === 0
+    ) {
+
+      continue;
+    }
+
+
+    result.push({
+
+      date: date,
+
+      remarks: remarks,
+
+      in: inValue,
+
+      out: outValue
+
+    });
+
+  }
+
+
+  return result;
+}
+
+
+/* =========================================
    ALLOCATION SHEET
    =========================================
 
@@ -849,8 +899,12 @@ function processRewardSheet(rows) {
 
    A2 = TRANSPARENCY NOTE
 
-   Row 5 = percentages
-   Row 7+ = transactions
+   Percentages are still read from
+   the existing percentage row.
+
+   Transactions are now detected from
+   the actual DATE / REMARKS / IN / OUT
+   headers.
    ========================================= */
 
 function processAllocationSheet(rows) {
@@ -879,57 +933,18 @@ function processAllocationSheet(rows) {
 
   /* -------------------------------------
      TRANSPARENCY NOTE
-     A2
-  ------------------------------------- */
 
-  if (
-    rows[1] &&
-    rows[1][0] !== undefined &&
-    rows[1][0] !== null
-  ) {
+     Actual sheet:
+     A2 contains the transparency note.
 
-    const note =
-      String(rows[1][0]).trim();
-
-
-    if (
-      note &&
-      !/^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(note)
-    ) {
-
-      result.note =
-        note;
-    }
-  }
-
-
-  /* -------------------------------------
-     TRANSACTIONS
-     
-     Row 7 = index 6
-     
-     LEAM:
-     A = DATE
-     B = REMARKS
-     C = IN
-     D = OUT
-
-     CP:
-     F = DATE
-     G = REMARKS
-     H = IN
-     I = OUT
-
-     PROJECT:
-     K = DATE
-     L = REMARKS
-     M = IN
-     N = OUT
+     Instead of relying on a fragile CSV
+     row index, search the first rows for
+     the actual note text.
   ------------------------------------- */
 
   for (
-    let i = 6;
-    i < rows.length;
+    let i = 0;
+    i < Math.min(rows.length, 6);
     i++
   ) {
 
@@ -937,177 +952,83 @@ function processAllocationSheet(rows) {
       rows[i] || [];
 
 
-    /* -------------------------------------
-       LEAM
-    ------------------------------------- */
-
-    const leamDate =
-      row[0];
-
-    const leamRemarks =
-      row[1];
-
-    const leamIn =
-      toNumber(row[2]);
-
-    const leamOut =
-      toNumber(row[3]);
-
-
-    /*
-      IMPORTANT FIX:
-
-      Do not depend only on truthiness.
-
-      Google Sheets can return empty
-      cells as undefined / empty strings.
-
-      A row is considered a transaction
-      if any relevant field has content.
-    */
-
-    const hasLeamDate =
+    const value =
       String(
-        leamDate ?? ""
-      ).trim() !== "";
-
-    const hasLeamRemarks =
-      String(
-        leamRemarks ?? ""
-      ).trim() !== "";
+        row[0] ?? ""
+      ).trim();
 
 
     if (
-      hasLeamDate ||
-      hasLeamRemarks ||
-      leamIn !== 0 ||
-      leamOut !== 0
+      value &&
+      value.length > 15 &&
+      !/^LEAM$/i.test(value) &&
+      !/^DATE$/i.test(value)
     ) {
 
-      result.leam.push({
+      /*
+        Ignore percentage values and
+        obvious numeric cells.
+      */
 
-        date:
-          leamDate,
+      if (
+        !Number.isFinite(
+          Number(value)
+        )
+      ) {
 
-        remarks:
-          leamRemarks,
+        result.note =
+          value;
 
-        in:
-          leamIn,
+        break;
+      }
 
-        out:
-          leamOut
-
-      });
-    }
-
-
-    /* -------------------------------------
-       CP KIDS
-    ------------------------------------- */
-
-    const cpDate =
-      row[5];
-
-    const cpRemarks =
-      row[6];
-
-    const cpIn =
-      toNumber(row[7]);
-
-    const cpOut =
-      toNumber(row[8]);
-
-
-    const hasCPDate =
-      String(
-        cpDate ?? ""
-      ).trim() !== "";
-
-    const hasCPRemarks =
-      String(
-        cpRemarks ?? ""
-      ).trim() !== "";
-
-
-    if (
-      hasCPDate ||
-      hasCPRemarks ||
-      cpIn !== 0 ||
-      cpOut !== 0
-    ) {
-
-      result.cp.push({
-
-        date:
-          cpDate,
-
-        remarks:
-          cpRemarks,
-
-        in:
-          cpIn,
-
-        out:
-          cpOut
-
-      });
-    }
-
-
-    /* -------------------------------------
-       PROJECT
-    ------------------------------------- */
-
-    const projectDate =
-      row[10];
-
-    const projectRemarks =
-      row[11];
-
-    const projectIn =
-      toNumber(row[12]);
-
-    const projectOut =
-      toNumber(row[13]);
-
-
-    const hasProjectDate =
-      String(
-        projectDate ?? ""
-      ).trim() !== "";
-
-    const hasProjectRemarks =
-      String(
-        projectRemarks ?? ""
-      ).trim() !== "";
-
-
-    if (
-      hasProjectDate ||
-      hasProjectRemarks ||
-      projectIn !== 0 ||
-      projectOut !== 0
-    ) {
-
-      result.project.push({
-
-        date:
-          projectDate,
-
-        remarks:
-          projectRemarks,
-
-        in:
-          projectIn,
-
-        out:
-          projectOut
-
-      });
     }
 
   }
+
+
+  /* -------------------------------------
+     TRANSACTIONS
+  ------------------------------------- */
+
+  /*
+    LEAM
+    A:D
+  */
+
+  result.leam =
+    readAllocationBlock(
+      rows,
+      0
+    );
+
+
+  /*
+    CP KIDS
+    F:I
+
+    F = index 5
+  */
+
+  result.cp =
+    readAllocationBlock(
+      rows,
+      5
+    );
+
+
+  /*
+    PROJECT
+    K:N
+
+    K = index 10
+  */
+
+  result.project =
+    readAllocationBlock(
+      rows,
+      10
+    );
 
 
   return result;
@@ -1302,28 +1223,23 @@ function renderRedeemed() {
 
   if (!rows.length) {
 
-    /*
-      Force empty state visible.
-    */
-
     empty.classList.remove(
       "hidden"
     );
 
-    empty.style.display =
-      "flex";
-
 
     /*
-      Force table hidden.
+      IMPORTANT FIX:
+
+      Do NOT use inline display:none.
+
+      The accordion needs to control the
+      parent section visibility.
     */
 
     wrap.classList.add(
       "hidden"
     );
-
-    wrap.style.display =
-      "none";
 
 
     if ($("redeemedTotal")) {
@@ -1362,31 +1278,27 @@ function renderRedeemed() {
      HAS REDEEMED RECORDS
      ===================================== */
 
-  /*
-    IMPORTANT:
-
-    When a redeemed record exists,
-    completely hide the empty state.
-  */
-
   empty.classList.add(
     "hidden"
   );
 
-  empty.style.display =
-    "none";
-
 
   /*
-    Show the redeemed table.
+    IMPORTANT FIX:
+
+    Only remove the hidden class.
+
+    We intentionally DO NOT force:
+
+      style.display = "block"
+
+    because that can fight with the
+    mobile accordion CSS.
   */
 
   wrap.classList.remove(
     "hidden"
   );
-
-  wrap.style.display =
-    "block";
 
 
   /* =====================================
@@ -1845,11 +1757,6 @@ function renderTransparencyNote() {
 
   /*
     Transparency statement note.
-
-    This supports the actual transparency
-    statement section if the HTML uses:
-
-    id="transparencyNote"
   */
 
   const transparencyNote =
@@ -1864,9 +1771,7 @@ function renderTransparencyNote() {
 
 
   /*
-    Additional compatibility IDs
-    in case the HTML uses another
-    transparency-note element.
+    Additional compatibility ID.
   */
 
   const statementNote =
@@ -2160,9 +2065,6 @@ function showDataError(
       "hidden"
     );
 
-    $("redeemedEmpty").style.display =
-      "flex";
-
 
     $("redeemedEmpty").innerHTML = `
       <div class="empty-icon">!</div>
@@ -2183,9 +2085,6 @@ function showDataError(
     $("redeemedWrap").classList.add(
       "hidden"
     );
-
-    $("redeemedWrap").style.display =
-      "none";
   }
 
 }
