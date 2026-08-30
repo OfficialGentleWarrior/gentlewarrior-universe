@@ -11,11 +11,11 @@
    CONFIG
    ========================================= */
 
-const C = window.GWAR_CONFIG;
+const C = GWAR_CONFIG;
 
 
 /* =========================================
-   DOM HELPER
+   DOM
    ========================================= */
 
 function $(id) {
@@ -42,6 +42,7 @@ function money(value) {
       maximumFractionDigits: 2
     })
   );
+
 }
 
 
@@ -60,6 +61,7 @@ function sol(value) {
     }) +
     " SOL"
   );
+
 }
 
 
@@ -75,6 +77,7 @@ function num(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
+
 }
 
 
@@ -86,10 +89,12 @@ function toNumber(value) {
 
   if (
     value === null ||
-    value === undefined
+    value === undefined ||
+    value === ""
   ) {
     return null;
   }
+
 
   if (
     typeof value === "number" &&
@@ -98,56 +103,30 @@ function toNumber(value) {
     return value;
   }
 
+
   let text =
-    String(value).trim();
+    String(value)
+      .trim();
+
 
   if (!text) {
     return null;
   }
 
 
-  /*
-   * Remove common currency symbols.
-   */
-
   text =
     text
       .replace(/₱/g, "")
       .replace(/\$/g, "")
-      .replace(/PHP/gi, "")
-      .replace(/SOL/gi, "")
       .replace(/,/g, "")
       .trim();
 
 
-  /*
-   * Percentage:
-   *
-   * 30% -> 30
-   */
-
   if (text.endsWith("%")) {
 
     text =
-      text.slice(0, -1).trim();
-
-  }
-
-
-  /*
-   * Handle accounting negatives:
-   *
-   * (1000) -> -1000
-   */
-
-  if (
-    text.startsWith("(") &&
-    text.endsWith(")")
-  ) {
-
-    text =
-      "-" +
-      text.slice(1, -1);
+      text.slice(0, -1)
+        .trim();
 
   }
 
@@ -159,6 +138,7 @@ function toNumber(value) {
   return Number.isFinite(n)
     ? n
     : null;
+
 }
 
 
@@ -177,16 +157,18 @@ function cleanDate(value) {
   }
 
 
-  if (
-    value instanceof Date &&
-    !Number.isNaN(value.getTime())
-  ) {
-    return value;
+  if (value instanceof Date) {
+
+    return Number.isNaN(value.getTime())
+      ? null
+      : value;
+
   }
 
 
   const text =
-    String(value).trim();
+    String(value)
+      .trim();
 
 
   if (!text) {
@@ -198,51 +180,35 @@ function cleanDate(value) {
    * Google Visualization format:
    *
    * Date(2026,7,8)
-   *
-   * Month is zero-based.
    */
 
-  const gvizMatch =
+  const gviz =
     text.match(
-      /^Date\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?(?:,\s*(\d+))?\)$/
+      /^Date\((\d+),\s*(\d+),\s*(\d+)\)$/
     );
 
 
-  if (gvizMatch) {
+  if (gviz) {
 
-    const year =
-      Number(gvizMatch[1]);
-
-    const month =
-      Number(gvizMatch[2]);
-
-    const day =
-      Number(gvizMatch[3]);
-
-    const hour =
-      Number(gvizMatch[4] || 0);
-
-    const minute =
-      Number(gvizMatch[5] || 0);
-
-    const second =
-      Number(gvizMatch[6] || 0);
+    const date =
+      new Date(
+        Number(gviz[1]),
+        Number(gviz[2]),
+        Number(gviz[3])
+      );
 
 
-    return new Date(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second
-    );
+    return Number.isNaN(
+      date.getTime()
+    )
+      ? null
+      : date;
 
   }
 
 
   /*
-   * Normal browser date parsing.
+   * Normal date strings.
    */
 
   const date =
@@ -259,6 +225,7 @@ function cleanDate(value) {
 
 
   return date;
+
 }
 
 
@@ -285,6 +252,7 @@ function dateText(value) {
       year: "numeric"
     }
   );
+
 }
 
 
@@ -296,7 +264,7 @@ function parseGviz(text) {
 
   if (
     typeof text !== "string" ||
-    !text
+    !text.trim()
   ) {
 
     throw new Error(
@@ -307,15 +275,16 @@ function parseGviz(text) {
 
 
   /*
-   * GViz returns something similar to:
+   * Google returns:
    *
    * google.visualization.Query.setResponse({...})
    *
-   * Find the JSON object.
+   * Extract the JSON object.
    */
 
   const start =
     text.indexOf("{");
+
 
   const end =
     text.lastIndexOf("}");
@@ -367,8 +336,8 @@ function parseGviz(text) {
   ) {
 
     throw new Error(
-      json.errors?.[0]?.message ||
-      "Google Sheets returned an error."
+      "Google Sheets returned status: " +
+      json.status
     );
 
   }
@@ -381,7 +350,7 @@ function parseGviz(text) {
   if (!table) {
 
     throw new Error(
-      "No Google Sheets table returned."
+      "Google Sheets table not found."
     );
 
   }
@@ -394,12 +363,22 @@ function parseGviz(text) {
   /*
    * IMPORTANT
    *
-   * Allocation uses A:N = 14 columns.
+   * We always create 14 columns.
    *
-   * GViz can omit trailing empty cells.
-   *
-   * We therefore ALWAYS normalize
-   * every row to 14 positions.
+   * A = 0
+   * B = 1
+   * C = 2
+   * D = 3
+   * E = 4
+   * F = 5
+   * G = 6
+   * H = 7
+   * I = 8
+   * J = 9
+   * K = 10
+   * L = 11
+   * M = 12
+   * N = 13
    */
 
   return rows.map(
@@ -408,8 +387,10 @@ function parseGviz(text) {
       const cells =
         row?.c || [];
 
+
       const result =
-        new Array(14).fill("");
+        new Array(14)
+          .fill("");
 
 
       for (
@@ -426,31 +407,16 @@ function parseGviz(text) {
           cell === null ||
           cell === undefined
         ) {
-
-          result[i] = "";
-
           continue;
-
         }
 
 
         /*
-         * Prefer raw value for numeric
-         * calculations.
-         *
-         * Use formatted value only
-         * when raw value is unavailable.
+         * Use formatted value first.
+         * If unavailable use raw value.
          */
 
         if (
-          cell.v !== null &&
-          cell.v !== undefined
-        ) {
-
-          result[i] =
-            cell.v;
-
-        } else if (
           cell.f !== null &&
           cell.f !== undefined
         ) {
@@ -458,9 +424,13 @@ function parseGviz(text) {
           result[i] =
             cell.f;
 
-        } else {
+        } else if (
+          cell.v !== null &&
+          cell.v !== undefined
+        ) {
 
-          result[i] = "";
+          result[i] =
+            cell.v;
 
         }
 
@@ -471,88 +441,48 @@ function parseGviz(text) {
 
     }
   );
+
 }
 
 
 /* =========================================
-   GOOGLE SHEET FETCH
+   FETCH GOOGLE SHEET
    ========================================= */
 
 async function fetchSheet(
   sheetName
 ) {
 
-  if (
-    !C ||
-    !C.sheetId
-  ) {
-
-    throw new Error(
-      "Google Sheet ID is missing."
-    );
-
-  }
-
-
-  if (!sheetName) {
-
-    throw new Error(
-      "Google Sheet tab name is missing."
-    );
-
-  }
-
-
-  /*
-   * Cache-busting parameter prevents
-   * browser/proxy from showing an old
-   * snapshot.
-   */
-
-  const cacheBust =
-    Date.now();
-
-
   const url =
     "https://docs.google.com/spreadsheets/d/" +
-    encodeURIComponent(C.sheetId) +
-    "/gviz/tq" +
-    "?tqx=out:json" +
+    C.sheetId +
+    "/gviz/tq?" +
+    "tqx=out:json" +
     "&sheet=" +
-    encodeURIComponent(sheetName) +
-    "&_=" +
-    cacheBust;
+    encodeURIComponent(sheetName);
 
 
-  let response;
+  console.log(
+    "Fetching:",
+    sheetName
+  );
 
 
-  try {
-
-    response =
-      await fetch(
-        url,
-        {
-          method: "GET",
-          cache: "no-store",
-          credentials: "omit",
-          redirect: "follow"
-        }
-      );
-
-  } catch (error) {
-
-    throw new Error(
-      "Unable to connect to Google Sheets."
+  const response =
+    await fetch(
+      url,
+      {
+        method: "GET",
+        cache: "no-store"
+      }
     );
-
-  }
 
 
   if (!response.ok) {
 
     throw new Error(
-      `Google Sheets request failed: ${response.status}`
+      "Google Sheets request failed: " +
+      response.status
     );
 
   }
@@ -562,61 +492,57 @@ async function fetchSheet(
     await response.text();
 
 
+  console.log(
+    sheetName +
+    " raw response:",
+    text.substring(0, 300)
+  );
+
+
   return parseGviz(text);
+
 }
 
 
 /* =========================================
-   REWARD SHEET PARSER
+   REWARD SHEET
    ========================================= */
+
+/*
+   EXACT STRUCTURE FROM REWARD SCREENSHOT
+
+   CLAIMED
+   A = DATE
+   B = SOL CLAIMED
+
+   REDEEMED
+   D = DATE
+   E = SOLD SOL
+   F = RATE
+   G = $
+   H = IN PESO
+
+   EXPENSES
+   J = DATE
+   K = DESCRIPTION
+   L = AMOUNT
+   M = REMARKS
+
+   Row 1 = section totals / labels
+   Row 2 = headers
+   Row 3 onward = transactions
+*/
 
 function parseReward(rows) {
 
-  const claims = [];
+  const claims =
+    [];
 
-  const redeemed = [];
+  const redeemed =
+    [];
 
-  const expenses = [];
-
-
-  /*
-   * REWARD SHEET
-   *
-   * ROW 1
-   *
-   * A1 = CLAIMED
-   * B1 = TOTAL CLAIMED
-   *
-   * D1 = REDEEMED
-   *
-   * J1 = EXPENSES
-   *
-   *
-   * ROW 2
-   *
-   * A2 = DATE
-   * B2 = SOL CLAIMED
-   *
-   * D2 = DATE
-   * E2 = SOLD SOL
-   * F2 = RATE
-   * G2 = $
-   * H2 = IN PESO
-   *
-   * J2 = DATE
-   * K2 = DESCRIPTION
-   * L2 = AMOUNT
-   * M2 = REMARKS
-   *
-   *
-   * DATA STARTS ROW 3
-   *
-   * Array index = sheet row - 1
-   *
-   * Therefore:
-   *
-   * Row 3 = index 2
-   */
+  const expenses =
+    [];
 
 
   for (
@@ -645,10 +571,6 @@ function parseReward(rows) {
       );
 
 
-    /*
-     * A date AND B amount required.
-     */
-
     if (
       claimDate !== "" &&
       claimDate !== null &&
@@ -663,10 +585,11 @@ function parseReward(rows) {
 
       if (date) {
 
-        claims.push([
+        claims.push({
           date,
-          claimSOL
-        ]);
+          sol:
+            claimSOL
+        });
 
       }
 
@@ -692,13 +615,6 @@ function parseReward(rows) {
       );
 
 
-    /*
-     * Do NOT require RATE/$/PHP.
-     *
-     * A valid sold transaction only needs
-     * DATE + SOLD SOL.
-     */
-
     if (
       soldDate !== "" &&
       soldDate !== null &&
@@ -714,29 +630,23 @@ function parseReward(rows) {
 
       if (date) {
 
-        const rate =
-          toNumber(
-            row[5]
-          );
+        redeemed.push({
 
-        const usd =
-          toNumber(
-            row[6]
-          );
-
-        const php =
-          toNumber(
-            row[7]
-          );
-
-
-        redeemed.push([
           date,
-          soldSOL,
-          rate,
-          usd,
-          php
-        ]);
+
+          soldSOL:
+            soldSOL,
+
+          rate:
+            toNumber(row[5]),
+
+          usd:
+            toNumber(row[6]),
+
+          php:
+            toNumber(row[7])
+
+        });
 
       }
 
@@ -769,14 +679,6 @@ function parseReward(rows) {
       row[12];
 
 
-    /*
-     * Expense requires:
-     *
-     * DATE
-     * DESCRIPTION
-     * AMOUNT
-     */
-
     if (
       expenseDate !== "" &&
       expenseDate !== null &&
@@ -793,12 +695,21 @@ function parseReward(rows) {
 
       if (date) {
 
-        expenses.push([
+        expenses.push({
+
           date,
-          String(description),
+
+          description:
+            String(description),
+
           amount,
-          String(remarks ?? "")
-        ]);
+
+          remarks:
+            String(
+              remarks || ""
+            )
+
+        });
 
       }
 
@@ -812,227 +723,208 @@ function parseReward(rows) {
     redeemed,
     expenses
   };
+
 }
 
 
 /* =========================================
-   ALLOCATION SHEET PARSER
+   ALLOCATION SHEET
    ========================================= */
+
+/*
+   EXACT STRUCTURE FROM ALLOCATION SCREENSHOT
+
+   LEAM
+   A5 = 30% LABEL ONLY
+   A6 = DATE
+   B6 = REMARKS
+   C6 = IN
+   D6 = OUT
+
+   CP KIDS
+   F5 = 30% LABEL ONLY
+   F6 = DATE
+   G6 = REMARKS
+   H6 = IN
+   I6 = OUT
+
+   PROJECT
+   K5 = 40% LABEL ONLY
+   K6 = DATE
+   L6 = REMARKS
+   M6 = IN
+   N6 = OUT
+
+   DATA STARTS ROW 7.
+
+   VERY IMPORTANT:
+
+   Row 5 is NOT a transaction.
+
+   The percentage values are ONLY labels.
+
+   Row 6 is ONLY the header.
+
+   Transactions start at row 7.
+*/
 
 function parseAllocation(rows) {
 
-  /*
-   * ========================================
-   * LOCKED ALLOCATION STRUCTURE
-   * ========================================
-   *
-   * ROW 2
-   *
-   * A2 = TRANSPARENCY NOTE
-   *
-   *
-   * ROW 4
-   *
-   * BALANCE / FORMULAS
-   *
-   * IGNORE COMPLETELY.
-   *
-   *
-   * ROW 5
-   *
-   * A5 = LEAM %
-   * F5 = CP KIDS %
-   * K5 = PROJECT %
-   *
-   * !!! PERCENTAGE LABEL ONLY !!!
-   *
-   * NEVER treat these as transactions.
-   *
-   *
-   * ROW 6
-   *
-   * Headers only.
-   *
-   *
-   * ROW 7 ONWARD
-   *
-   * Actual allocation transactions.
-   *
-   *
-   * LEAM
-   *
-   * A = DATE
-   * B = REMARKS
-   * C = IN
-   * D = OUT
-   *
-   *
-   * CP KIDS
-   *
-   * F = DATE
-   * G = REMARKS
-   * H = IN
-   * I = OUT
-   *
-   *
-   * PROJECT
-   *
-   * K = DATE
-   * L = REMARKS
-   * M = IN
-   * N = OUT
-   *
-   * ========================================
-   */
+  const result = {
 
+    note:
+      "",
 
-  const fallback =
-    C?.fallback?.allocation || {};
+    leam: {
+
+      pct:
+        30,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records:
+        []
+
+    },
+
+    cp: {
+
+      pct:
+        30,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records:
+        []
+
+    },
+
+    project: {
+
+      pct:
+        40,
+
+      in:
+        0,
+
+      out:
+        0,
+
+      records:
+        []
+
+    }
+
+  };
 
 
   /* =====================================
-     TRANSPARENCY NOTE
+     NOTE
      ===================================== */
 
-  /*
-   * A2 = array index 1
-   */
-
-  let note =
-    rows[1]?.[0];
-
-
-  /*
-   * If empty, use fallback note.
-   */
-
   if (
-    note === null ||
-    note === undefined ||
-    String(note).trim() === ""
+    rows[1] &&
+    rows[1][0] !== undefined &&
+    rows[1][0] !== ""
   ) {
 
-    note =
-      fallback.note || "";
+    result.note =
+      String(
+        rows[1][0]
+      );
 
   }
 
 
-  note =
-    String(note);
-
-
   /* =====================================
-     PERCENTAGE LABELS
+     PERCENTAGE LABELS ONLY
      ===================================== */
 
   /*
-   * VERY IMPORTANT:
-   *
    * Row 5 = array index 4.
    *
-   * We ONLY read these cells
-   * as labels.
+   * These values are ONLY percentages.
    */
 
-  const leamPercentage =
+  const leamPct =
     toNumber(
       rows[4]?.[0]
     );
 
 
-  const cpPercentage =
+  const cpPct =
     toNumber(
       rows[4]?.[5]
     );
 
 
-  const projectPercentage =
+  const projectPct =
     toNumber(
       rows[4]?.[10]
     );
 
 
-  const leamPct =
-    leamPercentage !== null
-      ? leamPercentage
-      : Number(
-          fallback.leam?.pct ?? 30
-        );
+  if (
+    leamPct !== null
+  ) {
+
+    result.leam.pct =
+      leamPct;
+
+  }
 
 
-  const cpPct =
-    cpPercentage !== null
-      ? cpPercentage
-      : Number(
-          fallback.cp?.pct ?? 30
-        );
+  if (
+    cpPct !== null
+  ) {
+
+    result.cp.pct =
+      cpPct;
+
+  }
 
 
-  const projectPct =
-    projectPercentage !== null
-      ? projectPercentage
-      : Number(
-          fallback.project?.pct ?? 40
-        );
+  if (
+    projectPct !== null
+  ) {
 
+    result.project.pct =
+      projectPct;
 
-  /* =====================================
-     TOTALS
-     ===================================== */
-
-  let leamIn = 0;
-
-  let leamOut = 0;
-
-  let cpIn = 0;
-
-  let cpOut = 0;
-
-  let projectIn = 0;
-
-  let projectOut = 0;
+  }
 
 
   /* =====================================
-     TRANSACTION RECORDS
+     TRANSACTIONS
      ===================================== */
-
-  const leamRecords = [];
-
-  const cpRecords = [];
-
-  const projectRecords = [];
-
 
   /*
-   * START AT ROW 7.
+   * START ROW 7
    *
-   * Sheet Row 7 = JavaScript index 6.
-   *
-   * This intentionally skips:
-   *
-   * Row 4
-   * Row 5
-   * Row 6
+   * Array index = 6
    */
 
   for (
-    let rowIndex = 6;
-    rowIndex < rows.length;
-    rowIndex++
+    let i = 6;
+    i < rows.length;
+    i++
   ) {
 
     const row =
-      rows[rowIndex] || [];
+      rows[i] || [];
 
 
     /* ===================================
        LEAM
-       A DATE
-       B REMARKS
-       C IN
-       D OUT
+       A B C D
        =================================== */
 
     const leamDate =
@@ -1043,38 +935,29 @@ function parseAllocation(rows) {
       row[1];
 
 
-    const leamInValue =
+    const leamIn =
       toNumber(
         row[2]
       );
 
 
-    const leamOutValue =
+    const leamOut =
       toNumber(
         row[3]
       );
 
 
-    /*
-     * IMPORTANT:
-     *
-     * An empty row must NOT become
-     * a transaction.
-     */
-
     const hasLeamData =
       (
         leamDate !== "" &&
-        leamDate !== null &&
-        leamDate !== undefined
+        leamDate !== null
       ) ||
       (
         leamRemarks !== "" &&
-        leamRemarks !== null &&
-        leamRemarks !== undefined
+        leamRemarks !== null
       ) ||
-      leamInValue !== null ||
-      leamOutValue !== null;
+      leamIn !== null ||
+      leamOut !== null;
 
 
     if (hasLeamData) {
@@ -1086,65 +969,48 @@ function parseAllocation(rows) {
 
 
       const safeIn =
-        leamInValue !== null
-          ? leamInValue
-          : 0;
+        leamIn === null
+          ? 0
+          : leamIn;
 
 
       const safeOut =
-        leamOutValue !== null
-          ? leamOutValue
-          : 0;
+        leamOut === null
+          ? 0
+          : leamOut;
 
 
-      /*
-       * Only add to totals when there
-       * is actual IN/OUT movement.
-       */
-
-      leamIn +=
+      result.leam.in +=
         safeIn;
 
 
-      leamOut +=
+      result.leam.out +=
         safeOut;
 
 
-      /*
-       * Keep a record if there is
-       * meaningful row data.
-       */
+      result.leam.records.push({
 
-      if (
-        date ||
-        leamRemarks ||
-        leamInValue !== null ||
-        leamOutValue !== null
-      ) {
+        date,
 
-        leamRecords.push({
-          date,
-          remarks:
-            String(
-              leamRemarks ?? ""
-            ),
-          in:
-            safeIn,
-          out:
-            safeOut
-        });
+        remarks:
+          String(
+            leamRemarks || ""
+          ),
 
-      }
+        in:
+          safeIn,
+
+        out:
+          safeOut
+
+      });
 
     }
 
 
     /* ===================================
        CP KIDS
-       F DATE
-       G REMARKS
-       H IN
-       I OUT
+       F G H I
        =================================== */
 
     const cpDate =
@@ -1155,13 +1021,13 @@ function parseAllocation(rows) {
       row[6];
 
 
-    const cpInValue =
+    const cpIn =
       toNumber(
         row[7]
       );
 
 
-    const cpOutValue =
+    const cpOut =
       toNumber(
         row[8]
       );
@@ -1170,16 +1036,14 @@ function parseAllocation(rows) {
     const hasCPData =
       (
         cpDate !== "" &&
-        cpDate !== null &&
-        cpDate !== undefined
+        cpDate !== null
       ) ||
       (
         cpRemarks !== "" &&
-        cpRemarks !== null &&
-        cpRemarks !== undefined
+        cpRemarks !== null
       ) ||
-      cpInValue !== null ||
-      cpOutValue !== null;
+      cpIn !== null ||
+      cpOut !== null;
 
 
     if (hasCPData) {
@@ -1191,55 +1055,48 @@ function parseAllocation(rows) {
 
 
       const safeIn =
-        cpInValue !== null
-          ? cpInValue
-          : 0;
+        cpIn === null
+          ? 0
+          : cpIn;
 
 
       const safeOut =
-        cpOutValue !== null
-          ? cpOutValue
-          : 0;
+        cpOut === null
+          ? 0
+          : cpOut;
 
 
-      cpIn +=
+      result.cp.in +=
         safeIn;
 
 
-      cpOut +=
+      result.cp.out +=
         safeOut;
 
 
-      if (
-        date ||
-        cpRemarks ||
-        cpInValue !== null ||
-        cpOutValue !== null
-      ) {
+      result.cp.records.push({
 
-        cpRecords.push({
-          date,
-          remarks:
-            String(
-              cpRemarks ?? ""
-            ),
-          in:
-            safeIn,
-          out:
-            safeOut
-        });
+        date,
 
-      }
+        remarks:
+          String(
+            cpRemarks || ""
+          ),
+
+        in:
+          safeIn,
+
+        out:
+          safeOut
+
+      });
 
     }
 
 
     /* ===================================
        PROJECT
-       K DATE
-       L REMARKS
-       M IN
-       N OUT
+       K L M N
        =================================== */
 
     const projectDate =
@@ -1250,13 +1107,13 @@ function parseAllocation(rows) {
       row[11];
 
 
-    const projectInValue =
+    const projectIn =
       toNumber(
         row[12]
       );
 
 
-    const projectOutValue =
+    const projectOut =
       toNumber(
         row[13]
       );
@@ -1265,16 +1122,14 @@ function parseAllocation(rows) {
     const hasProjectData =
       (
         projectDate !== "" &&
-        projectDate !== null &&
-        projectDate !== undefined
+        projectDate !== null
       ) ||
       (
         projectRemarks !== "" &&
-        projectRemarks !== null &&
-        projectRemarks !== undefined
+        projectRemarks !== null
       ) ||
-      projectInValue !== null ||
-      projectOutValue !== null;
+      projectIn !== null ||
+      projectOut !== null;
 
 
     if (hasProjectData) {
@@ -1286,89 +1141,49 @@ function parseAllocation(rows) {
 
 
       const safeIn =
-        projectInValue !== null
-          ? projectInValue
-          : 0;
+        projectIn === null
+          ? 0
+          : projectIn;
 
 
       const safeOut =
-        projectOutValue !== null
-          ? projectOutValue
-          : 0;
+        projectOut === null
+          ? 0
+          : projectOut;
 
 
-      projectIn +=
+      result.project.in +=
         safeIn;
 
 
-      projectOut +=
+      result.project.out +=
         safeOut;
 
 
-      if (
-        date ||
-        projectRemarks ||
-        projectInValue !== null ||
-        projectOutValue !== null
-      ) {
+      result.project.records.push({
 
-        projectRecords.push({
-          date,
-          remarks:
-            String(
-              projectRemarks ?? ""
-            ),
-          in:
-            safeIn,
-          out:
-            safeOut
-        });
+        date,
 
-      }
+        remarks:
+          String(
+            projectRemarks || ""
+          ),
+
+        in:
+          safeIn,
+
+        out:
+          safeOut
+
+      });
 
     }
 
   }
 
 
-  return {
+  return result;
 
-    note,
-
-    leam: {
-      pct:
-        leamPct,
-      in:
-        leamIn,
-      out:
-        leamOut,
-      records:
-        leamRecords
-    },
-
-    cp: {
-      pct:
-        cpPct,
-      in:
-        cpIn,
-      out:
-        cpOut,
-      records:
-        cpRecords
-    },
-
-    project: {
-      pct:
-        projectPct,
-      in:
-        projectIn,
-      out:
-        projectOut,
-      records:
-        projectRecords
-    }
-
-  };
 }
 
 
@@ -1377,64 +1192,66 @@ function parseAllocation(rows) {
    ========================================= */
 
 function render(
-  data,
-  source
+  reward,
+  allocation
 ) {
 
   /* =====================================
-     SUMMARY
+     SUMMARY TOTALS
      ===================================== */
 
   const totalClaimed =
-    data.claims.reduce(
+    reward.claims.reduce(
       (
         total,
-        row
+        item
       ) =>
         total +
-        Number(row[1] || 0),
+        item.sol,
       0
     );
 
 
   const totalRedeemed =
-    data.redeemed.reduce(
+    reward.redeemed.reduce(
       (
         total,
-        row
+        item
       ) =>
         total +
-        Number(row[1] || 0),
+        item.soldSOL,
       0
     );
 
 
   const totalProceeds =
-    data.redeemed.reduce(
+    reward.redeemed.reduce(
       (
         total,
-        row
+        item
       ) =>
         total +
-        Number(row[4] || 0),
+        (
+          Number(item.php) || 0
+        ),
       0
     );
 
 
   const totalExpenses =
-    data.expenses.reduce(
+    reward.expenses.reduce(
       (
         total,
-        row
+        item
       ) =>
         total +
-        Number(row[2] || 0),
+        item.amount,
       0
     );
 
 
   /* =====================================
-     SUMMARY CARDS
+     SUMMARY
      ===================================== */
 
   setText(
@@ -1495,19 +1312,19 @@ function render(
 
   setText(
     "claimedCount",
-    `${data.claims.length} records`
+    `${reward.claims.length} records`
   );
 
 
   setText(
     "redeemedCount",
-    `${data.redeemed.length} records`
+    `${reward.redeemed.length} records`
   );
 
 
   setText(
     "expenseCount",
-    `${data.expenses.length} records`
+    `${reward.expenses.length} records`
   );
 
 
@@ -1521,7 +1338,9 @@ function render(
 
   if (claimsTable) {
 
-    if (data.claims.length === 0) {
+    if (
+      reward.claims.length === 0
+    ) {
 
       claimsTable.innerHTML = `
         <tr>
@@ -1534,18 +1353,18 @@ function render(
     } else {
 
       claimsTable.innerHTML =
-        data.claims
+        reward.claims
           .map(
-            row => `
+            item => `
               <tr>
                 <td>
                   ${escapeHtml(
-                    dateText(row[0])
+                    dateText(item.date)
                   )}
                 </td>
 
                 <td class="num">
-                  ${num(row[1])} SOL
+                  ${num(item.sol)} SOL
                 </td>
               </tr>
             `
@@ -1567,46 +1386,66 @@ function render(
 
   if (redeemedTable) {
 
-    redeemedTable.innerHTML =
-      data.redeemed
-        .map(
-          row => `
-            <tr>
+    if (
+      reward.redeemed.length === 0
+    ) {
 
-              <td>
-                ${escapeHtml(
-                  dateText(row[0])
-                )}
-              </td>
+      redeemedTable.innerHTML = `
+        <tr>
+          <td colspan="5">
+            No Creator Rewards redeemed yet.
+          </td>
+        </tr>
+      `;
 
-              <td class="num">
-                ${num(row[1])} SOL
-              </td>
+    } else {
 
-              <td class="num">
-                ${
-                  row[2] === null
-                    ? "—"
-                    : money(row[2])
-                }
-              </td>
+      redeemedTable.innerHTML =
+        reward.redeemed
+          .map(
+            item => `
+              <tr>
 
-              <td class="num">
-                ${
-                  row[3] === null
-                    ? "—"
-                    : "$" + num(row[3])
-                }
-              </td>
+                <td>
+                  ${escapeHtml(
+                    dateText(item.date)
+                  )}
+                </td>
 
-              <td class="num">
-                ${money(row[4])}
-              </td>
+                <td class="num">
+                  ${num(item.soldSOL)} SOL
+                </td>
 
-            </tr>
-          `
-        )
-        .join("");
+                <td class="num">
+                  ${
+                    item.rate === null
+                      ? "—"
+                      : money(item.rate)
+                  }
+                </td>
+
+                <td class="num">
+                  ${
+                    item.usd === null
+                      ? "—"
+                      : "$" + num(item.usd)
+                  }
+                </td>
+
+                <td class="num">
+                  ${
+                    item.php === null
+                      ? "—"
+                      : money(item.php)
+                  }
+                </td>
+
+              </tr>
+            `
+          )
+          .join("");
+
+    }
 
   }
 
@@ -1621,7 +1460,9 @@ function render(
 
   if (expensesTable) {
 
-    if (data.expenses.length === 0) {
+    if (
+      reward.expenses.length === 0
+    ) {
 
       expensesTable.innerHTML = `
         <tr>
@@ -1634,30 +1475,30 @@ function render(
     } else {
 
       expensesTable.innerHTML =
-        data.expenses
+        reward.expenses
           .map(
-            row => `
+            item => `
               <tr>
 
                 <td>
                   ${escapeHtml(
-                    dateText(row[0])
+                    dateText(item.date)
                   )}
                 </td>
 
                 <td>
                   ${escapeHtml(
-                    row[1]
+                    item.description
                   )}
                 </td>
 
                 <td class="num">
-                  ${money(row[2])}
+                  ${money(item.amount)}
                 </td>
 
                 <td>
                   ${escapeHtml(
-                    row[3]
+                    item.remarks
                   )}
                 </td>
 
@@ -1672,112 +1513,53 @@ function render(
 
 
   /* =====================================
-     REDEEMED EMPTY STATE
-     ===================================== */
-
-  const redeemedEmpty =
-    $("redeemedEmpty");
-
-
-  const redeemedWrap =
-    $("redeemedWrap");
-
-
-  if (
-    data.redeemed.length === 0
-  ) {
-
-    if (redeemedEmpty) {
-
-      redeemedEmpty
-        .classList
-        .remove("hidden");
-
-    }
-
-
-    if (redeemedWrap) {
-
-      redeemedWrap
-        .classList
-        .add("hidden");
-
-    }
-
-  } else {
-
-    if (redeemedEmpty) {
-
-      redeemedEmpty
-        .classList
-        .add("hidden");
-
-    }
-
-
-    if (redeemedWrap) {
-
-      redeemedWrap
-        .classList
-        .remove("hidden");
-
-    }
-
-  }
-
-
-  /* =====================================
      ALLOCATION
      ===================================== */
 
-  const allocation =
-    data.allocation;
+  renderAllocation(
+    "leam",
+    allocation.leam
+  );
 
 
-  if (allocation) {
-
-    setAllocation(
-      "leam",
-      allocation.leam
-    );
+  renderAllocation(
+    "cp",
+    allocation.cp
+  );
 
 
-    setAllocation(
-      "cp",
-      allocation.cp
-    );
+  renderAllocation(
+    "project",
+    allocation.project
+  );
 
 
-    setAllocation(
-      "project",
-      allocation.project
-    );
+  setText(
+    "allocationNote",
+    allocation.note
+  );
 
 
-    setAllocationPercentage(
-      "leam",
-      allocation.leam.pct
-    );
+  /* =====================================
+     PERCENTAGE LABELS
+     ===================================== */
+
+  setAllocationPercentage(
+    "leam",
+    allocation.leam.pct
+  );
 
 
-    setAllocationPercentage(
-      "cp",
-      allocation.cp.pct
-    );
+  setAllocationPercentage(
+    "cp",
+    allocation.cp.pct
+  );
 
 
-    setAllocationPercentage(
-      "project",
-      allocation.project.pct
-    );
-
-
-    setText(
-      "allocationNote",
-      allocation.note
-    );
-
-  }
+  setAllocationPercentage(
+    "project",
+    allocation.project.pct
+  );
 
 
   /* =====================================
@@ -1786,38 +1568,31 @@ function render(
 
   const dates = [
 
-    ...data.claims.map(
-      row => row[0]
+    ...reward.claims.map(
+      item => item.date
     ),
 
-    ...data.redeemed.map(
-      row => row[0]
+    ...reward.redeemed.map(
+      item => item.date
     ),
 
-    ...data.expenses.map(
-      row => row[0]
+    ...reward.expenses.map(
+      item => item.date
     ),
 
-    ...(allocation?.leam?.records || [])
-      .map(
-        row => row.date
-      ),
+    ...allocation.leam.records.map(
+      item => item.date
+    ),
 
-    ...(allocation?.cp?.records || [])
-      .map(
-        row => row.date
-      ),
+    ...allocation.cp.records.map(
+      item => item.date
+    ),
 
-    ...(allocation?.project?.records || [])
-      .map(
-        row => row.date
-      )
+    ...allocation.project.records.map(
+      item => item.date
+    )
 
   ]
-    .map(
-      value =>
-        cleanDate(value)
-    )
     .filter(Boolean)
     .sort(
       (
@@ -1833,9 +1608,10 @@ function render(
 
     setText(
       "latestEntry",
-      `Latest recorded activity: ${dateText(
+      "Latest recorded activity: " +
+      dateText(
         dates[dates.length - 1]
-      )}`
+      )
     );
 
   } else {
@@ -1849,7 +1625,7 @@ function render(
 
 
   /* =====================================
-     DATA STATUS
+     LIVE STATUS
      ===================================== */
 
   const status =
@@ -1859,15 +1635,11 @@ function render(
   if (status) {
 
     status.className =
-      source === "live"
-        ? "status live"
-        : "status fallback";
+      "status live";
 
 
     status.textContent =
-      source === "live"
-        ? "● Live Google Sheet data"
-        : "● Snapshot data";
+      "● Live Google Sheet data";
 
   }
 
@@ -1875,28 +1647,23 @@ function render(
 
 
 /* =========================================
-   ALLOCATION CARD
+   ALLOCATION RENDER
    ========================================= */
 
-function setAllocation(
+function renderAllocation(
   prefix,
   allocation
 ) {
 
-  if (!allocation) {
-    return;
-  }
-
-
   const input =
     Number(
-      allocation.in || 0
+      allocation?.in || 0
     );
 
 
   const output =
     Number(
-      allocation.out || 0
+      allocation?.out || 0
     );
 
 
@@ -1935,7 +1702,9 @@ function setAllocationPercentage(
 ) {
 
   const value =
-    Number(percentage);
+    Number(
+      percentage
+    );
 
 
   const safe =
@@ -1945,7 +1714,9 @@ function setAllocationPercentage(
 
 
   /*
-   * Main percentage circle.
+   * Example:
+   *
+   * data-allocation="leam"
    */
 
   const element =
@@ -1963,8 +1734,9 @@ function setAllocationPercentage(
 
 
   /*
-   * Optional percentage element
-   * if present in HTML.
+   * Example:
+   *
+   * id="leamPercentage"
    */
 
   setText(
@@ -1976,7 +1748,7 @@ function setAllocationPercentage(
 
 
 /* =========================================
-   DOM TEXT SETTER
+   DOM TEXT
    ========================================= */
 
 function setText(
@@ -1991,7 +1763,7 @@ function setText(
   if (element) {
 
     element.textContent =
-      value ?? "";
+      value;
 
   }
 
@@ -1999,7 +1771,7 @@ function setText(
 
 
 /* =========================================
-   HTML ESCAPE
+   ESCAPE HTML
    ========================================= */
 
 function escapeHtml(
@@ -2034,35 +1806,25 @@ function escapeHtml(
 
 
 /* =========================================
-   LIVE DATA LOAD
+   LOAD
    ========================================= */
 
 async function load() {
 
-  const status =
-    $("dataStatus");
-
-
-  if (status) {
-
-    status.className =
-      "status live";
-
-    status.textContent =
-      "● Connecting to Google Sheet...";
-
-  }
-
-
   try {
 
-    /*
-     * Fetch BOTH tabs directly
-     * from the same Google Spreadsheet.
-     */
+    setText(
+      "dataStatus",
+      "Loading Google Sheet data..."
+    );
 
-    const results =
+
+    const [
+      rewardRows,
+      allocationRows
+    ] =
       await Promise.all([
+
         fetchSheet(
           C.rewardSheet
         ),
@@ -2070,20 +1832,21 @@ async function load() {
         fetchSheet(
           C.allocationSheet
         )
+
       ]);
 
 
-    const rewardRows =
-      results[0];
+    console.log(
+      "REWARD rows:",
+      rewardRows
+    );
 
 
-    const allocationRows =
-      results[1];
+    console.log(
+      "ALLOCATION rows:",
+      allocationRows
+    );
 
-
-    /*
-     * Parse Reward tab.
-     */
 
     const reward =
       parseReward(
@@ -2091,71 +1854,26 @@ async function load() {
       );
 
 
-    /*
-     * Parse Allocation tab.
-     */
-
     const allocation =
       parseAllocation(
         allocationRows
       );
 
 
-    /*
-     * Render live data.
-     */
+    console.log(
+      "Parsed reward:",
+      reward
+    );
+
+
+    console.log(
+      "Parsed allocation:",
+      allocation
+    );
+
 
     render(
-      {
-        claims:
-          reward.claims,
-
-        redeemed:
-          reward.redeemed,
-
-        expenses:
-          reward.expenses,
-
-        allocation:
-          allocation
-
-      },
-      "live"
-    );
-
-
-    /*
-     * Debug information.
-     *
-     * Useful if we need to inspect
-     * the sheet later.
-     */
-
-    console.log(
-      "GWAR Google Sheet loaded successfully."
-    );
-
-
-    console.log(
-      "Claims:",
-      reward.claims.length
-    );
-
-
-    console.log(
-      "Redeemed:",
-      reward.redeemed.length
-    );
-
-
-    console.log(
-      "Expenses:",
-      reward.expenses.length
-    );
-
-
-    console.log(
-      "Allocation:",
+      reward,
       allocation
     );
 
@@ -2163,203 +1881,28 @@ async function load() {
   } catch (error) {
 
     console.error(
-      "GWAR Google Sheet error:",
+      "CREATOR REWARD DATA ERROR:",
       error
     );
 
 
-    /*
-     * IMPORTANT:
-     *
-     * We do NOT silently pretend that
-     * Google Sheet has zero data.
-     *
-     * If the live sheet fails, show
-     * an explicit error.
-     */
+    const status =
+      $("dataStatus");
+
 
     if (status) {
 
       status.className =
-        "status fallback";
+        "status error";
+
 
       status.textContent =
-        "● Google Sheet unavailable";
-
-    }
-
-
-    /*
-     * Only use fallback if one exists
-     * AND it actually contains data.
-     *
-     * Otherwise show empty state.
-     */
-
-    const fallback =
-      C?.fallback || {};
-
-
-    const hasFallbackData =
-      (
-        Array.isArray(
-          fallback.claims
-        ) &&
-        fallback.claims.length > 0
-      ) ||
-      (
-        Array.isArray(
-          fallback.redeemed
-        ) &&
-        fallback.redeemed.length > 0
-      ) ||
-      (
-        Array.isArray(
-          fallback.expenses
-        ) &&
-        fallback.expenses.length > 0
-      );
-
-
-    if (hasFallbackData) {
-
-      render(
-        {
-          claims:
-            fallback.claims || [],
-
-          redeemed:
-            fallback.redeemed || [],
-
-          expenses:
-            fallback.expenses || [],
-
-          allocation:
-            normalizeFallbackAllocation(
-              fallback.allocation
-            )
-
-        },
-        "fallback"
-      );
-
-    } else {
-
-      /*
-       * Keep the page usable but clearly
-       * indicate that live data could not
-       * be loaded.
-       */
-
-      render(
-        {
-          claims: [],
-
-          redeemed: [],
-
-          expenses: [],
-
-          allocation:
-            normalizeFallbackAllocation(
-              fallback.allocation
-            )
-
-        },
-        "fallback"
-      );
+        "● Unable to load Google Sheet data";
 
     }
 
   }
 
-}
-
-
-/* =========================================
-   FALLBACK ALLOCATION
-   ========================================= */
-
-function normalizeFallbackAllocation(
-  allocation
-) {
-
-  allocation =
-    allocation || {};
-
-
-  return {
-
-    note:
-      String(
-        allocation.note || ""
-      ),
-
-    leam: {
-
-      pct:
-        Number(
-          allocation.leam?.pct ?? 30
-        ),
-
-      in:
-        Number(
-          allocation.leam?.in || 0
-        ),
-
-      out:
-        Number(
-          allocation.leam?.out || 0
-        ),
-
-      records: []
-
-    },
-
-
-    cp: {
-
-      pct:
-        Number(
-          allocation.cp?.pct ?? 30
-        ),
-
-      in:
-        Number(
-          allocation.cp?.in || 0
-        ),
-
-      out:
-        Number(
-          allocation.cp?.out || 0
-        ),
-
-      records: []
-
-    },
-
-
-    project: {
-
-      pct:
-        Number(
-          allocation.project?.pct ?? 40
-        ),
-
-      in:
-        Number(
-          allocation.project?.in || 0
-        ),
-
-      out:
-        Number(
-          allocation.project?.out || 0
-        ),
-
-      records: []
-
-    }
-
-  };
 }
 
 
@@ -2369,9 +1912,5 @@ function normalizeFallbackAllocation(
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
-
-    load();
-
-  }
+  load
 );
