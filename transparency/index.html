@@ -1,322 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  />
+  >
 
   <meta
     name="theme-color"
-    content="#063b24"
-  />
-
-  <title>
-    Creator Reward Transparency | Gentle Warrior
-  </title>
+    content="#071f16"
+  >
 
   <meta
     name="description"
-    content="Public transparency record for Gentle Warrior Creator Rewards."
-  />
+    content="Gentle Warrior Creator Reward Transparency"
+  >
+
+  <title>
+    Creator Reward Transparency — Gentle Warrior
+  </title>
 
   <link
     rel="stylesheet"
     href="style.css"
-  />
-
+  >
 </head>
-
 
 <body>
 
+  <!-- =========================================
+       TOP NAVIGATION
+       ========================================= -->
 
-  <main class="page">
+  <header class="site-header">
 
+    <div class="header-inner">
 
-    <!-- =====================================
-         BRAND HEADER
-         ===================================== -->
-
-    <header class="site-header">
-
-      <div class="brand-card">
-
-        <div class="brand-mark">
-
-          <img
-            src="../avatar.png"
-            alt="Gentle Warrior"
-            onerror="this.style.display='none';"
-          />
-
-        </div>
-
-
-        <div class="brand-copy">
-
-          <strong>
-            Gentle Warrior
-          </strong>
-
-          <span>
-            Soft Heart. Strong Spirit.
-          </span>
-
-        </div>
-
-
-        <a
-          href="../"
-          class="home-button"
-        >
-          ← Home
-        </a>
-
-      </div>
-
+      <a
+        href="#overview"
+        class="brand"
+        aria-label="Gentle Warrior"
+      >
+        GENTLE WARRIOR
+      </a>
 
       <nav
-        class="pill-nav"
-        aria-label="Transparency navigation"
+        class="main-nav"
+        aria-label="Main navigation"
       >
 
         <a
           href="#overview"
-          class="pill active"
+          class="nav-link active"
         >
           Overview
         </a>
 
         <a
           href="#claimed"
-          class="pill"
+          class="nav-link"
         >
           Rewards
         </a>
 
         <a
           href="#redeemed"
-          class="pill"
+          class="nav-link"
         >
           Sold
         </a>
 
         <a
           href="#expenses"
-          class="pill"
+          class="nav-link"
         >
           Expenses
         </a>
 
         <a
           href="#allocation"
-          class="pill"
+          class="nav-link"
         >
           Allocation
         </a>
 
       </nav>
 
-    </header>
+    </div>
+
+  </header>
 
 
+  <!-- =========================================
+       MAIN
+       ========================================= -->
 
-    <!-- =====================================
+  <main id="overview">
+
+    <!-- =======================================
          HERO
-         ===================================== -->
+         ======================================= -->
 
-    <section
-      class="hero"
-      id="overview"
-    >
+    <section class="hero-section">
 
       <div class="hero-content">
 
-        <span class="hero-badge">
+        <div class="eyebrow">
           GENTLE WARRIOR
-        </span>
-
+        </div>
 
         <h1>
-          Creator Reward
-          <br />
+          Creator Reward<br>
           Transparency
         </h1>
 
-
         <p class="hero-description">
-
           A clear public record of Creator Rewards —
           from what was claimed, to what was sold,
-          what was spent, and where the funds are
-          allocated.
-
+          what was spent, and where the funds are allocated.
         </p>
 
-
-        <div class="hero-status">
-
-          <span class="status-dot"></span>
-
-          <span>
-            Data status:
-          </span>
-
-          <strong id="dataStatus">
-            Loading...
-          </strong>
-
+        <div
+          id="dataStatus"
+          class="status live"
+        >
+          ● Loading Google Sheet data...
         </div>
 
+        <p
+          id="latestEntry"
+          class="latest-entry"
+        ></p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================
+         SUMMARY CARDS
+         ======================================= -->
+
+    <section class="summary-grid">
+
+      <!-- CLAIMED -->
+
+      <article class="summary-card">
+
+        <div class="summary-label">
+          CLAIMED
+        </div>
 
         <div
-          class="latest-entry"
-          id="latestEntry"
-        ></div>
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =====================================
-         SUMMARY
-         ===================================== -->
-
-    <section
-      class="summary-section"
-      aria-label="Creator Reward summary"
-    >
-
-      <div class="summary-grid">
-
-
-        <article class="stat-card">
-
-          <div class="stat-label">
-            CLAIMED
-          </div>
-
-          <strong
-            id="totalClaimed"
-            class="stat-value"
-          >
-            —
-          </strong>
-
-          <div class="stat-hint">
-            SOL CLAIMED
-          </div>
-
-        </article>
-
-
-        <article class="stat-card">
-
-          <div class="stat-label">
-            REDEEMED
-          </div>
-
-          <strong
-            id="totalRedeemed"
-            class="stat-value"
-          >
-            —
-          </strong>
-
-          <div class="stat-hint">
-            SOLD SOL
-          </div>
-
-        </article>
-
-
-        <article class="stat-card">
-
-          <div class="stat-label">
-            SALE PROCEEDS
-          </div>
-
-          <strong
-            id="totalProceeds"
-            class="stat-value"
-          >
-            —
-          </strong>
-
-          <div class="stat-hint">
-            IN PESO
-          </div>
-
-        </article>
-
-
-        <article class="stat-card">
-
-          <div class="stat-label">
-            EXPENSES
-          </div>
-
-          <strong
-            id="totalExpenses"
-            class="stat-value"
-          >
-            —
-          </strong>
-
-          <div class="stat-hint">
-            IN PESO
-          </div>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =====================================
-         01 — CLAIMED
-         ===================================== -->
-
-    <section
-      class="section"
-      id="claimed"
-    >
-
-      <div class="section-heading">
-
-        <div>
-
-          <span class="section-kicker">
-            01
-          </span>
-
-          <h2>
-            CLAIMED
-          </h2>
-
-          <p>
-            Recorded Creator Reward claims.
-          </p>
-
+          id="totalClaimed"
+          class="summary-value"
+        >
+          0.00 SOL
         </div>
 
+        <div class="summary-caption">
+          SOL CLAIMED
+        </div>
 
-        <span
-          id="claimedCount"
-          class="count-badge"
+      </article>
+
+
+      <!-- REDEEMED -->
+
+      <article class="summary-card">
+
+        <div class="summary-label">
+          REDEEMED
+        </div>
+
+        <div
+          id="totalRedeemed"
+          class="summary-value"
         >
-          —
-        </span>
+          0.00 SOL
+        </div>
 
+        <div class="summary-caption">
+          SOLD SOL
+        </div>
+
+      </article>
+
+
+      <!-- SALE PROCEEDS -->
+
+      <article class="summary-card">
+
+        <div class="summary-label">
+          SALE PROCEEDS
+        </div>
+
+        <div
+          id="totalProceeds"
+          class="summary-value"
+        >
+          ₱0.00
+        </div>
+
+        <div class="summary-caption">
+          IN PESO
+        </div>
+
+      </article>
+
+
+      <!-- EXPENSES -->
+
+      <article class="summary-card">
+
+        <div class="summary-label">
+          EXPENSES
+        </div>
+
+        <div
+          id="totalExpenses"
+          class="summary-value"
+        >
+          ₱0.00
+        </div>
+
+        <div class="summary-caption">
+          IN PESO
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =======================================
+         01 CLAIMED
+         ======================================= -->
+
+    <section
+      id="claimed"
+      class="data-section"
+    >
+
+      <div class="section-number">
+        01
+      </div>
+
+      <h2>
+        CLAIMED
+      </h2>
+
+      <p class="section-description">
+        Recorded Creator Reward claims.
+      </p>
+
+      <div
+        id="claimedCount"
+        class="record-count"
+      >
+        0 records
       </div>
 
 
@@ -324,7 +268,7 @@
 
         <div class="table-scroll">
 
-          <table class="reward-table">
+          <table>
 
             <thead>
 
@@ -342,25 +286,23 @@
 
             </thead>
 
-
             <tbody id="claimsTable">
             </tbody>
-
 
             <tfoot>
 
               <tr>
 
-                <th>
+                <td>
                   TOTAL
-                </th>
+                </td>
 
-                <th
+                <td
                   id="claimsTotal"
                   class="num"
                 >
-                  —
-                </th>
+                  0.00 SOL
+                </td>
 
               </tr>
 
@@ -375,44 +317,36 @@
     </section>
 
 
-
-    <!-- =====================================
-         02 — REDEEMED / SOLD
-         ===================================== -->
+    <!-- =======================================
+         02 REDEEMED
+         ======================================= -->
 
     <section
-      class="section"
       id="redeemed"
+      class="data-section"
     >
 
-      <div class="section-heading">
-
-        <div>
-
-          <span class="section-kicker">
-            02
-          </span>
-
-          <h2>
-            REDEEMED
-          </h2>
-
-          <p>
-            Recorded Creator Reward sales.
-          </p>
-
-        </div>
-
-
-        <span
-          id="redeemedCount"
-          class="count-badge"
-        >
-          —
-        </span>
-
+      <div class="section-number">
+        02
       </div>
 
+      <h2>
+        REDEEMED
+      </h2>
+
+      <p class="section-description">
+        Recorded Creator Reward sales.
+      </p>
+
+      <div
+        id="redeemedCount"
+        class="record-count"
+      >
+        0 records
+      </div>
+
+
+      <!-- EMPTY STATE -->
 
       <div
         id="redeemedEmpty"
@@ -423,11 +357,9 @@
           —
         </div>
 
-
-        <strong>
+        <h3>
           No Creator Rewards redeemed yet.
-        </strong>
-
+        </h3>
 
         <p>
           When a reward is sold, the transaction
@@ -437,15 +369,16 @@
       </div>
 
 
+      <!-- REDEEMED TABLE -->
+
       <div
         id="redeemedWrap"
-        class="table-card"
-        style="display: none;"
+        class="table-card hidden"
       >
 
         <div class="table-scroll">
 
-          <table class="reward-table sold-table">
+          <table>
 
             <thead>
 
@@ -475,38 +408,32 @@
 
             </thead>
 
-
             <tbody id="redeemedTable">
             </tbody>
-
 
             <tfoot>
 
               <tr>
 
-                <th>
+                <td colspan="1">
                   TOTAL
-                </th>
+                </td>
 
-                <th
+                <td
                   id="redeemedTotal"
                   class="num"
                 >
-                  —
-                </th>
+                  0.00 SOL
+                </td>
 
-                <th>
-                </th>
+                <td colspan="2"></td>
 
-                <th>
-                </th>
-
-                <th
+                <td
                   id="proceedsTotal"
                   class="num"
                 >
-                  —
-                </th>
+                  ₱0.00
+                </td>
 
               </tr>
 
@@ -521,42 +448,32 @@
     </section>
 
 
-
-    <!-- =====================================
-         03 — EXPENSES
-         ===================================== -->
+    <!-- =======================================
+         03 EXPENSES
+         ======================================= -->
 
     <section
-      class="section"
       id="expenses"
+      class="data-section"
     >
 
-      <div class="section-heading">
+      <div class="section-number">
+        03
+      </div>
 
-        <div>
+      <h2>
+        EXPENSES
+      </h2>
 
-          <span class="section-kicker">
-            03
-          </span>
+      <p class="section-description">
+        Recorded expenses and their purpose.
+      </p>
 
-          <h2>
-            EXPENSES
-          </h2>
-
-          <p>
-            Recorded expenses and their purpose.
-          </p>
-
-        </div>
-
-
-        <span
-          id="expenseCount"
-          class="count-badge"
-        >
-          —
-        </span>
-
+      <div
+        id="expenseCount"
+        class="record-count"
+      >
+        0 records
       </div>
 
 
@@ -564,7 +481,7 @@
 
         <div class="table-scroll">
 
-          <table class="reward-table expenses-table">
+          <table>
 
             <thead>
 
@@ -590,28 +507,25 @@
 
             </thead>
 
-
             <tbody id="expensesTable">
             </tbody>
-
 
             <tfoot>
 
               <tr>
 
-                <th colspan="2">
+                <td colspan="2">
                   TOTAL
-                </th>
+                </td>
 
-                <th
+                <td
                   id="expensesTotal"
                   class="num"
                 >
-                  —
-                </th>
+                  ₱0.00
+                </td>
 
-                <th>
-                </th>
+                <td></td>
 
               </tr>
 
@@ -626,277 +540,271 @@
     </section>
 
 
-
-    <!-- =====================================
-         04 — FUND ALLOCATION
-         ===================================== -->
+    <!-- =======================================
+         04 FUND ALLOCATION
+         ======================================= -->
 
     <section
-      class="section allocation-section"
       id="allocation"
+      class="data-section allocation-section"
     >
 
-      <div class="section-heading">
+      <div class="section-number">
+        04
+      </div>
 
-        <div>
+      <h2>
+        FUND ALLOCATION
+      </h2>
 
-          <span class="section-kicker">
-            04
-          </span>
+      <p class="section-description">
+        Current allocation of Creator Reward funds.
+      </p>
 
-          <h2>
-            FUND ALLOCATION
-          </h2>
+      <div class="allocation-total">
+        100%
+      </div>
 
-          <p>
-            Current allocation of Creator Reward funds.
-          </p>
+
+      <!-- =====================================
+           LEAM
+           ===================================== -->
+
+      <article class="allocation-card">
+
+        <div class="allocation-header">
+
+          <div>
+
+            <h3>
+              LEAM
+            </h3>
+
+            <p>
+              Direct support
+            </p>
+
+          </div>
+
+          <!-- IMPORTANT:
+               This is ONLY the percentage label
+               from Allocation!A5.
+          -->
+
+          <div
+            class="allocation-percentage"
+            data-allocation="leam"
+          >
+            30%
+          </div>
 
         </div>
 
 
-        <span class="count-badge">
-          100%
-        </span>
+        <div class="allocation-body">
 
-      </div>
+          <div class="allocation-row">
 
+            <span>
+              IN
+            </span>
 
-
-      <div class="allocation-grid">
-
-
-        <!-- LEAM -->
-
-        <article class="allocation-card">
-
-          <div class="allocation-header">
-
-            <div>
-
-              <span class="allocation-title">
-                LEAM
-              </span>
-
-              <span class="allocation-subtitle">
-                Direct support
-              </span>
-
-            </div>
-
-
-            <strong data-allocation="leam">
-              30%
+            <strong id="leamIn">
+              ₱0.00
             </strong>
 
           </div>
 
+          <div class="allocation-row">
 
-          <div class="allocation-content">
+            <span>
+              OUT
+            </span>
 
-            <div class="allocation-row">
-
-              <span>
-                IN
-              </span>
-
-              <strong id="leamIn">
-                —
-              </strong>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span>
-                OUT
-              </span>
-
-              <strong id="leamOut">
-                —
-              </strong>
-
-            </div>
-
-
-            <div class="allocation-balance">
-
-              <span>
-                BALANCE
-              </span>
-
-              <strong id="leamBalance">
-                —
-              </strong>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-
-        <!-- CP KIDS -->
-
-        <article class="allocation-card">
-
-          <div class="allocation-header">
-
-            <div>
-
-              <span class="allocation-title">
-                CP KIDS
-              </span>
-
-              <span class="allocation-subtitle">
-                Cerebral palsy support
-              </span>
-
-            </div>
-
-
-            <strong data-allocation="cp">
-              30%
+            <strong id="leamOut">
+              ₱0.00
             </strong>
 
           </div>
 
+          <div class="allocation-row balance-row">
 
-          <div class="allocation-content">
+            <span>
+              BALANCE
+            </span>
 
-            <div class="allocation-row">
-
-              <span>
-                IN
-              </span>
-
-              <strong id="cpIn">
-                —
-              </strong>
-
-            </div>
-
-
-            <div class="allocation-row">
-
-              <span>
-                OUT
-              </span>
-
-              <strong id="cpOut">
-                —
-              </strong>
-
-            </div>
-
-
-            <div class="allocation-balance">
-
-              <span>
-                BALANCE
-              </span>
-
-              <strong id="cpBalance">
-                —
-              </strong>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-
-        <!-- PROJECT -->
-
-        <article class="allocation-card">
-
-          <div class="allocation-header">
-
-            <div>
-
-              <span class="allocation-title">
-                PROJECT
-              </span>
-
-              <span class="allocation-subtitle">
-                Gentle Warrior projects
-              </span>
-
-            </div>
-
-
-            <strong data-allocation="project">
-              40%
+            <strong id="leamBalance">
+              ₱0.00
             </strong>
 
           </div>
 
+        </div>
 
-          <div class="allocation-content">
-
-            <div class="allocation-row">
-
-              <span>
-                IN
-              </span>
-
-              <strong id="projectIn">
-                —
-              </strong>
-
-            </div>
+      </article>
 
 
-            <div class="allocation-row">
+      <!-- =====================================
+           CP KIDS
+           ===================================== -->
 
-              <span>
-                OUT
-              </span>
+      <article class="allocation-card">
 
-              <strong id="projectOut">
-                —
-              </strong>
+        <div class="allocation-header">
 
-            </div>
+          <div>
 
+            <h3>
+              CP KIDS
+            </h3>
 
-            <div class="allocation-balance">
-
-              <span>
-                BALANCE
-              </span>
-
-              <strong id="projectBalance">
-                —
-              </strong>
-
-            </div>
+            <p>
+              Cerebral palsy support
+            </p>
 
           </div>
 
-        </article>
+          <!-- ONLY Allocation!F5 -->
 
-      </div>
+          <div
+            class="allocation-percentage"
+            data-allocation="cp"
+          >
+            30%
+          </div>
 
+        </div>
+
+
+        <div class="allocation-body">
+
+          <div class="allocation-row">
+
+            <span>
+              IN
+            </span>
+
+            <strong id="cpIn">
+              ₱0.00
+            </strong>
+
+          </div>
+
+          <div class="allocation-row">
+
+            <span>
+              OUT
+            </span>
+
+            <strong id="cpOut">
+              ₱0.00
+            </strong>
+
+          </div>
+
+          <div class="allocation-row balance-row">
+
+            <span>
+              BALANCE
+            </span>
+
+            <strong id="cpBalance">
+              ₱0.00
+            </strong>
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- =====================================
+           PROJECT
+           ===================================== -->
+
+      <article class="allocation-card">
+
+        <div class="allocation-header">
+
+          <div>
+
+            <h3>
+              PROJECT
+            </h3>
+
+            <p>
+              Gentle Warrior projects
+            </p>
+
+          </div>
+
+          <!-- ONLY Allocation!K5 -->
+
+          <div
+            class="allocation-percentage"
+            data-allocation="project"
+          >
+            40%
+          </div>
+
+        </div>
+
+
+        <div class="allocation-body">
+
+          <div class="allocation-row">
+
+            <span>
+              IN
+            </span>
+
+            <strong id="projectIn">
+              ₱0.00
+            </strong>
+
+          </div>
+
+          <div class="allocation-row">
+
+            <span>
+              OUT
+            </span>
+
+            <strong id="projectOut">
+              ₱0.00
+            </strong>
+
+          </div>
+
+          <div class="allocation-row balance-row">
+
+            <span>
+              BALANCE
+            </span>
+
+            <strong id="projectBalance">
+              ₱0.00
+            </strong>
+
+          </div>
+
+        </div>
+
+      </article>
 
 
       <!-- =====================================
            TRANSPARENCY NOTE
            ===================================== -->
 
-      <div class="allocation-note">
+      <div class="transparency-note">
 
-        <span class="note-kicker">
+        <div class="note-label">
           TRANSPARENCY NOTE
-        </span>
-
+        </div>
 
         <p id="allocationNote">
-          —
         </p>
 
       </div>
@@ -904,91 +812,196 @@
     </section>
 
 
-
-    <!-- =====================================
-         TRANSPARENCY STATEMENT
-         ===================================== -->
-
-    <section class="transparency-statement">
-
-      <div class="statement-card">
-
-        <span class="section-kicker">
-          GENTLE WARRIOR
-        </span>
-
-
-        <h2>
-          Soft Heart.
-          <br />
-          Strong Spirit.
-        </h2>
-
-
-        <p>
-
-          This page exists to make Creator Reward
-          activity easier to understand.
-
-          <br /><br />
-
-          Claims, sales, expenses, and allocations
-          are presented as part of our commitment
-          to transparency.
-
-        </p>
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =====================================
-         FOOTER
-         ===================================== -->
+    <!-- =======================================
+         FOOTER BRAND
+         ======================================= -->
 
     <footer class="site-footer">
 
       <div class="footer-brand">
-        Gentle Warrior
+        GENTLE WARRIOR
       </div>
 
+      <div class="footer-motto">
+        Soft Heart.<br>
+        Strong Spirit.
+      </div>
 
-      <p>
+      <div class="footer-note">
         Creator Reward Transparency
-      </p>
-
-
-      <span>
-        Soft Heart. Strong Spirit.
-      </span>
-
-
-      <div class="footer-disclaimer">
-
-        Data shown on this page is a transparency
-        record only. It is not financial advice,
-        an investment offer, or a promise of return.
-
       </div>
 
     </footer>
 
-
   </main>
 
 
+  <!-- =========================================
+       GOOGLE SHEET CONFIG
+       ========================================= -->
 
-  <!-- =====================================
-       SCRIPTS — DO NOT CHANGE
-       ===================================== -->
+  <script>
 
-  <script src="config.js"></script>
+    const GWAR_CONFIG = {
 
-  <script src="script.js"></script>
+      /*
+       * Google Spreadsheet ID
+       */
 
+      sheetId:
+        "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
+
+
+      /*
+       * EXACT SHEET TAB NAMES
+       */
+
+      rewardSheet:
+        "REWARD",
+
+      allocationSheet:
+        "ALLOCATION",
+
+
+      /*
+       * No hardcoded live data.
+       *
+       * Google Sheet is the source of truth.
+       */
+
+      fallback: {
+
+        claims: [],
+
+        redeemed: [],
+
+        expenses: [],
+
+        allocation: {
+
+          note: "",
+
+          leam: {
+            pct: 30,
+            in: 0,
+            out: 0
+          },
+
+          cp: {
+            pct: 30,
+            in: 0,
+            out: 0
+          },
+
+          project: {
+            pct: 40,
+            in: 0,
+            out: 0
+          }
+
+        }
+
+      }
+
+    };
+
+  </script>
+
+
+  <!-- =========================================
+       MAIN JAVASCRIPT
+       ========================================= -->
+
+  <script
+    src="script.js"
+  ></script>
+
+
+  <!-- =========================================
+       SIMPLE NAV ACTIVE STATE
+       ========================================= -->
+
+  <script>
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+
+        const links =
+          document.querySelectorAll(
+            ".nav-link"
+          );
+
+
+        const sections =
+          document.querySelectorAll(
+            "main section[id]"
+          );
+
+
+        function updateActiveNav() {
+
+          let current =
+            "overview";
+
+
+          const scrollPosition =
+            window.scrollY + 180;
+
+
+          sections.forEach(
+            section => {
+
+              if (
+                scrollPosition >=
+                section.offsetTop
+              ) {
+
+                current =
+                  section.id;
+
+              }
+
+            }
+          );
+
+
+          links.forEach(
+            link => {
+
+              const href =
+                link.getAttribute(
+                  "href"
+                );
+
+
+              link.classList.toggle(
+                "active",
+                href ===
+                "#" + current
+              );
+
+            }
+          );
+
+        }
+
+
+        window.addEventListener(
+          "scroll",
+          updateActiveNav,
+          {
+            passive: true
+          }
+        );
+
+
+        updateActiveNav();
+
+      }
+    );
+
+  </script>
 
 </body>
-
-  </html>
+</html>
