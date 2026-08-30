@@ -1,6 +1,7 @@
 /* =========================================
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
+   UPDATED DATA LOADER
    ========================================= */
 
 "use strict";
@@ -10,12 +11,32 @@
    CONFIG
    ========================================= */
 
-const CONFIG = window.GW_CONFIG || window.CONFIG || {};
+const CONFIG =
+  window.GW_CONFIG ||
+  window.CONFIG ||
+  {};
 
 const SHEET_URL =
   CONFIG.sheetUrl ||
   CONFIG.SHEET_URL ||
   "";
+
+const SHEET_ID =
+  CONFIG.sheetId ||
+  CONFIG.SHEET_ID ||
+  "";
+
+const SHEET_GIDS =
+  CONFIG.sheetGids ||
+  CONFIG.SHEET_GIDS ||
+  {};
+
+const SHEET_NAMES = {
+  claimed: "Claimed",
+  redeemed: "Redeemed",
+  expenses: "Expenses",
+  allocation: "Allocation"
+};
 
 
 /* =========================================
@@ -26,6 +47,7 @@ function $(id) {
   return document.getElementById(id);
 }
 
+
 function escapeHTML(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -35,59 +57,88 @@ function escapeHTML(value) {
     .replace(/'/g, "&#039;");
 }
 
+
 function toNumber(value) {
+
   if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
+    return Number.isFinite(value)
+      ? value
+      : 0;
   }
 
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
     return 0;
   }
 
-  const cleaned = String(value)
-    .replace(/₱/g, "")
-    .replace(/\$/g, "")
-    .replace(/,/g, "")
-    .replace(/SOL/gi, "")
-    .trim();
+  const cleaned =
+    String(value)
+      .replace(/₱/g, "")
+      .replace(/\$/g, "")
+      .replace(/,/g, "")
+      .replace(/SOL/gi, "")
+      .replace(/PHP/gi, "")
+      .trim();
 
-  const number = parseFloat(cleaned);
+  const number =
+    parseFloat(cleaned);
 
-  return Number.isFinite(number) ? number : 0;
+  return Number.isFinite(number)
+    ? number
+    : 0;
 }
+
 
 function formatSOL(value) {
   return `${toNumber(value).toFixed(2)} SOL`;
 }
 
+
 function formatPeso(value) {
-  return `₱${toNumber(value).toLocaleString("en-PH", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+  return `₱${toNumber(value).toLocaleString(
+    "en-PH",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
+
 
 function formatUSD(value) {
-  return `$${toNumber(value).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+  return `$${toNumber(value).toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
 
+
 function formatRate(value) {
-  const number = toNumber(value);
+
+  const number =
+    toNumber(value);
 
   if (!number) {
     return "—";
   }
 
-  return `$${number.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+  return `$${number.toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
 
+
 function normalizeKey(value) {
+
   return String(value ?? "")
     .trim()
     .toLowerCase()
@@ -95,15 +146,22 @@ function normalizeKey(value) {
     .replace(/[_-]/g, " ");
 }
 
+
 function getField(row, names) {
-  const keys = Object.keys(row || {});
+
+  const keys =
+    Object.keys(row || {});
 
   for (const name of names) {
-    const target = normalizeKey(name);
 
-    const key = keys.find(
-      key => normalizeKey(key) === target
-    );
+    const target =
+      normalizeKey(name);
+
+    const key =
+      keys.find(
+        key =>
+          normalizeKey(key) === target
+      );
 
     if (key !== undefined) {
       return row[key];
@@ -113,26 +171,35 @@ function getField(row, names) {
   return "";
 }
 
+
 function getDate(row) {
+
   return getField(row, [
     "Date",
-    "date"
+    "date",
+    "DATE"
   ]);
 }
 
+
 function getDescription(row) {
+
   return getField(row, [
     "Description",
     "description",
+    "DESCRIPTION",
     "Item",
     "Purpose"
   ]);
 }
 
+
 function getRemarks(row) {
+
   return getField(row, [
     "Remarks",
     "remarks",
+    "REMARKS",
     "Remark",
     "Notes",
     "Note"
@@ -145,16 +212,23 @@ function getRemarks(row) {
    ========================================= */
 
 const state = {
+
   claimed: [],
+
   redeemed: [],
+
   expenses: [],
+
   allocation: {
     leam: [],
     cp: [],
     project: []
   },
+
   note: "",
+
   loaded: false
+
 };
 
 
@@ -163,130 +237,430 @@ const state = {
    ========================================= */
 
 function parseCSV(text) {
+
   const rows = [];
+
   let row = [];
   let cell = "";
+
   let insideQuotes = false;
 
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const next = text[i + 1];
+  for (
+    let i = 0;
+    i < text.length;
+    i++
+  ) {
 
-    if (char === '"' && insideQuotes && next === '"') {
-      cell += '"';
-      i++;
-      continue;
-    }
+    const char =
+      text[i];
 
-    if (char === '"') {
-      insideQuotes = !insideQuotes;
-      continue;
-    }
+    const next =
+      text[i + 1];
 
-    if (char === "," && !insideQuotes) {
-      row.push(cell);
-      cell = "";
-      continue;
-    }
 
     if (
-      (char === "\n" || char === "\r") &&
+      char === '"' &&
+      insideQuotes &&
+      next === '"'
+    ) {
+
+      cell += '"';
+
+      i++;
+
+      continue;
+    }
+
+
+    if (char === '"') {
+
+      insideQuotes =
+        !insideQuotes;
+
+      continue;
+    }
+
+
+    if (
+      char === "," &&
       !insideQuotes
     ) {
-      if (char === "\r" && next === "\n") {
+
+      row.push(cell);
+
+      cell = "";
+
+      continue;
+    }
+
+
+    if (
+      (
+        char === "\n" ||
+        char === "\r"
+      ) &&
+      !insideQuotes
+    ) {
+
+      if (
+        char === "\r" &&
+        next === "\n"
+      ) {
         i++;
       }
 
+
       row.push(cell);
+
       cell = "";
+
 
       if (
         row.length > 1 ||
-        row.some(value => value.trim() !== "")
+        row.some(
+          value =>
+            String(value)
+              .trim() !== ""
+        )
       ) {
+
         rows.push(row);
       }
 
+
       row = [];
+
       continue;
     }
+
 
     cell += char;
   }
 
-  row.push(cell);
 
   if (
-    row.length > 1 ||
-    row.some(value => value.trim() !== "")
+    cell !== "" ||
+    row.length
   ) {
-    rows.push(row);
+
+    row.push(cell);
+
+    if (
+      row.length > 1 ||
+      row.some(
+        value =>
+          String(value)
+            .trim() !== ""
+      )
+    ) {
+
+      rows.push(row);
+    }
   }
+
 
   return rows;
 }
 
 
 /* =========================================
-   SHEET DATA
+   ROWS TO OBJECTS
    ========================================= */
 
 function rowsToObjects(rows) {
-  if (!Array.isArray(rows) || rows.length < 2) {
+
+  if (
+    !Array.isArray(rows) ||
+    rows.length < 2
+  ) {
     return [];
   }
 
-  const headers = rows[0].map(header =>
-    String(header || "").trim()
-  );
+
+  const headers =
+    rows[0].map(
+      header =>
+        String(header || "")
+          .trim()
+    );
+
 
   return rows
     .slice(1)
+
     .filter(row =>
-      row.some(value =>
-        String(value ?? "").trim() !== ""
+      row.some(
+        value =>
+          String(value ?? "")
+            .trim() !== ""
       )
     )
+
     .map(row => {
+
       const object = {};
 
-      headers.forEach((header, index) => {
-        object[header] = row[index] ?? "";
-      });
+      headers.forEach(
+        (header, index) => {
+
+          if (!header) {
+            return;
+          }
+
+          object[header] =
+            row[index] ?? "";
+
+        }
+      );
 
       return object;
+
     });
 }
 
 
 /* =========================================
-   GOOGLE SHEET FETCH
+   DETECT GOOGLE SHEETS URL
    ========================================= */
 
-async function fetchSheet(sheetName) {
-  if (!SHEET_URL) {
+function extractSpreadsheetId(url) {
+
+  if (!url) {
+    return "";
+  }
+
+
+  const match =
+    String(url).match(
+      /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/
+    );
+
+
+  return match
+    ? match[1]
+    : "";
+}
+
+
+/* =========================================
+   DIRECT GOOGLE SHEETS CSV
+   ========================================= */
+
+async function fetchGoogleSheetByName(
+  sheetName
+) {
+
+  const spreadsheetId =
+    SHEET_ID ||
+    extractSpreadsheetId(
+      SHEET_URL
+    );
+
+
+  if (!spreadsheetId) {
+
     throw new Error(
-      "Google Sheet URL is not configured."
+      "Google Spreadsheet ID not found."
     );
   }
 
-  const separator =
-    SHEET_URL.includes("?") ? "&" : "?";
 
-  const url =
-    `${SHEET_URL}${separator}sheet=${encodeURIComponent(sheetName)}`;
+  /*
+     If a GID is supplied in CONFIG,
+     use the faster CSV export.
+  */
 
-  const response = await fetch(url, {
-    cache: "no-store"
-  });
+  const gid =
+    SHEET_GIDS[sheetName] ??
+    SHEET_GIDS[
+      sheetName.toLowerCase()
+    ];
+
+
+  if (
+    gid !== undefined &&
+    gid !== null &&
+    String(gid).trim() !== ""
+  ) {
+
+    const url =
+      `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${encodeURIComponent(gid)}`;
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `Unable to load ${sheetName} from Google Sheets.`
+      );
+    }
+
+
+    const text =
+      await response.text();
+
+
+    const rows =
+      parseCSV(text);
+
+
+    const objects =
+      rowsToObjects(rows);
+
+
+    if (objects.length) {
+      return objects;
+    }
+  }
+
+
+  /*
+     Fallback:
+     Google Visualization endpoint.
+     This loads by SHEET NAME, so a GID
+     is not required.
+  */
+
+  const queryUrl =
+    `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+
+
+  const response =
+    await fetch(
+      queryUrl,
+      {
+        cache: "no-store"
+      }
+    );
+
 
   if (!response.ok) {
+
     throw new Error(
       `Unable to load ${sheetName}.`
     );
   }
 
-  const text = await response.text();
+
+  const text =
+    await response.text();
+
+
+  const objects =
+    rowsToObjects(
+      parseCSV(text)
+    );
+
+
+  return objects;
+}
+
+
+/* =========================================
+   CONFIGURED ENDPOINT
+   ========================================= */
+
+async function fetchConfiguredSheet(
+  sheetName
+) {
+
+  if (!SHEET_URL) {
+
+    throw new Error(
+      "Google Sheet URL is not configured."
+    );
+  }
+
+
+  const separator =
+    SHEET_URL.includes("?")
+      ? "&"
+      : "?";
+
+
+  const url =
+    `${SHEET_URL}${separator}sheet=${encodeURIComponent(sheetName)}`;
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        cache: "no-store"
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      `Unable to load ${sheetName}.`
+    );
+  }
+
+
+  const text =
+    await response.text();
+
+
+  /*
+     Some endpoints return JSON
+     instead of CSV.
+  */
+
+  const contentType =
+    response.headers.get(
+      "content-type"
+    ) || "";
+
+
+  if (
+    contentType.includes(
+      "application/json"
+    )
+  ) {
+
+    try {
+
+      const json =
+        JSON.parse(text);
+
+
+      if (Array.isArray(json)) {
+        return json;
+      }
+
+
+      if (
+        Array.isArray(json.data)
+      ) {
+        return json.data;
+      }
+
+
+      if (
+        Array.isArray(json.rows)
+      ) {
+        return json.rows;
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "JSON parsing failed:",
+        error
+      );
+    }
+  }
+
 
   return rowsToObjects(
     parseCSV(text)
@@ -295,28 +669,89 @@ async function fetchSheet(sheetName) {
 
 
 /* =========================================
-   ALTERNATIVE SHEET FETCH
+   UNIVERSAL SHEET FETCH
    ========================================= */
 
-async function fetchSheetDirect(sheetId, gid) {
-  const url =
-    `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+async function fetchSheet(
+  sheetName
+) {
 
-  const response = await fetch(url, {
-    cache: "no-store"
-  });
+  /*
+     If SHEET_URL points directly to
+     a Google Spreadsheet, use Google
+     Sheets directly.
 
-  if (!response.ok) {
-    throw new Error(
-      "Unable to load Google Sheet."
+     This avoids relying on:
+     ?sheet=Claimed
+  */
+
+  const spreadsheetId =
+    SHEET_ID ||
+    extractSpreadsheetId(
+      SHEET_URL
     );
+
+
+  if (spreadsheetId) {
+
+    try {
+
+      const rows =
+        await fetchGoogleSheetByName(
+          sheetName
+        );
+
+
+      if (rows.length) {
+
+        console.log(
+          `[GW] ${sheetName}: ${rows.length} records`
+        );
+
+        return rows;
+      }
+
+    } catch (error) {
+
+      console.warn(
+        `[GW] Direct Google Sheet load failed for ${sheetName}:`,
+        error
+      );
+
+    }
   }
 
-  const text = await response.text();
 
-  return rowsToObjects(
-    parseCSV(text)
-  );
+  /*
+     Fallback to the existing
+     configured endpoint.
+  */
+
+  try {
+
+    const rows =
+      await fetchConfiguredSheet(
+        sheetName
+      );
+
+
+    console.log(
+      `[GW] Endpoint ${sheetName}: ${rows.length} records`
+    );
+
+
+    return rows;
+
+  } catch (error) {
+
+    console.error(
+      `[GW] Failed to load ${sheetName}:`,
+      error
+    );
+
+
+    throw error;
+  }
 }
 
 
@@ -325,28 +760,44 @@ async function fetchSheetDirect(sheetId, gid) {
    ========================================= */
 
 function normalizeClaimed(rows) {
-  return rows.map(row => ({
-    date: getDate(row),
 
-    sol: toNumber(
-      getField(row, [
-        "SOL Claimed",
-        "SOL",
-        "Claimed",
-        "Amount"
-      ])
-    )
+  return rows.map(row => ({
+
+    date:
+      getDate(row),
+
+    sol:
+      toNumber(
+        getField(row, [
+          "SOL Claimed",
+          "SOL CLAIMED",
+          "SOL",
+          "Claimed",
+          "Amount"
+        ])
+      )
+
   }));
 }
 
+
 function renderClaimed() {
-  const table = $("claimsTable");
 
-  if (!table) return;
+  const table =
+    $("claimsTable");
 
-  const rows = state.claimed;
+
+  if (!table) {
+    return;
+  }
+
+
+  const rows =
+    state.claimed;
+
 
   if (!rows.length) {
+
     table.innerHTML = `
       <tr>
         <td colspan="2">
@@ -355,40 +806,63 @@ function renderClaimed() {
       </tr>
     `;
 
+
     $("claimsTotal").textContent =
       formatSOL(0);
+
 
     $("claimedCount").textContent =
       "0 records";
 
+
     $("totalClaimed").textContent =
       formatSOL(0);
+
 
     return;
   }
 
-  table.innerHTML = rows.map(row => `
-    <tr>
-      <td>${escapeHTML(row.date)}</td>
-      <td class="num">
-        ${formatSOL(row.sol)}
-      </td>
-    </tr>
-  `).join("");
 
-  const total = rows.reduce(
-    (sum, row) => sum + row.sol,
-    0
-  );
+  table.innerHTML =
+    rows.map(row => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
+
+        <td class="num">
+          ${formatSOL(row.sol)}
+        </td>
+
+      </tr>
+
+    `).join("");
+
+
+  const total =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.sol,
+      0
+    );
+
 
   $("claimsTotal").textContent =
     formatSOL(total);
 
+
   $("totalClaimed").textContent =
     formatSOL(total);
 
+
   $("claimedCount").textContent =
-    `${rows.length} ${rows.length === 1 ? "record" : "records"}`;
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
 }
 
 
@@ -397,119 +871,188 @@ function renderClaimed() {
    ========================================= */
 
 function normalizeRedeemed(rows) {
+
   return rows.map(row => ({
-    date: getDate(row),
 
-    sol: toNumber(
-      getField(row, [
-        "Sold SOL",
-        "SOL Sold",
-        "Sold",
-        "SOL"
-      ])
-    ),
+    date:
+      getDate(row),
 
-    rate: toNumber(
-      getField(row, [
-        "Rate",
-        "SOL Rate",
-        "USD Rate"
-      ])
-    ),
+    sol:
+      toNumber(
+        getField(row, [
+          "Sold SOL",
+          "SOL Sold",
+          "SOLD SOL",
+          "Sold",
+          "SOL"
+        ])
+      ),
 
-    usd: toNumber(
-      getField(row, [
-        "$",
-        "USD",
-        "USD Amount"
-      ])
-    ),
+    rate:
+      toNumber(
+        getField(row, [
+          "Rate",
+          "RATE",
+          "SOL Rate",
+          "USD Rate"
+        ])
+      ),
 
-    peso: toNumber(
-      getField(row, [
-        "In Peso",
-        "Peso",
-        "PHP",
-        "PHP Amount"
-      ])
-    )
+    usd:
+      toNumber(
+        getField(row, [
+          "$",
+          "USD",
+          "USD Amount",
+          "Dollar"
+        ])
+      ),
+
+    peso:
+      toNumber(
+        getField(row, [
+          "In Peso",
+          "IN PESO",
+          "Peso",
+          "PHP",
+          "PHP Amount"
+        ])
+      )
+
   }));
 }
 
+
 function renderRedeemed() {
-  const table = $("redeemedTable");
-  const empty = $("redeemedEmpty");
-  const wrap = $("redeemedWrap");
 
-  if (!table || !empty || !wrap) return;
+  const table =
+    $("redeemedTable");
 
-  const rows = state.redeemed;
+  const empty =
+    $("redeemedEmpty");
+
+  const wrap =
+    $("redeemedWrap");
+
+
+  if (
+    !table ||
+    !empty ||
+    !wrap
+  ) {
+    return;
+  }
+
+
+  const rows =
+    state.redeemed;
+
 
   $("redeemedCount").textContent =
-    `${rows.length} ${rows.length === 1 ? "record" : "records"}`;
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
+
 
   if (!rows.length) {
-    empty.classList.remove("hidden");
-    wrap.classList.add("hidden");
+
+    empty.classList.remove(
+      "hidden"
+    );
+
+    wrap.classList.add(
+      "hidden"
+    );
+
 
     $("redeemedTotal").textContent =
       formatSOL(0);
 
+
     $("proceedsTotal").textContent =
       formatPeso(0);
+
 
     $("totalRedeemed").textContent =
       formatSOL(0);
 
+
     $("totalProceeds").textContent =
       formatPeso(0);
+
 
     return;
   }
 
-  empty.classList.add("hidden");
-  wrap.classList.remove("hidden");
 
-  table.innerHTML = rows.map(row => `
-    <tr>
-      <td>${escapeHTML(row.date)}</td>
-
-      <td class="num">
-        ${row.sol.toFixed(2)} SOL
-      </td>
-
-      <td class="num">
-        ${formatRate(row.rate)}
-      </td>
-
-      <td class="num">
-        ${formatUSD(row.usd)}
-      </td>
-
-      <td class="num">
-        ${formatPeso(row.peso)}
-      </td>
-    </tr>
-  `).join("");
-
-  const totalSOL = rows.reduce(
-    (sum, row) => sum + row.sol,
-    0
+  empty.classList.add(
+    "hidden"
   );
 
-  const totalPeso = rows.reduce(
-    (sum, row) => sum + row.peso,
-    0
+  wrap.classList.remove(
+    "hidden"
   );
+
+
+  table.innerHTML =
+    rows.map(row => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
+
+        <td class="num">
+          ${row.sol.toFixed(2)} SOL
+        </td>
+
+        <td class="num">
+          ${formatRate(row.rate)}
+        </td>
+
+        <td class="num">
+          ${formatUSD(row.usd)}
+        </td>
+
+        <td class="num">
+          ${formatPeso(row.peso)}
+        </td>
+
+      </tr>
+
+    `).join("");
+
+
+  const totalSOL =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.sol,
+      0
+    );
+
+
+  const totalPeso =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.peso,
+      0
+    );
+
 
   $("redeemedTotal").textContent =
     formatSOL(totalSOL);
 
+
   $("proceedsTotal").textContent =
     formatPeso(totalPeso);
 
+
   $("totalRedeemed").textContent =
     formatSOL(totalSOL);
+
 
   $("totalProceeds").textContent =
     formatPeso(totalPeso);
@@ -521,35 +1064,58 @@ function renderRedeemed() {
    ========================================= */
 
 function normalizeExpenses(rows) {
+
   return rows.map(row => ({
-    date: getDate(row),
 
-    description: getDescription(row),
+    date:
+      getDate(row),
 
-    amount: toNumber(
-      getField(row, [
-        "Amount",
-        "Expense",
-        "PHP",
-        "Cost"
-      ])
-    ),
+    description:
+      getDescription(row),
 
-    remarks: getRemarks(row)
+    amount:
+      toNumber(
+        getField(row, [
+          "Amount",
+          "AMOUNT",
+          "Expense",
+          "PHP",
+          "Cost"
+        ])
+      ),
+
+    remarks:
+      getRemarks(row)
+
   }));
 }
 
+
 function renderExpenses() {
-  const table = $("expensesTable");
 
-  if (!table) return;
+  const table =
+    $("expensesTable");
 
-  const rows = state.expenses;
+
+  if (!table) {
+    return;
+  }
+
+
+  const rows =
+    state.expenses;
+
 
   $("expenseCount").textContent =
-    `${rows.length} ${rows.length === 1 ? "record" : "records"}`;
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
+
 
   if (!rows.length) {
+
     table.innerHTML = `
       <tr>
         <td colspan="4">
@@ -558,40 +1124,62 @@ function renderExpenses() {
       </tr>
     `;
 
+
     $("expensesTotal").textContent =
       formatPeso(0);
+
 
     $("totalExpenses").textContent =
       formatPeso(0);
 
+
     return;
   }
 
-  table.innerHTML = rows.map(row => `
-    <tr>
-      <td>${escapeHTML(row.date)}</td>
 
-      <td>
-        ${escapeHTML(row.description)}
-      </td>
+  table.innerHTML =
+    rows.map(row => `
 
-      <td class="num">
-        ${formatPeso(row.amount)}
-      </td>
+      <tr>
 
-      <td>
-        ${escapeHTML(row.remarks)}
-      </td>
-    </tr>
-  `).join("");
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
 
-  const total = rows.reduce(
-    (sum, row) => sum + row.amount,
-    0
-  );
+        <td>
+          ${escapeHTML(
+            row.description
+          )}
+        </td>
+
+        <td class="num">
+          ${formatPeso(
+            row.amount
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            row.remarks
+          )}
+        </td>
+
+      </tr>
+
+    `).join("");
+
+
+  const total =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.amount,
+      0
+    );
+
 
   $("expensesTotal").textContent =
     formatPeso(total);
+
 
   $("totalExpenses").textContent =
     formatPeso(total);
@@ -603,42 +1191,57 @@ function renderExpenses() {
    ========================================= */
 
 function normalizeAllocation(rows) {
+
   return rows.map(row => ({
-    date: getDate(row),
 
-    fund: normalizeKey(
-      getField(row, [
-        "Fund",
-        "Allocation",
-        "Category",
-        "Account"
-      ])
-    ),
+    date:
+      getDate(row),
 
-    remarks: getRemarks(row),
+    fund:
+      normalizeKey(
+        getField(row, [
+          "Fund",
+          "FUND",
+          "Allocation",
+          "Category",
+          "Account"
+        ])
+      ),
 
-    in: toNumber(
-      getField(row, [
-        "IN",
-        "In",
-        "Amount In",
-        "Incoming"
-      ])
-    ),
+    remarks:
+      getRemarks(row),
 
-    out: toNumber(
-      getField(row, [
-        "OUT",
-        "Out",
-        "Amount Out",
-        "Outgoing"
-      ])
-    )
+    in:
+      toNumber(
+        getField(row, [
+          "IN",
+          "In",
+          "Amount In",
+          "Incoming"
+        ])
+      ),
+
+    out:
+      toNumber(
+        getField(row, [
+          "OUT",
+          "Out",
+          "Amount Out",
+          "Outgoing"
+        ])
+      )
+
   }));
 }
 
-function resolveAllocationFund(fund) {
-  const value = normalizeKey(fund);
+
+function resolveAllocationFund(
+  fund
+) {
+
+  const value =
+    normalizeKey(fund);
+
 
   if (
     value.includes("leam")
@@ -646,12 +1249,15 @@ function resolveAllocationFund(fund) {
     return "leam";
   }
 
+
   if (
     value.includes("cp") ||
-    value.includes("cerebral")
+    value.includes("cerebral") ||
+    value.includes("palsy")
   ) {
     return "cp";
   }
+
 
   if (
     value.includes("project") ||
@@ -660,47 +1266,74 @@ function resolveAllocationFund(fund) {
     return "project";
   }
 
+
   return null;
 }
 
-function renderAllocationCard(key) {
-  const rows = state.allocation[key] || [];
 
-  const prefix = key;
+function renderAllocationCard(
+  key
+) {
 
-  const inTotal = rows.reduce(
-    (sum, row) => sum + row.in,
-    0
-  );
+  const rows =
+    state.allocation[key] ||
+    [];
 
-  const outTotal = rows.reduce(
-    (sum, row) => sum + row.out,
-    0
-  );
+
+  const prefix =
+    key;
+
+
+  const inTotal =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.in,
+      0
+    );
+
+
+  const outTotal =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.out,
+      0
+    );
+
 
   const balance =
     inTotal - outTotal;
 
+
   const records =
     $(`${prefix}Records`);
+
 
   const noRecords =
     $(`${prefix}NoRecords`);
 
-  if (!records || !noRecords) {
+
+  if (
+    !records ||
+    !noRecords
+  ) {
     return;
   }
+
 
   $(`${prefix}In`).textContent =
     formatPeso(inTotal);
 
+
   $(`${prefix}Out`).textContent =
     formatPeso(outTotal);
+
 
   $(`${prefix}Balance`).textContent =
     formatPeso(balance);
 
+
   if (!rows.length) {
+
     records.innerHTML = "";
 
     noRecords.style.display =
@@ -709,59 +1342,98 @@ function renderAllocationCard(key) {
     return;
   }
 
+
   noRecords.style.display =
     "none";
 
-  records.innerHTML = rows.map(row => `
-    <div class="allocation-record">
 
-      <span>
-        ${escapeHTML(row.date)}
-      </span>
+  records.innerHTML =
+    rows.map(row => `
 
-      <span>
-        ${escapeHTML(row.remarks)}
-      </span>
+      <div class="allocation-record">
 
-      <strong>
-        ${row.in ? formatPeso(row.in) : "—"}
-      </strong>
+        <span>
+          ${escapeHTML(row.date)}
+        </span>
 
-      <strong>
-        ${row.out ? formatPeso(row.out) : "—"}
-      </strong>
+        <span>
+          ${escapeHTML(row.remarks)}
+        </span>
 
-    </div>
-  `).join("");
+        <strong>
+          ${
+            row.in
+              ? formatPeso(row.in)
+              : "—"
+          }
+        </strong>
+
+        <strong>
+          ${
+            row.out
+              ? formatPeso(row.out)
+              : "—"
+          }
+        </strong>
+
+      </div>
+
+    `).join("");
 }
 
+
 function renderAllocation() {
-  renderAllocationCard("leam");
-  renderAllocationCard("cp");
-  renderAllocationCard("project");
+
+  renderAllocationCard(
+    "leam"
+  );
+
+  renderAllocationCard(
+    "cp"
+  );
+
+  renderAllocationCard(
+    "project"
+  );
+
 
   const percentages = {
+
     leam: 30,
+
     cp: 30,
+
     project: 40
+
   };
+
 
   $("leamPercentage").textContent =
     `${percentages.leam}%`;
 
+
   $("cpPercentage").textContent =
     `${percentages.cp}%`;
+
 
   $("projectPercentage").textContent =
     `${percentages.project}%`;
 
+
   $("allocationTotalPercentage").textContent =
-    `${percentages.leam + percentages.cp + percentages.project}%`;
+    `${
+      percentages.leam +
+      percentages.cp +
+      percentages.project
+    }%`;
+
 
   if ($("allocationNote")) {
+
     $("allocationNote").textContent =
       state.note ||
       "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
+
   }
 }
 
@@ -770,21 +1442,38 @@ function renderAllocation() {
    ALLOCATION SOURCE
    ========================================= */
 
-function processAllocation(rows) {
+function processAllocation(
+  rows
+) {
+
   const normalized =
     normalizeAllocation(rows);
 
+
   state.allocation.leam = [];
+
   state.allocation.cp = [];
+
   state.allocation.project = [];
 
+
   normalized.forEach(row => {
+
     const key =
-      resolveAllocationFund(row.fund);
+      resolveAllocationFund(
+        row.fund
+      );
 
-    if (!key) return;
 
-    state.allocation[key].push(row);
+    if (!key) {
+      return;
+    }
+
+
+    state.allocation[key].push(
+      row
+    );
+
   });
 }
 
@@ -795,49 +1484,238 @@ function processAllocation(rows) {
 
 async function loadData() {
 
-  setStatus("Loading...");
+  setStatus(
+    "Loading..."
+  );
+
 
   try {
 
     /*
-      Expected sheet names:
+       Load every sheet independently.
 
-      Claimed
-      Redeemed
-      Expenses
-      Allocation
+       This is intentional.
+
+       If one sheet has an issue,
+       the other valid sheets are
+       still allowed to load.
     */
 
+    const results =
+      await Promise.allSettled([
+
+        fetchSheet(
+          SHEET_NAMES.claimed
+        ),
+
+        fetchSheet(
+          SHEET_NAMES.redeemed
+        ),
+
+        fetchSheet(
+          SHEET_NAMES.expenses
+        ),
+
+        fetchSheet(
+          SHEET_NAMES.allocation
+        )
+
+      ]);
+
+
     const [
-      claimed,
-      redeemed,
-      expenses,
-      allocation
-    ] = await Promise.all([
-      fetchSheet("Claimed"),
-      fetchSheet("Redeemed"),
-      fetchSheet("Expenses"),
-      fetchSheet("Allocation")
-    ]);
+      claimedResult,
+      redeemedResult,
+      expensesResult,
+      allocationResult
+    ] = results;
 
-    state.claimed =
-      normalizeClaimed(claimed);
 
-    state.redeemed =
-      normalizeRedeemed(redeemed);
+    /*
+       CLAIMED
+    */
 
-    state.expenses =
-      normalizeExpenses(expenses);
+    if (
+      claimedResult.status ===
+      "fulfilled"
+    ) {
 
-    processAllocation(allocation);
+      console.log(
+        "[GW] Claimed loaded:",
+        claimedResult.value
+      );
+
+
+      state.claimed =
+        normalizeClaimed(
+          claimedResult.value
+        );
+
+    } else {
+
+      console.error(
+        "[GW] Claimed failed:",
+        claimedResult.reason
+      );
+
+      state.claimed = [];
+
+    }
+
+
+    /*
+       REDEEMED
+    */
+
+    if (
+      redeemedResult.status ===
+      "fulfilled"
+    ) {
+
+      console.log(
+        "[GW] Redeemed loaded:",
+        redeemedResult.value
+      );
+
+
+      state.redeemed =
+        normalizeRedeemed(
+          redeemedResult.value
+        );
+
+    } else {
+
+      console.error(
+        "[GW] Redeemed failed:",
+        redeemedResult.reason
+      );
+
+      state.redeemed = [];
+
+    }
+
+
+    /*
+       EXPENSES
+    */
+
+    if (
+      expensesResult.status ===
+      "fulfilled"
+    ) {
+
+      console.log(
+        "[GW] Expenses loaded:",
+        expensesResult.value
+      );
+
+
+      state.expenses =
+        normalizeExpenses(
+          expensesResult.value
+        );
+
+    } else {
+
+      console.error(
+        "[GW] Expenses failed:",
+        expensesResult.reason
+      );
+
+      state.expenses = [];
+
+    }
+
+
+    /*
+       ALLOCATION
+    */
+
+    if (
+      allocationResult.status ===
+      "fulfilled"
+    ) {
+
+      console.log(
+        "[GW] Allocation loaded:",
+        allocationResult.value
+      );
+
+
+      processAllocation(
+        allocationResult.value
+      );
+
+    } else {
+
+      console.error(
+        "[GW] Allocation failed:",
+        allocationResult.reason
+      );
+
+      processAllocation([]);
+
+    }
+
 
     renderAll();
 
+
+    /*
+       Check whether at least one
+       source successfully returned data.
+    */
+
+    const successful =
+      results.filter(
+        result =>
+          result.status ===
+          "fulfilled"
+      );
+
+
+    const hasData =
+      state.claimed.length ||
+      state.redeemed.length ||
+      state.expenses.length ||
+      state.allocation.leam.length ||
+      state.allocation.cp.length ||
+      state.allocation.project.length;
+
+
     state.loaded = true;
 
-    setStatus("Live");
+
+    if (hasData) {
+
+      setStatus("Live");
+
+    } else if (
+      successful.length > 0
+    ) {
+
+      setStatus(
+        "No records"
+      );
+
+    } else {
+
+      setStatus(
+        "Data unavailable"
+      );
+
+      showDataError();
+
+    }
+
 
     updateLatestEntry();
+
+
+    console.log(
+      "[GW] Final state:",
+      state
+    );
 
   } catch (error) {
 
@@ -846,9 +1724,15 @@ async function loadData() {
       error
     );
 
-    setStatus("Data unavailable");
+
+    state.loaded = false;
+
+    setStatus(
+      "Data unavailable"
+    );
 
     showDataError();
+
   }
 }
 
@@ -858,10 +1742,15 @@ async function loadData() {
    ========================================= */
 
 function renderAll() {
+
   renderClaimed();
+
   renderRedeemed();
+
   renderExpenses();
+
   renderAllocation();
+
 }
 
 
@@ -869,62 +1758,104 @@ function renderAll() {
    STATUS
    ========================================= */
 
-function setStatus(text) {
+function setStatus(
+  text
+) {
+
   const element =
     $("dataStatus");
 
-  if (!element) return;
+
+  if (!element) {
+    return;
+  }
+
 
   element.textContent =
     text;
 
+
   if (
-    text === "Data unavailable"
+    text ===
+    "Data unavailable"
   ) {
+
     element.classList.add(
       "data-error"
     );
+
   } else {
+
     element.classList.remove(
       "data-error"
     );
+
   }
 }
 
+
+/* =========================================
+   DATA ERROR
+   ========================================= */
+
 function showDataError() {
 
-  const messages = [
-    "Unable to load transparency data.",
-    "Please check the live data source."
-  ];
+  const message =
+    "Unable to load transparency data.";
+
 
   if ($("claimsTable")) {
+
     $("claimsTable").innerHTML = `
+
       <tr>
-        <td colspan="2" class="data-error">
-          ${messages[0]}
+
+        <td
+          colspan="2"
+          class="data-error"
+        >
+          ${message}
         </td>
+
       </tr>
+
     `;
+
   }
+
 
   if ($("expensesTable")) {
+
     $("expensesTable").innerHTML = `
+
       <tr>
-        <td colspan="4" class="data-error">
-          ${messages[0]}
+
+        <td
+          colspan="4"
+          class="data-error"
+        >
+          ${message}
         </td>
+
       </tr>
+
     `;
+
   }
 
+
   if ($("redeemedEmpty")) {
-    $("redeemedEmpty").classList.remove(
-      "hidden"
-    );
+
+    $("redeemedEmpty")
+      .classList
+      .remove("hidden");
+
 
     $("redeemedEmpty").innerHTML = `
-      <div class="empty-icon">!</div>
+
+      <div class="empty-icon">
+        !
+      </div>
 
       <strong>
         Unable to load reward sales.
@@ -933,7 +1864,9 @@ function showDataError() {
       <p>
         Please check the live data source.
       </p>
+
     `;
+
   }
 }
 
@@ -947,57 +1880,99 @@ function updateLatestEntry() {
   const element =
     $("latestEntry");
 
-  if (!element) return;
+
+  if (!element) {
+    return;
+  }
+
 
   const dates = [
-    ...state.claimed.map(row => row.date),
-    ...state.redeemed.map(row => row.date),
-    ...state.expenses.map(row => row.date),
 
-    ...state.allocation.leam.map(row => row.date),
-    ...state.allocation.cp.map(row => row.date),
-    ...state.allocation.project.map(row => row.date)
+    ...state.claimed
+      .map(row => row.date),
+
+    ...state.redeemed
+      .map(row => row.date),
+
+    ...state.expenses
+      .map(row => row.date),
+
+    ...state.allocation.leam
+      .map(row => row.date),
+
+    ...state.allocation.cp
+      .map(row => row.date),
+
+    ...state.allocation.project
+      .map(row => row.date)
+
   ].filter(Boolean);
 
+
   if (!dates.length) {
+
     element.textContent =
       "No records available yet.";
 
     return;
   }
 
+
   const parsedDates =
     dates
-      .map(date => new Date(date))
+
+      .map(date => {
+
+        /*
+           Handle Google Sheets date
+           values more safely.
+        */
+
+        const parsed =
+          new Date(date);
+
+        return parsed;
+
+      })
+
       .filter(date =>
-        !Number.isNaN(date.getTime())
+        !Number.isNaN(
+          date.getTime()
+        )
       );
 
+
   if (!parsedDates.length) {
+
     element.textContent =
       "Latest transparency records available.";
 
     return;
   }
 
+
   const latest =
     new Date(
       Math.max(
-        ...parsedDates.map(date =>
-          date.getTime()
+        ...parsedDates.map(
+          date =>
+            date.getTime()
         )
       )
     );
 
+
   element.textContent =
-    `Latest recorded activity: ${latest.toLocaleDateString(
-      "en-PH",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
-    )}`;
+    `Latest recorded activity: ${
+      latest.toLocaleDateString(
+        "en-PH",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }
+      )
+    }`;
 }
 
 
@@ -1012,6 +1987,7 @@ function setupAccordion() {
       "[data-accordion]"
     );
 
+
   sections.forEach(section => {
 
     const heading =
@@ -1019,28 +1995,57 @@ function setupAccordion() {
         ".section-heading"
       );
 
-    if (!heading) return;
+
+    if (!heading) {
+      return;
+    }
+
+
+    heading.setAttribute(
+      "tabindex",
+      "0"
+    );
+
+
+    heading.setAttribute(
+      "role",
+      "button"
+    );
+
+
+    heading.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
 
     function toggle() {
 
       const isOpen =
-        section.classList.contains("open");
+        section.classList.contains(
+          "open"
+        );
+
 
       section.classList.toggle(
         "open",
         !isOpen
       );
 
+
       heading.setAttribute(
         "aria-expanded",
         String(!isOpen)
       );
+
     }
+
 
     heading.addEventListener(
       "click",
       toggle
     );
+
 
     heading.addEventListener(
       "keydown",
@@ -1050,8 +2055,11 @@ function setupAccordion() {
           event.key === "Enter" ||
           event.key === " "
         ) {
+
           event.preventDefault();
+
           toggle();
+
         }
 
       }
@@ -1072,6 +2080,7 @@ function setupNavigation() {
       ".pill-nav .pill"
     );
 
+
   pills.forEach(pill => {
 
     pill.addEventListener(
@@ -1079,36 +2088,59 @@ function setupNavigation() {
       () => {
 
         pills.forEach(item =>
-          item.classList.remove("active")
+          item.classList.remove(
+            "active"
+          )
         );
 
-        pill.classList.add("active");
+
+        pill.classList.add(
+          "active"
+        );
+
 
         const targetId =
-          pill.getAttribute("href");
+          pill.getAttribute(
+            "href"
+          );
 
-        if (!targetId) return;
+
+        if (!targetId) {
+          return;
+        }
+
 
         const section =
-          document.querySelector(targetId);
+          document.querySelector(
+            targetId
+          );
+
 
         if (
           section &&
           window.innerWidth <= 600
         ) {
-          section.classList.add("open");
+
+          section.classList.add(
+            "open"
+          );
+
 
           const heading =
             section.querySelector(
               ".section-heading"
             );
 
+
           if (heading) {
+
             heading.setAttribute(
               "aria-expanded",
               "true"
             );
+
           }
+
         }
 
       }
@@ -1129,22 +2161,31 @@ function syncAccordionState() {
       "[data-accordion]"
     );
 
-  if (window.innerWidth > 600) {
+
+  if (
+    window.innerWidth > 600
+  ) {
 
     sections.forEach(section => {
 
-      section.classList.remove("open");
+      section.classList.remove(
+        "open"
+      );
+
 
       const heading =
         section.querySelector(
           ".section-heading"
         );
 
+
       if (heading) {
+
         heading.setAttribute(
           "aria-expanded",
           "false"
         );
+
       }
 
     });
@@ -1163,7 +2204,9 @@ document.addEventListener(
   () => {
 
     setupAccordion();
+
     setupNavigation();
+
     syncAccordionState();
 
     loadData();
@@ -1178,11 +2221,15 @@ document.addEventListener(
 
 let resizeTimer;
 
+
 window.addEventListener(
   "resize",
   () => {
 
-    clearTimeout(resizeTimer);
+    clearTimeout(
+      resizeTimer
+    );
+
 
     resizeTimer =
       setTimeout(
