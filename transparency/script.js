@@ -104,8 +104,19 @@ async function fetchSheet(sheetName) {
     getTransparencySheetUrl(sheetName);
 
 
+  if (!url) {
+
+    throw new Error(
+      `No Google Sheet URL configured for ${sheetName}.`
+    );
+
+  }
+
+
   const response =
-    await fetch(url);
+    await fetch(url, {
+      cache: "no-store"
+    });
 
 
   if (!response.ok) {
@@ -188,11 +199,23 @@ function parseGViz(text) {
         cell => {
 
           if (!cell) {
+
             return "";
+
           }
 
 
+          /*
+           * GViz can return either
+           * formatted value (f)
+           * or raw value (v).
+           *
+           * Use formatted value when
+           * available for dates/text.
+           */
+
           return (
+            cell.f ??
             cell.v ??
             ""
           );
@@ -244,7 +267,7 @@ function parseRewardSheet(rows) {
 
 
     if (
-      date &&
+      date !== "" &&
       sol !== null
     ) {
 
@@ -299,12 +322,12 @@ function parseRewardSheet(rows) {
 
 
     /*
-     * Only create a record when
-     * SOLD SOL actually exists.
+     * No SOLD SOL =
+     * no transaction record.
      */
 
     if (
-      date &&
+      date !== "" &&
       soldSOL !== null &&
       soldSOL > 0
     ) {
@@ -380,8 +403,8 @@ function parseRewardSheet(rows) {
 
 
     if (
-      date &&
-      description &&
+      date !== "" &&
+      description !== "" &&
       amount !== null
     ) {
 
@@ -425,7 +448,7 @@ function parseRewardSheet(rows) {
 function parseAllocationSheet(rows) {
 
   /*
-   * ACTUAL GOOGLE SHEET STRUCTURE
+   * GOOGLE SHEET STRUCTURE
    *
    * LEAM
    * A = percentage
@@ -442,8 +465,10 @@ function parseAllocationSheet(rows) {
    * M = IN
    * N = OUT
    *
-   * Data values are on Sheet Row 5.
+   * Current data row:
+   * Sheet Row 5
    */
+
 
   const allocationRow =
     rows[4] || [];
@@ -581,6 +606,8 @@ function renderPage() {
   renderAllocation();
 
   renderLatestUpdate();
+
+  optimizeTablesForMobile();
 
 }
 
@@ -755,6 +782,10 @@ function renderRedeemed() {
     transparencyData.redeemed;
 
 
+  /* =======================================
+     EMPTY
+     ======================================= */
+
   if (
     records.length === 0
   ) {
@@ -775,7 +806,14 @@ function renderRedeemed() {
 
     }
 
-  } else {
+  }
+
+
+  /* =======================================
+     HAS DATA
+     ======================================= */
+
+  else {
 
     if (table) {
 
@@ -837,6 +875,10 @@ function renderRedeemed() {
 
   }
 
+
+  /* =======================================
+     TOTALS
+     ======================================= */
 
   const totalSOL =
     records.reduce(
@@ -991,6 +1033,30 @@ function renderAllocation() {
     transparencyData.note
   );
 
+
+  /*
+   * Update allocation percentage labels.
+   * Works even if HTML uses either
+   * data-allocation or known IDs/classes.
+   */
+
+  updateAllocationPercentage(
+    "leam",
+    a.leam.percentage
+  );
+
+
+  updateAllocationPercentage(
+    "cp",
+    a.cpKids.percentage
+  );
+
+
+  updateAllocationPercentage(
+    "project",
+    a.project.percentage
+  );
+
 }
 
 
@@ -1003,48 +1069,146 @@ function renderAllocationCard(
   data
 ) {
 
-  const balance =
-    Number(data.in || 0) -
-    Number(data.out || 0);
+  const input =
+    Number(data.in);
 
+
+  const output =
+    Number(data.out);
+
+
+  const safeIn =
+    Number.isFinite(input)
+      ? input
+      : 0;
+
+
+  const safeOut =
+    Number.isFinite(output)
+      ? output
+      : 0;
+
+
+  const balance =
+    safeIn -
+    safeOut;
+
+
+  /* =======================================
+     IN
+     ======================================= */
 
   setText(
     `${prefix}In`,
-    formatPHP(data.in)
+    formatPHP(safeIn)
   );
 
+
+  /* =======================================
+     OUT
+     ======================================= */
 
   setText(
     `${prefix}Out`,
-    formatPHP(data.out)
+    formatPHP(safeOut)
   );
 
+
+  /* =======================================
+     BALANCE
+     ======================================= */
 
   setText(
     `${prefix}Balance`,
     formatPHP(balance)
   );
 
+}
+
+
+/* =========================================
+   ALLOCATION PERCENTAGE
+   ========================================= */
+
+function updateAllocationPercentage(
+  prefix,
+  percentage
+) {
+
+  const value =
+    Number(percentage);
+
+
+  const safePercentage =
+    Number.isFinite(value)
+      ? value
+      : 0;
+
 
   /*
-   * Optional dynamic percentage.
+   * Preferred:
    *
-   * Current HTML uses the percentage
-   * directly, so this remains optional.
+   * [data-allocation="leam"]
    */
 
-  const percentage =
+  const dataElement =
     document.querySelector(
       `[data-allocation="${prefix}"]`
     );
 
 
-  if (percentage) {
+  if (dataElement) {
 
-    percentage.textContent =
-      `${data.percentage}%`;
+    dataElement.textContent =
+      `${safePercentage}%`;
 
   }
+
+
+  /*
+   * Also support IDs:
+   *
+   * leamPercentage
+   * cpPercentage
+   * projectPercentage
+   */
+
+  setText(
+    `${prefix}Percentage`,
+    `${safePercentage}%`
+  );
+
+}
+
+
+/* =========================================
+   MOBILE TABLE OPTIMIZATION
+   ========================================= */
+
+function optimizeTablesForMobile() {
+
+  /*
+   * Do not force the page into a
+   * horizontally scrollable table.
+   *
+   * The CSS file controls the actual
+   * responsive layout.
+   *
+   * This class allows the CSS to switch
+   * tables into compact/mobile mode.
+   */
+
+  document
+    .querySelectorAll(".table-scroll")
+    .forEach(
+      element => {
+
+        element.classList.add(
+          "table-responsive"
+        );
+
+      }
+    );
 
 }
 
@@ -1115,14 +1279,18 @@ function renderLatestUpdate() {
   }
 
 
+  const latestTime =
+    Math.max(
+      ...dates.map(
+        date =>
+          date.getTime()
+      )
+    );
+
+
   const latest =
     new Date(
-      Math.max(
-        ...dates.map(
-          date =>
-            date.getTime()
-        )
-      )
+      latestTime
     );
 
 
@@ -1191,13 +1359,54 @@ function toNumber(value) {
   }
 
 
+  let stringValue =
+    String(value)
+      .trim();
+
+
+  if (!stringValue) {
+
+    return null;
+
+  }
+
+
+  /*
+   * Remove currency symbols,
+   * commas and spaces.
+   */
+
+  stringValue =
+    stringValue
+      .replace(/₱/g, "")
+      .replace(/\$/g, "")
+      .replace(/,/g, "")
+      .trim();
+
+
+  /*
+   * Handle percentage values.
+   *
+   * Example:
+   * "30%" -> 30
+   */
+
+  if (
+    stringValue.endsWith("%")
+  ) {
+
+    stringValue =
+      stringValue.slice(
+        0,
+        -1
+      );
+
+  }
+
+
   const number =
     Number(
-      String(value)
-        .replace(/₱/g, "")
-        .replace(/\$/g, "")
-        .replace(/,/g, "")
-        .trim()
+      stringValue
     );
 
 
@@ -1231,13 +1440,16 @@ function parseSheetDate(value) {
 
 
   const stringValue =
-    String(value);
+    String(value)
+      .trim();
 
 
   /*
    * Google GViz:
    *
    * Date(2026,7,8)
+   *
+   * Month is zero-based.
    */
 
   const match =
@@ -1257,8 +1469,18 @@ function parseSheetDate(value) {
   }
 
 
+  /*
+   * Also support:
+   *
+   * Aug 8
+   * Aug 8, 2026
+   * 2026-08-08
+   */
+
   const date =
-    new Date(value);
+    new Date(
+      stringValue
+    );
 
 
   return Number.isNaN(
@@ -1328,7 +1550,15 @@ function formatSol(value) {
 
 function formatSolNumber(value) {
 
-  return Number(value || 0)
+  const number =
+    Number(value);
+
+
+  return (
+    Number.isFinite(number)
+      ? number
+      : 0
+  )
     .toLocaleString(
       "en-US",
       {
@@ -1346,9 +1576,17 @@ function formatSolNumber(value) {
 
 function formatPHP(value) {
 
+  const number =
+    Number(value);
+
+
   return (
     "₱" +
-    Number(value || 0)
+    (
+      Number.isFinite(number)
+        ? number
+        : 0
+    )
       .toLocaleString(
         "en-PH",
         {
@@ -1378,16 +1616,28 @@ function formatUSD(value) {
   }
 
 
+  const number =
+    Number(value);
+
+
+  if (
+    !Number.isFinite(number)
+  ) {
+
+    return "—";
+
+  }
+
+
   return (
     "$" +
-    Number(value)
-      .toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      )
+    number.toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    )
   );
 
 }
@@ -1410,16 +1660,28 @@ function formatRate(value) {
   }
 
 
+  const number =
+    Number(value);
+
+
+  if (
+    !Number.isFinite(number)
+  ) {
+
+    return "—";
+
+  }
+
+
   return (
     "₱" +
-    Number(value)
-      .toLocaleString(
-        "en-PH",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      )
+    number.toLocaleString(
+      "en-PH",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    )
   );
 
 }
@@ -1435,7 +1697,9 @@ function setText(
 ) {
 
   const element =
-    document.getElementById(id);
+    document.getElementById(
+      id
+    );
 
 
   if (element) {
@@ -1478,4 +1742,4 @@ function escapeHTML(value) {
       "&#039;"
     );
 
-}
+     }
