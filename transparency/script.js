@@ -220,7 +220,29 @@ function parseDate(value) {
     08/08/2026
     2026-08-08
     Aug 8, 2026
+    Aug 8
+
+    IMPORTANT:
+    Google Sheets may export a date
+    using the cell's display format.
+
+    Example:
+
+    Aug 30
+
+    JavaScript can interpret
+    "Aug 30" as August 30, 2001.
+
+    FIX:
+    If the year is missing,
+    explicitly use the current year.
   */
+
+
+  /* -------------------------------------
+     MM/DD/YYYY
+     MM-DD-YYYY
+  ------------------------------------- */
 
   let match =
     text.match(
@@ -230,26 +252,14 @@ function parseDate(value) {
 
   if (match) {
 
-    const first =
-      Number(match[1]);
+    const month =
+      Number(match[1]) - 1;
 
-    const second =
+    const day =
       Number(match[2]);
 
     const year =
       Number(match[3]);
-
-
-    /*
-      Google Sheets / PH format:
-      MM/DD/YYYY
-    */
-
-    const month =
-      first - 1;
-
-    const day =
-      second;
 
 
     const date =
@@ -270,6 +280,138 @@ function parseDate(value) {
     }
   }
 
+
+  /* -------------------------------------
+     YYYY-MM-DD
+  ------------------------------------- */
+
+  match =
+    text.match(
+      /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/
+    );
+
+
+  if (match) {
+
+    const year =
+      Number(match[1]);
+
+    const month =
+      Number(match[2]) - 1;
+
+    const day =
+      Number(match[3]);
+
+
+    const date =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month &&
+      date.getDate() === day
+    ) {
+
+      return date;
+    }
+  }
+
+
+  /* -------------------------------------
+     MONTH DAY, YEAR
+     Example:
+
+     Aug 30, 2026
+  ------------------------------------- */
+
+  match =
+    text.match(
+      /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/
+    );
+
+
+  if (match) {
+
+    const monthName =
+      match[1];
+
+    const day =
+      Number(match[2]);
+
+    const year =
+      Number(match[3]);
+
+
+    const date =
+      new Date(
+        `${monthName} ${day}, ${year}`
+      );
+
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return date;
+    }
+  }
+
+
+  /* -------------------------------------
+     MONTH DAY WITHOUT YEAR
+     
+     Example:
+     Aug 30
+
+     FIX:
+     Force current year.
+  ------------------------------------- */
+
+  match =
+    text.match(
+      /^([A-Za-z]+)\s+(\d{1,2})$/
+    );
+
+
+  if (match) {
+
+    const monthName =
+      match[1];
+
+    const day =
+      Number(match[2]);
+
+    const currentYear =
+      new Date().getFullYear();
+
+
+    const date =
+      new Date(
+        `${monthName} ${day}, ${currentYear}`
+      );
+
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return date;
+    }
+  }
+
+
+  /* -------------------------------------
+     FINAL FALLBACK
+  ------------------------------------- */
 
   const date =
     new Date(text);
@@ -763,7 +905,26 @@ function processAllocationSheet(rows) {
 
   /* -------------------------------------
      TRANSACTIONS
+     
      Row 7 = index 6
+     
+     LEAM:
+     A = DATE
+     B = REMARKS
+     C = IN
+     D = OUT
+
+     CP:
+     F = DATE
+     G = REMARKS
+     H = IN
+     I = OUT
+
+     PROJECT:
+     K = DATE
+     L = REMARKS
+     M = IN
+     N = OUT
   ------------------------------------- */
 
   for (
@@ -778,10 +939,6 @@ function processAllocationSheet(rows) {
 
     /* -------------------------------------
        LEAM
-       A = DATE
-       B = REMARKS
-       C = IN
-       D = OUT
     ------------------------------------- */
 
     const leamDate =
@@ -797,16 +954,40 @@ function processAllocationSheet(rows) {
       toNumber(row[3]);
 
 
+    /*
+      IMPORTANT FIX:
+
+      Do not depend only on truthiness.
+
+      Google Sheets can return empty
+      cells as undefined / empty strings.
+
+      A row is considered a transaction
+      if any relevant field has content.
+    */
+
+    const hasLeamDate =
+      String(
+        leamDate ?? ""
+      ).trim() !== "";
+
+    const hasLeamRemarks =
+      String(
+        leamRemarks ?? ""
+      ).trim() !== "";
+
+
     if (
-      leamDate ||
-      leamRemarks ||
+      hasLeamDate ||
+      hasLeamRemarks ||
       leamIn !== 0 ||
       leamOut !== 0
     ) {
 
       result.leam.push({
 
-        date: leamDate,
+        date:
+          leamDate,
 
         remarks:
           leamRemarks,
@@ -823,10 +1004,6 @@ function processAllocationSheet(rows) {
 
     /* -------------------------------------
        CP KIDS
-       F = DATE
-       G = REMARKS
-       H = IN
-       I = OUT
     ------------------------------------- */
 
     const cpDate =
@@ -842,16 +1019,28 @@ function processAllocationSheet(rows) {
       toNumber(row[8]);
 
 
+    const hasCPDate =
+      String(
+        cpDate ?? ""
+      ).trim() !== "";
+
+    const hasCPRemarks =
+      String(
+        cpRemarks ?? ""
+      ).trim() !== "";
+
+
     if (
-      cpDate ||
-      cpRemarks ||
+      hasCPDate ||
+      hasCPRemarks ||
       cpIn !== 0 ||
       cpOut !== 0
     ) {
 
       result.cp.push({
 
-        date: cpDate,
+        date:
+          cpDate,
 
         remarks:
           cpRemarks,
@@ -868,10 +1057,6 @@ function processAllocationSheet(rows) {
 
     /* -------------------------------------
        PROJECT
-       K = DATE
-       L = REMARKS
-       M = IN
-       N = OUT
     ------------------------------------- */
 
     const projectDate =
@@ -887,9 +1072,20 @@ function processAllocationSheet(rows) {
       toNumber(row[13]);
 
 
+    const hasProjectDate =
+      String(
+        projectDate ?? ""
+      ).trim() !== "";
+
+    const hasProjectRemarks =
+      String(
+        projectRemarks ?? ""
+      ).trim() !== "";
+
+
     if (
-      projectDate ||
-      projectRemarks ||
+      hasProjectDate ||
+      hasProjectRemarks ||
       projectIn !== 0 ||
       projectOut !== 0
     ) {
