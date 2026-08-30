@@ -35,10 +35,6 @@
 <body>
 
 
-  <!-- =====================================
-       PAGE
-       ===================================== -->
-
   <main class="page">
 
 
@@ -83,10 +79,6 @@
 
       </div>
 
-
-      <!-- =================================
-           NAVIGATION
-           ================================= -->
 
       <nav
         class="pill-nav"
@@ -205,8 +197,6 @@
       <div class="summary-grid">
 
 
-        <!-- CLAIMED -->
-
         <article class="stat-card">
 
           <div class="stat-label">
@@ -226,8 +216,6 @@
 
         </article>
 
-
-        <!-- REDEEMED -->
 
         <article class="stat-card">
 
@@ -249,8 +237,6 @@
         </article>
 
 
-        <!-- SALE PROCEEDS -->
-
         <article class="stat-card">
 
           <div class="stat-label">
@@ -270,8 +256,6 @@
 
         </article>
 
-
-        <!-- EXPENSES -->
 
         <article class="stat-card">
 
@@ -359,13 +343,6 @@
             </thead>
 
 
-            <!--
-              EMPTY ON PURPOSE.
-
-              script.js will populate this
-              from the Google Sheet.
-            -->
-
             <tbody id="claimsTable">
             </tbody>
 
@@ -437,10 +414,6 @@
       </div>
 
 
-      <!-- =================================
-           EMPTY STATE
-           ================================= -->
-
       <div
         id="redeemedEmpty"
         class="empty-state"
@@ -463,10 +436,6 @@
 
       </div>
 
-
-      <!-- =================================
-           SOLD TABLE
-           ================================= -->
 
       <div
         id="redeemedWrap"
@@ -622,13 +591,6 @@
             </thead>
 
 
-            <!--
-              EMPTY ON PURPOSE.
-
-              script.js will populate this
-              from the Google Sheet.
-            -->
-
             <tbody id="expensesTable">
             </tbody>
 
@@ -683,7 +645,7 @@
           </span>
 
           <h2>
-            ALLOCATION
+            FUND ALLOCATION
           </h2>
 
           <p>
@@ -701,16 +663,10 @@
 
 
 
-      <!-- =================================
-           ALLOCATION GRID
-           ================================= -->
-
       <div class="allocation-grid">
 
 
-        <!-- =================================
-             LEAM
-             ================================= -->
+        <!-- LEAM -->
 
         <article class="allocation-card">
 
@@ -729,9 +685,7 @@
             </div>
 
 
-            <strong
-              data-allocation="leam"
-            >
+            <strong data-allocation="leam">
               30%
             </strong>
 
@@ -784,9 +738,7 @@
 
 
 
-        <!-- =================================
-             CP KIDS
-             ================================= -->
+        <!-- CP KIDS -->
 
         <article class="allocation-card">
 
@@ -805,9 +757,7 @@
             </div>
 
 
-            <strong
-              data-allocation="cp"
-            >
+            <strong data-allocation="cp">
               30%
             </strong>
 
@@ -860,9 +810,7 @@
 
 
 
-        <!-- =================================
-             PROJECT
-             ================================= -->
+        <!-- PROJECT -->
 
         <article class="allocation-card">
 
@@ -881,9 +829,7 @@
             </div>
 
 
-            <strong
-              data-allocation="project"
-            >
+            <strong data-allocation="project">
               40%
             </strong>
 
@@ -938,9 +884,9 @@
 
 
 
-      <!-- =================================
-           ALLOCATION NOTE
-           ================================= -->
+      <!-- =====================================
+           TRANSPARENCY NOTE
+           ===================================== -->
 
       <div class="allocation-note">
 
@@ -963,9 +909,7 @@
          TRANSPARENCY STATEMENT
          ===================================== -->
 
-    <section
-      class="transparency-statement"
-    >
+    <section class="transparency-statement">
 
       <div class="statement-card">
 
@@ -1037,7 +981,7 @@
 
 
   <!-- =====================================
-       SCRIPTS
+       SCRIPTS — DO NOT CHANGE
        ===================================== -->
 
   <script src="config.js"></script>
@@ -1047,4 +991,4 @@
 
 </body>
 
-                </html>
+  </html>
