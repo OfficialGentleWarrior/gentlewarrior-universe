@@ -3,522 +3,701 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#063b24">
 
   <title>Creator Reward Transparency | Gentle Warrior</title>
 
   <meta
     name="description"
-    content="Gentle Warrior Creator Reward Transparency"
+    content="Public transparency record for Gentle Warrior Creator Rewards."
   >
+
+  <link rel="icon" type="image/png" href="../avatar.png">
+  <link rel="apple-touch-icon" href="../avatar.png">
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <main class="page">
 
-<main class="page">
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="brand-card">
 
-  <!-- =========================
-       HEADER
-  ========================== -->
-  <header class="site-header">
-
-    <div class="header-top">
-
-      <div class="brand">
-        <div class="brand-name">GENTLE WARRIOR</div>
-        <div class="brand-tagline">
-          Soft Heart. Strong Spirit.
+        <div class="brand-mark">
+          <img
+            src="../avatar.png"
+            alt="Gentle Warrior"
+            onerror="this.style.display='none';"
+          >
         </div>
+
+        <div class="brand-copy">
+          <strong>Gentle Warrior</strong>
+          <span>Soft Heart. Strong Spirit.</span>
+        </div>
+
+        <a href="../" class="home-button">← HOME</a>
       </div>
 
-      <a href="../" class="home-button">
-        ← HOME
-      </a>
-
-    </div>
-
-    <nav class="nav">
-
-      <a href="#overview">Overview</a>
-      <a href="#claimed">Claimed</a>
-      <a href="#redeemed">Redeemed</a>
-      <a href="#expenses">Expenses</a>
-      <a href="#allocation">Allocation</a>
-
-    </nav>
-
-  </header>
+      <nav class="pill-nav" aria-label="Transparency navigation">
+        <a href="#overview" class="pill active">Overview</a>
+        <a href="#claimed" class="pill">Rewards</a>
+        <a href="#redeemed" class="pill">Sold</a>
+        <a href="#expenses" class="pill">Expenses</a>
+        <a href="#allocation" class="pill">Allocation</a>
+      </nav>
+    </header>
 
 
-  <!-- =========================
-       HERO
-  ========================== -->
-  <section id="overview" class="hero">
+    <!-- HERO -->
+    <section class="hero" id="overview">
+      <div class="hero-content">
 
-    <div class="eyebrow">
-      GENTLE WARRIOR
-    </div>
+        <span class="hero-badge">GENTLE WARRIOR</span>
 
-    <h1>
-      Creator Reward<br>
-      Transparency
-    </h1>
+        <h1>
+          Creator Reward
+          <br>
+          Transparency
+        </h1>
 
-    <p>
-      A clear public record of Creator Rewards —
-      from what was claimed, to what was sold,
-      what was spent, and where the funds are allocated.
-    </p>
+        <p class="hero-description">
+          A clear public record of Creator Rewards —
+          from what was claimed, to what was sold,
+          what was spent, and where the funds are allocated.
+        </p>
 
-    <div id="dataStatus" class="status">
-      ● Loading Google Sheet data...
-    </div>
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          <span>Data status:</span>
+          <strong id="dataStatus">Loading...</strong>
+        </div>
 
-    <div id="latestEntry" class="latest-entry"></div>
+        <div class="latest-entry" id="latestEntry"></div>
 
-  </section>
-
-
-  <!-- =========================
-       SUMMARY
-  ========================== -->
-  <section class="summary">
-
-    <div class="summary-card">
-      <span>CLAIMED</span>
-      <strong id="totalClaimed">0.00 SOL</strong>
-      <small id="claimedCount">0 records</small>
-    </div>
-
-    <div class="summary-card">
-      <span>REDEEMED</span>
-      <strong id="totalRedeemed">0.00 SOL</strong>
-      <small id="redeemedCount">0 records</small>
-    </div>
-
-    <div class="summary-card">
-      <span>SALE PROCEEDS</span>
-      <strong id="totalProceeds">₱0.00</strong>
-      <small>IN PESO</small>
-    </div>
-
-    <div class="summary-card">
-      <span>EXPENSES</span>
-      <strong id="totalExpenses">₱0.00</strong>
-      <small id="expenseCount">0 records</small>
-    </div>
-
-  </section>
+      </div>
+    </section>
 
 
-  <!-- =========================
-       01 CLAIMED
-  ========================== -->
-  <section id="claimed" class="section">
+    <!-- SUMMARY -->
+    <section
+      class="summary-section"
+      aria-label="Creator Reward summary"
+    >
+      <div class="summary-grid">
 
-    <div class="section-title">
-      <span>01</span>
-      <h2>CLAIMED</h2>
-    </div>
+        <article class="stat-card">
+          <div class="stat-label">CREATOR REWARDS</div>
+          <strong id="totalClaimed" class="stat-value">
+            0.00 SOL
+          </strong>
+          <div class="stat-hint">SOL claimed</div>
+        </article>
 
-    <p class="section-description">
-      Recorded Creator Reward claims.
-    </p>
+        <article class="stat-card">
+          <div class="stat-label">REDEEMED / SOLD</div>
+          <strong id="totalRedeemed" class="stat-value">
+            0.00 SOL
+          </strong>
+          <div class="stat-hint">SOL sold / redeemed</div>
+        </article>
 
-    <div class="data-card">
+        <article class="stat-card">
+          <div class="stat-label">SALE PROCEEDS</div>
+          <strong id="totalProceeds" class="stat-value">
+            ₱0.00
+          </strong>
+          <div class="stat-hint">Recorded in PHP</div>
+        </article>
 
-      <table class="data-table claimed-table">
+        <article class="stat-card">
+          <div class="stat-label">EXPENSES</div>
+          <strong id="totalExpenses" class="stat-value">
+            ₱0.00
+          </strong>
+          <div class="stat-hint">Recorded expenses</div>
+        </article>
 
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>SOL CLAIMED</th>
-          </tr>
-        </thead>
-
-        <tbody id="claimsTable"></tbody>
-
-        <tfoot>
-          <tr>
-            <th>TOTAL</th>
-            <th id="claimsTotal">0.00 SOL</th>
-          </tr>
-        </tfoot>
-
-      </table>
-
-    </div>
-
-  </section>
+      </div>
+    </section>
 
 
-  <!-- =========================
-       02 REDEEMED
-  ========================== -->
-  <section id="redeemed" class="section">
+    <!-- 01 — CLAIMED -->
+    <section
+      class="section"
+      id="claimed"
+      data-accordion
+    >
 
-    <div class="section-title">
-      <span>02</span>
-      <h2>REDEEMED</h2>
-    </div>
+      <div
+        class="section-heading"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="claimedContent"
+      >
+        <div>
+          <span class="section-kicker">01</span>
+          <h2>Claimed</h2>
+          <p>Recorded Creator Reward claims.</p>
+        </div>
 
-    <p class="section-description">
-      Recorded Creator Reward sales.
-    </p>
+        <span id="claimedCount" class="count-badge">
+          0 records
+        </span>
+      </div>
 
-    <div id="redeemedEmpty" class="empty-card">
+      <div
+        id="claimedContent"
+        class="table-card section-content"
+      >
 
-      <div class="empty-icon">—</div>
+        <div class="table-scroll">
+          <table id="claimsTableWrapper">
 
-      <strong>
-        No Creator Rewards redeemed yet.
-      </strong>
+            <colgroup>
+              <col class="col-date">
+              <col class="col-amount">
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="num">SOL Claimed</th>
+              </tr>
+            </thead>
+
+            <tbody id="claimsTable"></tbody>
+
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                <th
+                  id="claimsTotal"
+                  class="num"
+                >
+                  0.00 SOL
+                </th>
+              </tr>
+            </tfoot>
+
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 02 — REDEEMED -->
+    <section
+      class="section"
+      id="redeemed"
+      data-accordion
+    >
+
+      <div
+        class="section-heading"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="redeemedContent"
+      >
+        <div>
+          <span class="section-kicker">02</span>
+          <h2>Redeemed</h2>
+          <p>Recorded Creator Reward sales.</p>
+        </div>
+
+        <span id="redeemedCount" class="count-badge">
+          0 records
+        </span>
+      </div>
+
+      <div
+        id="redeemedContent"
+        class="section-content"
+      >
+
+        <div
+          id="redeemedEmpty"
+          class="empty-state"
+        >
+          <div class="empty-icon">−</div>
+
+          <strong>
+            No Creator Rewards redeemed yet.
+          </strong>
+
+          <p>
+            When a reward is sold, the transaction will be
+            recorded here.
+          </p>
+        </div>
+
+        <div
+          id="redeemedWrap"
+          class="table-card hidden"
+        >
+
+          <div class="table-scroll">
+
+            <table>
+
+              <colgroup>
+                <col class="col-date">
+                <col class="col-sol">
+                <col class="col-rate">
+                <col class="col-usd">
+                <col class="col-php">
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="num">Sold SOL</th>
+                  <th class="num">Rate</th>
+                  <th class="num">$</th>
+                  <th class="num">In Peso</th>
+                </tr>
+              </thead>
+
+              <tbody id="redeemedTable"></tbody>
+
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+
+                  <th
+                    id="redeemedTotal"
+                    class="num"
+                  >
+                    0.00 SOL
+                  </th>
+
+                  <th></th>
+                  <th></th>
+
+                  <th
+                    id="proceedsTotal"
+                    class="num"
+                  >
+                    ₱0.00
+                  </th>
+                </tr>
+              </tfoot>
+
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 03 — EXPENSES -->
+    <section
+      class="section"
+      id="expenses"
+      data-accordion
+    >
+
+      <div
+        class="section-heading"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="expensesContent"
+      >
+        <div>
+          <span class="section-kicker">03</span>
+          <h2>Expenses</h2>
+          <p>Recorded expenses and their purpose.</p>
+        </div>
+
+        <span id="expenseCount" class="count-badge">
+          0 records
+        </span>
+      </div>
+
+      <div
+        id="expensesContent"
+        class="table-card section-content"
+      >
+
+        <div class="table-scroll">
+
+          <table>
+
+            <colgroup>
+              <col class="col-expense-date">
+              <col class="col-description">
+              <col class="col-amount">
+              <col class="col-remarks">
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th class="num">Amount</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+
+            <tbody id="expensesTable"></tbody>
+
+            <tfoot>
+              <tr>
+                <th colspan="2">Total</th>
+
+                <th
+                  id="expensesTotal"
+                  class="num"
+                >
+                  ₱0.00
+                </th>
+
+                <th></th>
+              </tr>
+            </tfoot>
+
+          </table>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 04 — FUND ALLOCATION -->
+    <section
+      class="section allocation-section"
+      id="allocation"
+      data-accordion
+    >
+
+      <div
+        class="section-heading"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="allocationContent"
+      >
+        <div>
+          <span class="section-kicker">04</span>
+          <h2>Fund Allocation</h2>
+          <p>Current allocation of Creator Reward funds.</p>
+        </div>
+
+        <span
+          id="allocationTotalPercentage"
+          class="count-badge"
+        >
+          100%
+        </span>
+      </div>
+
+
+      <div
+        id="allocationContent"
+        class="allocation-section-content"
+      >
+
+        <div class="allocation-grid">
+
+
+          <!-- LEAM -->
+          <article class="allocation-card">
+
+            <div class="allocation-header">
+
+              <div>
+                <span class="allocation-title">
+                  LEAM
+                </span>
+
+                <span class="allocation-subtitle">
+                  Direct support
+                </span>
+              </div>
+
+              <strong
+                id="leamPercentage"
+                data-allocation="leam"
+              >
+                30%
+              </strong>
+
+            </div>
+
+            <div class="allocation-content">
+
+              <div class="allocation-row">
+                <span>IN</span>
+                <strong id="leamIn">₱0.00</strong>
+              </div>
+
+              <div class="allocation-row">
+                <span>OUT</span>
+                <strong id="leamOut">₱0.00</strong>
+              </div>
+
+              <div class="allocation-balance">
+                <span>BALANCE</span>
+                <strong id="leamBalance">
+                  ₱0.00
+                </strong>
+              </div>
+
+              <div class="allocation-records">
+
+                <div class="allocation-record-head">
+                  <span>DATE</span>
+                  <span>REMARKS</span>
+                  <span>IN</span>
+                  <span>OUT</span>
+                </div>
+
+                <div
+                  id="leamRecords"
+                  class="allocation-record-list"
+                ></div>
+
+                <div
+                  id="leamNoRecords"
+                  class="allocation-no-records"
+                >
+                  No allocation transactions recorded yet.
+                </div>
+
+              </div>
+
+            </div>
+          </article>
+
+
+          <!-- CP KIDS -->
+          <article class="allocation-card">
+
+            <div class="allocation-header">
+
+              <div>
+                <span class="allocation-title">
+                  CP KIDS
+                </span>
+
+                <span class="allocation-subtitle">
+                  Cerebral palsy support
+                </span>
+              </div>
+
+              <strong
+                id="cpPercentage"
+                data-allocation="cp"
+              >
+                30%
+              </strong>
+
+            </div>
+
+            <div class="allocation-content">
+
+              <div class="allocation-row">
+                <span>IN</span>
+                <strong id="cpIn">₱0.00</strong>
+              </div>
+
+              <div class="allocation-row">
+                <span>OUT</span>
+                <strong id="cpOut">₱0.00</strong>
+              </div>
+
+              <div class="allocation-balance">
+                <span>BALANCE</span>
+                <strong id="cpBalance">
+                  ₱0.00
+                </strong>
+              </div>
+
+              <div class="allocation-records">
+
+                <div class="allocation-record-head">
+                  <span>DATE</span>
+                  <span>REMARKS</span>
+                  <span>IN</span>
+                  <span>OUT</span>
+                </div>
+
+                <div
+                  id="cpRecords"
+                  class="allocation-record-list"
+                ></div>
+
+                <div
+                  id="cpNoRecords"
+                  class="allocation-no-records"
+                >
+                  No allocation transactions recorded yet.
+                </div>
+
+              </div>
+
+            </div>
+          </article>
+
+
+          <!-- PROJECT -->
+          <article class="allocation-card">
+
+            <div class="allocation-header">
+
+              <div>
+                <span class="allocation-title">
+                  PROJECT
+                </span>
+
+                <span class="allocation-subtitle">
+                  Gentle Warrior projects
+                </span>
+              </div>
+
+              <strong
+                id="projectPercentage"
+                data-allocation="project"
+              >
+                40%
+              </strong>
+
+            </div>
+
+            <div class="allocation-content">
+
+              <div class="allocation-row">
+                <span>IN</span>
+                <strong id="projectIn">
+                  ₱0.00
+                </strong>
+              </div>
+
+              <div class="allocation-row">
+                <span>OUT</span>
+                <strong id="projectOut">
+                  ₱0.00
+                </strong>
+              </div>
+
+              <div class="allocation-balance">
+                <span>BALANCE</span>
+                <strong id="projectBalance">
+                  ₱0.00
+                </strong>
+              </div>
+
+              <div class="allocation-records">
+
+                <div class="allocation-record-head">
+                  <span>DATE</span>
+                  <span>REMARKS</span>
+                  <span>IN</span>
+                  <span>OUT</span>
+                </div>
+
+                <div
+                  id="projectRecords"
+                  class="allocation-record-list"
+                ></div>
+
+                <div
+                  id="projectNoRecords"
+                  class="allocation-no-records"
+                >
+                  No allocation transactions recorded yet.
+                </div>
+
+              </div>
+
+            </div>
+          </article>
+
+        </div>
+
+
+        <!-- ALLOCATION NOTE -->
+        <div class="allocation-note">
+
+          <span class="note-kicker">
+            TRANSPARENCY NOTE
+          </span>
+
+          <p id="allocationNote">
+            No allocation note recorded yet.
+          </p>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- TRANSPARENCY STATEMENT -->
+    <section class="transparency-statement">
+
+      <div class="statement-card">
+
+        <span class="section-kicker">
+          GENTLE WARRIOR
+        </span>
+
+        <h2>
+          Soft Heart.
+          <br>
+          Strong Spirit.
+        </h2>
+
+        <p>
+          This page exists to make Creator Reward activity
+          easier to understand.
+          <br><br>
+          Claims, sales, expenses, and allocations are
+          presented as part of our commitment to transparency.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+      <div class="footer-brand">
+        Gentle Warrior
+      </div>
 
       <p>
-        When a reward is sold, the transaction
-        will be recorded here.
+        Creator Reward Transparency
       </p>
 
-    </div>
+      <span>
+        Soft Heart. Strong Spirit.
+      </span>
 
-
-    <div id="redeemedWrap" class="data-card hidden">
-
-      <table class="data-table redeemed-table">
-
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>SOLD SOL</th>
-            <th>RATE</th>
-            <th>$</th>
-            <th>IN PESO</th>
-          </tr>
-        </thead>
-
-        <tbody id="redeemedTable"></tbody>
-
-        <tfoot>
-          <tr>
-            <th>TOTAL</th>
-            <th id="redeemedTotal">0.00 SOL</th>
-            <th></th>
-            <th></th>
-            <th id="proceedsTotal">₱0.00</th>
-          </tr>
-        </tfoot>
-
-      </table>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       03 EXPENSES
-  ========================== -->
-  <section id="expenses" class="section">
-
-    <div class="section-title">
-      <span>03</span>
-      <h2>EXPENSES</h2>
-    </div>
-
-    <p class="section-description">
-      Recorded expenses and their purpose.
-    </p>
-
-    <div class="data-card">
-
-      <table class="data-table expenses-table">
-
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>DESCRIPTION</th>
-            <th>AMOUNT</th>
-            <th>REMARKS</th>
-          </tr>
-        </thead>
-
-        <tbody id="expensesTable"></tbody>
-
-        <tfoot>
-          <tr>
-            <th colspan="2">TOTAL</th>
-            <th id="expensesTotal">₱0.00</th>
-            <th></th>
-          </tr>
-        </tfoot>
-
-      </table>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       04 FUND ALLOCATION
-  ========================== -->
-  <section id="allocation" class="section allocation-section">
-
-    <div class="section-title">
-      <span>04</span>
-      <h2>FUND ALLOCATION</h2>
-    </div>
-
-    <p class="section-description">
-      Current allocation of Creator Reward funds.
-    </p>
-
-
-    <!-- NOTE FROM A2 -->
-    <div class="allocation-note">
-
-      <div class="note-label">
-        TRANSPARENCY NOTE
+      <div class="footer-disclaimer">
+        Data shown on this page is a transparency record only.
+        It is not financial advice, an investment offer,
+        or a promise of return.
       </div>
 
-      <p id="allocationNote">
-        —
-      </p>
+    </footer>
 
-    </div>
+  </main>
 
 
-    <!-- =========================
-         LEAM
-    ========================== -->
-    <article class="allocation-card">
-
-      <div class="allocation-header">
-
-        <div>
-          <h3>LEAM</h3>
-          <p>Direct support</p>
-        </div>
-
-        <strong
-          id="leamPercentage"
-          data-allocation="leam"
-        >
-          30%
-        </strong>
-
-      </div>
-
-
-      <div class="allocation-summary">
-
-        <div>
-          <span>IN</span>
-          <strong id="leamIn">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>OUT</span>
-          <strong id="leamOut">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>BALANCE</span>
-          <strong id="leamBalance">₱0.00</strong>
-        </div>
-
-      </div>
-
-
-      <div class="allocation-records">
-
-        <div class="allocation-record-header">
-          <span>DATE</span>
-          <span>REMARKS</span>
-          <span>IN</span>
-          <span>OUT</span>
-        </div>
-
-        <div id="leamRecords"></div>
-
-      </div>
-
-    </article>
-
-
-    <!-- =========================
-         CP KIDS
-    ========================== -->
-    <article class="allocation-card">
-
-      <div class="allocation-header">
-
-        <div>
-          <h3>CP KIDS</h3>
-          <p>Cerebral palsy support</p>
-        </div>
-
-        <strong
-          id="cpPercentage"
-          data-allocation="cp"
-        >
-          30%
-        </strong>
-
-      </div>
-
-
-      <div class="allocation-summary">
-
-        <div>
-          <span>IN</span>
-          <strong id="cpIn">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>OUT</span>
-          <strong id="cpOut">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>BALANCE</span>
-          <strong id="cpBalance">₱0.00</strong>
-        </div>
-
-      </div>
-
-
-      <div class="allocation-records">
-
-        <div class="allocation-record-header">
-          <span>DATE</span>
-          <span>REMARKS</span>
-          <span>IN</span>
-          <span>OUT</span>
-        </div>
-
-        <div id="cpRecords"></div>
-
-      </div>
-
-    </article>
-
-
-    <!-- =========================
-         PROJECT
-    ========================== -->
-    <article class="allocation-card">
-
-      <div class="allocation-header">
-
-        <div>
-          <h3>PROJECT</h3>
-          <p>Gentle Warrior projects</p>
-        </div>
-
-        <strong
-          id="projectPercentage"
-          data-allocation="project"
-        >
-          40%
-        </strong>
-
-      </div>
-
-
-      <div class="allocation-summary">
-
-        <div>
-          <span>IN</span>
-          <strong id="projectIn">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>OUT</span>
-          <strong id="projectOut">₱0.00</strong>
-        </div>
-
-        <div>
-          <span>BALANCE</span>
-          <strong id="projectBalance">₱0.00</strong>
-        </div>
-
-      </div>
-
-
-      <div class="allocation-records">
-
-        <div class="allocation-record-header">
-          <span>DATE</span>
-          <span>REMARKS</span>
-          <span>IN</span>
-          <span>OUT</span>
-        </div>
-
-        <div id="projectRecords"></div>
-
-      </div>
-
-    </article>
-
-  </section>
-
-
-  <!-- =========================
-       FOOTER
-  ========================== -->
-  <footer class="footer">
-
-    <strong>Gentle Warrior</strong>
-
-    <span>
-      Creator Reward Transparency
-    </span>
-
-    <small>
-      Soft Heart. Strong Spirit.
-    </small>
-
-  </footer>
-
-</main>
-
-
-<script src="config.js"></script>
-<script src="script.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const sections = document.querySelectorAll(".section");
-
-  sections.forEach(section => {
-
-    const heading = section.querySelector(".section-heading");
-
-    if (!heading) return;
-
-    heading.addEventListener("click", function () {
-
-      const isOpen = section.classList.contains("open");
-
-      // Close all sections
-      sections.forEach(item => {
-        item.classList.remove("open");
-      });
-
-      // Open selected section
-      if (!isOpen) {
-        section.classList.add("open");
-      }
-
-    });
-
-  });
-
-});
-</script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 
 </body>
-</html>
+  </html>
