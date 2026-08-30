@@ -6,7 +6,7 @@
 
 "use strict";
 
-const GWAR_CONFIG = {
+window.GWAR_CONFIG = {
 
   /* =======================================
      GOOGLE SHEET
