@@ -1,8 +1,6 @@
 /* =========================================
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
-   SCRIPT.JS
-   FIXED LIVE GOOGLE SHEET CONNECTION
    ========================================= */
 
 "use strict";
@@ -12,16 +10,16 @@
    CONFIG
    ========================================= */
 
-const CONFIG = {
-  sheetId: "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T",
+const CONFIG = window.GW_CONFIG || window.CONFIG || {};
 
-  rewardSheet: "REWARD",
-  allocationSheet: "ALLOCATION"
-};
+const SPREADSHEET_ID =
+  CONFIG.spreadsheetId ||
+  CONFIG.SPREADSHEET_ID ||
+  "1pXMbQ3QScwSNvreeMO-1xEjr7yRhKw9T";
 
 
 /* =========================================
-   DOM
+   HELPERS
    ========================================= */
 
 function $(id) {
@@ -29,120 +27,7 @@ function $(id) {
 }
 
 
-/* =========================================
-   FORMATTING
-   ========================================= */
-
-function numberValue(value) {
-
-  if (
-    value === null ||
-    value === undefined ||
-    value === ""
-  ) {
-    return null;
-  }
-
-  if (
-    typeof value === "number" &&
-    Number.isFinite(value)
-  ) {
-    return value;
-  }
-
-  let text = String(value)
-    .trim()
-    .replace(/₱/g, "")
-    .replace(/\$/g, "")
-    .replace(/,/g, "")
-    .replace(/\s/g, "");
-
-  if (!text) {
-    return null;
-  }
-
-  if (text.endsWith("%")) {
-    text = text.slice(0, -1);
-  }
-
-  const valueNumber = Number(text);
-
-  return Number.isFinite(valueNumber)
-    ? valueNumber
-    : null;
-}
-
-
-function money(value) {
-
-  const n = Number(value) || 0;
-
-  return (
-    "₱" +
-    n.toLocaleString("en-PH", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
-  );
-}
-
-
-function sol(value) {
-
-  const n = Number(value) || 0;
-
-  return (
-    n.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }) +
-    " SOL"
-  );
-}
-
-
-function usd(value) {
-
-  const n = Number(value) || 0;
-
-  return (
-    "$" +
-    n.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
-  );
-}
-
-
-function num(value) {
-
-  const n = Number(value) || 0;
-
-  return n.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-
-/* =========================================
-   TEXT
-   ========================================= */
-
-function normalizeText(value) {
-
-  return String(value ?? "")
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, " ")
-    .replace(/[._-]+/g, " ")
-    .trim();
-}
-
-
 function escapeHTML(value) {
-
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -152,123 +37,145 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================
-   DATE
-   ========================================= */
+function toNumber(value) {
 
-function cleanDate(value) {
-
-  if (!value) {
-    return null;
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
   }
-
-  if (value instanceof Date) {
-    return value;
-  }
-
-  const text = String(value).trim();
-
-  const match = text.match(
-    /Date\((\d+),(\d+),(\d+)/
-  );
-
-  if (match) {
-
-    return new Date(
-      Number(match[1]),
-      Number(match[2]),
-      Number(match[3])
-    );
-  }
-
-  const date = new Date(text);
 
   if (
-    Number.isNaN(
-      date.getTime()
-    )
+    value === null ||
+    value === undefined ||
+    value === ""
   ) {
-    return null;
+    return 0;
   }
 
-  return date;
+  const cleaned = String(value)
+    .replace(/₱/g, "")
+    .replace(/\$/g, "")
+    .replace(/,/g, "")
+    .replace(/SOL/gi, "")
+    .trim();
+
+  const number = parseFloat(cleaned);
+
+  return Number.isFinite(number)
+    ? number
+    : 0;
 }
 
 
-function dateText(value) {
+function formatSOL(value) {
 
-  const date = cleanDate(value);
+  return `${toNumber(value).toFixed(2)} SOL`;
+}
 
-  if (!date) {
+
+function formatPeso(value) {
+
+  return `₱${toNumber(value).toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+
+function formatUSD(value) {
+
+  return `$${toNumber(value).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+
+function formatRate(value) {
+
+  const number = toNumber(value);
+
+  if (!number) {
     return "—";
   }
 
-  return date.toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    }
-  );
+  return `$${number.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+
+function normalizeKey(value) {
+
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[_-]/g, " ");
 }
 
 
 /* =========================================
-   GOOGLE SHEETS GVIZ
+   DATA STATE
    ========================================= */
 
-async function fetchSheet(sheetName) {
+const state = {
 
-  if (!CONFIG.sheetId) {
+  claimed: [],
+
+  redeemed: [],
+
+  expenses: [],
+
+  allocation: {
+    leam: [],
+    cp: [],
+    project: []
+  },
+
+  note: "",
+
+  loaded: false
+};
+
+
+/* =========================================
+   GOOGLE GVIZ FETCH
+   ========================================= */
+
+async function fetchGoogleSheet(sheetName) {
+
+  if (!SPREADSHEET_ID) {
     throw new Error(
-      "Google Sheet ID is missing."
+      "Google Spreadsheet ID is not configured."
     );
   }
 
   const url =
-    "https://docs.google.com/spreadsheets/d/" +
-    CONFIG.sheetId +
-    "/gviz/tq" +
-    "?tqx=out:json" +
-    "&sheet=" +
-    encodeURIComponent(sheetName) +
-    "&cachebust=" +
-    Date.now();
+    `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq` +
+    `?sheet=${encodeURIComponent(sheetName)}` +
+    `&tqx=out:json`;
 
-  console.log(
-    "[GWAR] Fetching:",
-    sheetName,
-    url
-  );
-
-  const response = await fetch(
-    url,
-    {
-      cache: "no-store"
-    }
-  );
+  const response = await fetch(url, {
+    cache: "no-store"
+  });
 
   if (!response.ok) {
-
     throw new Error(
-      "Google Sheet request failed: " +
-      response.status
+      `Unable to load ${sheetName}.`
     );
   }
 
-  const text =
-    await response.text();
+  const text = await response.text();
 
-  return parseGViz(text);
-}
+  /*
+    GViz returns something like:
 
+    /*O_o*/
+    google.visualization.Query.setResponse({...})
 
-/* =========================================
-   GVIZ PARSER
-   ========================================= */
-
-function parseGViz(text) {
+    Extract the JSON object from that response.
+  */
 
   const start =
     text.indexOf("{");
@@ -281,992 +188,745 @@ function parseGViz(text) {
     end === -1
   ) {
     throw new Error(
-      "Invalid Google Sheets response."
+      `Invalid Google Sheet response for ${sheetName}.`
     );
   }
 
-  const json =
-    JSON.parse(
-      text.substring(
-        start,
-        end + 1
-      )
-    );
+  const jsonText =
+    text.substring(start, end + 1);
+
+  const data =
+    JSON.parse(jsonText);
 
   if (
-    !json.table
+    data.status !== "ok" ||
+    !data.table
   ) {
     throw new Error(
-      "No Google Sheets table returned."
+      `Google Sheet returned no usable data for ${sheetName}.`
     );
   }
 
-  const rows =
-    json.table.rows || [];
+  return data.table;
+}
 
-  return rows.map(row => {
 
-    const cells =
-      row.c || [];
+/* =========================================
+   GVIZ TABLE → ARRAY
+   ========================================= */
 
-    const result = [];
+function tableToRows(table) {
 
-    /*
-      Keep enough columns for:
-      REWARD:
-      A:N
+  if (
+    !table ||
+    !Array.isArray(table.cols) ||
+    !Array.isArray(table.rows)
+  ) {
+    return [];
+  }
 
-      ALLOCATION:
-      A:N
-    */
+  const headers =
+    table.cols.map((column, index) => {
 
-    for (
-      let i = 0;
-      i < 14;
-      i++
-    ) {
+      return (
+        column.label ||
+        column.id ||
+        `Column ${index + 1}`
+      ).trim();
+
+    });
+
+
+  return table.rows.map(row => {
+
+    const object = {};
+
+    headers.forEach((header, index) => {
 
       const cell =
-        cells[i];
+        row.c?.[index];
 
       if (!cell) {
-
-        result.push("");
-
-        continue;
+        object[header] = "";
+        return;
       }
 
-      if (
-        cell.f !== undefined &&
-        cell.f !== null
-      ) {
+      /*
+        Prefer formatted value when available.
+        Fall back to raw value.
+      */
 
-        result.push(cell.f);
+      object[header] =
+        cell.f ??
+        cell.v ??
+        "";
 
-      } else if (
-        cell.v !== undefined &&
-        cell.v !== null
-      ) {
+    });
 
-        result.push(cell.v);
+    return object;
 
-      } else {
-
-        result.push("");
-      }
-    }
-
-    return result;
   });
 }
 
 
 /* =========================================
-   HEADER HELPERS
+   GVIZ CELL VALUE
    ========================================= */
 
-function isDateHeader(value) {
+function cellValue(table, rowIndex, columnIndex) {
 
-  return (
-    normalizeText(value) ===
-    "DATE"
-  );
-}
+  const row =
+    table?.rows?.[rowIndex];
 
-
-function isRemarkHeader(value) {
-
-  const text =
-    normalizeText(value);
-
-  return (
-    text === "REMARK" ||
-    text === "REMARKS"
-  );
-}
-
-
-function isInHeader(value) {
-
-  return (
-    normalizeText(value) ===
-    "IN"
-  );
-}
-
-
-function isOutHeader(value) {
-
-  return (
-    normalizeText(value) ===
-    "OUT"
-  );
-}
-
-
-function findRowWithHeaders(
-  rows,
-  headers
-) {
-
-  const wanted =
-    headers.map(normalizeText);
-
-  for (
-    let r = 0;
-    r < rows.length;
-    r++
-  ) {
-
-    const row =
-      rows[r] || [];
-
-    const normalized =
-      row.map(normalizeText);
-
-    const found =
-      wanted.every(
-        item =>
-          normalized.includes(item)
-      );
-
-    if (found) {
-      return r;
-    }
+  if (!row) {
+    return "";
   }
 
-  return -1;
-}
+  const cell =
+    row.c?.[columnIndex];
 
-
-function findColumn(
-  row,
-  matcher
-) {
-
-  for (
-    let i = 0;
-    i < row.length;
-    i++
-  ) {
-
-    if (
-      matcher(row[i])
-    ) {
-      return i;
-    }
+  if (!cell) {
+    return "";
   }
 
-  return -1;
-}
-
-
-function findSequence(
-  row,
-  matchers
-) {
-
-  for (
-    let start = 0;
-    start <=
-      row.length -
-      matchers.length;
-    start++
-  ) {
-
-    let found = true;
-
-    for (
-      let i = 0;
-      i < matchers.length;
-      i++
-    ) {
-
-      if (
-        !matchers[i](
-          row[start + i]
-        )
-      ) {
-
-        found = false;
-
-        break;
-      }
-    }
-
-    if (found) {
-      return start;
-    }
-  }
-
-  return -1;
+  return (
+    cell.f ??
+    cell.v ??
+    ""
+  );
 }
 
 
 /* =========================================
-   REWARD PARSER
+   REWARD — CLAIMED
    ========================================= */
 
-function parseReward(rows) {
+function loadClaimedFromReward(table) {
 
-  const claims = [];
-  const redeemed = [];
-  const expenses = [];
+  const rows = [];
 
-
-  /* =======================================
-     CLAIMED
-     ======================================= */
-
-  let claimHeaderRow =
-    findRowWithHeaders(
-      rows,
-      [
-        "DATE",
-        "SOL CLAIMED"
-      ]
-    );
-
-  if (
-    claimHeaderRow === -1
-  ) {
-    claimHeaderRow = 1;
+  if (!table?.rows) {
+    return rows;
   }
-
-
-  const claimHeader =
-    rows[claimHeaderRow] || [];
-
-
-  let claimDateCol =
-    findColumn(
-      claimHeader,
-      isDateHeader
-    );
-
-
-  let claimSolCol =
-    findColumn(
-      claimHeader,
-      value =>
-        normalizeText(value) ===
-        "SOL CLAIMED"
-    );
-
 
   /*
-    Original layout:
-    A = DATE
-    B = SOL CLAIMED
+    REWARD:
+    A = Date
+    B = SOL Claimed
+
+    Data begins below the header.
   */
 
-  if (
-    claimDateCol === -1
-  ) {
-    claimDateCol = 0;
-  }
+  table.rows.forEach((row, index) => {
 
-  if (
-    claimSolCol === -1
-  ) {
-    claimSolCol = 1;
-  }
+    const date =
+      cellValue(table, index, 0);
 
-
-  for (
-    let i =
-      claimHeaderRow + 1;
-    i < rows.length;
-    i++
-  ) {
-
-    const row =
-      rows[i] || [];
-
-    const dateValue =
-      row[claimDateCol];
-
-    const solValue =
-      numberValue(
-        row[claimSolCol]
-      );
-
-    if (
-      dateValue !== "" &&
-      solValue !== null
-    ) {
-
-      const date =
-        cleanDate(
-          dateValue
-        );
-
-      if (date) {
-
-        claims.push([
-          date,
-          solValue
-        ]);
-      }
-    }
-  }
-
-
-  /* =======================================
-     REDEEMED / SOLD
-     ======================================= */
-
-  let redeemedHeaderRow =
-    findRowWithHeaders(
-      rows,
-      [
-        "DATE",
-        "SOLD SOL"
-      ]
-    );
-
-  if (
-    redeemedHeaderRow === -1
-  ) {
-    redeemedHeaderRow = 1;
-  }
-
-
-  const redeemedHeader =
-    rows[redeemedHeaderRow] || [];
-
-
-  let redeemedDateCol =
-    findColumn(
-      redeemedHeader,
-      isDateHeader
-    );
-
-
-  let soldSolCol =
-    findColumn(
-      redeemedHeader,
-      value =>
-        normalizeText(value) ===
-        "SOLD SOL"
-    );
-
-
-  let rateCol =
-    findColumn(
-      redeemedHeader,
-      value =>
-        normalizeText(value) ===
-        "RATE"
-    );
-
-
-  let usdCol =
-    findColumn(
-      redeemedHeader,
-      value => {
-
-        const text =
-          normalizeText(value);
-
-        return (
-          text === "$" ||
-          text === "USD"
-        );
-      }
-    );
-
-
-  let pesoCol =
-    findColumn(
-      redeemedHeader,
-      value =>
-        normalizeText(value) ===
-        "IN PESO"
-    );
-
-
-  /*
-    Original layout:
-
-    D = DATE
-    E = SOLD SOL
-    F = RATE
-    G = $
-    H = IN PESO
-  */
-
-  if (
-    redeemedDateCol === -1
-  ) {
-    redeemedDateCol = 3;
-  }
-
-  if (
-    soldSolCol === -1
-  ) {
-    soldSolCol = 4;
-  }
-
-  if (
-    rateCol === -1
-  ) {
-    rateCol = 5;
-  }
-
-  if (
-    usdCol === -1
-  ) {
-    usdCol = 6;
-  }
-
-  if (
-    pesoCol === -1
-  ) {
-    pesoCol = 7;
-  }
-
-
-  for (
-    let i =
-      redeemedHeaderRow + 1;
-    i < rows.length;
-    i++
-  ) {
-
-    const row =
-      rows[i] || [];
-
-    const dateValue =
-      row[redeemedDateCol];
-
-    const soldSol =
-      numberValue(
-        row[soldSolCol]
-      );
-
-    if (
-      dateValue !== "" &&
-      soldSol !== null &&
-      soldSol > 0
-    ) {
-
-      const date =
-        cleanDate(
-          dateValue
-        );
-
-      if (date) {
-
-        redeemed.push([
-          date,
-          soldSol,
-          numberValue(
-            row[rateCol]
-          ),
-          numberValue(
-            row[usdCol]
-          ),
-          numberValue(
-            row[pesoCol]
-          ) || 0
-        ]);
-      }
-    }
-  }
-
-
-  /* =======================================
-     EXPENSES
-     ======================================= */
-
-  let expenseHeaderRow =
-    findRowWithHeaders(
-      rows,
-      [
-        "DATE",
-        "DESCRIPTION",
-        "AMOUNT"
-      ]
-    );
-
-  if (
-    expenseHeaderRow === -1
-  ) {
-    expenseHeaderRow = 1;
-  }
-
-
-  const expenseHeader =
-    rows[expenseHeaderRow] || [];
-
-
-  let expenseDateCol =
-    findColumn(
-      expenseHeader,
-      isDateHeader
-    );
-
-
-  let descriptionCol =
-    findColumn(
-      expenseHeader,
-      value =>
-        normalizeText(value) ===
-        "DESCRIPTION"
-    );
-
-
-  let amountCol =
-    findColumn(
-      expenseHeader,
-      value =>
-        normalizeText(value) ===
-        "AMOUNT"
-    );
-
-
-  let remarksCol =
-    findColumn(
-      expenseHeader,
-      isRemarkHeader
-    );
-
-
-  /*
-    Original layout:
-
-    J = DATE
-    K = DESCRIPTION
-    L = AMOUNT
-    M = REMARKS
-  */
-
-  if (
-    expenseDateCol === -1
-  ) {
-    expenseDateCol = 9;
-  }
-
-  if (
-    descriptionCol === -1
-  ) {
-    descriptionCol = 10;
-  }
-
-  if (
-    amountCol === -1
-  ) {
-    amountCol = 11;
-  }
-
-  if (
-    remarksCol === -1
-  ) {
-    remarksCol = 12;
-  }
-
-
-  for (
-    let i =
-      expenseHeaderRow + 1;
-    i < rows.length;
-    i++
-  ) {
-
-    const row =
-      rows[i] || [];
-
-    const dateValue =
-      row[expenseDateCol];
-
-    const description =
-      row[descriptionCol];
+    const sol =
+      cellValue(table, index, 1);
 
     const amount =
-      numberValue(
-        row[amountCol]
-      );
+      toNumber(sol);
+
+    if (
+      String(date).trim() !== "" &&
+      amount !== 0
+    ) {
+
+      rows.push({
+        date: date,
+        sol: amount
+      });
+
+    }
+
+  });
+
+  return rows;
+}
+
+
+/* =========================================
+   REWARD — REDEEMED / SOLD
+   ========================================= */
+
+function loadRedeemedFromReward(table) {
+
+  const rows = [];
+
+  if (!table?.rows) {
+    return rows;
+  }
+
+  /*
+    REWARD:
+    D = Date
+    E = Sold SOL
+    F = Rate
+    G = $
+    H = In Peso
+  */
+
+  table.rows.forEach((row, index) => {
+
+    const date =
+      cellValue(table, index, 3);
+
+    const soldSOL =
+      cellValue(table, index, 4);
+
+    const rate =
+      cellValue(table, index, 5);
+
+    const usd =
+      cellValue(table, index, 6);
+
+    const peso =
+      cellValue(table, index, 7);
+
+    const solValue =
+      toNumber(soldSOL);
+
+    if (
+      String(date).trim() !== "" &&
+      (
+        solValue !== 0 ||
+        toNumber(peso) !== 0
+      )
+    ) {
+
+      rows.push({
+
+        date: date,
+
+        sol: solValue,
+
+        rate: toNumber(rate),
+
+        usd: toNumber(usd),
+
+        peso: toNumber(peso)
+
+      });
+
+    }
+
+  });
+
+  return rows;
+}
+
+
+/* =========================================
+   REWARD — EXPENSES
+   ========================================= */
+
+function loadExpensesFromReward(table) {
+
+  const rows = [];
+
+  if (!table?.rows) {
+    return rows;
+  }
+
+  /*
+    REWARD:
+    J = Date
+    K = Description
+    L = Amount
+    M = Remarks
+  */
+
+  table.rows.forEach((row, index) => {
+
+    const date =
+      cellValue(table, index, 9);
+
+    const description =
+      cellValue(table, index, 10);
+
+    const amount =
+      cellValue(table, index, 11);
 
     const remarks =
-      row[remarksCol];
+      cellValue(table, index, 12);
 
+    const numericAmount =
+      toNumber(amount);
 
     if (
-      dateValue !== "" &&
-      description !== "" &&
-      amount !== null
+      String(date).trim() !== "" &&
+      (
+        String(description).trim() !== "" ||
+        numericAmount !== 0 ||
+        String(remarks).trim() !== ""
+      )
     ) {
 
-      const date =
-        cleanDate(
-          dateValue
-        );
+      rows.push({
 
-      if (date) {
+        date: date,
 
-        expenses.push([
-          date,
-          String(description),
-          amount,
-          String(
-            remarks || ""
-          )
-        ]);
-      }
+        description: description,
+
+        amount: numericAmount,
+
+        remarks: remarks
+
+      });
+
     }
-  }
 
+  });
 
-  return {
-    claims,
-    redeemed,
-    expenses
-  };
+  return rows;
 }
 
 
 /* =========================================
-   ALLOCATION PARSER
+   ALLOCATION
    ========================================= */
 
-function parseAllocation(rows) {
+function loadAllocation(table) {
 
-  let note =
-    rows[1]?.[0] ||
-    "";
+  const allocation = {
+
+    leam: [],
+
+    cp: [],
+
+    project: []
+
+  };
 
 
-  /*
-    Find:
-
-    DATE | REMARK | IN | OUT
-  */
-
-  let headerRowIndex = -1;
-
-  for (
-    let r = 0;
-    r < rows.length;
-    r++
-  ) {
-
-    const row =
-      rows[r] || [];
-
-    if (
-      findSequence(
-        row,
-        [
-          isDateHeader,
-          isRemarkHeader,
-          isInHeader,
-          isOutHeader
-        ]
-      ) !== -1
-    ) {
-
-      headerRowIndex = r;
-
-      break;
-    }
+  if (!table?.rows) {
+    return allocation;
   }
 
 
   /*
-    Original layout:
-    Header = row 6
+    ALLOCATION structure:
+
+    Row 5:
+      allocation labels / percentages
+
+    Row 7+:
+      transactions
+
+    We detect the transaction columns
+    instead of assuming row 5 is data.
   */
+
+  const rows =
+    table.rows;
+
+
+  rows.forEach((row, index) => {
+
+    /*
+      Skip the first 6 spreadsheet rows.
+
+      Actual allocation transactions
+      start at row 7.
+    */
+
+    if (index < 6) {
+      return;
+    }
+
+
+    /*
+      Expected transaction layout:
+
+      A = Date
+      B = Fund
+      C = Remarks
+      D = IN
+      E = OUT
+
+      The parser also checks alternate
+      positions below.
+    */
+
+    let date =
+      cellValue(table, index, 0);
+
+    let fund =
+      cellValue(table, index, 1);
+
+    let remarks =
+      cellValue(table, index, 2);
+
+    let incoming =
+      cellValue(table, index, 3);
+
+    let outgoing =
+      cellValue(table, index, 4);
+
+
+    /*
+      Ignore completely empty rows.
+    */
+
+    if (
+      String(date).trim() === "" &&
+      String(fund).trim() === "" &&
+      String(remarks).trim() === "" &&
+      String(incoming).trim() === "" &&
+      String(outgoing).trim() === ""
+    ) {
+      return;
+    }
+
+
+    const normalizedFund =
+      normalizeKey(fund);
+
+
+    let key = null;
+
+
+    if (
+      normalizedFund.includes("leam")
+    ) {
+
+      key = "leam";
+
+    } else if (
+      normalizedFund.includes("cp") ||
+      normalizedFund.includes("cerebral")
+    ) {
+
+      key = "cp";
+
+    } else if (
+      normalizedFund.includes("project") ||
+      normalizedFund.includes("gentle warrior")
+    ) {
+
+      key = "project";
+
+    }
+
+
+    if (!key) {
+      return;
+    }
+
+
+    allocation[key].push({
+
+      date: date,
+
+      fund: fund,
+
+      remarks: remarks,
+
+      in: toNumber(incoming),
+
+      out: toNumber(outgoing)
+
+    });
+
+  });
+
+
+  return allocation;
+}
+
+
+/* =========================================
+   CLAIMED RENDER
+   ========================================= */
+
+function renderClaimed() {
+
+  const table =
+    $("claimsTable");
+
+  if (!table) {
+    return;
+  }
+
+
+  const rows =
+    state.claimed;
+
+
+  if (!rows.length) {
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="2">
+          No Creator Reward claims recorded yet.
+        </td>
+      </tr>
+    `;
+
+    $("claimsTotal").textContent =
+      formatSOL(0);
+
+    $("claimedCount").textContent =
+      "0 records";
+
+    $("totalClaimed").textContent =
+      formatSOL(0);
+
+    return;
+  }
+
+
+  table.innerHTML =
+    rows.map(row => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
+
+        <td class="num">
+          ${formatSOL(row.sol)}
+        </td>
+
+      </tr>
+
+    `).join("");
+
+
+  const total =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.sol,
+      0
+    );
+
+
+  $("claimsTotal").textContent =
+    formatSOL(total);
+
+  $("totalClaimed").textContent =
+    formatSOL(total);
+
+  $("claimedCount").textContent =
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
+}
+
+
+/* =========================================
+   REDEEMED RENDER
+   ========================================= */
+
+function renderRedeemed() {
+
+  const table =
+    $("redeemedTable");
+
+  const empty =
+    $("redeemedEmpty");
+
+  const wrap =
+    $("redeemedWrap");
+
 
   if (
-    headerRowIndex === -1
+    !table ||
+    !empty ||
+    !wrap
   ) {
-    headerRowIndex = 5;
+    return;
   }
 
 
-  const header =
-    rows[headerRowIndex] || [];
+  const rows =
+    state.redeemed;
 
 
-  /*
-    Blocks:
-
-    LEAM
-    A B C D
-
-    CP KIDS
-    F G H I
-
-    PROJECT
-    K L M N
-  */
-
-  const blocks = [];
-
-  let searchFrom = 0;
+  $("redeemedCount").textContent =
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
 
 
-  while (
-    searchFrom <
-    header.length
-  ) {
+  if (!rows.length) {
 
-    const relative =
-      findSequence(
-        header.slice(
-          searchFrom
-        ),
-        [
-          isDateHeader,
-          isRemarkHeader,
-          isInHeader,
-          isOutHeader
-        ]
-      );
+    empty.classList.remove("hidden");
 
+    wrap.classList.add("hidden");
 
-    if (
-      relative === -1
-    ) {
-      break;
-    }
+    $("redeemedTotal").textContent =
+      formatSOL(0);
 
+    $("proceedsTotal").textContent =
+      formatPeso(0);
 
-    const start =
-      searchFrom +
-      relative;
+    $("totalRedeemed").textContent =
+      formatSOL(0);
 
+    $("totalProceeds").textContent =
+      formatPeso(0);
 
-    blocks.push(start);
-
-
-    searchFrom =
-      start + 4;
+    return;
   }
 
 
-  const starts =
-    blocks.length >= 3
-      ? blocks.slice(0, 3)
-      : [0, 5, 10];
+  empty.classList.add("hidden");
+
+  wrap.classList.remove("hidden");
 
 
-  const names = [
-    "leam",
-    "cp",
-    "project"
-  ];
+  table.innerHTML =
+    rows.map(row => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
+
+        <td class="num">
+          ${row.sol.toFixed(2)} SOL
+        </td>
+
+        <td class="num">
+          ${formatRate(row.rate)}
+        </td>
+
+        <td class="num">
+          ${formatUSD(row.usd)}
+        </td>
+
+        <td class="num">
+          ${formatPeso(row.peso)}
+        </td>
+
+      </tr>
+
+    `).join("");
 
 
-  const percentages = {
-    leam: 30,
-    cp: 30,
-    project: 40
-  };
+  const totalSOL =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.sol,
+      0
+    );
 
 
-  const result = {
-
-    note: String(note || ""),
-
-    leam: {
-      pct: 30,
-      in: 0,
-      out: 0,
-      records: []
-    },
-
-    cp: {
-      pct: 30,
-      in: 0,
-      out: 0,
-      records: []
-    },
-
-    project: {
-      pct: 40,
-      in: 0,
-      out: 0,
-      records: []
-    }
-  };
+  const totalPeso =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.peso,
+      0
+    );
 
 
-  /*
-    Find percentage labels
-    above each block.
-  */
+  $("redeemedTotal").textContent =
+    formatSOL(totalSOL);
 
-  for (
-    let b = 0;
-    b < 3;
-    b++
-  ) {
+  $("proceedsTotal").textContent =
+    formatPeso(totalPeso);
 
-    const start =
-      starts[b];
+  $("totalRedeemed").textContent =
+    formatSOL(totalSOL);
 
-    const name =
-      names[b];
-
-
-    for (
-      let r =
-        headerRowIndex - 1;
-      r >= 0;
-      r--
-    ) {
-
-      const value =
-        rows[r]?.[start];
-
-      const parsed =
-        numberValue(value);
-
-
-      if (
-        parsed !== null &&
-        String(value).includes("%")
-      ) {
-
-        percentages[name] =
-          parsed;
-
-        break;
-      }
-    }
-
-
-    result[name].pct =
-      percentages[name];
-  }
-
-
-  /*
-    Read transactions.
-  */
-
-  for (
-    let rowIndex =
-      headerRowIndex + 1;
-    rowIndex < rows.length;
-    rowIndex++
-  ) {
-
-    const row =
-      rows[rowIndex] || [];
-
-
-    for (
-      let b = 0;
-      b < 3;
-      b++
-    ) {
-
-      const start =
-        starts[b];
-
-      const name =
-        names[b];
-
-
-      const dateValue =
-        row[start];
-
-      const remarksValue =
-        row[start + 1];
-
-      const inValue =
-        numberValue(
-          row[start + 2]
-        );
-
-      const outValue =
-        numberValue(
-          row[start + 3]
-        );
-
-
-      const hasData =
-        dateValue !== "" ||
-        remarksValue !== "" ||
-        inValue !== null ||
-        outValue !== null;
-
-
-      if (!hasData) {
-        continue;
-      }
-
-
-      const date =
-        cleanDate(
-          dateValue
-        );
-
-
-      const incoming =
-        inValue === null
-          ? 0
-          : inValue;
-
-
-      const outgoing =
-        outValue === null
-          ? 0
-          : outValue;
-
-
-      result[name].in +=
-        incoming;
-
-
-      result[name].out +=
-        outgoing;
-
-
-      if (
-        date ||
-        remarksValue !== "" ||
-        inValue !== null ||
-        outValue !== null
-      ) {
-
-        result[name].records.push({
-          date,
-          remarks:
-            String(
-              remarksValue || ""
-            ),
-          in: incoming,
-          out: outgoing
-        });
-      }
-    }
-  }
-
-
-  return result;
+  $("totalProceeds").textContent =
+    formatPeso(totalPeso);
 }
 
 
 /* =========================================
-   SET TEXT
+   EXPENSES RENDER
    ========================================= */
 
-function setText(
-  id,
-  value
-) {
+function renderExpenses() {
 
-  const element =
-    $(id);
+  const table =
+    $("expensesTable");
 
-  if (element) {
-    element.textContent =
-      value;
+  if (!table) {
+    return;
   }
+
+
+  const rows =
+    state.expenses;
+
+
+  $("expenseCount").textContent =
+    `${rows.length} ${
+      rows.length === 1
+        ? "record"
+        : "records"
+    }`;
+
+
+  if (!rows.length) {
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="4">
+          No expenses recorded yet.
+        </td>
+      </tr>
+    `;
+
+    $("expensesTotal").textContent =
+      formatPeso(0);
+
+    $("totalExpenses").textContent =
+      formatPeso(0);
+
+    return;
+  }
+
+
+  table.innerHTML =
+    rows.map(row => `
+
+      <tr>
+
+        <td>
+          ${escapeHTML(row.date)}
+        </td>
+
+        <td>
+          ${escapeHTML(row.description)}
+        </td>
+
+        <td class="num">
+          ${formatPeso(row.amount)}
+        </td>
+
+        <td>
+          ${escapeHTML(row.remarks)}
+        </td>
+
+      </tr>
+
+    `).join("");
+
+
+  const total =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.amount,
+      0
+    );
+
+
+  $("expensesTotal").textContent =
+    formatPeso(total);
+
+  $("totalExpenses").textContent =
+    formatPeso(total);
 }
 
 
@@ -1274,72 +934,42 @@ function setText(
    ALLOCATION RENDER
    ========================================= */
 
-function renderAllocation(
-  prefix,
-  data
-) {
+function renderAllocationCard(key) {
 
-  if (!data) {
-    return;
-  }
+  const rows =
+    state.allocation[key] || [];
 
 
-  const incoming =
-    Number(data.in) || 0;
-
-  const outgoing =
-    Number(data.out) || 0;
-
-  const balance =
-    incoming - outgoing;
+  const prefix =
+    key;
 
 
-  setText(
-    prefix + "In",
-    money(incoming)
-  );
-
-  setText(
-    prefix + "Out",
-    money(outgoing)
-  );
-
-  setText(
-    prefix + "Balance",
-    money(balance)
-  );
-
-
-  setText(
-    prefix + "Percentage",
-    `${data.pct}%`
-  );
-
-
-  const percentage =
-    document.querySelector(
-      `[data-allocation="${prefix}"]`
+  const inTotal =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.in,
+      0
     );
 
 
-  if (percentage) {
+  const outTotal =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.out,
+      0
+    );
 
-    percentage.textContent =
-      `${data.pct}%`;
-  }
+
+  const balance =
+    inTotal - outTotal;
 
 
   const records =
-    $(
-      prefix +
-      "Records"
-    );
+    $(`${prefix}Records`);
+
 
   const noRecords =
-    $(
-      prefix +
-      "NoRecords"
-    );
+    $(`${prefix}NoRecords`);
 
 
   if (
@@ -1350,13 +980,21 @@ function renderAllocation(
   }
 
 
-  if (
-    !data.records ||
-    !data.records.length
-  ) {
+  $(`${prefix}In`).textContent =
+    formatPeso(inTotal);
 
-    records.innerHTML =
-      "";
+
+  $(`${prefix}Out`).textContent =
+    formatPeso(outTotal);
+
+
+  $(`${prefix}Balance`).textContent =
+    formatPeso(balance);
+
+
+  if (!rows.length) {
+
+    records.innerHTML = "";
 
     noRecords.style.display =
       "block";
@@ -1370,608 +1008,451 @@ function renderAllocation(
 
 
   records.innerHTML =
-    data.records
-      .map(record => {
+    rows.map(row => `
 
-        return `
-          <div class="allocation-record">
+      <div class="allocation-record">
 
-            <span>
-              ${escapeHTML(
-                dateText(
-                  record.date
-                )
-              )}
-            </span>
+        <span>
+          ${escapeHTML(row.date)}
+        </span>
 
-            <span>
-              ${escapeHTML(
-                record.remarks
-              )}
-            </span>
+        <span>
+          ${escapeHTML(row.remarks)}
+        </span>
 
-            <strong>
-              ${
-                record.in
-                  ? money(record.in)
-                  : "—"
-              }
-            </strong>
+        <strong>
+          ${row.in
+            ? formatPeso(row.in)
+            : "—"}
+        </strong>
 
-            <strong>
-              ${
-                record.out
-                  ? money(record.out)
-                  : "—"
-              }
-            </strong>
+        <strong>
+          ${row.out
+            ? formatPeso(row.out)
+            : "—"}
+        </strong>
 
-          </div>
-        `;
-      })
-      .join("");
+      </div>
+
+    `).join("");
 }
 
 
 /* =========================================
-   RENDER PAGE
+   ALLOCATION TOTAL
    ========================================= */
 
-function renderPage(
-  reward,
-  allocation
-) {
+function renderAllocation() {
 
-  const totalClaimed =
-    reward.claims.reduce(
-      (sum, row) =>
-        sum +
-        Number(row[1] || 0),
-      0
-    );
+  renderAllocationCard("leam");
+
+  renderAllocationCard("cp");
+
+  renderAllocationCard("project");
 
 
-  const totalRedeemed =
-    reward.redeemed.reduce(
-      (sum, row) =>
-        sum +
-        Number(row[1] || 0),
-      0
-    );
+  const percentages = {
+
+    leam: 30,
+
+    cp: 30,
+
+    project: 40
+
+  };
 
 
-  const totalProceeds =
-    reward.redeemed.reduce(
-      (sum, row) =>
-        sum +
-        Number(row[4] || 0),
-      0
-    );
+  if ($("leamPercentage")) {
 
+    $("leamPercentage").textContent =
+      `${percentages.leam}%`;
 
-  const totalExpenses =
-    reward.expenses.reduce(
-      (sum, row) =>
-        sum +
-        Number(row[2] || 0),
-      0
-    );
-
-
-  /* =====================================
-     SUMMARY
-     ===================================== */
-
-  setText(
-    "totalClaimed",
-    sol(totalClaimed)
-  );
-
-  setText(
-    "totalRedeemed",
-    sol(totalRedeemed)
-  );
-
-  setText(
-    "totalProceeds",
-    money(totalProceeds)
-  );
-
-  setText(
-    "totalExpenses",
-    money(totalExpenses)
-  );
-
-
-  setText(
-    "claimsTotal",
-    sol(totalClaimed)
-  );
-
-  setText(
-    "redeemedTotal",
-    sol(totalRedeemed)
-  );
-
-  setText(
-    "proceedsTotal",
-    money(totalProceeds)
-  );
-
-  setText(
-    "expensesTotal",
-    money(totalExpenses)
-  );
-
-
-  /* =====================================
-     COUNTS
-     ===================================== */
-
-  setText(
-    "claimedCount",
-    `${reward.claims.length} ${
-      reward.claims.length === 1
-        ? "record"
-        : "records"
-    }`
-  );
-
-
-  setText(
-    "redeemedCount",
-    `${reward.redeemed.length} ${
-      reward.redeemed.length === 1
-        ? "record"
-        : "records"
-    }`
-  );
-
-
-  setText(
-    "expenseCount",
-    `${reward.expenses.length} ${
-      reward.expenses.length === 1
-        ? "record"
-        : "records"
-    }`
-  );
-
-
-  /* =====================================
-     CLAIMED TABLE
-     ===================================== */
-
-  const claimsTable =
-    $("claimsTable");
-
-
-  if (claimsTable) {
-
-    claimsTable.innerHTML =
-      reward.claims
-        .map(row => {
-
-          return `
-            <tr>
-
-              <td>
-                ${escapeHTML(
-                  dateText(row[0])
-                )}
-              </td>
-
-              <td class="num">
-                ${num(row[1])} SOL
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
   }
 
 
-  /* =====================================
-     REDEEMED TABLE
-     ===================================== */
+  if ($("cpPercentage")) {
 
-  const redeemedTable =
-    $("redeemedTable");
+    $("cpPercentage").textContent =
+      `${percentages.cp}%`;
 
-
-  if (redeemedTable) {
-
-    redeemedTable.innerHTML =
-      reward.redeemed
-        .map(row => {
-
-          return `
-            <tr>
-
-              <td>
-                ${escapeHTML(
-                  dateText(row[0])
-                )}
-              </td>
-
-              <td class="num">
-                ${num(row[1])} SOL
-              </td>
-
-              <td class="num">
-                ${
-                  row[2] === null
-                    ? "—"
-                    : usd(row[2])
-                }
-              </td>
-
-              <td class="num">
-                ${
-                  row[3] === null
-                    ? "—"
-                    : usd(row[3])
-                }
-              </td>
-
-              <td class="num">
-                ${money(row[4])}
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
   }
 
 
-  /* =====================================
-     REDEEMED EMPTY STATE
-     ===================================== */
+  if ($("projectPercentage")) {
 
-  const redeemedEmpty =
-    $("redeemedEmpty");
+    $("projectPercentage").textContent =
+      `${percentages.project}%`;
 
-  const redeemedWrap =
-    $("redeemedWrap");
-
-
-  if (
-    reward.redeemed.length === 0
-  ) {
-
-    if (redeemedEmpty) {
-      redeemedEmpty.classList.remove(
-        "hidden"
-      );
-    }
-
-    if (redeemedWrap) {
-      redeemedWrap.classList.add(
-        "hidden"
-      );
-    }
-
-  } else {
-
-    if (redeemedEmpty) {
-      redeemedEmpty.classList.add(
-        "hidden"
-      );
-    }
-
-    if (redeemedWrap) {
-      redeemedWrap.classList.remove(
-        "hidden"
-      );
-    }
   }
 
 
-  /* =====================================
-     EXPENSES
-     ===================================== */
+  if ($("allocationTotalPercentage")) {
 
-  const expensesTable =
-    $("expensesTable");
+    $("allocationTotalPercentage").textContent =
+      `${
+        percentages.leam +
+        percentages.cp +
+        percentages.project
+      }%`;
 
-
-  if (expensesTable) {
-
-    expensesTable.innerHTML =
-      reward.expenses
-        .map(row => {
-
-          return `
-            <tr>
-
-              <td>
-                ${escapeHTML(
-                  dateText(row[0])
-                )}
-              </td>
-
-              <td>
-                ${escapeHTML(
-                  row[1]
-                )}
-              </td>
-
-              <td class="num">
-                ${money(row[2])}
-              </td>
-
-              <td>
-                ${escapeHTML(
-                  row[3]
-                )}
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
   }
 
 
-  /* =====================================
-     ALLOCATION
-     ===================================== */
+  if ($("allocationNote")) {
 
-  renderAllocation(
-    "leam",
-    allocation.leam
-  );
+    $("allocationNote").textContent =
+      state.note ||
+      "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
 
-  renderAllocation(
-    "cp",
-    allocation.cp
-  );
-
-  renderAllocation(
-    "project",
-    allocation.project
-  );
-
-
-  setText(
-    "allocationNote",
-    allocation.note ||
-    "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects."
-  );
-
-
-  /* =====================================
-     ALLOCATION TOTAL
-     ===================================== */
-
-  const totalPercentage =
-    Number(
-      allocation.leam.pct
-    ) +
-    Number(
-      allocation.cp.pct
-    ) +
-    Number(
-      allocation.project.pct
-    );
-
-
-  setText(
-    "allocationTotalPercentage",
-    `${totalPercentage}%`
-  );
-
-
-  /* =====================================
-     LATEST ACTIVITY
-     ===================================== */
-
-  const dates = [
-
-    ...reward.claims.map(
-      row => row[0]
-    ),
-
-    ...reward.redeemed.map(
-      row => row[0]
-    ),
-
-    ...reward.expenses.map(
-      row => row[0]
-    ),
-
-    ...allocation.leam.records.map(
-      row => row.date
-    ),
-
-    ...allocation.cp.records.map(
-      row => row.date
-    ),
-
-    ...allocation.project.records.map(
-      row => row.date
-    )
-
-  ]
-    .filter(Boolean)
-    .map(cleanDate)
-    .filter(Boolean)
-    .sort(
-      (a, b) =>
-        a.getTime() -
-        b.getTime()
-    );
-
-
-  if (dates.length) {
-
-    setText(
-      "latestEntry",
-      "Latest recorded activity: " +
-      dateText(
-        dates[
-          dates.length - 1
-        ]
-      )
-    );
-
-  } else {
-
-    setText(
-      "latestEntry",
-      "No records available yet."
-    );
-  }
-
-
-  /* =====================================
-     STATUS
-     ===================================== */
-
-  const status =
-    $("dataStatus");
-
-
-  if (status) {
-
-    status.className =
-      "status live";
-
-    status.textContent =
-      "● Live Google Sheet data";
   }
 }
 
 
 /* =========================================
-   ERROR
-   ========================================= */
-
-function showError(error) {
-
-  console.error(
-    "[GWAR] Transparency error:",
-    error
-  );
-
-
-  const status =
-    $("dataStatus");
-
-
-  if (status) {
-
-    status.className =
-      "status fallback";
-
-    status.textContent =
-      "Data unavailable";
-  }
-
-
-  setText(
-    "latestEntry",
-    "Unable to load live transparency data."
-  );
-}
-
-
-/* =========================================
-   LOAD
+   LOAD DATA
    ========================================= */
 
 async function loadData() {
 
-  const status =
-    $("dataStatus");
-
-
-  if (status) {
-
-    status.className =
-      "status";
-
-    status.textContent =
-      "Loading...";
-  }
+  setStatus("Loading...");
 
 
   try {
 
-    console.log(
-      "[GWAR] Loading REWARD..."
-    );
+    /*
+      ACTUAL GOOGLE SHEET STRUCTURE:
 
-
-    console.log(
-      "[GWAR] Loading ALLOCATION..."
-    );
-
+      REWARD
+      ALLOCATION
+    */
 
     const [
-      rewardRows,
-      allocationRows
+      rewardTable,
+      allocationTable
     ] = await Promise.all([
 
-      fetchSheet(
-        CONFIG.rewardSheet
-      ),
+      fetchGoogleSheet("REWARD"),
 
-      fetchSheet(
-        CONFIG.allocationSheet
-      )
+      fetchGoogleSheet("ALLOCATION")
 
     ]);
 
 
-    console.log(
-      "[GWAR] Reward rows:",
-      rewardRows
-    );
+    /*
+      REWARD
+    */
 
-
-    console.log(
-      "[GWAR] Allocation rows:",
-      allocationRows
-    );
-
-
-    const reward =
-      parseReward(
-        rewardRows
+    state.claimed =
+      loadClaimedFromReward(
+        rewardTable
       );
 
 
-    const allocation =
-      parseAllocation(
-        allocationRows
+    state.redeemed =
+      loadRedeemedFromReward(
+        rewardTable
       );
 
 
-    console.log(
-      "[GWAR] Parsed reward:",
-      reward
+    state.expenses =
+      loadExpensesFromReward(
+        rewardTable
+      );
+
+
+    /*
+      ALLOCATION
+    */
+
+    state.allocation =
+      loadAllocation(
+        allocationTable
+      );
+
+
+    /*
+      Render everything.
+    */
+
+    renderAll();
+
+
+    state.loaded =
+      true;
+
+
+    setStatus(
+      "Live Google Sheet data"
     );
 
 
+    updateLatestEntry();
+
+
     console.log(
-      "[GWAR] Parsed allocation:",
-      allocation
-    );
+      "Creator Reward Transparency loaded:",
+      {
+        claimed:
+          state.claimed.length,
 
+        redeemed:
+          state.redeemed.length,
 
-    renderPage(
-      reward,
-      allocation
+        expenses:
+          state.expenses.length,
+
+        leam:
+          state.allocation.leam.length,
+
+        cp:
+          state.allocation.cp.length,
+
+        project:
+          state.allocation.project.length
+      }
     );
 
 
   } catch (error) {
 
-    showError(error);
+    console.error(
+      "Creator Reward Transparency:",
+      error
+    );
+
+
+    setStatus(
+      "Data unavailable"
+    );
+
+
+    showDataError();
+
   }
+}
+
+
+/* =========================================
+   RENDER ALL
+   ========================================= */
+
+function renderAll() {
+
+  renderClaimed();
+
+  renderRedeemed();
+
+  renderExpenses();
+
+  renderAllocation();
+
+}
+
+
+/* =========================================
+   STATUS
+   ========================================= */
+
+function setStatus(text) {
+
+  const element =
+    $("dataStatus");
+
+
+  if (!element) {
+    return;
+  }
+
+
+  element.textContent =
+    text;
+
+
+  if (
+    text === "Data unavailable"
+  ) {
+
+    element.classList.add(
+      "data-error"
+    );
+
+  } else {
+
+    element.classList.remove(
+      "data-error"
+    );
+
+  }
+}
+
+
+/* =========================================
+   ERROR DISPLAY
+   ========================================= */
+
+function showDataError() {
+
+  if ($("claimsTable")) {
+
+    $("claimsTable").innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="2"
+          class="data-error"
+        >
+          Unable to load transparency data.
+        </td>
+
+      </tr>
+
+    `;
+
+  }
+
+
+  if ($("expensesTable")) {
+
+    $("expensesTable").innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="4"
+          class="data-error"
+        >
+          Unable to load transparency data.
+        </td>
+
+      </tr>
+
+    `;
+
+  }
+
+
+  if ($("redeemedEmpty")) {
+
+    $("redeemedEmpty")
+      .classList.remove("hidden");
+
+
+    $("redeemedEmpty").innerHTML = `
+
+      <div class="empty-icon">
+        !
+      </div>
+
+      <strong>
+        Unable to load reward sales.
+      </strong>
+
+      <p>
+        Please check the live data source.
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================
+   LATEST ENTRY
+   ========================================= */
+
+function updateLatestEntry() {
+
+  const element =
+    $("latestEntry");
+
+
+  if (!element) {
+    return;
+  }
+
+
+  const dates = [
+
+    ...state.claimed.map(
+      row => row.date
+    ),
+
+    ...state.redeemed.map(
+      row => row.date
+    ),
+
+    ...state.expenses.map(
+      row => row.date
+    ),
+
+    ...state.allocation.leam.map(
+      row => row.date
+    ),
+
+    ...state.allocation.cp.map(
+      row => row.date
+    ),
+
+    ...state.allocation.project.map(
+      row => row.date
+    )
+
+  ].filter(Boolean);
+
+
+  if (!dates.length) {
+
+    element.textContent =
+      "No records available yet.";
+
+    return;
+  }
+
+
+  const parsedDates =
+    dates
+      .map(date => new Date(date))
+      .filter(date =>
+        !Number.isNaN(
+          date.getTime()
+        )
+      );
+
+
+  if (!parsedDates.length) {
+
+    element.textContent =
+      "Latest transparency records available.";
+
+    return;
+  }
+
+
+  const latest =
+    new Date(
+      Math.max(
+        ...parsedDates.map(
+          date =>
+            date.getTime()
+        )
+      )
+    );
+
+
+  element.textContent =
+    `Latest recorded activity: ${
+      latest.toLocaleDateString(
+        "en-PH",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }
+      )
+    }`;
 }
 
 
@@ -2002,7 +1483,7 @@ function setupAccordion() {
 
     function toggle() {
 
-      const open =
+      const isOpen =
         section.classList.contains(
           "open"
         );
@@ -2010,14 +1491,15 @@ function setupAccordion() {
 
       section.classList.toggle(
         "open",
-        !open
+        !isOpen
       );
 
 
       heading.setAttribute(
         "aria-expanded",
-        String(!open)
+        String(!isOpen)
       );
+
     }
 
 
@@ -2039,10 +1521,14 @@ function setupAccordion() {
           event.preventDefault();
 
           toggle();
+
         }
+
       }
     );
+
   });
+
 }
 
 
@@ -2064,12 +1550,11 @@ function setupNavigation() {
       "click",
       () => {
 
-        pills.forEach(item => {
-
+        pills.forEach(item =>
           item.classList.remove(
             "active"
-          );
-        });
+          )
+        );
 
 
         pill.classList.add(
@@ -2116,16 +1601,21 @@ function setupNavigation() {
               "aria-expanded",
               "true"
             );
+
           }
+
         }
+
       }
     );
+
   });
+
 }
 
 
 /* =========================================
-   ACCORDION STATE
+   DESKTOP / MOBILE STATE
    ========================================= */
 
 function syncAccordionState() {
@@ -2159,14 +1649,18 @@ function syncAccordionState() {
           "aria-expanded",
           "false"
         );
+
       }
+
     });
+
   }
+
 }
 
 
 /* =========================================
-   INITIALIZE
+   INITIALIZATION
    ========================================= */
 
 document.addEventListener(
@@ -2180,6 +1674,7 @@ document.addEventListener(
     syncAccordionState();
 
     loadData();
+
   }
 );
 
@@ -2205,5 +1700,6 @@ window.addEventListener(
         syncAccordionState,
         100
       );
+
   }
 );
