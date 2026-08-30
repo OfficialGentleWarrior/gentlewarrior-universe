@@ -1602,4 +1602,302 @@ async function loadData() {
     );
 
 
-    update
+    updateLatestEntry();
+
+
+    console.log(
+      "Creator Reward Transparency loaded:",
+      {
+        claimed:
+          state.claimed.length,
+
+        redeemed:
+          state.redeemed.length,
+
+        expenses:
+          state.expenses.length,
+
+        leam:
+          state.allocation.leam.length,
+
+        cp:
+          state.allocation.cp.length,
+
+        project:
+          state.allocation.project.length
+      }
+    );
+
+
+  } catch (error) {
+
+    state.loaded =
+      false;
+
+    setStatus(
+      "Data unavailable"
+    );
+
+    showDataError(
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   MOBILE ACCORDION
+   ========================================= */
+
+function setupAccordion() {
+
+  const sections =
+    document.querySelectorAll(
+      "[data-accordion]"
+    );
+
+
+  sections.forEach(
+    section => {
+
+      const heading =
+        section.querySelector(
+          ".section-heading"
+        );
+
+
+      if (!heading) {
+        return;
+      }
+
+
+      function toggle() {
+
+        const isOpen =
+          section.classList.contains(
+            "open"
+          );
+
+
+        section.classList.toggle(
+          "open",
+          !isOpen
+        );
+
+
+        heading.setAttribute(
+          "aria-expanded",
+          String(!isOpen)
+        );
+
+      }
+
+
+      heading.addEventListener(
+        "click",
+        toggle
+      );
+
+
+      heading.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+            toggle();
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   NAVIGATION
+   ========================================= */
+
+function setupNavigation() {
+
+  const pills =
+    document.querySelectorAll(
+      ".pill-nav .pill"
+    );
+
+
+  pills.forEach(
+    pill => {
+
+      pill.addEventListener(
+        "click",
+        () => {
+
+          pills.forEach(
+            item =>
+              item.classList.remove(
+                "active"
+              )
+          );
+
+
+          pill.classList.add(
+            "active"
+          );
+
+
+          const targetId =
+            pill.getAttribute(
+              "href"
+            );
+
+
+          if (!targetId) {
+            return;
+          }
+
+
+          const section =
+            document.querySelector(
+              targetId
+            );
+
+
+          if (
+            section &&
+            window.innerWidth <= 600
+          ) {
+
+            section.classList.add(
+              "open"
+            );
+
+
+            const heading =
+              section.querySelector(
+                ".section-heading"
+              );
+
+
+            if (heading) {
+
+              heading.setAttribute(
+                "aria-expanded",
+                "true"
+              );
+
+            }
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   DESKTOP / MOBILE STATE
+   ========================================= */
+
+function syncAccordionState() {
+
+  const sections =
+    document.querySelectorAll(
+      "[data-accordion]"
+    );
+
+
+  if (
+    window.innerWidth > 600
+  ) {
+
+    sections.forEach(
+      section => {
+
+        section.classList.remove(
+          "open"
+        );
+
+
+        const heading =
+          section.querySelector(
+            ".section-heading"
+          );
+
+
+        if (heading) {
+
+          heading.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   INITIALIZATION
+   ========================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    setupAccordion();
+
+    setupNavigation();
+
+    syncAccordionState();
+
+    loadData();
+
+  }
+);
+
+
+/* =========================================
+   RESIZE
+   ========================================= */
+
+let resizeTimer;
+
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    clearTimeout(
+      resizeTimer
+    );
+
+
+    resizeTimer =
+      setTimeout(
+        syncAccordionState,
+        100
+      );
+
+  }
+);
