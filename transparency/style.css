@@ -45,10 +45,13 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  min-width: 0;
 
   background: var(--gw-page);
 
@@ -63,6 +66,8 @@ body {
     sans-serif;
 
   line-height: 1.5;
+
+  overflow-x: hidden;
 }
 
 body,
@@ -101,6 +106,7 @@ img {
 .page {
   width: 100%;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 
@@ -425,6 +431,8 @@ img {
   width: 9px;
   height: 9px;
 
+  flex: 0 0 9px;
+
   border-radius: 50%;
 
   background: var(--gw-lime);
@@ -510,6 +518,8 @@ img {
   line-height: 1;
 
   letter-spacing: -0.045em;
+
+  word-break: break-word;
 }
 
 .stat-hint {
@@ -605,6 +615,8 @@ img {
    ========================================= */
 
 .table-card {
+  width: 100%;
+
   overflow: hidden;
 
   background: var(--gw-card);
@@ -617,25 +629,43 @@ img {
   box-shadow: var(--gw-shadow);
 }
 
+
+/*
+ * IMPORTANT:
+ * No horizontal scrolling.
+ */
+
 .table-scroll {
   width: 100%;
 
-  overflow-x: auto;
+  overflow: hidden;
 
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: auto;
 }
+
+
+/* =========================================
+   TABLE
+   ========================================= */
 
 table {
   width: 100%;
 
-  min-width: 620px;
+  max-width: 100%;
+
+  table-layout: fixed;
 
   border-collapse: collapse;
+
+  border-spacing: 0;
 }
+
+
+/* Default cells */
 
 th,
 td {
-  padding: 16px 18px;
+  padding: 15px 18px;
 
   text-align: left;
 
@@ -643,7 +673,16 @@ td {
     1px solid var(--gw-border-soft);
 
   font-size: 13px;
+
+  vertical-align: middle;
+
+  overflow-wrap: anywhere;
+
+  word-break: normal;
 }
+
+
+/* Header */
 
 thead th {
   background: #f2f7ef;
@@ -653,10 +692,15 @@ thead th {
   font-size: 10px;
   font-weight: 900;
 
-  letter-spacing: 0.11em;
+  letter-spacing: 0.10em;
 
   text-transform: uppercase;
+
+  white-space: normal;
 }
+
+
+/* Body */
 
 tbody td {
   color: var(--gw-text);
@@ -675,6 +719,9 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+
+/* Footer */
+
 tfoot {
   background: var(--gw-lime-soft);
 }
@@ -687,9 +734,92 @@ tfoot th {
   border-bottom: 0;
 }
 
+
+/* Numbers */
+
 .num {
   text-align: right;
+
   white-space: nowrap;
+
+  overflow-wrap: normal;
+}
+
+
+/* =========================================
+   TABLE COLUMN CONTROL
+   ========================================= */
+
+/*
+ * Rewards table
+ * Date + SOL
+ */
+
+#claimed table th:first-child,
+#claimed table td:first-child {
+  width: 55%;
+}
+
+#claimed table th:last-child,
+#claimed table td:last-child {
+  width: 45%;
+}
+
+
+/*
+ * Redeemed table
+ * Date / SOL / Rate / USD / PHP
+ */
+
+#redeemed table th:nth-child(1),
+#redeemed table td:nth-child(1) {
+  width: 22%;
+}
+
+#redeemed table th:nth-child(2),
+#redeemed table td:nth-child(2) {
+  width: 17%;
+}
+
+#redeemed table th:nth-child(3),
+#redeemed table td:nth-child(3) {
+  width: 19%;
+}
+
+#redeemed table th:nth-child(4),
+#redeemed table td:nth-child(4) {
+  width: 18%;
+}
+
+#redeemed table th:nth-child(5),
+#redeemed table td:nth-child(5) {
+  width: 24%;
+}
+
+
+/*
+ * Expenses
+ * Date / Description / Amount / Remarks
+ */
+
+#expenses table th:nth-child(1),
+#expenses table td:nth-child(1) {
+  width: 18%;
+}
+
+#expenses table th:nth-child(2),
+#expenses table td:nth-child(2) {
+  width: 29%;
+}
+
+#expenses table th:nth-child(3),
+#expenses table td:nth-child(3) {
+  width: 19%;
+}
+
+#expenses table th:nth-child(4),
+#expenses table td:nth-child(4) {
+  width: 34%;
 }
 
 
@@ -857,6 +987,8 @@ tfoot th {
   align-items: center;
   justify-content: space-between;
 
+  gap: 12px;
+
   border-bottom:
     1px solid var(--gw-border-soft);
 }
@@ -875,6 +1007,8 @@ tfoot th {
   color: var(--gw-text);
 
   font-size: 13px;
+
+  text-align: right;
 }
 
 .allocation-balance {
@@ -883,12 +1017,16 @@ tfoot th {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  gap: 12px;
 }
 
 .allocation-balance strong {
   color: var(--gw-deep);
 
   font-size: 18px;
+
+  text-align: right;
 }
 
 
@@ -1084,7 +1222,7 @@ tfoot th {
 
 
 /* =========================================
-   RESPONSIVE
+   TABLET
    ========================================= */
 
 @media (max-width: 900px) {
@@ -1101,6 +1239,10 @@ tfoot th {
 }
 
 
+/* =========================================
+   MOBILE
+   ========================================= */
+
 @media (max-width: 600px) {
 
   .site-header,
@@ -1113,7 +1255,9 @@ tfoot th {
   }
 
 
-  /* Header */
+  /* =======================================
+     HEADER
+     ======================================= */
 
   .site-header {
     margin-top: 10px;
@@ -1122,7 +1266,11 @@ tfoot th {
   .brand-card {
     min-height: 76px;
 
-    padding: 9px 10px 9px 11px;
+    padding:
+      9px
+      10px
+      9px
+      11px;
 
     border-radius: 23px;
 
@@ -1134,6 +1282,10 @@ tfoot th {
     height: 52px;
 
     flex-basis: 52px;
+  }
+
+  .brand-copy {
+    overflow: hidden;
   }
 
   .brand-copy strong {
@@ -1153,7 +1305,9 @@ tfoot th {
   }
 
 
-  /* Navigation */
+  /* =======================================
+     NAVIGATION
+     ======================================= */
 
   .pill-nav {
     justify-content: flex-start;
@@ -1182,7 +1336,9 @@ tfoot th {
   }
 
 
-  /* Hero */
+  /* =======================================
+     HERO
+     ======================================= */
 
   .hero {
     margin-top: 12px;
@@ -1221,7 +1377,9 @@ tfoot th {
   }
 
 
-  /* Summary */
+  /* =======================================
+     SUMMARY
+     ======================================= */
 
   .summary-section {
     margin-top: 12px;
@@ -1254,7 +1412,9 @@ tfoot th {
   }
 
 
-  /* Sections */
+  /* =======================================
+     SECTIONS
+     ======================================= */
 
   .section {
     margin-top: 48px;
@@ -1281,25 +1441,152 @@ tfoot th {
   }
 
 
-  /* Tables */
+  /* =======================================
+     TABLES — MOBILE
+     ======================================= */
 
   .table-card {
     border-radius: 20px;
   }
 
+  .table-scroll {
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+
+    min-width: 0;
+
+    table-layout: fixed;
+  }
+
   th,
   td {
-    padding: 13px 14px;
+    padding:
+      11px
+      8px;
 
-    font-size: 12px;
+    font-size: 10px;
+
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
   }
 
   thead th {
+    padding:
+      10px
+      8px;
+
+    font-size: 8px;
+
+    line-height: 1.25;
+
+    letter-spacing: 0.06em;
+  }
+
+  tfoot th {
+    padding:
+      11px
+      8px;
+
+    font-size: 10px;
+  }
+
+  .num {
+    white-space: nowrap;
+
+    font-size: 10px;
+  }
+
+
+  /* =======================================
+     REWARDS TABLE
+     ======================================= */
+
+  #claimed table th:first-child,
+  #claimed table td:first-child {
+    width: 52%;
+  }
+
+  #claimed table th:last-child,
+  #claimed table td:last-child {
+    width: 48%;
+  }
+
+
+  /* =======================================
+     REDEEMED TABLE
+     ======================================= */
+
+  #redeemed table th:nth-child(1),
+  #redeemed table td:nth-child(1) {
+    width: 22%;
+  }
+
+  #redeemed table th:nth-child(2),
+  #redeemed table td:nth-child(2) {
+    width: 17%;
+  }
+
+  #redeemed table th:nth-child(3),
+  #redeemed table td:nth-child(3) {
+    width: 19%;
+  }
+
+  #redeemed table th:nth-child(4),
+  #redeemed table td:nth-child(4) {
+    width: 18%;
+  }
+
+  #redeemed table th:nth-child(5),
+  #redeemed table td:nth-child(5) {
+    width: 24%;
+  }
+
+
+  /* =======================================
+     EXPENSE TABLE
+     ======================================= */
+
+  #expenses table th:nth-child(1),
+  #expenses table td:nth-child(1) {
+    width: 18%;
+  }
+
+  #expenses table th:nth-child(2),
+  #expenses table td:nth-child(2) {
+    width: 27%;
+  }
+
+  #expenses table th:nth-child(3),
+  #expenses table td:nth-child(3) {
+    width: 20%;
+  }
+
+  #expenses table th:nth-child(4),
+  #expenses table td:nth-child(4) {
+    width: 35%;
+  }
+
+  #expenses table td:nth-child(1) {
+    font-size: 9px;
+  }
+
+  #expenses table td:nth-child(2),
+  #expenses table td:nth-child(4) {
+    font-size: 9px;
+  }
+
+  #expenses table td:nth-child(3) {
     font-size: 9px;
   }
 
 
-  /* Empty */
+  /* =======================================
+     EMPTY
+     ======================================= */
 
   .empty-state {
     min-height: 170px;
@@ -1310,7 +1597,9 @@ tfoot th {
   }
 
 
-  /* Allocation */
+  /* =======================================
+     ALLOCATION
+     ======================================= */
 
   .allocation-card {
     border-radius: 20px;
@@ -1325,28 +1614,38 @@ tfoot th {
   .allocation-header > strong {
     width: 44px;
     height: 44px;
+
+    font-size: 13px;
   }
 
   .allocation-content {
     padding:
-      7px 17px 16px;
+      7px
+      17px
+      16px;
   }
 
 
-  /* Statement */
+  /* =======================================
+     STATEMENT
+     ======================================= */
 
   .transparency-statement {
     margin-top: 48px;
   }
 
   .statement-card {
-    padding: 31px 21px;
+    padding:
+      31px
+      21px;
 
     border-radius: 24px;
   }
 
 
-  /* Footer */
+  /* =======================================
+     FOOTER
+     ======================================= */
 
   .site-footer {
     margin-top: 50px;
@@ -1359,6 +1658,10 @@ tfoot th {
 
 }
 
+
+/* =========================================
+   SMALL PHONES
+   ========================================= */
 
 @media (max-width: 380px) {
 
@@ -1389,4 +1692,46 @@ tfoot th {
     font-size: 20px;
   }
 
-     }
+
+  /* Extra compact table */
+
+  th,
+  td {
+    padding:
+      9px
+      6px;
+
+    font-size: 9px;
+  }
+
+  thead th {
+    padding:
+      9px
+      6px;
+
+    font-size: 7px;
+  }
+
+  tfoot th {
+    padding:
+      9px
+      6px;
+
+    font-size: 9px;
+  }
+
+  .num {
+    font-size: 9px;
+  }
+
+
+  /* Expenses */
+
+  #expenses table td:nth-child(1),
+  #expenses table td:nth-child(2),
+  #expenses table td:nth-child(3),
+  #expenses table td:nth-child(4) {
+    font-size: 8px;
+  }
+
+   }
