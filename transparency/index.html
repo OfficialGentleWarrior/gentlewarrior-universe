@@ -488,5 +488,37 @@
 <script src="config.js"></script>
 <script src="script.js"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const sections = document.querySelectorAll(".section");
+
+  sections.forEach(section => {
+
+    const heading = section.querySelector(".section-heading");
+
+    if (!heading) return;
+
+    heading.addEventListener("click", function () {
+
+      const isOpen = section.classList.contains("open");
+
+      // Close all sections
+      sections.forEach(item => {
+        item.classList.remove("open");
+      });
+
+      // Open selected section
+      if (!isOpen) {
+        section.classList.add("open");
+      }
+
+    });
+
+  });
+
+});
+</script>
+
 </body>
 </html>
