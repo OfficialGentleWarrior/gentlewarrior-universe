@@ -101,18 +101,7 @@ async function initTransparency() {
 async function fetchSheet(sheetName) {
 
   const url =
-    getTransparencySheetUrl(
-      sheetName
-    );
-
-
-  if (!url) {
-
-    throw new Error(
-      `No Google Sheet URL configured for ${sheetName}.`
-    );
-
-  }
+    getTransparencySheetUrl(sheetName);
 
 
   const response =
@@ -219,23 +208,6 @@ function parseGViz(text) {
 
 /* =========================================
    REWARD SHEET
-   =========================================
-
-   ACTUAL SHEET STRUCTURE:
-
-   A = DATE
-   B = SOL CLAIMED
-
-   D = DATE SOLD
-   E = SOLD SOL
-   F = RATE
-   G = USD
-   H = PHP
-
-   J = DATE
-   K = DESCRIPTION
-   L = AMOUNT
-   M = REMARKS
    ========================================= */
 
 function parseRewardSheet(rows) {
@@ -247,47 +219,40 @@ function parseRewardSheet(rows) {
   transparencyData.expenses = [];
 
 
-  if (!Array.isArray(rows)) {
-    return;
-  }
+  /* =======================================
+     CLAIMS
+
+     A = DATE
+     B = SOL CLAIMED
+
+     Starts at Sheet Row 3
+     ======================================= */
+
+  for (
+    let row = 2;
+    row < rows.length;
+    row++
+  ) {
+
+    const date =
+      rows[row]?.[0];
+
+    const sol =
+      toNumber(
+        rows[row]?.[1]
+      );
 
 
-  /*
-   * =======================================
-   * CLAIMS
-   * =======================================
-   */
+    if (
+      date &&
+      sol !== null
+    ) {
 
-  rows.forEach(
-    (row, index) => {
-
-      /*
-       * Skip header row.
-       */
-
-      if (index < 2) {
-        return;
-      }
+      const parsedDate =
+        parseSheetDate(date);
 
 
-      const date =
-        row?.[0];
-
-      const sol =
-        toNumber(
-          row?.[1]
-        );
-
-
-      if (
-        hasValue(date) &&
-        sol !== null &&
-        sol > 0
-      ) {
-
-        const parsedDate =
-          parseSheetDate(date);
-
+      if (parsedDate) {
 
         transparencyData.claims.push({
 
@@ -302,59 +267,75 @@ function parseRewardSheet(rows) {
       }
 
     }
-  );
+
+  }
 
 
-  /*
-   * =======================================
-   * REDEEMED / SOLD
-   * =======================================
-   */
+  /* =======================================
+     REDEEMED / SOLD
 
-  rows.forEach(
-    (row, index) => {
+     D = DATE
+     E = SOLD SOL
+     F = RATE
+     G = $
+     H = IN PESO
 
-      if (index < 2) {
-        return;
-      }
+     Starts at Sheet Row 3
+     ======================================= */
+
+  for (
+    let row = 2;
+    row < rows.length;
+    row++
+  ) {
+
+    const date =
+      rows[row]?.[3];
+
+    const soldSOL =
+      toNumber(
+        rows[row]?.[4]
+      );
 
 
-      const date =
-        row?.[3];
+    /*
+     * Only create a record when
+     * SOLD SOL actually exists.
+     */
 
-      const soldSOL =
-        toNumber(
-          row?.[4]
-        );
+    if (
+      date &&
+      soldSOL !== null &&
+      soldSOL > 0
+    ) {
+
+      const parsedDate =
+        parseSheetDate(date);
 
 
-      if (
-        hasValue(date) &&
-        soldSOL !== null &&
-        soldSOL > 0
-      ) {
+      if (parsedDate) {
 
         transparencyData.redeemed.push({
 
           date:
-            parseSheetDate(date),
+            parsedDate,
 
           sol:
             soldSOL,
 
           rate:
             toNumber(
-              row?.[5]
+              rows[row]?.[5]
             ),
 
           usd:
             toNumber(
-              row?.[6]
+              rows[row]?.[6]
             ),
 
           php:
             toNumber(
-              row?.[7]
+              rows[row]?.[7]
             )
 
         });
@@ -362,49 +343,58 @@ function parseRewardSheet(rows) {
       }
 
     }
-  );
+
+  }
 
 
-  /*
-   * =======================================
-   * EXPENSES
-   * =======================================
-   */
+  /* =======================================
+     EXPENSES
 
-  rows.forEach(
-    (row, index) => {
+     J = DATE
+     K = DESCRIPTION
+     L = AMOUNT
+     M = REMARKS
 
-      if (index < 2) {
-        return;
-      }
+     Starts at Sheet Row 3
+     ======================================= */
+
+  for (
+    let row = 2;
+    row < rows.length;
+    row++
+  ) {
+
+    const date =
+      rows[row]?.[9];
+
+    const description =
+      rows[row]?.[10];
+
+    const amount =
+      toNumber(
+        rows[row]?.[11]
+      );
+
+    const remarks =
+      rows[row]?.[12];
 
 
-      const date =
-        row?.[9];
+    if (
+      date &&
+      description &&
+      amount !== null
+    ) {
 
-      const description =
-        row?.[10];
-
-      const amount =
-        toNumber(
-          row?.[11]
-        );
-
-      const remarks =
-        row?.[12];
+      const parsedDate =
+        parseSheetDate(date);
 
 
-      if (
-        hasValue(date) &&
-        hasValue(description) &&
-        amount !== null &&
-        amount > 0
-      ) {
+      if (parsedDate) {
 
         transparencyData.expenses.push({
 
           date:
-            parseSheetDate(date),
+            parsedDate,
 
           description:
             String(description),
@@ -413,7 +403,7 @@ function parseRewardSheet(rows) {
             amount,
 
           remarks:
-            hasValue(remarks)
+            remarks
               ? String(remarks)
               : ""
 
@@ -422,201 +412,154 @@ function parseRewardSheet(rows) {
       }
 
     }
-  );
 
-
-  /*
-   * Sort oldest → newest
-   */
-
-  transparencyData.claims.sort(
-    sortByDate
-  );
-
-  transparencyData.redeemed.sort(
-    sortByDate
-  );
-
-  transparencyData.expenses.sort(
-    sortByDate
-  );
+  }
 
 }
 
 
 /* =========================================
    ALLOCATION SHEET
-   =========================================
-
-   ACTUAL SHEET STRUCTURE:
-
-   LEAM
-   A = percentage
-   C = IN
-   D = OUT
-
-   CP KIDS
-   F = percentage
-   H = IN
-   I = OUT
-
-   PROJECT
-   K = percentage
-   M = IN
-   N = OUT
-
-   NOTE
-   A2
    ========================================= */
 
 function parseAllocationSheet(rows) {
 
   /*
-   * ---------------------------------------
+   * ACTUAL GOOGLE SHEET STRUCTURE
+   *
    * LEAM
-   * ---------------------------------------
+   * A = percentage
+   * C = IN
+   * D = OUT
+   *
+   * CP KIDS
+   * F = percentage
+   * H = IN
+   * I = OUT
+   *
+   * PROJECT
+   * K = percentage
+   * M = IN
+   * N = OUT
+   *
+   * Data values are on Sheet Row 5.
    */
 
-  const leamPercentage =
-    toNumber(
-      rows[4]?.[0]
-    );
+  const allocationRow =
+    rows[4] || [];
 
 
-  const leamIn =
-    toNumber(
-      rows[4]?.[2]
-    );
-
-
-  const leamOut =
-    toNumber(
-      rows[4]?.[3]
-    );
-
+  /* =======================================
+     LEAM
+     ======================================= */
 
   transparencyData.allocation.leam = {
 
     percentage:
-      leamPercentage !== null
-        ? leamPercentage
-        : 30,
+      getNumberOrDefault(
+        allocationRow[0],
+        30
+      ),
 
     in:
-      leamIn !== null
-        ? leamIn
-        : 0,
+      getNumberOrDefault(
+        allocationRow[2],
+        0
+      ),
 
     out:
-      leamOut !== null
-        ? leamOut
-        : 0
+      getNumberOrDefault(
+        allocationRow[3],
+        0
+      )
 
   };
 
 
-  /*
-   * ---------------------------------------
-   * CP KIDS
-   * ---------------------------------------
-   */
-
-  const cpPercentage =
-    toNumber(
-      rows[4]?.[5]
-    );
-
-
-  const cpIn =
-    toNumber(
-      rows[4]?.[7]
-    );
-
-
-  const cpOut =
-    toNumber(
-      rows[4]?.[8]
-    );
-
+  /* =======================================
+     CP KIDS
+     ======================================= */
 
   transparencyData.allocation.cpKids = {
 
     percentage:
-      cpPercentage !== null
-        ? cpPercentage
-        : 30,
+      getNumberOrDefault(
+        allocationRow[5],
+        30
+      ),
 
     in:
-      cpIn !== null
-        ? cpIn
-        : 0,
+      getNumberOrDefault(
+        allocationRow[7],
+        0
+      ),
 
     out:
-      cpOut !== null
-        ? cpOut
-        : 0
+      getNumberOrDefault(
+        allocationRow[8],
+        0
+      )
 
   };
 
 
-  /*
-   * ---------------------------------------
-   * PROJECT
-   * ---------------------------------------
-   */
-
-  const projectPercentage =
-    toNumber(
-      rows[4]?.[10]
-    );
-
-
-  const projectIn =
-    toNumber(
-      rows[4]?.[12]
-    );
-
-
-  const projectOut =
-    toNumber(
-      rows[4]?.[13]
-    );
-
+  /* =======================================
+     PROJECT
+     ======================================= */
 
   transparencyData.allocation.project = {
 
     percentage:
-      projectPercentage !== null
-        ? projectPercentage
-        : 40,
+      getNumberOrDefault(
+        allocationRow[10],
+        40
+      ),
 
     in:
-      projectIn !== null
-        ? projectIn
-        : 0,
+      getNumberOrDefault(
+        allocationRow[12],
+        0
+      ),
 
     out:
-      projectOut !== null
-        ? projectOut
-        : 0
+      getNumberOrDefault(
+        allocationRow[13],
+        0
+      )
 
   };
 
 
-  /*
-   * ---------------------------------------
-   * TRANSPARENCY NOTE
-   *
-   * A2
-   * ---------------------------------------
-   */
+  /* =======================================
+     NOTE
+
+     A2
+     ======================================= */
 
   transparencyData.note =
-    hasValue(
-      rows[1]?.[0]
-    )
+    rows[1]?.[0]
       ? String(rows[1][0])
       : "";
+
+}
+
+
+/* =========================================
+   NUMBER WITH DEFAULT
+   ========================================= */
+
+function getNumberOrDefault(
+  value,
+  fallback
+) {
+
+  const number =
+    toNumber(value);
+
+
+  return number === null
+    ? fallback
+    : number;
 
 }
 
@@ -651,7 +594,7 @@ function renderSummary() {
   const claimed =
     transparencyData.claims.reduce(
       (sum, item) =>
-        sum + Number(item.sol || 0),
+        sum + item.sol,
       0
     );
 
@@ -659,7 +602,7 @@ function renderSummary() {
   const redeemed =
     transparencyData.redeemed.reduce(
       (sum, item) =>
-        sum + Number(item.sol || 0),
+        sum + item.sol,
       0
     );
 
@@ -667,7 +610,9 @@ function renderSummary() {
   const proceeds =
     transparencyData.redeemed.reduce(
       (sum, item) =>
-        sum + Number(item.php || 0),
+        sum + (
+          Number(item.php) || 0
+        ),
       0
     );
 
@@ -675,7 +620,7 @@ function renderSummary() {
   const expenses =
     transparencyData.expenses.reduce(
       (sum, item) =>
-        sum + Number(item.amount || 0),
+        sum + item.amount,
       0
     );
 
@@ -718,9 +663,7 @@ function renderClaims() {
     );
 
 
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
 
   tbody.innerHTML = "";
@@ -744,9 +687,7 @@ function renderClaims() {
         </td>
 
         <td class="num">
-          ${formatSolNumber(
-            item.sol
-          )}
+          ${formatSolNumber(item.sol)}
         </td>
 
       `;
@@ -761,7 +702,7 @@ function renderClaims() {
   const total =
     transparencyData.claims.reduce(
       (sum, item) =>
-        sum + Number(item.sol || 0),
+        sum + item.sol,
       0
     );
 
@@ -804,9 +745,7 @@ function renderRedeemed() {
     );
 
 
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
 
   tbody.innerHTML = "";
@@ -816,41 +755,42 @@ function renderRedeemed() {
     transparencyData.redeemed;
 
 
-  /*
-   * ---------------------------------------
-   * NO SALES
-   * ---------------------------------------
-   */
-
-  if (records.length === 0) {
+  if (
+    records.length === 0
+  ) {
 
     if (table) {
-      table.style.display = "none";
+
+      table.style.display =
+        "none";
+
     }
 
 
     if (empty) {
-      empty.classList.remove("hidden");
+
+      empty.classList.remove(
+        "hidden"
+      );
+
     }
 
-  }
-
-
-  /*
-   * ---------------------------------------
-   * HAS SALES
-   * ---------------------------------------
-   */
-
-  else {
+  } else {
 
     if (table) {
-      table.style.display = "";
+
+      table.style.display =
+        "";
+
     }
 
 
     if (empty) {
-      empty.classList.add("hidden");
+
+      empty.classList.add(
+        "hidden"
+      );
+
     }
 
 
@@ -872,27 +812,19 @@ function renderRedeemed() {
           </td>
 
           <td class="num">
-            ${formatSolNumber(
-              item.sol
-            )}
+            ${formatSolNumber(item.sol)}
           </td>
 
           <td class="num">
-            ${formatRate(
-              item.rate
-            )}
+            ${formatRate(item.rate)}
           </td>
 
           <td class="num">
-            ${formatUSD(
-              item.usd
-            )}
+            ${formatUSD(item.usd)}
           </td>
 
           <td class="num">
-            ${formatPHP(
-              item.php
-            )}
+            ${formatPHP(item.php)}
           </td>
 
         `;
@@ -909,7 +841,7 @@ function renderRedeemed() {
   const totalSOL =
     records.reduce(
       (sum, item) =>
-        sum + Number(item.sol || 0),
+        sum + item.sol,
       0
     );
 
@@ -917,7 +849,9 @@ function renderRedeemed() {
   const totalPHP =
     records.reduce(
       (sum, item) =>
-        sum + Number(item.php || 0),
+        sum + (
+          Number(item.php) || 0
+        ),
       0
     );
 
@@ -954,9 +888,7 @@ function renderExpenses() {
     );
 
 
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
 
   tbody.innerHTML = "";
@@ -986,9 +918,7 @@ function renderExpenses() {
         </td>
 
         <td class="num">
-          ${formatPHP(
-            item.amount
-          )}
+          ${formatPHP(item.amount)}
         </td>
 
         <td>
@@ -1009,7 +939,7 @@ function renderExpenses() {
   const total =
     transparencyData.expenses.reduce(
       (sum, item) =>
-        sum + Number(item.amount || 0),
+        sum + item.amount,
       0
     );
 
@@ -1056,10 +986,6 @@ function renderAllocation() {
   );
 
 
-  /*
-   * Actual note from A2.
-   */
-
   setText(
     "allocationNote",
     transparencyData.note
@@ -1077,32 +1003,20 @@ function renderAllocationCard(
   data
 ) {
 
-  if (!data) {
-    return;
-  }
-
-
-  const input =
-    Number(data.in || 0);
-
-
-  const output =
-    Number(data.out || 0);
-
-
   const balance =
-    input - output;
+    Number(data.in || 0) -
+    Number(data.out || 0);
 
 
   setText(
     `${prefix}In`,
-    formatPHP(input)
+    formatPHP(data.in)
   );
 
 
   setText(
     `${prefix}Out`,
-    formatPHP(output)
+    formatPHP(data.out)
   );
 
 
@@ -1113,7 +1027,10 @@ function renderAllocationCard(
 
 
   /*
-   * Optional percentage element.
+   * Optional dynamic percentage.
+   *
+   * Current HTML uses the percentage
+   * directly, so this remains optional.
    */
 
   const percentage =
@@ -1145,7 +1062,11 @@ function renderLatestUpdate() {
     item => {
 
       if (item.date) {
-        dates.push(item.date);
+
+        dates.push(
+          item.date
+        );
+
       }
 
     }
@@ -1156,7 +1077,11 @@ function renderLatestUpdate() {
     item => {
 
       if (item.date) {
-        dates.push(item.date);
+
+        dates.push(
+          item.date
+        );
+
       }
 
     }
@@ -1167,7 +1092,11 @@ function renderLatestUpdate() {
     item => {
 
       if (item.date) {
-        dates.push(item.date);
+
+        dates.push(
+          item.date
+        );
+
       }
 
     }
@@ -1186,25 +1115,10 @@ function renderLatestUpdate() {
   }
 
 
-  const validDates =
-    dates.filter(
-      date =>
-        date instanceof Date &&
-        !Number.isNaN(
-          date.getTime()
-        )
-    );
-
-
-  if (!validDates.length) {
-    return;
-  }
-
-
   const latest =
     new Date(
       Math.max(
-        ...validDates.map(
+        ...dates.map(
           date =>
             date.getTime()
         )
@@ -1235,9 +1149,7 @@ function setDataStatus(
     );
 
 
-  if (!element) {
-    return;
-  }
+  if (!element) return;
 
 
   element.textContent =
@@ -1279,43 +1191,19 @@ function toNumber(value) {
   }
 
 
-  let cleaned =
-    String(value)
-      .trim()
-      .replace(/₱/g, "")
-      .replace(/\$/g, "")
-      .replace(/,/g, "")
-      .replace(/SOL/gi, "")
-      .trim();
-
-
-  if (cleaned === "") {
-    return null;
-  }
-
-
   const number =
-    Number(cleaned);
+    Number(
+      String(value)
+        .replace(/₱/g, "")
+        .replace(/\$/g, "")
+        .replace(/,/g, "")
+        .trim()
+    );
 
 
   return Number.isFinite(number)
     ? number
     : null;
-
-}
-
-
-/* =========================================
-   CHECK VALUE
-   ========================================= */
-
-function hasValue(value) {
-
-  return !(
-    value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-  );
 
 }
 
@@ -1335,26 +1223,26 @@ function parseSheetDate(value) {
   }
 
 
-  if (!hasValue(value)) {
+  if (!value) {
+
     return null;
+
   }
 
 
   const stringValue =
-    String(value).trim();
+    String(value);
 
 
   /*
-   * GViz format:
+   * Google GViz:
    *
    * Date(2026,7,8)
-   *
-   * Month is zero-based.
    */
 
   const match =
     stringValue.match(
-      /Date\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/
+      /Date\((\d+),(\d+),(\d+)\)/
     );
 
 
@@ -1369,49 +1257,15 @@ function parseSheetDate(value) {
   }
 
 
-  /*
-   * Normal date string.
-   */
-
   const date =
-    new Date(stringValue);
+    new Date(value);
 
 
-  if (
-    !Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return date;
-
-  }
-
-
-  return null;
-
-}
-
-
-/* =========================================
-   SORT BY DATE
-   ========================================= */
-
-function sortByDate(a, b) {
-
-  const aTime =
-    a.date instanceof Date
-      ? a.date.getTime()
-      : 0;
-
-
-  const bTime =
-    b.date instanceof Date
-      ? b.date.getTime()
-      : 0;
-
-
-  return aTime - bTime;
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? null
+    : date;
 
 }
 
@@ -1423,7 +1277,9 @@ function sortByDate(a, b) {
 function formatDate(value) {
 
   if (!value) {
+
     return "—";
+
   }
 
 
