@@ -2,7 +2,7 @@
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
    SCRIPT.JS
-   STABLE FIXED VERSION
+   TARGETED FIX VERSION
    ========================================= */
 
 "use strict";
@@ -44,23 +44,6 @@ function escapeHTML(value) {
 }
 
 
-function isSheetError(value) {
-
-  return /^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i
-    .test(String(value ?? "").trim());
-}
-
-
-function hasValue(value) {
-
-  return (
-    value !== null &&
-    value !== undefined &&
-    String(value).trim() !== ""
-  );
-}
-
-
 function toNumber(value) {
 
   if (
@@ -71,7 +54,6 @@ function toNumber(value) {
     return 0;
   }
 
-
   if (typeof value === "number") {
 
     return Number.isFinite(value)
@@ -79,15 +61,18 @@ function toNumber(value) {
       : 0;
   }
 
-
   let cleaned =
     String(value).trim();
 
-
-  if (!cleaned || isSheetError(cleaned)) {
+  if (!cleaned) {
     return 0;
   }
 
+  if (
+    /^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(cleaned)
+  ) {
+    return 0;
+  }
 
   cleaned =
     cleaned
@@ -98,10 +83,8 @@ function toNumber(value) {
       .replace(/%/g, "")
       .trim();
 
-
   const number =
     parseFloat(cleaned);
-
 
   return Number.isFinite(number)
     ? number
@@ -148,11 +131,9 @@ function formatRate(value) {
   const number =
     toNumber(value);
 
-
   if (!number) {
     return "—";
   }
-
 
   return `$${number.toLocaleString(
     "en-US",
@@ -166,23 +147,6 @@ function formatRate(value) {
 
 /* =========================================
    DATE HELPERS
-   =========================================
-
-   IMPORTANT:
-
-   Google Sheets CSV may return dates as:
-
-   8/8/2026
-   08/08/2026
-   2026-08-08
-   Aug 8, 2026
-   August 8, 2026
-
-   We NEVER interpret a plain number as
-   a JavaScript date.
-
-   This prevents dates such as 2001 from
-   appearing because of browser date parsing.
    ========================================= */
 
 function parseDate(value) {
@@ -195,7 +159,6 @@ function parseDate(value) {
     return null;
   }
 
-
   if (value instanceof Date) {
 
     return Number.isNaN(
@@ -205,213 +168,127 @@ function parseDate(value) {
       : value;
   }
 
-
   const text =
     String(value).trim();
 
-
-  if (
-    !text ||
-    isSheetError(text)
-  ) {
+  if (!text) {
     return null;
   }
 
-
-  /* -------------------------------------
-     MM/DD/YYYY or MM-DD-YYYY
-  ------------------------------------- */
+  /*
+    Standard Google Sheets formats.
+  */
 
   let match =
     text.match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
+      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/
     );
-
 
   if (match) {
 
-    const month =
+    const first =
       Number(match[1]);
 
-    const day =
+    const second =
       Number(match[2]);
 
-    const year =
+    let year =
       Number(match[3]);
 
-
-    if (
-      month >= 1 &&
-      month <= 12 &&
-      day >= 1 &&
-      day <= 31 &&
-      year >= 1900 &&
-      year <= 2100
-    ) {
-
-      const date =
-        new Date(
-          year,
-          month - 1,
-          day
-        );
-
-
-      if (
-        date.getFullYear() === year &&
-        date.getMonth() === month - 1 &&
-        date.getDate() === day
-      ) {
-
-        return date;
-      }
+    if (year < 100) {
+      year += 2000;
     }
 
+    /*
+      Primary assumption:
+      MM/DD/YYYY
+    */
 
-    return null;
-  }
-
-
-  /* -------------------------------------
-     YYYY-MM-DD
-  ------------------------------------- */
-
-  match =
-    text.match(
-      /^(\d{4})-(\d{1,2})-(\d{1,2})$/
-    );
-
-
-  if (match) {
-
-    const year =
-      Number(match[1]);
-
-    const month =
-      Number(match[2]);
-
-    const day =
-      Number(match[3]);
-
-
-    if (
-      year >= 1900 &&
-      year <= 2100 &&
-      month >= 1 &&
-      month <= 12 &&
-      day >= 1 &&
-      day <= 31
-    ) {
-
-      const date =
-        new Date(
-          year,
-          month - 1,
-          day
-        );
-
-
-      if (
-        date.getFullYear() === year &&
-        date.getMonth() === month - 1 &&
-        date.getDate() === day
-      ) {
-
-        return date;
-      }
-    }
-
-
-    return null;
-  }
-
-
-  /* -------------------------------------
-     Month-name dates
-
-     Aug 8, 2026
-     August 8, 2026
-  ------------------------------------- */
-
-  match =
-    text.match(
-      /^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2}),?\s+(\d{4})$/i
-    );
-
-
-  if (match) {
-
-    const monthNames = [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec"
-    ];
-
-
-    const monthText =
-      match[1].substring(0, 3).toLowerCase();
-
-
-    const month =
-      monthNames.indexOf(
-        monthText
+    let date =
+      new Date(
+        year,
+        first - 1,
+        second
       );
 
-
-    const day =
-      Number(match[2]);
-
-    const year =
-      Number(match[3]);
-
-
     if (
-      month >= 0 &&
-      day >= 1 &&
-      day <= 31 &&
-      year >= 1900 &&
-      year <= 2100
+      date.getFullYear() === year &&
+      date.getMonth() === first - 1 &&
+      date.getDate() === second
     ) {
 
-      const date =
-        new Date(
-          year,
-          month,
-          day
-        );
-
-
-      if (
-        date.getFullYear() === year &&
-        date.getMonth() === month &&
-        date.getDate() === day
-      ) {
-
-        return date;
-      }
+      return date;
     }
 
+    /*
+      Fallback:
+      DD/MM/YYYY
+    */
 
-    return null;
+    date =
+      new Date(
+        year,
+        second - 1,
+        first
+      );
+
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === second - 1 &&
+      date.getDate() === first
+    ) {
+
+      return date;
+    }
   }
 
 
   /*
-    Do NOT use new Date(text) for arbitrary
-    numeric/unknown strings.
-
-    This is intentional to prevent incorrect
-    dates such as 2001.
+    Google Visualization style:
+    Date(2026,7,8)
   */
+
+  match =
+    text.match(
+      /^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/i
+    );
+
+  if (match) {
+
+    const date =
+      new Date(
+        Number(match[1]),
+        Number(match[2]),
+        Number(match[3])
+      );
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return date;
+    }
+  }
+
+
+  /*
+    Natural dates:
+    Aug 8, 2026
+    August 8, 2026
+  */
+
+  const parsed =
+    new Date(text);
+
+  if (
+    !Number.isNaN(
+      parsed.getTime()
+    )
+  ) {
+
+    return parsed;
+  }
 
   return null;
 }
@@ -422,7 +299,6 @@ function formatDate(value) {
   const date =
     parseDate(value);
 
-
   if (!date) {
 
     return escapeHTML(
@@ -430,15 +306,29 @@ function formatDate(value) {
     );
   }
 
+  /*
+    Explicit formatting.
 
-  return date.toLocaleDateString(
-    "en-PH",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    }
-  );
+    This prevents the year from
+    disappearing or depending on
+    browser locale behavior.
+  */
+
+  const month =
+    date.toLocaleString(
+      "en-US",
+      {
+        month: "short"
+      }
+    );
+
+  const day =
+    date.getDate();
+
+  const year =
+    date.getFullYear();
+
+  return `${month} ${day}, ${year}`;
 }
 
 
@@ -456,7 +346,6 @@ function parseCSV(text) {
   let insideQuotes =
     false;
 
-
   for (
     let i = 0;
     i < text.length;
@@ -468,7 +357,6 @@ function parseCSV(text) {
 
     const next =
       text[i + 1];
-
 
     if (
       char === '"' &&
@@ -483,7 +371,6 @@ function parseCSV(text) {
       continue;
     }
 
-
     if (char === '"') {
 
       insideQuotes =
@@ -491,7 +378,6 @@ function parseCSV(text) {
 
       continue;
     }
-
 
     if (
       char === "," &&
@@ -504,7 +390,6 @@ function parseCSV(text) {
 
       continue;
     }
-
 
     if (
       (char === "\n" ||
@@ -519,7 +404,6 @@ function parseCSV(text) {
         i++;
       }
 
-
       row.push(cell);
 
       cell = "";
@@ -531,10 +415,8 @@ function parseCSV(text) {
       continue;
     }
 
-
     cell += char;
   }
-
 
   if (
     cell !== "" ||
@@ -545,7 +427,6 @@ function parseCSV(text) {
 
     rows.push(row);
   }
-
 
   return rows;
 }
@@ -566,7 +447,6 @@ async function fetchGoogleSheet(
     );
   }
 
-
   const url =
     `https://docs.google.com/spreadsheets/d/${encodeURIComponent(
       SHEET_ID
@@ -574,17 +454,14 @@ async function fetchGoogleSheet(
       sheetName
     )}&_=${Date.now()}`;
 
-
   const controller =
     new AbortController();
-
 
   const timeout =
     setTimeout(
       () => controller.abort(),
       12000
     );
-
 
   try {
 
@@ -598,7 +475,6 @@ async function fetchGoogleSheet(
         }
       );
 
-
     if (!response.ok) {
 
       throw new Error(
@@ -606,10 +482,8 @@ async function fetchGoogleSheet(
       );
     }
 
-
     const text =
       await response.text();
-
 
     if (
       !text ||
@@ -621,7 +495,6 @@ async function fetchGoogleSheet(
       );
     }
 
-
     if (
       text.includes("<html") ||
       text.includes("<!DOCTYPE")
@@ -632,9 +505,7 @@ async function fetchGoogleSheet(
       );
     }
 
-
     return parseCSV(text);
-
 
   } finally {
 
@@ -645,17 +516,6 @@ async function fetchGoogleSheet(
 
 /* =========================================
    REWARD SHEET
-   =========================================
-
-   REWARD:
-
-   A:B = CLAIMED
-   D:H = REDEEMED
-   J:M = EXPENSES
-
-   Row 1 = totals
-   Row 2 = headers
-   Row 3+ = records
    ========================================= */
 
 function processRewardSheet(rows) {
@@ -663,7 +523,6 @@ function processRewardSheet(rows) {
   const claimed = [];
   const redeemed = [];
   const expenses = [];
-
 
   if (
     !Array.isArray(rows) ||
@@ -677,7 +536,6 @@ function processRewardSheet(rows) {
     };
   }
 
-
   for (
     let i = 2;
     i < rows.length;
@@ -688,9 +546,7 @@ function processRewardSheet(rows) {
       rows[i] || [];
 
 
-    /* -------------------------------------
-       CLAIMED
-    ------------------------------------- */
+    /* CLAIMED */
 
     const claimedDate =
       row[0];
@@ -698,9 +554,8 @@ function processRewardSheet(rows) {
     const claimedSOL =
       toNumber(row[1]);
 
-
     if (
-      hasValue(claimedDate) &&
+      claimedDate &&
       claimedSOL !== 0
     ) {
 
@@ -711,9 +566,7 @@ function processRewardSheet(rows) {
     }
 
 
-    /* -------------------------------------
-       REDEEMED
-    ------------------------------------- */
+    /* REDEEMED */
 
     const soldDate =
       row[3];
@@ -730,18 +583,8 @@ function processRewardSheet(rows) {
     const soldPeso =
       toNumber(row[7]);
 
-
-    /*
-      A redeemed record exists when the row
-      contains actual redeemed information.
-
-      Date alone is also accepted because
-      a transaction should still appear even
-      if another calculated field is blank.
-    */
-
     if (
-      hasValue(soldDate) ||
+      soldDate ||
       soldSOL !== 0 ||
       soldRate !== 0 ||
       soldUSD !== 0 ||
@@ -764,9 +607,7 @@ function processRewardSheet(rows) {
     }
 
 
-    /* -------------------------------------
-       EXPENSES
-    ------------------------------------- */
+    /* EXPENSES */
 
     const expenseDate =
       row[9];
@@ -780,17 +621,17 @@ function processRewardSheet(rows) {
     const expenseRemarks =
       row[12];
 
-
     if (
-      hasValue(expenseDate) ||
-      hasValue(expenseDescription) ||
+      expenseDate ||
+      expenseDescription ||
       expenseAmount !== 0 ||
-      hasValue(expenseRemarks)
+      expenseRemarks
     ) {
 
       expenses.push({
 
-        date: expenseDate,
+        date:
+          expenseDate,
 
         description:
           expenseDescription,
@@ -803,9 +644,7 @@ function processRewardSheet(rows) {
 
       });
     }
-
   }
-
 
   return {
     claimed,
@@ -816,30 +655,8 @@ function processRewardSheet(rows) {
 
 
 /* =========================================
-   ALLOCATION HELPERS
+   ALLOCATION BLOCK READER
    ========================================= */
-
-
-/*
-  Normalize a cell for header comparison.
-*/
-
-function normalizeCell(value) {
-
-  return String(value ?? "")
-    .trim()
-    .replace(/\s+/g, " ")
-    .toUpperCase();
-}
-
-
-/*
-  Detect a block header.
-
-  Expected:
-
-  DATE | REMARKS | IN | OUT
-*/
 
 function findAllocationHeaderRow(
   rows,
@@ -850,7 +667,6 @@ function findAllocationHeaderRow(
     return -1;
   }
 
-
   for (
     let i = 0;
     i < rows.length;
@@ -860,27 +676,33 @@ function findAllocationHeaderRow(
     const row =
       rows[i] || [];
 
-
     const date =
-      normalizeCell(
-        row[startColumn]
-      );
+      String(
+        row[startColumn] ?? ""
+      )
+      .trim()
+      .toUpperCase();
 
     const remarks =
-      normalizeCell(
-        row[startColumn + 1]
-      );
+      String(
+        row[startColumn + 1] ?? ""
+      )
+      .trim()
+      .toUpperCase();
 
     const incoming =
-      normalizeCell(
-        row[startColumn + 2]
-      );
+      String(
+        row[startColumn + 2] ?? ""
+      )
+      .trim()
+      .toUpperCase();
 
     const outgoing =
-      normalizeCell(
-        row[startColumn + 3]
-      );
-
+      String(
+        row[startColumn + 3] ?? ""
+      )
+      .trim()
+      .toUpperCase();
 
     if (
       date === "DATE" &&
@@ -893,27 +715,9 @@ function findAllocationHeaderRow(
     }
   }
 
-
   return -1;
 }
 
-
-/*
-  Read transactions below a detected
-  allocation header.
-
-  We stop capturing a row as a transaction
-  unless the DATE cell is a real date.
-
-  This prevents:
-  - BALANCE rows
-  - percentage rows
-  - labels
-  - totals
-  - random numeric cells
-
-  from becoming transactions.
-*/
 
 function readAllocationBlock(
   rows,
@@ -922,19 +726,15 @@ function readAllocationBlock(
 
   const result = [];
 
-
   const headerRow =
     findAllocationHeaderRow(
       rows,
       startColumn
     );
 
-
   if (headerRow === -1) {
-
     return result;
   }
-
 
   for (
     let i = headerRow + 1;
@@ -944,7 +744,6 @@ function readAllocationBlock(
 
     const row =
       rows[i] || [];
-
 
     const date =
       row[startColumn];
@@ -964,56 +763,77 @@ function readAllocationBlock(
 
 
     /*
-      A transaction requires a valid date.
-
-      This is important because allocation
-      sheets can contain balance/percentage
-      rows in the same columns.
+      Skip completely empty rows.
     */
 
     if (
-      !hasValue(date) ||
-      !parseDate(date)
+      !date &&
+      !remarks &&
+      inValue === 0 &&
+      outValue === 0
     ) {
-
       continue;
     }
 
 
-    result.push({
+    /*
+      Skip known non-transaction rows.
+    */
 
-      date: date,
+    const dateText =
+      String(
+        date ?? ""
+      )
+      .trim()
+      .toUpperCase();
 
-      remarks:
-        remarks || "",
+    if (
+      dateText === "DATE" ||
+      dateText === "BALANCE" ||
+      dateText === "TOTAL"
+    ) {
+      continue;
+    }
 
-      in:
-        inValue,
 
-      out:
-        outValue
+    /*
+      REAL TRANSACTION:
+      date must be a valid date.
 
-    });
+      This prevents percentage,
+      balance and header rows from
+      becoming transactions.
+    */
+
+    if (
+      date &&
+      parseDate(date)
+    ) {
+
+      result.push({
+
+        date:
+          date,
+
+        remarks:
+          remarks,
+
+        in:
+          inValue,
+
+        out:
+          outValue
+
+      });
+    }
   }
-
 
   return result;
 }
 
 
 /* =========================================
-   ALLOCATION NOTE FINDER
-   =========================================
-
-   The note may not always remain exactly
-   at A2 after sheet edits.
-
-   We therefore search the first several
-   rows for a transparency-note label and
-   retrieve the nearby text.
-
-   If A2 itself contains the actual note,
-   that is also accepted.
+   TRANSPARENCY NOTE FINDER
    ========================================= */
 
 function findTransparencyNote(rows) {
@@ -1022,128 +842,85 @@ function findTransparencyNote(rows) {
     !Array.isArray(rows) ||
     !rows.length
   ) {
-
     return "";
   }
 
 
   /*
-    First: preserve the known A2 behavior.
+    First look for an obvious
+    transparency-related cell.
   */
 
-  if (
-    rows[1] &&
-    hasValue(rows[1][0]) &&
-    !isSheetError(rows[1][0])
+  for (
+    let r = 0;
+    r < Math.min(rows.length, 10);
+    r++
   ) {
 
-    const a2 =
-      String(rows[1][0]).trim();
+    const row =
+      rows[r] || [];
 
-
-    /*
-      Do not accidentally treat a title such
-      as ALLOCATION as the note.
-    */
-
-    const upper =
-      a2.toUpperCase();
-
-
-    if (
-      upper !== "ALLOCATION" &&
-      upper !== "TRANSPARENCY NOTE" &&
-      upper !== "FUND ALLOCATION"
+    for (
+      let c = 0;
+      c < row.length;
+      c++
     ) {
 
-      return a2;
+      const value =
+        String(
+          row[c] ?? ""
+        ).trim();
+
+      if (!value) {
+        continue;
+      }
+
+      if (
+        /transparency/i.test(value) &&
+        value.length > 35
+      ) {
+
+        return value;
+      }
     }
   }
 
 
   /*
-    Search for an explicit note label.
+    Common layout:
+    A2 = note
+
+    Also supports merged/shifted
+    Google Sheets output.
   */
 
   for (
-    let i = 0;
-    i < Math.min(rows.length, 12);
-    i++
+    let r = 0;
+    r < Math.min(rows.length, 6);
+    r++
   ) {
 
     const row =
-      rows[i] || [];
-
+      rows[r] || [];
 
     for (
       let c = 0;
-      c < Math.min(row.length, 14);
+      c < row.length;
       c++
     ) {
 
-      const cell =
-        normalizeCell(row[c]);
-
+      const value =
+        String(
+          row[c] ?? ""
+        ).trim();
 
       if (
-        cell === "TRANSPARENCY NOTE" ||
-        cell === "NOTE"
+        value &&
+        value.length > 45 &&
+        !/^DATE$/i.test(value)
       ) {
 
-        /*
-          Look to the right first.
-        */
-
-        for (
-          let next = c + 1;
-          next < Math.min(row.length, 14);
-          next++
-        ) {
-
-          if (
-            hasValue(row[next]) &&
-            !isSheetError(row[next])
-          ) {
-
-            return String(
-              row[next]
-            ).trim();
-          }
-        }
-
-
-        /*
-          Then look at the next row.
-        */
-
-        if (
-          rows[i + 1]
-        ) {
-
-          for (
-            let next = 0;
-            next < Math.min(
-              rows[i + 1].length,
-              14
-            );
-            next++
-          ) {
-
-            if (
-              hasValue(
-                rows[i + 1][next]
-              ) &&
-              !isSheetError(
-                rows[i + 1][next]
-              )
-            ) {
-
-              return String(
-                rows[i + 1][next]
-              ).trim();
-            }
-          }
-        }
+        return value;
       }
     }
   }
@@ -1171,35 +948,22 @@ function processAllocationSheet(rows) {
 
   };
 
-
   if (
     !Array.isArray(rows) ||
     !rows.length
   ) {
-
     return result;
   }
 
 
   /*
-    Transparency note.
-  */
+    IMPORTANT:
 
-  result.note =
-    findTransparencyNote(rows);
+    Read each block independently.
 
-
-  /*
-    Read each block dynamically.
-
-    LEAM:
-    A:D
-
-    CP KIDS:
-    F:I
-
-    PROJECT:
-    K:N
+    LEAM  = A:D
+    CP    = F:I
+    PROJECT = K:N
   */
 
   result.leam =
@@ -1208,18 +972,22 @@ function processAllocationSheet(rows) {
       0
     );
 
-
   result.cp =
     readAllocationBlock(
       rows,
       5
     );
 
-
   result.project =
     readAllocationBlock(
       rows,
       10
+    );
+
+
+  result.note =
+    findTransparencyNote(
+      rows
     );
 
 
@@ -1265,15 +1033,12 @@ function renderClaimed() {
   const table =
     $("claimsTable");
 
-
   if (!table) {
     return;
   }
 
-
   const rows =
     state.claimed;
-
 
   const count =
     $("claimedCount");
@@ -1306,18 +1071,15 @@ function renderClaimed() {
       </tr>
     `;
 
-
     if (totalElement) {
       totalElement.textContent =
         formatSOL(0);
     }
 
-
     if (summaryElement) {
       summaryElement.textContent =
         formatSOL(0);
     }
-
 
     return;
   }
@@ -1353,13 +1115,11 @@ function renderClaimed() {
       formatSOL(total);
   }
 
-
   if (summaryElement) {
 
     summaryElement.textContent =
       formatSOL(total);
   }
-
 }
 
 
@@ -1378,7 +1138,6 @@ function renderRedeemed() {
   const wrap =
     $("redeemedWrap");
 
-
   if (
     !table ||
     !empty ||
@@ -1387,14 +1146,11 @@ function renderRedeemed() {
     return;
   }
 
-
   const rows =
     state.redeemed;
 
-
   const count =
     $("redeemedCount");
-
 
   if (count) {
 
@@ -1407,10 +1163,6 @@ function renderRedeemed() {
   }
 
 
-  /* -------------------------------------
-     NO RECORDS
-  ------------------------------------- */
-
   if (!rows.length) {
 
     empty.classList.remove(
@@ -1421,62 +1173,38 @@ function renderRedeemed() {
       "hidden"
     );
 
-
     if ($("redeemedTotal")) {
-
       $("redeemedTotal").textContent =
         formatSOL(0);
     }
 
-
     if ($("proceedsTotal")) {
-
       $("proceedsTotal").textContent =
         formatPeso(0);
     }
 
-
     if ($("totalRedeemed")) {
-
       $("totalRedeemed").textContent =
         formatSOL(0);
     }
 
-
     if ($("totalProceeds")) {
-
       $("totalProceeds").textContent =
         formatPeso(0);
     }
-
 
     return;
   }
 
 
-  /* -------------------------------------
-     HAS RECORDS
-
-     IMPORTANT:
-
-     Empty message is explicitly hidden
-     whenever at least one transaction
-     exists.
-  ------------------------------------- */
-
   empty.classList.add(
     "hidden"
   );
-
 
   wrap.classList.remove(
     "hidden"
   );
 
-
-  /* -------------------------------------
-     TABLE
-  ------------------------------------- */
 
   table.innerHTML =
     rows.map(row => `
@@ -1506,17 +1234,12 @@ function renderRedeemed() {
     `).join("");
 
 
-  /* -------------------------------------
-     TOTALS
-  ------------------------------------- */
-
   const totalSOL =
     rows.reduce(
       (sum, row) =>
         sum + toNumber(row.sol),
       0
     );
-
 
   const totalPeso =
     rows.reduce(
@@ -1527,32 +1250,24 @@ function renderRedeemed() {
 
 
   if ($("redeemedTotal")) {
-
     $("redeemedTotal").textContent =
       formatSOL(totalSOL);
   }
 
-
   if ($("proceedsTotal")) {
-
     $("proceedsTotal").textContent =
       formatPeso(totalPeso);
   }
 
-
   if ($("totalRedeemed")) {
-
     $("totalRedeemed").textContent =
       formatSOL(totalSOL);
   }
 
-
   if ($("totalProceeds")) {
-
     $("totalProceeds").textContent =
       formatPeso(totalPeso);
   }
-
 }
 
 
@@ -1565,15 +1280,12 @@ function renderExpenses() {
   const table =
     $("expensesTable");
 
-
   if (!table) {
     return;
   }
 
-
   const rows =
     state.expenses;
-
 
   if ($("expenseCount")) {
 
@@ -1596,20 +1308,15 @@ function renderExpenses() {
       </tr>
     `;
 
-
     if ($("expensesTotal")) {
-
       $("expensesTotal").textContent =
         formatPeso(0);
     }
 
-
     if ($("totalExpenses")) {
-
       $("totalExpenses").textContent =
         formatPeso(0);
     }
-
 
     return;
   }
@@ -1657,13 +1364,11 @@ function renderExpenses() {
       formatPeso(total);
   }
 
-
   if ($("totalExpenses")) {
 
     $("totalExpenses").textContent =
       formatPeso(total);
   }
-
 }
 
 
@@ -1676,7 +1381,6 @@ function renderAllocationCard(key) {
   const rows =
     state.allocation[key] || [];
 
-
   const prefix =
     key;
 
@@ -1688,14 +1392,12 @@ function renderAllocationCard(key) {
       0
     );
 
-
   const outTotal =
     rows.reduce(
       (sum, row) =>
         sum + toNumber(row.out),
       0
     );
-
 
   const balance =
     inTotal - outTotal;
@@ -1732,13 +1434,11 @@ function renderAllocationCard(key) {
       formatPeso(inTotal);
   }
 
-
   if (outElement) {
 
     outElement.textContent =
       formatPeso(outTotal);
   }
-
 
   if (balanceElement) {
 
@@ -1747,17 +1447,9 @@ function renderAllocationCard(key) {
   }
 
 
-  /* -------------------------------------
-     NO TRANSACTIONS
-  ------------------------------------- */
-
   if (!rows.length) {
 
     records.innerHTML = "";
-
-    noRecords.classList.remove(
-      "hidden"
-    );
 
     noRecords.style.display =
       "block";
@@ -1765,14 +1457,6 @@ function renderAllocationCard(key) {
     return;
   }
 
-
-  /* -------------------------------------
-     HAS TRANSACTIONS
-  ------------------------------------- */
-
-  noRecords.classList.add(
-    "hidden"
-  );
 
   noRecords.style.display =
     "none";
@@ -1810,7 +1494,6 @@ function renderAllocationCard(key) {
 
       </div>
     `).join("");
-
 }
 
 
@@ -1833,29 +1516,76 @@ function getAllocationPercentages(
   };
 
 
+  if (
+    !Array.isArray(rows)
+  ) {
+    return defaults;
+  }
+
+
   /*
-    Preserve the current working 30/30/40
-    unless row 5 contains valid percentage
-    values.
+    Find the percentage row dynamically.
+
+    Looks for the first row containing
+    usable values in A, F and K.
   */
 
-  if (
-    !Array.isArray(rows) ||
-    !rows[4]
+  let percentageRow =
+    null;
+
+
+  for (
+    let i = 0;
+    i < Math.min(rows.length, 10);
+    i++
   ) {
 
+    const row =
+      rows[i] || [];
+
+    const leam =
+      toNumber(row[0]);
+
+    const cp =
+      toNumber(row[5]);
+
+    const project =
+      toNumber(row[10]);
+
+
+    if (
+      leam > 0 &&
+      cp > 0 &&
+      project > 0
+    ) {
+
+      percentageRow =
+        row;
+
+      break;
+    }
+  }
+
+
+  if (!percentageRow) {
     return defaults;
   }
 
 
   let leam =
-    toNumber(rows[4][0]);
+    toNumber(
+      percentageRow[0]
+    );
 
   let cp =
-    toNumber(rows[4][5]);
+    toNumber(
+      percentageRow[5]
+    );
 
   let project =
-    toNumber(rows[4][10]);
+    toNumber(
+      percentageRow[10]
+    );
 
 
   if (
@@ -1865,14 +1595,12 @@ function getAllocationPercentages(
     leam *= 100;
   }
 
-
   if (
     cp > 0 &&
     cp <= 1
   ) {
     cp *= 100;
   }
-
 
   if (
     project > 0 &&
@@ -1886,27 +1614,22 @@ function getAllocationPercentages(
     leam <= 0 ||
     !Number.isFinite(leam)
   ) {
-
     leam =
       defaults.leam;
   }
-
 
   if (
     cp <= 0 ||
     !Number.isFinite(cp)
   ) {
-
     cp =
       defaults.cp;
   }
-
 
   if (
     project <= 0 ||
     !Number.isFinite(project)
   ) {
-
     project =
       defaults.project;
   }
@@ -1930,48 +1653,101 @@ function getAllocationPercentages(
 
 function renderTransparencyNote() {
 
-  const note =
-    state.note ||
+  const fallback =
     "Creator Reward funds are allocated across direct support, cerebral palsy support, and Gentle Warrior projects.";
 
-
-  const allocationNote =
-    $("allocationNote");
-
-
-  if (allocationNote) {
-
-    allocationNote.textContent =
-      note;
-  }
+  const note =
+    state.note ||
+    fallback;
 
 
   /*
-    Compatibility IDs if they are added
-    later or already exist in another version.
+    Existing IDs.
   */
 
-  const transparencyNote =
-    $("transparencyNote");
+  const targets = [
+
+    $("allocationNote"),
+
+    $("transparencyNote"),
+
+    $("statementNote")
+
+  ].filter(Boolean);
 
 
-  if (transparencyNote) {
+  targets.forEach(
+    element => {
 
-    transparencyNote.textContent =
-      note;
+      element.textContent =
+        note;
+
+      element.classList.remove(
+        "hidden"
+      );
+
+      element.style.display =
+        "";
+    }
+  );
+
+
+  /*
+    If the existing HTML does not have
+    a transparency-note element, create
+    one automatically inside the
+    Fund Allocation section.
+
+    This prevents the note from
+    disappearing because of a missing ID.
+  */
+
+  if (!targets.length) {
+
+    const allocationSection =
+      document.querySelector(
+        '[data-accordion]:has(#leamRecords)'
+      ) ||
+      document.querySelector(
+        '[data-accordion]'
+      );
+
+
+    if (allocationSection) {
+
+      const heading =
+        allocationSection.querySelector(
+          ".section-heading"
+        );
+
+
+      const noteElement =
+        document.createElement(
+          "div"
+        );
+
+      noteElement.className =
+        "transparency-note";
+
+      noteElement.textContent =
+        note;
+
+
+      if (heading) {
+
+        heading.insertAdjacentElement(
+          "afterend",
+          noteElement
+        );
+
+      } else {
+
+        allocationSection.prepend(
+          noteElement
+        );
+      }
+    }
   }
-
-
-  const statementNote =
-    $("statementNote");
-
-
-  if (statementNote) {
-
-    statementNote.textContent =
-      note;
-  }
-
 }
 
 
@@ -2008,13 +1784,11 @@ function renderAllocation(
       `${percentages.leam}%`;
   }
 
-
   if ($("cpPercentage")) {
 
     $("cpPercentage").textContent =
       `${percentages.cp}%`;
   }
-
 
   if ($("projectPercentage")) {
 
@@ -2037,7 +1811,6 @@ function renderAllocation(
 
 
   renderTransparencyNote();
-
 }
 
 
@@ -2058,7 +1831,6 @@ function renderAll(
   renderAllocation(
     allocationRows
   );
-
 }
 
 
@@ -2070,7 +1842,6 @@ function updateLatestEntry() {
 
   const element =
     $("latestEntry");
-
 
   if (!element) {
     return;
@@ -2142,13 +1913,8 @@ function updateLatestEntry() {
 
 
   element.textContent =
-    `Latest recorded activity: ${latest.toLocaleDateString(
-      "en-PH",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
+    `Latest recorded activity: ${formatDate(
+      latest
     )}`;
 }
 
@@ -2161,7 +1927,6 @@ function setStatus(text) {
 
   const element =
     $("dataStatus");
-
 
   if (!element) {
     return;
@@ -2185,9 +1950,7 @@ function setStatus(text) {
     element.classList.remove(
       "data-error"
     );
-
   }
-
 }
 
 
@@ -2248,7 +2011,6 @@ function showDataError(
       "hidden"
     );
 
-
     $("redeemedEmpty").innerHTML = `
       <div class="empty-icon">!</div>
 
@@ -2269,158 +2031,57 @@ function showDataError(
       "hidden"
     );
   }
-
 }
 
 
 /* =========================================
-   LOAD DATA
+   TABLE HORIZONTAL SCROLL
    ========================================= */
 
-async function loadData() {
+function setupTableScroll() {
 
-  setStatus(
-    "Loading..."
-  );
+  const tables =
+    document.querySelectorAll(
+      "table"
+    );
 
 
-  try {
+  tables.forEach(
+    table => {
 
-    if (!SHEET_ID) {
+      /*
+        Do not wrap the same table twice.
+      */
 
-      throw new Error(
-        "Missing sheetId in config.js."
+      if (
+        table.parentElement &&
+        table.parentElement.classList.contains(
+          "table-scroll"
+        )
+      ) {
+        return;
+      }
+
+
+      const wrapper =
+        document.createElement(
+          "div"
+        );
+
+      wrapper.className =
+        "table-scroll";
+
+
+      table.parentNode.insertBefore(
+        wrapper,
+        table
+      );
+
+      wrapper.appendChild(
+        table
       );
     }
-
-
-    const [
-      rewardRows,
-      allocationRows
-    ] =
-      await Promise.all([
-
-        fetchGoogleSheet(
-          REWARD_SHEET
-        ),
-
-        fetchGoogleSheet(
-          ALLOCATION_SHEET
-        )
-
-      ]);
-
-
-    /* -------------------------------------
-       REWARD
-    ------------------------------------- */
-
-    const rewardData =
-      processRewardSheet(
-        rewardRows
-      );
-
-
-    state.claimed =
-      rewardData.claimed;
-
-    state.redeemed =
-      rewardData.redeemed;
-
-    state.expenses =
-      rewardData.expenses;
-
-
-    /* -------------------------------------
-       ALLOCATION
-    ------------------------------------- */
-
-    const allocationData =
-      processAllocationSheet(
-        allocationRows
-      );
-
-
-    state.allocation.leam =
-      allocationData.leam;
-
-    state.allocation.cp =
-      allocationData.cp;
-
-    state.allocation.project =
-      allocationData.project;
-
-    state.note =
-      allocationData.note;
-
-
-    /* -------------------------------------
-       RENDER
-    ------------------------------------- */
-
-    renderAll(
-      allocationRows
-    );
-
-
-    state.loaded =
-      true;
-
-
-    setStatus(
-      "● Live Google Sheet data"
-    );
-
-
-    updateLatestEntry();
-
-
-    console.log(
-      "Creator Reward Transparency loaded:",
-      {
-
-        claimed:
-          state.claimed.length,
-
-        redeemed:
-          state.redeemed.length,
-
-        expenses:
-          state.expenses.length,
-
-        leam:
-          state.allocation.leam.length,
-
-        cp:
-          state.allocation.cp.length,
-
-        project:
-          state.allocation.project.length,
-
-        transparencyNote:
-          state.note
-
-      }
-    );
-
-
-  } catch (error) {
-
-    state.loaded =
-      false;
-
-
-    setStatus(
-      "Data unavailable"
-    );
-
-
-    showDataError(
-      error
-    );
-
-  }
-
+  );
 }
 
 
@@ -2450,6 +2111,43 @@ function setupAccordion() {
       }
 
 
+      heading.setAttribute(
+        "role",
+        "button"
+      );
+
+      heading.setAttribute(
+        "tabindex",
+        "0"
+      );
+
+
+      function updateIcon() {
+
+        const isOpen =
+          section.classList.contains(
+            "open"
+          );
+
+        heading.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+        /*
+          CSS uses this value for
+          the visible + / − indicator.
+        */
+
+        heading.setAttribute(
+          "data-accordion-icon",
+          isOpen
+            ? "−"
+            : "+"
+        );
+      }
+
+
       function toggle() {
 
         const isOpen =
@@ -2464,11 +2162,7 @@ function setupAccordion() {
         );
 
 
-        heading.setAttribute(
-          "aria-expanded",
-          String(!isOpen)
-        );
-
+        updateIcon();
       }
 
 
@@ -2491,13 +2185,14 @@ function setupAccordion() {
 
             toggle();
           }
-
         }
       );
 
+
+      updateIcon();
+
     }
   );
-
 }
 
 
@@ -2572,16 +2267,17 @@ function setupNavigation() {
                 "aria-expanded",
                 "true"
               );
+
+              heading.setAttribute(
+                "data-accordion-icon",
+                "−"
+              );
             }
-
           }
-
         }
       );
-
     }
   );
-
 }
 
 
@@ -2621,13 +2317,51 @@ function syncAccordionState() {
             "aria-expanded",
             "false"
           );
-        }
 
+          heading.setAttribute(
+            "data-accordion-icon",
+            ""
+          );
+        }
       }
     );
 
-  }
+  } else {
 
+    sections.forEach(
+      section => {
+
+        const heading =
+          section.querySelector(
+            ".section-heading"
+          );
+
+
+        if (!heading) {
+          return;
+        }
+
+
+        const isOpen =
+          section.classList.contains(
+            "open"
+          );
+
+
+        heading.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+        heading.setAttribute(
+          "data-accordion-icon",
+          isOpen
+            ? "−"
+            : "+"
+        );
+      }
+    );
+  }
 }
 
 
@@ -2642,6 +2376,8 @@ document.addEventListener(
     setupAccordion();
 
     setupNavigation();
+
+    setupTableScroll();
 
     syncAccordionState();
 
@@ -2675,3 +2411,140 @@ window.addEventListener(
 
   }
 );
+
+
+/* =========================================
+   LOAD DATA
+   ========================================= */
+
+async function loadData() {
+
+  setStatus(
+    "Loading..."
+  );
+
+
+  try {
+
+    if (!SHEET_ID) {
+
+      throw new Error(
+        "Missing sheetId in config.js."
+      );
+    }
+
+
+    const [
+      rewardRows,
+      allocationRows
+    ] =
+      await Promise.all([
+
+        fetchGoogleSheet(
+          REWARD_SHEET
+        ),
+
+        fetchGoogleSheet(
+          ALLOCATION_SHEET
+        )
+
+      ]);
+
+
+    const rewardData =
+      processRewardSheet(
+        rewardRows
+      );
+
+
+    state.claimed =
+      rewardData.claimed;
+
+    state.redeemed =
+      rewardData.redeemed;
+
+    state.expenses =
+      rewardData.expenses;
+
+
+    const allocationData =
+      processAllocationSheet(
+        allocationRows
+      );
+
+
+    state.allocation.leam =
+      allocationData.leam;
+
+    state.allocation.cp =
+      allocationData.cp;
+
+    state.allocation.project =
+      allocationData.project;
+
+    state.note =
+      allocationData.note;
+
+
+    renderAll(
+      allocationRows
+    );
+
+
+    state.loaded =
+      true;
+
+
+    setStatus(
+      "● Live Google Sheet data"
+    );
+
+
+    updateLatestEntry();
+
+
+    console.log(
+      "Creator Reward Transparency loaded:",
+      {
+
+        claimed:
+          state.claimed.length,
+
+        redeemed:
+          state.redeemed.length,
+
+        expenses:
+          state.expenses.length,
+
+        leam:
+          state.allocation.leam.length,
+
+        cp:
+          state.allocation.cp.length,
+
+        project:
+          state.allocation.project.length,
+
+        transparencyNote:
+          state.note
+
+      }
+    );
+
+
+  } catch (error) {
+
+    state.loaded =
+      false;
+
+
+    setStatus(
+      "Data unavailable"
+    );
+
+
+    showDataError(
+      error
+    );
+  }
+         }
