@@ -899,12 +899,11 @@ function readAllocationBlock(
 
    A2 = TRANSPARENCY NOTE
 
-   Percentages are still read from
-   the existing percentage row.
+   Row 5 = percentages
+   Row 7+ = transactions
 
-   Transactions are now detected from
-   the actual DATE / REMARKS / IN / OUT
-   headers.
+   IMPORTANT:
+   Transaction rows are detected dynamically.
    ========================================= */
 
 function processAllocationSheet(rows) {
@@ -933,18 +932,47 @@ function processAllocationSheet(rows) {
 
   /* -------------------------------------
      TRANSPARENCY NOTE
+     A2
+  ------------------------------------- */
 
-     Actual sheet:
-     A2 contains the transparency note.
+  if (
+    rows[1] &&
+    rows[1][0] !== undefined &&
+    rows[1][0] !== null
+  ) {
 
-     Instead of relying on a fragile CSV
-     row index, search the first rows for
-     the actual note text.
+    const note =
+      String(rows[1][0]).trim();
+
+
+    if (
+      note &&
+      !/^#(VALUE|REF|DIV\/0|N\/A|NAME|NUM|NULL|ERROR)!?$/i.test(note)
+    ) {
+
+      result.note =
+        note;
+    }
+  }
+
+
+  /* -------------------------------------
+     DYNAMIC TRANSACTION SCAN
+     
+     Do NOT assume transaction starts
+     at a fixed row number.
+
+     This allows the sheet to contain:
+     - blank rows
+     - merged cells
+     - balance rows
+     - percentage rows
+     - header rows
   ------------------------------------- */
 
   for (
     let i = 0;
-    i < Math.min(rows.length, 6);
+    i < rows.length;
     i++
   ) {
 
@@ -952,88 +980,151 @@ function processAllocationSheet(rows) {
       rows[i] || [];
 
 
-    const value =
-      String(
-        row[0] ?? ""
-      ).trim();
+    /* -------------------------------------
+       LEAM
+       A = DATE
+       B = REMARKS
+       C = IN
+       D = OUT
+    ------------------------------------- */
+
+    const leamDate =
+      row[0];
+
+    const leamRemarks =
+      row[1];
+
+    const leamIn =
+      toNumber(row[2]);
+
+    const leamOut =
+      toNumber(row[3]);
+
+
+    /*
+      Only treat the row as a real
+      transaction when the DATE column
+      contains an actual date.
+
+      This prevents the BALANCE row
+      from being captured.
+    */
+
+    if (
+      leamDate &&
+      parseDate(leamDate)
+    ) {
+
+      result.leam.push({
+
+        date:
+          leamDate,
+
+        remarks:
+          leamRemarks,
+
+        in:
+          leamIn,
+
+        out:
+          leamOut
+
+      });
+    }
+
+
+    /* -------------------------------------
+       CP KIDS
+       F = DATE
+       G = REMARKS
+       H = IN
+       I = OUT
+    ------------------------------------- */
+
+    const cpDate =
+      row[5];
+
+    const cpRemarks =
+      row[6];
+
+    const cpIn =
+      toNumber(row[7]);
+
+    const cpOut =
+      toNumber(row[8]);
 
 
     if (
-      value &&
-      value.length > 15 &&
-      !/^LEAM$/i.test(value) &&
-      !/^DATE$/i.test(value)
+      cpDate &&
+      parseDate(cpDate)
     ) {
 
-      /*
-        Ignore percentage values and
-        obvious numeric cells.
-      */
+      result.cp.push({
 
-      if (
-        !Number.isFinite(
-          Number(value)
-        )
-      ) {
+        date:
+          cpDate,
 
-        result.note =
-          value;
+        remarks:
+          cpRemarks,
 
-        break;
-      }
+        in:
+          cpIn,
 
+        out:
+          cpOut
+
+      });
+    }
+
+
+    /* -------------------------------------
+       PROJECT
+       K = DATE
+       L = REMARKS
+       M = IN
+       N = OUT
+    ------------------------------------- */
+
+    const projectDate =
+      row[10];
+
+    const projectRemarks =
+      row[11];
+
+    const projectIn =
+      toNumber(row[12]);
+
+    const projectOut =
+      toNumber(row[13]);
+
+
+    if (
+      projectDate &&
+      parseDate(projectDate)
+    ) {
+
+      result.project.push({
+
+        date:
+          projectDate,
+
+        remarks:
+          projectRemarks,
+
+        in:
+          projectIn,
+
+        out:
+          projectOut
+
+      });
     }
 
   }
 
 
-  /* -------------------------------------
-     TRANSACTIONS
-  ------------------------------------- */
-
-  /*
-    LEAM
-    A:D
-  */
-
-  result.leam =
-    readAllocationBlock(
-      rows,
-      0
-    );
-
-
-  /*
-    CP KIDS
-    F:I
-
-    F = index 5
-  */
-
-  result.cp =
-    readAllocationBlock(
-      rows,
-      5
-    );
-
-
-  /*
-    PROJECT
-    K:N
-
-    K = index 10
-  */
-
-  result.project =
-    readAllocationBlock(
-      rows,
-      10
-    );
-
-
   return result;
 }
-
 
 /* =========================================
    DATA STATE
