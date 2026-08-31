@@ -175,11 +175,41 @@ function parseDate(value) {
     return null;
   }
 
+
   /*
-    Standard Google Sheets formats.
+    Google Visualization style:
+    Date(2026,7,8)
   */
 
   let match =
+    text.match(
+      /^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/i
+    );
+
+  if (match) {
+
+    const date =
+      new Date(
+        Number(match[1]),
+        Number(match[2]),
+        Number(match[3])
+      );
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return date;
+    }
+  }
+
+
+  /*
+    Standard numeric dates.
+  */
+
+  match =
     text.match(
       /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/
     );
@@ -195,9 +225,33 @@ function parseDate(value) {
     let year =
       Number(match[3]);
 
-    if (year < 100) {
+
+    /*
+      IMPORTANT FIX:
+
+      Creator Reward records are
+      2026 records.
+
+      Some Google Sheets CSV
+      outputs can return the year
+      as "01" / "2001".
+
+      For this transparency page,
+      those legacy year values are
+      normalized to 2026.
+    */
+
+    if (
+      year === 1 ||
+      year === 2001
+    ) {
+      year = 2026;
+    }
+
+    else if (year < 100) {
       year += 2000;
     }
+
 
     /*
       Primary assumption:
@@ -219,6 +273,7 @@ function parseDate(value) {
 
       return date;
     }
+
 
     /*
       Fallback:
@@ -244,35 +299,6 @@ function parseDate(value) {
 
 
   /*
-    Google Visualization style:
-    Date(2026,7,8)
-  */
-
-  match =
-    text.match(
-      /^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/i
-    );
-
-  if (match) {
-
-    const date =
-      new Date(
-        Number(match[1]),
-        Number(match[2]),
-        Number(match[3])
-      );
-
-    if (
-      !Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return date;
-    }
-  }
-
-
-  /*
     Natural dates:
     Aug 8, 2026
     August 8, 2026
@@ -286,6 +312,23 @@ function parseDate(value) {
       parsed.getTime()
     )
   ) {
+
+    /*
+      Normalize legacy 2001 dates
+      to 2026 while preserving
+      month and day.
+    */
+
+    if (
+      parsed.getFullYear() === 2001
+    ) {
+
+      return new Date(
+        2026,
+        parsed.getMonth(),
+        parsed.getDate()
+      );
+    }
 
     return parsed;
   }
@@ -306,12 +349,12 @@ function formatDate(value) {
     );
   }
 
+
   /*
-    Explicit formatting.
+    Explicit 2026 output.
 
     This prevents the year from
-    disappearing or depending on
-    browser locale behavior.
+    appearing as 2001.
   */
 
   const month =
@@ -325,10 +368,7 @@ function formatDate(value) {
   const day =
     date.getDate();
 
-  const year =
-    date.getFullYear();
-
-  return `${month} ${day}, ${year}`;
+  return `${month} ${day}, 2026`;
 }
 
 
@@ -762,10 +802,6 @@ function readAllocationBlock(
       );
 
 
-    /*
-      Skip completely empty rows.
-    */
-
     if (
       !date &&
       !remarks &&
@@ -775,10 +811,6 @@ function readAllocationBlock(
       continue;
     }
 
-
-    /*
-      Skip known non-transaction rows.
-    */
 
     const dateText =
       String(
@@ -795,15 +827,6 @@ function readAllocationBlock(
       continue;
     }
 
-
-    /*
-      REAL TRANSACTION:
-      date must be a valid date.
-
-      This prevents percentage,
-      balance and header rows from
-      becoming transactions.
-    */
 
     if (
       date &&
@@ -847,13 +870,13 @@ function findTransparencyNote(rows) {
 
 
   /*
-    First look for an obvious
-    transparency-related cell.
+    Search the entire sheet for
+    the actual transparency note.
   */
 
   for (
     let r = 0;
-    r < Math.min(rows.length, 10);
+    r < rows.length;
     r++
   ) {
 
@@ -877,7 +900,7 @@ function findTransparencyNote(rows) {
 
       if (
         /transparency/i.test(value) &&
-        value.length > 35
+        value.length > 20
       ) {
 
         return value;
@@ -887,16 +910,14 @@ function findTransparencyNote(rows) {
 
 
   /*
-    Common layout:
-    A2 = note
-
-    Also supports merged/shifted
-    Google Sheets output.
+    Fallback for note cells that
+    don't explicitly contain the
+    word "transparency".
   */
 
   for (
     let r = 0;
-    r < Math.min(rows.length, 6);
+    r < Math.min(rows.length, 10);
     r++
   ) {
 
@@ -917,7 +938,10 @@ function findTransparencyNote(rows) {
       if (
         value &&
         value.length > 45 &&
-        !/^DATE$/i.test(value)
+        !/^DATE$/i.test(value) &&
+        !/^REMARKS$/i.test(value) &&
+        !/^IN$/i.test(value) &&
+        !/^OUT$/i.test(value)
       ) {
 
         return value;
@@ -957,12 +981,10 @@ function processAllocationSheet(rows) {
 
 
   /*
-    IMPORTANT:
-
     Read each block independently.
 
-    LEAM  = A:D
-    CP    = F:I
+    LEAM    = A:D
+    CP      = F:I
     PROJECT = K:N
   */
 
@@ -1517,133 +1539,137 @@ function getAllocationPercentages(
 
 
   if (
-    !Array.isArray(rows)
+    !Array.isArray(rows) ||
+    !rows.length
   ) {
     return defaults;
   }
 
 
   /*
-    Find the percentage row dynamically.
+    IMPORTANT FIX:
 
-    Looks for the first row containing
-    usable values in A, F and K.
+    Do NOT simply use the first row
+    containing positive numbers.
+
+    That could accidentally read
+    transaction amounts as percentages.
+
+    Instead, look for a row whose
+    three allocation values represent
+    a valid 100% allocation.
   */
-
-  let percentageRow =
-    null;
-
 
   for (
     let i = 0;
-    i < Math.min(rows.length, 10);
+    i < Math.min(rows.length, 20);
     i++
   ) {
 
     const row =
       rows[i] || [];
 
-    const leam =
-      toNumber(row[0]);
 
-    const cp =
-      toNumber(row[5]);
+    const rawLeam =
+      row[0];
 
-    const project =
-      toNumber(row[10]);
+    const rawCP =
+      row[5];
+
+    const rawProject =
+      row[10];
 
 
     if (
-      leam > 0 &&
-      cp > 0 &&
-      project > 0
+      rawLeam === undefined ||
+      rawCP === undefined ||
+      rawProject === undefined
+    ) {
+      continue;
+    }
+
+
+    let leam =
+      toNumber(rawLeam);
+
+    let cp =
+      toNumber(rawCP);
+
+    let project =
+      toNumber(rawProject);
+
+
+    if (
+      leam <= 0 ||
+      cp <= 0 ||
+      project <= 0
+    ) {
+      continue;
+    }
+
+
+    /*
+      Support both:
+
+      30 / 30 / 40
+
+      and
+
+      0.30 / 0.30 / 0.40
+    */
+
+    if (leam <= 1) {
+      leam *= 100;
+    }
+
+    if (cp <= 1) {
+      cp *= 100;
+    }
+
+    if (project <= 1) {
+      project *= 100;
+    }
+
+
+    const total =
+      leam +
+      cp +
+      project;
+
+
+    /*
+      Allow tiny floating-point
+      differences.
+    */
+
+    if (
+      Math.abs(total - 100) <= 0.5
     ) {
 
-      percentageRow =
-        row;
+      return {
 
-      break;
+        leam:
+          Number(leam.toFixed(2)),
+
+        cp:
+          Number(cp.toFixed(2)),
+
+        project:
+          Number(project.toFixed(2))
+
+      };
     }
   }
 
 
-  if (!percentageRow) {
-    return defaults;
-  }
+  /*
+    If the allocation sheet does
+    not contain a valid percentage
+    row, preserve the established
+    allocation structure.
+  */
 
-
-  let leam =
-    toNumber(
-      percentageRow[0]
-    );
-
-  let cp =
-    toNumber(
-      percentageRow[5]
-    );
-
-  let project =
-    toNumber(
-      percentageRow[10]
-    );
-
-
-  if (
-    leam > 0 &&
-    leam <= 1
-  ) {
-    leam *= 100;
-  }
-
-  if (
-    cp > 0 &&
-    cp <= 1
-  ) {
-    cp *= 100;
-  }
-
-  if (
-    project > 0 &&
-    project <= 1
-  ) {
-    project *= 100;
-  }
-
-
-  if (
-    leam <= 0 ||
-    !Number.isFinite(leam)
-  ) {
-    leam =
-      defaults.leam;
-  }
-
-  if (
-    cp <= 0 ||
-    !Number.isFinite(cp)
-  ) {
-    cp =
-      defaults.cp;
-  }
-
-  if (
-    project <= 0 ||
-    !Number.isFinite(project)
-  ) {
-    project =
-      defaults.project;
-  }
-
-
-  return {
-
-    leam,
-
-    cp,
-
-    project
-
-  };
+  return defaults;
 }
 
 
@@ -1662,7 +1688,7 @@ function renderTransparencyNote() {
 
 
   /*
-    Existing IDs.
+    Existing note IDs.
   */
 
   const targets = [
@@ -1686,20 +1712,31 @@ function renderTransparencyNote() {
         "hidden"
       );
 
+      /*
+        Force visibility.
+
+        This prevents an existing
+        hidden/mobile CSS state from
+        hiding the transparency note.
+      */
+
       element.style.display =
-        "";
+        "block";
+
+      element.style.visibility =
+        "visible";
+
+      element.style.opacity =
+        "1";
     }
   );
 
 
   /*
-    If the existing HTML does not have
-    a transparency-note element, create
-    one automatically inside the
-    Fund Allocation section.
-
-    This prevents the note from
-    disappearing because of a missing ID.
+    If there is no existing
+    transparency-note element,
+    create one inside the
+    allocation section.
   */
 
   if (!targets.length) {
@@ -1715,37 +1752,56 @@ function renderTransparencyNote() {
 
     if (allocationSection) {
 
-      const heading =
+      let noteElement =
         allocationSection.querySelector(
-          ".section-heading"
+          ".transparency-note"
         );
 
 
-      const noteElement =
-        document.createElement(
-          "div"
-        );
+      if (!noteElement) {
 
-      noteElement.className =
-        "transparency-note";
+        noteElement =
+          document.createElement(
+            "div"
+          );
+
+        noteElement.className =
+          "transparency-note";
+
+
+        const heading =
+          allocationSection.querySelector(
+            ".section-heading"
+          );
+
+
+        if (heading) {
+
+          heading.insertAdjacentElement(
+            "afterend",
+            noteElement
+          );
+
+        } else {
+
+          allocationSection.prepend(
+            noteElement
+          );
+        }
+      }
+
 
       noteElement.textContent =
         note;
 
+      noteElement.style.display =
+        "block";
 
-      if (heading) {
+      noteElement.style.visibility =
+        "visible";
 
-        heading.insertAdjacentElement(
-          "afterend",
-          noteElement
-        );
-
-      } else {
-
-        allocationSection.prepend(
-          noteElement
-        );
-      }
+      noteElement.style.opacity =
+        "1";
     }
   }
 }
@@ -1806,7 +1862,7 @@ function renderAllocation(
   if ($("allocationTotalPercentage")) {
 
     $("allocationTotalPercentage").textContent =
-      `${totalPercentage}%`;
+      `${Number(totalPercentage.toFixed(2))}%`;
   }
 
 
@@ -1831,6 +1887,13 @@ function renderAll(
   renderAllocation(
     allocationRows
   );
+
+  /*
+    Apply mobile table fitting
+    after dynamic table rendering.
+  */
+
+  setupTableScroll();
 }
 
 
@@ -2035,7 +2098,7 @@ function showDataError(
 
 
 /* =========================================
-   TABLE HORIZONTAL SCROLL
+   TABLE FIT — NO HORIZONTAL SCROLL
    ========================================= */
 
 function setupTableScroll() {
@@ -2050,35 +2113,63 @@ function setupTableScroll() {
     table => {
 
       /*
-        Do not wrap the same table twice.
+        IMPORTANT:
+
+        The previous version created
+        .table-scroll wrappers.
+
+        That is intentionally removed.
+
+        Tables must fit the available
+        mobile screen directly.
       */
 
-      if (
-        table.parentElement &&
-        table.parentElement.classList.contains(
-          "table-scroll"
-        )
-      ) {
-        return;
-      }
-
-
-      const wrapper =
-        document.createElement(
-          "div"
-        );
-
-      wrapper.className =
-        "table-scroll";
-
-
-      table.parentNode.insertBefore(
-        wrapper,
-        table
+      table.classList.add(
+        "responsive-table"
       );
 
-      wrapper.appendChild(
-        table
+
+      table.style.width =
+        "100%";
+
+      table.style.maxWidth =
+        "100%";
+
+      table.style.tableLayout =
+        "fixed";
+
+      table.style.marginLeft =
+        "0";
+
+      table.style.marginRight =
+        "0";
+
+
+      /*
+        Prevent table content from
+        forcing horizontal overflow.
+      */
+
+      table.querySelectorAll(
+        "th, td"
+      ).forEach(
+        cell => {
+
+          cell.style.textAlign =
+            "center";
+
+          cell.style.whiteSpace =
+            "normal";
+
+          cell.style.overflowWrap =
+            "anywhere";
+
+          cell.style.wordBreak =
+            "break-word";
+
+          cell.style.maxWidth =
+            "0";
+        }
       );
     }
   );
@@ -2122,6 +2213,39 @@ function setupAccordion() {
       );
 
 
+      /*
+        Create a real visible + / −
+        control instead of relying
+        only on CSS pseudo-elements.
+      */
+
+      let icon =
+        heading.querySelector(
+          ".accordion-icon"
+        );
+
+
+      if (!icon) {
+
+        icon =
+          document.createElement(
+            "span"
+          );
+
+        icon.className =
+          "accordion-icon";
+
+        icon.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+        heading.appendChild(
+          icon
+        );
+      }
+
+
       function updateIcon() {
 
         const isOpen =
@@ -2134,17 +2258,40 @@ function setupAccordion() {
           String(isOpen)
         );
 
-        /*
-          CSS uses this value for
-          the visible + / − indicator.
-        */
-
         heading.setAttribute(
           "data-accordion-icon",
           isOpen
             ? "−"
             : "+"
         );
+
+
+        /*
+          Explicit text so the
+          control cannot disappear
+          because of missing CSS.
+        */
+
+        icon.textContent =
+          isOpen
+            ? "−"
+            : "+";
+
+
+        icon.style.display =
+          "inline-flex";
+
+        icon.style.visibility =
+          "visible";
+
+        icon.style.opacity =
+          "1";
+
+        icon.style.alignItems =
+          "center";
+
+        icon.style.justifyContent =
+          "center";
       }
 
 
@@ -2272,6 +2419,22 @@ function setupNavigation() {
                 "data-accordion-icon",
                 "−"
               );
+
+
+              const icon =
+                heading.querySelector(
+                  ".accordion-icon"
+                );
+
+
+              if (icon) {
+
+                icon.textContent =
+                  "−";
+
+                icon.style.display =
+                  "inline-flex";
+              }
             }
           }
         }
@@ -2300,7 +2463,15 @@ function syncAccordionState() {
     sections.forEach(
       section => {
 
-        section.classList.remove(
+        /*
+          Desktop:
+
+          Keep content available.
+          Remove mobile open-state
+          dependency.
+        */
+
+        section.classList.add(
           "open"
         );
 
@@ -2315,13 +2486,24 @@ function syncAccordionState() {
 
           heading.setAttribute(
             "aria-expanded",
-            "false"
+            "true"
           );
 
-          heading.setAttribute(
-            "data-accordion-icon",
-            ""
-          );
+
+          const icon =
+            heading.querySelector(
+              ".accordion-icon"
+            );
+
+
+          if (icon) {
+
+            icon.textContent =
+              "−";
+
+            icon.style.display =
+              "inline-flex";
+          }
         }
       }
     );
@@ -2359,6 +2541,30 @@ function syncAccordionState() {
             ? "−"
             : "+"
         );
+
+
+        const icon =
+          heading.querySelector(
+            ".accordion-icon"
+          );
+
+
+        if (icon) {
+
+          icon.textContent =
+            isOpen
+              ? "−"
+              : "+";
+
+          icon.style.display =
+            "inline-flex";
+
+          icon.style.visibility =
+            "visible";
+
+          icon.style.opacity =
+            "1";
+        }
       }
     );
   }
@@ -2405,7 +2611,13 @@ window.addEventListener(
 
     resizeTimer =
       setTimeout(
-        syncAccordionState,
+        () => {
+
+          syncAccordionState();
+
+          setupTableScroll();
+
+        },
         100
       );
 
@@ -2503,6 +2715,15 @@ async function loadData() {
     updateLatestEntry();
 
 
+    /*
+      Make sure the note remains
+      visible after all dynamic
+      rendering is complete.
+    */
+
+    renderTransparencyNote();
+
+
     console.log(
       "Creator Reward Transparency loaded:",
       {
@@ -2547,4 +2768,4 @@ async function loadData() {
       error
     );
   }
-         }
+     }
