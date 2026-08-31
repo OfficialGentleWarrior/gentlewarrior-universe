@@ -2,6 +2,7 @@
    GENTLE WARRIOR
    CREATOR REWARD TRANSPARENCY
    STYLE.CSS
+   MOBILE-FIT VERSION
    ========================================= */
 
 :root {
@@ -44,12 +45,17 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  min-width: 0;
+
   background: var(--gw-page);
   color: var(--gw-text);
+
   font-family:
     Inter,
     -apple-system,
@@ -58,7 +64,9 @@ body {
     Roboto,
     Arial,
     sans-serif;
+
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 button,
@@ -71,6 +79,10 @@ a {
   text-decoration: none;
 }
 
+img {
+  max-width: 100%;
+}
+
 
 /* =========================================
    PAGE
@@ -79,8 +91,11 @@ a {
 .page {
   width: 100%;
   max-width: var(--max-width);
+
   margin: 0 auto;
   padding: 18px;
+
+  min-width: 0;
 }
 
 
@@ -92,9 +107,12 @@ a {
   position: sticky;
   top: 0;
   z-index: 20;
+
   padding-bottom: 14px;
+
   background: rgba(245, 248, 241, 0.94);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .brand-card {
@@ -110,6 +128,8 @@ a {
   border-radius: var(--radius-lg);
 
   box-shadow: var(--gw-shadow);
+
+  min-width: 0;
 }
 
 .brand-mark {
@@ -119,20 +139,25 @@ a {
 
   overflow: hidden;
   border-radius: 14px;
+
   background: var(--gw-deep);
 }
 
 .brand-mark img {
   display: block;
+
   width: 100%;
   height: 100%;
+
   object-fit: cover;
 }
 
 .brand-copy {
   min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   line-height: 1.15;
 }
 
@@ -143,6 +168,7 @@ a {
 
 .brand-copy span {
   margin-top: 4px;
+
   color: var(--gw-muted);
   font-size: 11px;
 }
@@ -160,7 +186,9 @@ a {
 
   font-size: 11px;
   font-weight: 800;
+
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .home-button:hover {
@@ -201,6 +229,7 @@ a {
 
   font-size: 11px;
   font-weight: 700;
+
   white-space: nowrap;
 }
 
@@ -285,6 +314,7 @@ a {
 .status-dot {
   width: 7px;
   height: 7px;
+
   border-radius: 50%;
   background: var(--gw-lime);
 }
@@ -293,7 +323,6 @@ a {
   margin-top: 9px;
 
   color: rgba(255, 255, 255, 0.55);
-
   font-size: 10px;
 }
 
@@ -308,6 +337,7 @@ a {
 
 .summary-grid {
   display: grid;
+
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
@@ -320,10 +350,13 @@ a {
   border-radius: var(--radius-lg);
 
   box-shadow: var(--gw-shadow);
+
+  min-width: 0;
 }
 
 .stat-label {
   color: var(--gw-muted);
+
   font-size: 9px;
   font-weight: 900;
   letter-spacing: 0.07em;
@@ -331,19 +364,21 @@ a {
 
 .stat-value {
   display: block;
+
   margin-top: 7px;
 
   color: var(--gw-deep);
 
   font-size: 21px;
   line-height: 1.15;
+
+  overflow-wrap: anywhere;
 }
 
 .stat-hint {
   margin-top: 5px;
 
   color: var(--gw-light-text);
-
   font-size: 10px;
 }
 
@@ -354,12 +389,15 @@ a {
 
 .section {
   margin-top: 14px;
+
+  min-width: 0;
 }
 
 .section-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 15px;
 
   padding: 20px;
@@ -371,6 +409,8 @@ a {
   border-radius: var(--radius-lg);
 
   box-shadow: var(--gw-shadow);
+
+  min-width: 0;
 }
 
 .section-heading > div {
@@ -416,6 +456,8 @@ a {
 
   font-size: 10px;
   font-weight: 800;
+
+  white-space: nowrap;
 }
 
 
@@ -425,6 +467,8 @@ a {
 
 .section-content {
   margin-top: 8px;
+
+  min-width: 0;
 }
 
 @media (max-width: 600px) {
@@ -441,6 +485,9 @@ a {
    ========================================= */
 
 .table-card {
+  width: 100%;
+  min-width: 0;
+
   padding: 0;
 
   background: var(--gw-card);
@@ -448,23 +495,46 @@ a {
   border-radius: var(--radius-lg);
 
   overflow: hidden;
+
   box-shadow: var(--gw-shadow);
 }
 
+
+/*
+   IMPORTANT:
+   NO HORIZONTAL SCROLL.
+
+   The table is forced to fit inside the
+   available screen width.
+*/
+
 .table-scroll {
   width: 100%;
-  overflow-x: auto;
+  max-width: 100%;
+
+  overflow-x: hidden;
+  overflow-y: visible;
+
   -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
-  min-width: 520px;
+  max-width: 100%;
+
+  min-width: 0;
+
+  table-layout: fixed;
 
   border-collapse: collapse;
 
   font-size: 12px;
 }
+
+
+/* =========================================
+   TABLE HEADER
+   ========================================= */
 
 thead {
   background: var(--gw-soft);
@@ -472,12 +542,17 @@ thead {
 
 th,
 td {
-  padding: 13px 15px;
+  padding: 13px 10px;
 
   border-bottom: 1px solid var(--gw-border-soft);
 
   text-align: left;
   vertical-align: middle;
+
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 th {
@@ -485,18 +560,24 @@ th {
 
   font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
+
+  letter-spacing: 0.04em;
+
+  white-space: normal;
 }
 
 td {
   color: var(--gw-text);
+
+  line-height: 1.45;
 }
 
 td.num,
 th.num {
   text-align: right;
-  white-space: nowrap;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 tbody tr:last-child td {
@@ -509,6 +590,7 @@ tfoot {
 
 tfoot th {
   color: var(--gw-deep);
+
   font-size: 10px;
 }
 
@@ -517,40 +599,60 @@ tfoot th {
    TABLE COLUMN WIDTHS
    ========================================= */
 
+/*
+   Normal desktop widths.
+*/
+
 .col-date {
-  width: 120px;
+  width: 14%;
 }
 
 .col-amount {
-  width: 150px;
+  width: 17%;
 }
 
 .col-sol {
-  width: 110px;
+  width: 12%;
 }
 
 .col-rate {
-  width: 100px;
+  width: 11%;
 }
 
 .col-usd {
-  width: 100px;
+  width: 11%;
 }
 
 .col-php {
-  width: 125px;
+  width: 15%;
 }
 
 .col-expense-date {
-  width: 120px;
+  width: 15%;
 }
 
 .col-description {
-  min-width: 220px;
+  width: 30%;
 }
 
 .col-remarks {
-  min-width: 180px;
+  width: 25%;
+}
+
+
+/* =========================================
+   DATE CELLS
+   ========================================= */
+
+/*
+   Prevent dates from becoming excessively
+   narrow while still allowing them to fit.
+*/
+
+td.date,
+td[data-label="Date"] {
+  white-space: normal;
+  overflow-wrap: normal;
 }
 
 
@@ -586,6 +688,7 @@ tfoot th {
 
   width: 38px;
   height: 38px;
+
   margin: 0 auto 10px;
 
   color: var(--gw-deep);
@@ -607,6 +710,7 @@ tfoot th {
 
 .empty-state p {
   max-width: 400px;
+
   margin: 6px auto 0;
 
   color: var(--gw-muted);
@@ -621,12 +725,17 @@ tfoot th {
 
 .allocation-section-content {
   margin-top: 8px;
+
+  min-width: 0;
 }
 
 .allocation-grid {
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+
+  min-width: 0;
 }
 
 
@@ -635,13 +744,16 @@ tfoot th {
    ========================================= */
 
 .allocation-card {
+  width: 100%;
   min-width: 0;
 
   background: var(--gw-card);
+
   border: 1px solid var(--gw-border);
   border-radius: var(--radius-lg);
 
   overflow: hidden;
+
   box-shadow: var(--gw-shadow);
 }
 
@@ -649,6 +761,7 @@ tfoot th {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 10px;
 
   padding: 17px 17px 14px;
@@ -661,6 +774,8 @@ tfoot th {
     );
 
   border-bottom: 1px solid var(--gw-border-soft);
+
+  min-width: 0;
 }
 
 .allocation-title {
@@ -670,6 +785,7 @@ tfoot th {
 
   font-size: 13px;
   font-weight: 900;
+
   letter-spacing: 0.04em;
 }
 
@@ -704,6 +820,8 @@ tfoot th {
 
 .allocation-content {
   padding: 14px;
+
+  min-width: 0;
 }
 
 .allocation-row,
@@ -711,7 +829,10 @@ tfoot th {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 10px;
+
+  min-width: 0;
 }
 
 .allocation-row {
@@ -724,6 +845,7 @@ tfoot th {
 
   font-size: 9px;
   font-weight: 900;
+
   letter-spacing: 0.06em;
 }
 
@@ -731,13 +853,17 @@ tfoot th {
   color: var(--gw-text);
 
   font-size: 12px;
+
+  white-space: nowrap;
 }
 
 .allocation-balance {
   margin-top: 5px;
+
   padding: 11px 12px;
 
   background: var(--gw-soft);
+
   border-radius: var(--radius-md);
 }
 
@@ -749,6 +875,8 @@ tfoot th {
   color: var(--gw-deep);
 
   font-size: 14px;
+
+  white-space: nowrap;
 }
 
 
@@ -757,6 +885,9 @@ tfoot th {
    ========================================= */
 
 .allocation-records {
+  width: 100%;
+  min-width: 0;
+
   margin-top: 14px;
 
   border: 1px solid var(--gw-border-soft);
@@ -770,13 +901,16 @@ tfoot th {
   display: grid;
 
   grid-template-columns:
-    72px
-    minmax(100px, 1fr)
-    82px
-    82px;
+    18%
+    minmax(0, 1fr)
+    20%
+    20%;
 
   align-items: center;
-  column-gap: 7px;
+
+  column-gap: 5px;
+
+  min-width: 0;
 }
 
 .allocation-record-head {
@@ -788,6 +922,7 @@ tfoot th {
 
   font-size: 8px;
   font-weight: 900;
+
   letter-spacing: 0.05em;
 }
 
@@ -805,26 +940,33 @@ tfoot th {
   border-top: 0;
 }
 
-.allocation-record > span:first-child {
-  color: var(--gw-muted);
-  white-space: nowrap;
-}
-
-.allocation-record > span:nth-child(2) {
+.allocation-record > span {
   min-width: 0;
-
-  color: var(--gw-text);
 
   overflow-wrap: anywhere;
 }
 
+.allocation-record > span:first-child {
+  color: var(--gw-muted);
+
+  white-space: normal;
+}
+
+.allocation-record > span:nth-child(2) {
+  color: var(--gw-text);
+}
+
 .allocation-record > strong {
+  min-width: 0;
+
   text-align: right;
 
   color: var(--gw-text);
 
   font-size: 9px;
-  white-space: nowrap;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 
@@ -848,6 +990,10 @@ tfoot th {
    ========================================= */
 
 .allocation-note {
+  display: block;
+
+  width: 100%;
+
   margin-top: 12px;
   padding: 18px 20px;
 
@@ -865,6 +1011,7 @@ tfoot th {
 
   font-size: 9px;
   font-weight: 900;
+
   letter-spacing: 0.1em;
 }
 
@@ -883,10 +1030,16 @@ tfoot th {
    ========================================= */
 
 .transparency-statement {
+  display: block;
+
+  width: 100%;
+
   margin-top: 18px;
 }
 
 .statement-card {
+  width: 100%;
+
   padding: 30px;
 
   background: var(--gw-lime-soft);
@@ -902,6 +1055,7 @@ tfoot th {
 
   font-size: 30px;
   line-height: 1;
+
   letter-spacing: -0.03em;
 }
 
@@ -948,6 +1102,7 @@ tfoot th {
 
 .footer-disclaimer {
   max-width: 620px;
+
   margin: 18px auto 0;
 
   color: var(--gw-light-text);
@@ -990,7 +1145,11 @@ tfoot th {
 @media (max-width: 600px) {
 
   .page {
+    width: 100%;
+
     padding: 10px;
+
+    overflow-x: hidden;
   }
 
   .site-header {
@@ -999,12 +1158,16 @@ tfoot th {
 
   .brand-card {
     min-height: 60px;
+
     padding: 8px 10px;
+
+    gap: 10px;
   }
 
   .brand-mark {
     width: 40px;
     height: 40px;
+
     flex-basis: 40px;
   }
 
@@ -1018,6 +1181,7 @@ tfoot th {
 
   .home-button {
     padding: 8px 10px;
+
     font-size: 9px;
   }
 
@@ -1027,12 +1191,18 @@ tfoot th {
 
   .pill {
     padding: 7px 11px;
+
     font-size: 9px;
   }
 
+
+  /* HERO */
+
   .hero {
     margin-top: 6px;
+
     padding: 32px 20px;
+
     border-radius: 20px;
   }
 
@@ -1043,6 +1213,9 @@ tfoot th {
   .hero-description {
     font-size: 12px;
   }
+
+
+  /* SUMMARY */
 
   .summary-grid {
     gap: 8px;
@@ -1064,8 +1237,12 @@ tfoot th {
     font-size: 8px;
   }
 
+
+  /* SECTION */
+
   .section-heading {
     padding: 15px;
+
     border-radius: 17px;
   }
 
@@ -1079,8 +1256,125 @@ tfoot th {
 
   .count-badge {
     padding: 6px 8px;
+
     font-size: 8px;
   }
+
+
+  /* =====================================
+     MOBILE TABLE
+     ===================================== */
+
+  .table-card {
+    border-radius: 17px;
+  }
+
+  .table-scroll {
+    overflow-x: hidden;
+  }
+
+  table {
+    width: 100%;
+
+    min-width: 0;
+
+    table-layout: fixed;
+
+    font-size: 10px;
+  }
+
+  th,
+  td {
+    padding: 10px 7px;
+
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  th {
+    font-size: 7px;
+
+    letter-spacing: 0.02em;
+  }
+
+  td {
+    font-size: 10px;
+
+    line-height: 1.45;
+  }
+
+
+  /*
+     EXPENSE TABLE
+
+     Date       20%
+     Description 31%
+     Amount      23%
+     Remarks     26%
+
+     Everything stays visible.
+  */
+
+  .col-expense-date,
+  th:first-child {
+    width: 20%;
+  }
+
+  .col-description,
+  th:nth-child(2) {
+    width: 31%;
+  }
+
+  .col-amount,
+  th:nth-child(3) {
+    width: 23%;
+  }
+
+  .col-remarks,
+  th:nth-child(4) {
+    width: 26%;
+  }
+
+
+  /*
+     Keep full date visible if JS provides
+     the year. It can wrap naturally.
+  */
+
+  td:first-child {
+    white-space: normal;
+
+    overflow-wrap: normal;
+  }
+
+
+  /* Amount */
+
+  td.num,
+  th.num {
+    text-align: right;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+  }
+
+
+  /* Footer total */
+
+  tfoot th,
+  tfoot td {
+    padding: 11px 7px;
+
+    font-size: 9px;
+  }
+
+
+  /* =====================================
+     ALLOCATION
+     ===================================== */
 
   .allocation-card {
     border-radius: 17px;
@@ -1090,46 +1384,85 @@ tfoot th {
     padding: 15px;
   }
 
+  .allocation-title {
+    font-size: 12px;
+  }
+
+  .allocation-subtitle {
+    font-size: 8px;
+  }
+
+  .allocation-header > strong {
+    padding: 6px 8px;
+
+    font-size: 10px;
+  }
+
   .allocation-content {
     padding: 12px;
   }
 
-  /*
-    Keep the allocation record readable
-    on narrow screens.
-  */
+
+  /* Allocation records fit screen */
 
   .allocation-record-head,
   .allocation-record {
-    grid-template-columns:
-      66px
-      minmax(90px, 1fr)
-      72px
-      72px;
 
-    column-gap: 5px;
+    grid-template-columns:
+      18%
+      minmax(0, 1fr)
+      20%
+      20%;
+
+    column-gap: 4px;
+
+    min-width: 0;
   }
 
   .allocation-record-head {
     padding: 8px;
+
     font-size: 7px;
   }
 
   .allocation-record {
     padding: 9px 8px;
+
     font-size: 8px;
   }
 
   .allocation-record > strong {
     font-size: 8px;
+
+    white-space: normal;
   }
 
+
+  /* =====================================
+     TRANSPARENCY NOTE
+     ===================================== */
+
   .allocation-note {
+    display: block;
+
+    margin-top: 12px;
+
     padding: 16px;
   }
 
   .allocation-note p {
     font-size: 10px;
+  }
+
+
+  /* =====================================
+     TRANSPARENCY STATEMENT
+     ===================================== */
+
+  .transparency-statement {
+    display: block;
+
+    margin-top: 14px;
   }
 
   .statement-card {
@@ -1138,6 +1471,10 @@ tfoot th {
 
   .statement-card h2 {
     font-size: 26px;
+  }
+
+  .statement-card p {
+    font-size: 11px;
   }
 
 }
@@ -1149,25 +1486,129 @@ tfoot th {
 
 @media (max-width: 380px) {
 
+  .page {
+    padding: 8px;
+  }
+
   .summary-grid {
     grid-template-columns: 1fr;
   }
 
+  .brand-card {
+    gap: 8px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+
+    flex-basis: 38px;
+  }
+
+  .home-button {
+    padding: 7px 8px;
+
+    font-size: 8px;
+  }
+
+  .section-heading {
+    gap: 8px;
+  }
+
+  .section-heading h2 {
+    font-size: 16px;
+  }
+
+
+  /* Extra compact table */
+
+  table {
+    font-size: 9px;
+  }
+
+  th,
+  td {
+    padding: 9px 5px;
+  }
+
+  th {
+    font-size: 6px;
+  }
+
+  td {
+    font-size: 9px;
+  }
+
+
+  /*
+     Keep four expense columns visible.
+  */
+
+  .col-expense-date,
+  th:first-child {
+    width: 20%;
+  }
+
+  .col-description,
+  th:nth-child(2) {
+    width: 30%;
+  }
+
+  .col-amount,
+  th:nth-child(3) {
+    width: 23%;
+  }
+
+  .col-remarks,
+  th:nth-child(4) {
+    width: 27%;
+  }
+
+
+  /* Allocation records */
+
   .allocation-record-head,
   .allocation-record {
     grid-template-columns:
-      58px
-      minmax(80px, 1fr)
-      65px
-      65px;
+      18%
+      minmax(0, 1fr)
+      20%
+      20%;
+
+    column-gap: 3px;
   }
 
   .allocation-record-head {
+    padding: 7px 5px;
+
     font-size: 6px;
   }
 
   .allocation-record {
+    padding: 8px 5px;
+
     font-size: 7px;
   }
 
-     }
+  .allocation-record > strong {
+    font-size: 7px;
+  }
+
+
+  .allocation-note {
+    padding: 14px;
+  }
+
+  .allocation-note p {
+    font-size: 9px;
+  }
+
+  .statement-card {
+    padding: 20px 16px;
+  }
+
+  .statement-card h2 {
+    font-size: 23px;
+  }
+
+   }
