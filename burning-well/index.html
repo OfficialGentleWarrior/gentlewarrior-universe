@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Burning Well — Gentle Warrior</title>
+
+  <meta
+    name="description"
+    content="Burn Solana tokens permanently with Burning Well by Gentle Warrior."
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <main class="burning-well">
+
+    <!-- HERO -->
+    <header class="hero">
+
+      <div class="logo-wrap">
+        <img
+          src="./avatar.png"
+          alt="Gentle Warrior"
+          class="logo"
+        />
+      </div>
+
+      <p class="eyebrow">A GENTLE WARRIOR TOOL</p>
+
+      <h1>Burning Well</h1>
+
+      <p class="tagline">
+        Burn Tokens. Fund Hope.<br />
+        Strengthen GWAR. 💚
+      </p>
+
+    </header>
+
+
+    <!-- STATS -->
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <span class="stat-label">
+          TOTAL BURN TRANSACTIONS
+        </span>
+
+        <strong id="totalBurnTransactions">
+          0
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">
+          TOTAL FEES GENERATED
+        </span>
+
+        <strong id="totalFeesGenerated">
+          $0.00
+        </strong>
+      </div>
+
+    </section>
+
+
+    <!-- BURNING WELL VIDEO -->
+    <section class="visual">
+
+      <video
+        class="burn-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      >
+        <source
+          src="./assets/burning well with gentle warrior.mp4"
+          type="video/mp4"
+        />
+
+        Your browser does not support video playback.
+      </video>
+
+    </section>
+
+
+    <!-- BURN CARD -->
+    <section class="burn-card">
+
+      <!-- WALLET -->
+      <div class="wallet-section">
+
+        <div>
+          <span class="section-label">WALLET</span>
+
+          <p id="walletStatus">
+            Not connected
+          </p>
+        </div>
+
+        <button
+          id="connectWalletBtn"
+          class="secondary-btn"
+          type="button"
+        >
+          Connect Wallet
+        </button>
+
+      </div>
+
+
+      <div class="divider"></div>
+
+
+      <!-- TOKEN -->
+      <div class="token-section">
+
+        <label
+          class="section-label"
+          for="tokenSelect"
+        >
+          SELECT TOKEN
+        </label>
+
+        <select
+          id="tokenSelect"
+          disabled
+        >
+          <option value="">
+            Connect wallet first
+          </option>
+        </select>
+
+      </div>
+
+
+      <!-- AMOUNT -->
+      <div class="amount-section">
+
+        <label
+          class="section-label"
+          for="burnAmount"
+        >
+          AMOUNT TO BURN
+        </label>
+
+        <input
+          id="burnAmount"
+          type="number"
+          min="0"
+          step="any"
+          placeholder="0.00"
+          disabled
+        />
+
+        <button
+          id="maxBtn"
+          class="max-btn"
+          type="button"
+          disabled
+        >
+          MAX
+        </button>
+
+      </div>
+
+
+      <!-- FEES -->
+      <div class="fee-box">
+
+        <div class="fee-row">
+          <span>Service fee</span>
+
+          <strong>
+            $1.50 worth of SOL
+          </strong>
+        </div>
+
+        <div class="fee-row">
+          <span>Network fee</span>
+
+          <strong id="networkFee">
+            Estimated
+          </strong>
+        </div>
+
+      </div>
+
+
+      <!-- BURN -->
+      <button
+        id="burnBtn"
+        class="burn-btn"
+        type="button"
+        disabled
+      >
+        <span>🔥</span>
+        Burn Tokens
+      </button>
+
+
+      <p class="security-note">
+        Your tokens never leave your wallet except through
+        the burn transaction you approve.
+      </p>
+
+      <p class="privacy-note">
+        Your wallet address and burn transaction details are
+        publicly visible on Solana and may be recorded by
+        Burning Well for statistics and future community events.
+      </p>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        Burning Well · Powered by Gentle Warrior
+      </p>
+    </footer>
+
+  </main>
+
+
+  <script
+    type="module"
+    src="./app.js"
+  ></script>
+
+</body>
+</html>

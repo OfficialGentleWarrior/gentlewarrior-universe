@@ -1,0 +1,1519 @@
+:root {
+  --bg: #061b12;
+  --bg-deep: #03130d;
+
+  --card: #082318;
+  --card-soft: #0b2a1d;
+
+  --green: #9be56f;
+  --green-bright: #b8ff83;
+
+  --gold: #f4c84a;
+  --gold-soft: #ffd96a;
+
+  --text: #f5f8f4;
+  --muted: #9bb0a4;
+
+  --border: rgba(155, 229, 111, 0.18);
+
+  --input: #061a12;
+}
+
+
+/* RESET */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+html {
+  min-height: 100%;
+}
+
+
+body {
+  min-height: 100vh;
+
+  font-family:
+    Inter,
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  color: var(--text);
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(74, 180, 76, 0.22),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(18, 90, 52, 0.12),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #082418 0%,
+      var(--bg) 55%,
+      var(--bg-deep) 100%
+    );
+}
+
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+
+button {
+  cursor: pointer;
+}
+
+
+/* MAIN */
+
+.burning-well {
+  width: 100%;
+  max-width: 900px;
+
+  min-height: 100vh;
+
+  margin: 0 auto;
+
+  padding: 34px 20px 40px;
+}
+
+
+/* HERO */
+
+.hero {
+  text-align: center;
+
+  margin-bottom: 34px;
+}
+
+
+/* LOGO */
+
+.logo-wrap {
+  width: 78px;
+  height: 78px;
+
+  margin: 0 auto 16px;
+
+  padding: 3px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--green-bright),
+      #55a83f
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(155, 229, 111, 0.25),
+    0 0 35px rgba(100, 210, 75, 0.20);
+}
+
+
+.logo {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+
+/* EYEBROW */
+
+.eyebrow {
+  margin-bottom: 10px;
+
+  color: var(--gold);
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 3.5px;
+}
+
+
+/* TITLE */
+
+h1 {
+  font-size: clamp(58px, 10vw, 92px);
+
+  line-height: 0.98;
+
+  font-weight: 900;
+
+  letter-spacing: -4px;
+
+  color: #f7faf6;
+
+  text-shadow:
+    0 3px 25px rgba(0, 0, 0, 0.18);
+}
+
+
+/* TAGLINE */
+
+.tagline {
+  margin-top: 18px;
+
+  color: var(--muted);
+
+  font-size: 18px;
+
+  line-height: 1.55;
+}
+
+
+/* VIDEO */
+
+.visual {
+  position: relative;
+
+  width: 100%;
+
+  margin: 0 auto 30px;
+
+  overflow: hidden;
+
+  border-radius: 24px;
+
+  border: 1px solid rgba(155, 229, 111, 0.20);
+
+  background: #020b07;
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.35),
+    0 0 50px rgba(63, 170, 75, 0.08);
+}
+
+
+.burn-video {
+  width: 100%;
+  height: 390px;
+  display: block;
+  object-fit: cover;
+  object-position: center 35%;
+  background: #020b07;
+}
+
+
+/*
+  Dark green overlay.
+  Keeps the video connected to the Gentle Warrior branding.
+*/
+
+.visual::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 30, 17, 0.08),
+      rgba(0, 20, 12, 0.20)
+    );
+}
+
+
+/* BURN CARD */
+
+.burn-card {
+  position: relative;
+
+  padding: 28px;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 38, 25, 0.96),
+      rgba(6, 27, 18, 0.96)
+    );
+
+  border: 1px solid var(--border);
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* WALLET */
+
+.wallet-section {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+
+.section-label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #769083;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.8px;
+}
+
+
+#walletStatus {
+  color: var(--text);
+
+  font-size: 14px;
+
+  word-break: break-all;
+}
+
+
+/* CONNECT BUTTON */
+
+.secondary-btn {
+  flex-shrink: 0;
+
+  padding: 11px 18px;
+
+  color: #07150d;
+
+  background: var(--green);
+
+  border: 0;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  transition: 0.2s ease;
+}
+
+
+.secondary-btn:hover {
+  background: var(--green-bright);
+
+  transform: translateY(-1px);
+}
+
+
+/* DIVIDER */
+
+.divider {
+  height: 1px;
+
+  margin: 25px 0;
+
+  background: rgba(155, 229, 111, 0.10);
+}
+
+
+/* TOKEN + AMOUNT */
+
+.token-section,
+.amount-section {
+  position: relative;
+
+  margin-bottom: 22px;
+}
+
+
+select,
+input {
+  width: 100%;
+
+  height: 56px;
+
+  padding: 0 16px;
+
+  color: var(--text);
+
+  background: var(--input);
+
+  border: 1px solid rgba(155, 229, 111, 0.12);
+
+  border-radius: 14px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+
+select:focus,
+input:focus {
+  border-color: rgba(155, 229, 111, 0.55);
+
+  box-shadow:
+    0 0 0 3px rgba(155, 229, 111, 0.07);
+}
+
+
+select:disabled,
+input:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+input {
+  padding-right: 70px;
+}
+
+
+/* MAX */
+
+.max-btn {
+  position: absolute;
+
+  right: 10px;
+
+  bottom: 10px;
+
+  padding: 8px 10px;
+
+  color: var(--green);
+
+  background: rgba(155, 229, 111, 0.08);
+
+  border: 1px solid rgba(155, 229, 111, 0.16);
+
+  border-radius: 8px;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+
+.max-btn:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+}
+
+
+/* FEES */
+
+.fee-box {
+  margin: 4px 0 22px;
+
+  padding: 16px;
+
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.17);
+
+  border: 1px solid rgba(155, 229, 111, 0.07);
+}
+
+
+.fee-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 7px 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+
+.fee-row strong {
+  color: var(--text);
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* BURN BUTTON */
+
+.burn-btn {
+  width: 100%;
+
+  height: 64px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 11px;
+
+  color: #07150d;
+
+  background:
+    linear-gradient(
+      100deg,
+      var(--green),
+      var(--green-bright)
+    );
+
+  border: 0;
+
+  border-radius: 16px;
+
+  font-size: 18px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 12px 35px rgba(92, 205, 81, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.burn-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 42px rgba(92, 205, 81, 0.28);
+}
+
+
+.burn-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
+.burn-btn:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+.burn-btn span {
+  font-size: 23px;
+}
+
+
+/* SECURITY */
+
+.security-note {
+  margin-top: 17px;
+
+  color: #657a6e;
+
+  text-align: center;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+
+/* FOOTER */
+
+footer {
+  padding: 28px 0 0;
+
+  text-align: center;
+
+  color: #53685c;
+
+  font-size: 11px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 620px) {
+
+  .burning-well {
+    padding: 30px 14px 24px;
+  }
+
+
+  .logo-wrap {
+    width: 68px;
+    height: 68px;
+  }
+
+
+  h1 {
+    font-size: clamp(52px, 15vw, 70px);
+
+    letter-spacing: -3px;
+  }
+
+
+  .tagline {
+    font-size: 16px;
+  }
+
+
+  .visual {
+    border-radius: 20px;
+  }
+
+
+  .burn-video {
+    height: 300px;
+  }
+
+
+  .burn-card {
+    padding: 20px;
+
+    border-radius: 20px;
+  }
+
+
+  .wallet-section {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .secondary-btn {
+    width: 100%;
+  }
+}
+/* =========================================================
+   WALLET MODAL
+   ========================================================= */
+
+.wallet-modal {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  visibility: hidden;
+  opacity: 0;
+
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+}
+
+
+.wallet-modal.is-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* BACKDROP */
+
+.wallet-modal-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background:
+    rgba(1, 13, 8, 0.78);
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* CARD */
+
+.wallet-modal-card {
+  position: relative;
+
+  width: 100%;
+  max-width: 430px;
+
+  max-height: calc(100vh - 40px);
+
+  overflow-y: auto;
+
+  padding: 30px;
+
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0b2a1d 0%,
+      #061b12 100%
+    );
+
+  border:
+    1px solid rgba(155, 229, 111, 0.22);
+
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(82, 190, 70, 0.10);
+
+  transform:
+    translateY(12px)
+    scale(0.97);
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+.wallet-modal.is-open
+.wallet-modal-card {
+  transform:
+    translateY(0)
+    scale(1);
+}
+
+
+/* CLOSE */
+
+.wallet-modal-close {
+  position: absolute;
+
+  top: 15px;
+  right: 16px;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #9bb0a4;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 50%;
+
+  font-size: 24px;
+  line-height: 1;
+
+  transition: 0.2s ease;
+}
+
+
+.wallet-modal-close:hover {
+  color: white;
+
+  background:
+    rgba(155, 229, 111, 0.10);
+
+  border-color:
+    rgba(155, 229, 111, 0.25);
+}
+
+
+/* MODAL LOGO */
+
+.wallet-modal-logo {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(155, 229, 111, 0.08);
+
+  border:
+    1px solid rgba(155, 229, 111, 0.20);
+
+  font-size: 28px;
+
+  box-shadow:
+    0 0 30px rgba(100, 210, 75, 0.10);
+}
+
+
+.wallet-modal-eyebrow {
+  margin-bottom: 8px;
+
+  color: var(--gold);
+
+  text-align: center;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 3px;
+}
+
+
+.wallet-modal-card h2 {
+  color: var(--text);
+
+  text-align: center;
+
+  font-size: 28px;
+
+  font-weight: 900;
+
+  letter-spacing: -0.8px;
+}
+
+
+.wallet-modal-subtitle {
+  margin-top: 8px;
+  margin-bottom: 24px;
+
+  color: var(--muted);
+
+  text-align: center;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* WALLET LIST */
+
+.wallet-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+/* WALLET OPTION */
+
+.wallet-option {
+  width: 100%;
+
+  min-height: 68px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 10px 13px;
+
+  color: var(--text);
+
+  background:
+    rgba(4, 24, 15, 0.85);
+
+  border:
+    1px solid rgba(155, 229, 111, 0.10);
+
+  border-radius: 15px;
+
+  text-align: left;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.wallet-option:hover:not(:disabled) {
+  background:
+    rgba(155, 229, 111, 0.08);
+
+  border-color:
+    rgba(155, 229, 111, 0.30);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.wallet-option:disabled {
+  cursor: wait;
+}
+
+
+/* WALLET ICON */
+
+.wallet-option-icon {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, 0.06);
+}
+
+
+.wallet-option-icon img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  border-radius: inherit;
+}
+
+
+.wallet-fallback {
+  color: var(--green);
+
+  font-size: 22px;
+}
+
+
+/* WALLET INFO */
+
+.wallet-option-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.wallet-option-info strong {
+  color: var(--text);
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+
+.wallet-option-info small {
+  color: #71877a;
+
+  font-size: 11px;
+}
+
+
+/* ARROW */
+
+.wallet-option-arrow {
+  color: #668071;
+
+  font-size: 20px;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.wallet-option:hover
+.wallet-option-arrow {
+  color: var(--green);
+
+  transform:
+    translateX(2px);
+}
+
+
+/* LOADING */
+
+.wallet-spinner {
+  width: 20px;
+  height: 20px;
+
+  display: block;
+
+  border:
+    2px solid rgba(155, 229, 111, 0.20);
+
+  border-top-color:
+    var(--green);
+
+  border-radius: 50%;
+
+  animation:
+    walletSpin 0.7s linear infinite;
+}
+
+
+@keyframes walletSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* EMPTY */
+
+.wallet-empty {
+  padding: 22px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  text-align: center;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.07);
+
+  border-radius: 15px;
+
+  background:
+    rgba(0, 0, 0, 0.14);
+}
+
+
+.wallet-empty strong {
+  color: var(--text);
+
+  font-size: 14px;
+}
+
+
+.wallet-empty span {
+  color: var(--muted);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* NOTE */
+
+.wallet-modal-note {
+  margin-top: 18px;
+
+  color: #63796c;
+
+  text-align: center;
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+  .wallet-modal {
+    padding: 14px;
+  }
+
+
+  .wallet-modal-card {
+    padding: 24px 18px;
+
+    border-radius: 22px;
+  }
+
+
+  .wallet-modal-card h2 {
+    font-size: 24px;
+  }
+
+
+  .wallet-option {
+    min-height: 64px;
+  }
+
+}
+/* ======================================================
+   BURNING WELL STATS
+   ====================================================== */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin: 0 auto 30px;
+}
+
+
+.stat-card {
+  padding: 20px;
+
+  text-align: center;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 38, 25, 0.94),
+      rgba(6, 27, 18, 0.94)
+    );
+
+  border: 1px solid
+    rgba(155, 229, 111, 0.12);
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.22);
+}
+
+
+.stat-label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #769083;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.6px;
+}
+
+
+.stat-card strong {
+  display: block;
+
+  color: var(--green-bright);
+
+  font-size: 24px;
+
+  font-weight: 900;
+}
+
+
+/* ======================================================
+   PRIVACY NOTE
+   ====================================================== */
+
+.privacy-note {
+  margin-top: 12px;
+
+  color: #53685c;
+
+  text-align: center;
+
+  font-size: 10px;
+
+  line-height: 1.55;
+}
+
+
+/* ======================================================
+   BURN EXPERIENCE MODAL
+   ====================================================== */
+
+.burn-modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(1, 10, 6, 0.88);
+
+  backdrop-filter:
+    blur(10px);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+
+.burn-modal.is-open {
+  opacity: 1;
+
+  visibility: visible;
+
+  pointer-events: auto;
+}
+
+
+.burn-modal-card {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 520px;
+
+  overflow: hidden;
+
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0b2a1d,
+      #061b12
+    );
+
+  border: 1px solid
+    rgba(155, 229, 111, 0.20);
+
+  box-shadow:
+    0 35px 100px rgba(0, 0, 0, 0.55);
+}
+
+
+.burn-modal-video-wrap {
+  position: relative;
+
+  width: 100%;
+
+  height: 250px;
+
+  overflow: hidden;
+
+  background: #020b07;
+}
+
+
+.burn-modal-video {
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position: center;
+}
+
+
+.burn-modal-video-wrap::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 20, 12, 0.05),
+      rgba(0, 20, 12, 0.55)
+    );
+
+  pointer-events: none;
+}
+
+
+.burn-modal-content {
+  padding: 28px;
+
+  text-align: center;
+}
+
+
+.burn-modal-eyebrow {
+  margin-bottom: 10px;
+
+  color: var(--gold);
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  letter-spacing: 2.5px;
+}
+
+
+.burn-modal-title {
+  color: var(--text);
+
+  font-size: 30px;
+
+  font-weight: 900;
+
+  line-height: 1.1;
+}
+
+
+.burn-modal-amount {
+  margin-top: 15px;
+
+  color: var(--green-bright);
+
+  font-size: 27px;
+
+  font-weight: 900;
+
+  word-break: break-word;
+}
+
+
+.burn-modal-status {
+  margin-top: 10px;
+
+  color: var(--muted);
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+.burn-modal-brand {
+  margin-top: 22px;
+
+  color: #769083;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+.burn-modal-brand strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--text);
+
+  font-size: 13px;
+}
+
+
+.burn-modal-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+
+.burn-modal-action {
+  min-height: 44px;
+
+  padding: 10px 8px;
+
+  color: var(--text);
+
+  background:
+    rgba(155, 229, 111, 0.07);
+
+  border: 1px solid
+    rgba(155, 229, 111, 0.15);
+
+  border-radius: 11px;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  transition: 0.2s ease;
+}
+
+
+.burn-modal-action:hover {
+  background:
+    rgba(155, 229, 111, 0.13);
+
+  border-color:
+    rgba(155, 229, 111, 0.30);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.burn-modal-close {
+  width: 100%;
+
+  min-height: 46px;
+
+  margin-top: 10px;
+
+  color: #07150d;
+
+  background: var(--green);
+
+  border: 0;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+
+  font-weight: 900;
+}
+
+
+/* ======================================================
+   BURNING STATE
+   ====================================================== */
+
+.burn-modal.is-burning
+  .burn-modal-content {
+  padding-top: 22px;
+}
+
+
+.burning-spinner {
+  width: 34px;
+
+  height: 34px;
+
+  margin: 0 auto 14px;
+
+  border: 3px solid
+    rgba(155, 229, 111, 0.18);
+
+  border-top-color:
+    var(--green-bright);
+
+  border-radius: 50%;
+
+  animation:
+    burningSpin 0.9s linear infinite;
+}
+
+
+@keyframes burningSpin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media (max-width: 620px) {
+
+  .stats-grid {
+    grid-template-columns:
+      1fr;
+
+    margin-bottom: 24px;
+  }
+
+
+  .stat-card {
+    padding: 17px;
+  }
+
+
+  .stat-card strong {
+    font-size: 22px;
+  }
+
+
+  .burn-modal {
+    padding: 12px;
+  }
+
+
+  .burn-modal-video-wrap {
+    height: 220px;
+  }
+
+
+  .burn-modal-content {
+    padding: 22px 18px;
+  }
+
+
+  .burn-modal-title {
+    font-size: 26px;
+  }
+
+
+  .burn-modal-amount {
+    font-size: 23px;
+  }
+
+
+  .burn-modal-actions {
+    grid-template-columns:
+      1fr;
+
+    gap: 8px;
+  }
+
+}
