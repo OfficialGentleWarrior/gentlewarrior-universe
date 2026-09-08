@@ -1,11 +1,10 @@
-name: Burning Well Pages
+name: Gentle Warrior Pages
 
 on:
   push:
     branches: ["main"]
     paths:
-      - "burning-well/**"
-      - ".github/workflows/burning-well.yml"
+      - "**"
   workflow_dispatch:
 
 permissions:
@@ -14,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "burning-well-pages"
+  group: "gentle-warrior-pages"
   cancel-in-progress: true
 
 jobs:
@@ -40,13 +39,25 @@ jobs:
         working-directory: burning-well
         run: npm run build
 
+      - name: Prepare GitHub Pages site
+        run: |
+          mkdir -p _site
+
+          rsync -av \
+            --exclude='.git' \
+            --exclude='burning-well' \
+            ./ _site/
+
+          mkdir -p _site/burning-well
+          cp -R burning-well/dist/. _site/burning-well/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: burning-well/dist
+          path: _site
 
   deploy:
     environment:
