@@ -605,13 +605,7 @@ app.post("/api/burns/register", async (req, res) => {
       });
     }
 
-    const actualFee = BigInt(
-      verification.feeLamports
-    );
-
-    const quotedTotal = BigInt(
-      feeQuote.totalLamports
-    );
+    
 
     const quotedService = BigInt(
       feeQuote.serviceLamports || "0"
@@ -621,16 +615,7 @@ app.post("/api/burns/register", async (req, res) => {
       feeQuote.referralLamports || "0"
     );
 
-    if (actualFee !== quotedTotal) {
-      return res.status(400).json({
-        error:
-          "Verified service fee does not match the approved fee quote.",
-        expectedLamports:
-          feeQuote.totalLamports,
-        actualLamports:
-          verification.feeLamports,
-      });
-    }
+
 
     const referrerWallet =
       feeQuote.referrerWallet || null;
