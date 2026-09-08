@@ -2896,19 +2896,13 @@ function renderWalletHistory() {
 }
   </div>
 
-  ${
-    ownReferralCode
-      ? `
-        <button
-          id="copyReferralBtn"
-          type="button"
-          class="burn-modal-action"
-        >
-          Copy Referral Link
-        </button>
-      `
-      : ""
-  }
+  <button
+  id="copyReferralBtn"
+  type="button"
+  class="burn-modal-action"
+>
+  Copy Referral Link
+</button>
 </div>
         <div
           id="walletBurnHistoryList"
@@ -2943,7 +2937,7 @@ const referralLink =
 if (referralLink) {
   referralLink.textContent =
     window.burningWellReferralCode
-      ? `https://gentlewarrior.world/burning-well?ref=${encodeURIComponent(
+      ? `https://gentlewarrior.world/burning-well/?ref=${encodeURIComponent(
   window.burningWellReferralCode
 )}`
       : "Connect your wallet to get your referral link.";
@@ -2965,7 +2959,7 @@ if (copyReferralBtn && ownReferralCode) {
     "click",
     async () => {
       const referralLink =
-  `https://gentlewarrior.world/burning-well?ref=${encodeURIComponent(
+  `https://gentlewarrior.world/burning-well/?ref=${encodeURIComponent(
     ownReferralCode
   )}`;
 
