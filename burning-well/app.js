@@ -137,6 +137,13 @@ let activeReferralCode = referralCodeFromUrl;
 
 let ownReferralCode = null;
 
+let referralStats = {
+  successfulReferrals: 0,
+  rewardsEarned: 0,
+  rewardsPaid: 0,
+  referrals: [],
+};
+
 // ======================================================
 // HELPERS
 // ======================================================
@@ -1340,6 +1347,8 @@ renderWalletHistory();
 
             await loadBurnRegistry();
 
+            await loadReferralStats();
+
           } catch (
             error
           ) {
@@ -2464,7 +2473,68 @@ async function loadBurnRegistry() {
     registryLoading = false;
   }
 }
+async function loadReferralStats() {
+  const wallet =
+    getConnectedWalletAddress();
 
+  if (!wallet) {
+    referralStats = {
+      successfulReferrals: 0,
+      rewardsEarned: 0,
+      rewardsPaid: 0,
+      referrals: [],
+    };
+
+    renderWalletHistory();
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/referrals?wallet=${encodeURIComponent(
+        wallet
+      )}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+          "Unable to load referral details."
+      );
+    }
+
+    referralStats = {
+      successfulReferrals:
+        Number(data.successfulReferrals || 0),
+      rewardsEarned:
+        Number(data.rewardsEarned || 0),
+      rewardsPaid:
+        Number(data.rewardsPaid || 0),
+      referrals:
+        Array.isArray(data.referrals)
+          ? data.referrals
+          : [],
+    };
+
+    renderWalletHistory();
+  } catch (error) {
+    console.warn(
+      "Referral stats unavailable:",
+      error
+    );
+
+    referralStats = {
+      successfulReferrals: 0,
+      rewardsEarned: 0,
+      rewardsPaid: 0,
+      referrals: [],
+    };
+
+    renderWalletHistory();
+  }
+}
 async function loadGlobalStats() {
 
   try {
@@ -2903,6 +2973,57 @@ function renderWalletHistory() {
 >
   Copy Referral Link
 </button>
+<div class="burn-referral-stats">
+  <div>
+    <strong>${referralStats.successfulReferrals}</strong>
+    <span>Successful Referrals</span>
+  </div>
+
+  <div>
+    <strong>$${referralStats.rewardsEarned.toFixed(2)}</strong>
+    <span>Rewards Earned</span>
+  </div>
+
+  <div>
+    <strong>$${referralStats.rewardsPaid.toFixed(2)}</strong>
+    <span>Rewards Paid</span>
+  </div>
+</div>
+<div class="burn-referral-list">
+  <strong>Your Referrals</strong>
+
+  ${
+    referralStats.referrals.length
+      ? referralStats.referrals
+          .map(
+            (item) => `
+              <div class="burn-referral-item">
+                <span>
+                  ${shortenAddress(
+                    item.referredUser
+                  )}
+                </span>
+
+                <span>
+                  $${Number(
+                    item.rewardUsd || 0
+                  ).toFixed(2)}
+                </span>
+
+                <span>
+                  ${item.status || "unknown"}
+                </span>
+              </div>
+            `
+          )
+          .join("")
+      : `
+          <div class="burn-referral-empty">
+            No successful referrals yet.
+          </div>
+        `
+  }
+</div>
 </div>
         <div
           id="walletBurnHistoryList"

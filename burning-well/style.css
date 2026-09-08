@@ -1517,3 +1517,78 @@ footer {
   }
 
 }
+/* =========================================================
+   REFERRAL DASHBOARD
+========================================================= */
+
+.burn-referral-box {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(155, 229, 111, 0.16);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.burn-referral-link {
+  margin-top: 8px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(155, 229, 111, 0.05);
+  border: 1px solid rgba(155, 229, 111, 0.10);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.burn-referral-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.burn-referral-stats > div {
+  padding: 14px 10px;
+  text-align: center;
+  border-radius: 10px;
+  background: rgba(155, 229, 111, 0.05);
+  border: 1px solid rgba(155, 229, 111, 0.10);
+}
+
+.burn-referral-stats strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.burn-referral-stats span {
+  display: block;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.burn-referral-list {
+  margin-top: 18px;
+}
+
+.burn-referral-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 12px;
+}
+
+.burn-referral-empty {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .burn-referral-stats {
+    grid-template-columns: 1fr;
+  }
+}

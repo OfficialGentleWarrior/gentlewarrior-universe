@@ -320,6 +320,90 @@ expiresAt:
     });
   }
 });
+app.get("/api/referrals", async (req, res) => {
+  try {
+    const wallet = String(
+      req.query.wallet || ""
+    ).trim();
+
+    if (!isValidAddress(wallet)) {
+      return res.status(400).json({
+        error: "Invalid wallet.",
+      });
+    }
+
+    const snapshot = await db
+      .collection("referral_rewards")
+      .where(
+        "referrerWallet",
+        "==",
+        wallet
+      )
+      .get();
+
+    const referrals = snapshot.docs.map(
+      (doc) => {
+        const data = doc.data();
+
+        return {
+          id: doc.id,
+          referredUser:
+            data.referredUser || null,
+          referralCode:
+            data.referralCode || null,
+          rewardUsd:
+            Number(data.rewardUsd || 0),
+          status:
+            data.status || "unknown",
+          payoutSignature:
+            data.payoutSignature || null,
+          createdAt:
+            data.createdAt?.toDate?.()
+              ?.toISOString?.() || null,
+        };
+      }
+    );
+
+    const successfulReferrals =
+      referrals.length;
+
+    const rewardsEarned =
+      referrals.reduce(
+        (sum, item) =>
+          sum + item.rewardUsd,
+        0
+      );
+
+    const rewardsPaid =
+      referrals
+        .filter(
+          (item) =>
+            item.status === "paid"
+        )
+        .reduce(
+          (sum, item) =>
+            sum + item.rewardUsd,
+          0
+        );
+
+    return res.json({
+      wallet,
+      successfulReferrals,
+      rewardsEarned,
+      rewardsPaid,
+      referrals,
+    });
+  } catch (error) {
+    console.error(
+      "Referral lookup error:",
+      error
+    );
+
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 function extractBurnAndFee(tx, expected) {
   if (!tx || tx.meta?.err) {
     return {
