@@ -909,6 +909,432 @@ app.get("/api/stats", async (req, res) => {
     });
   }
 });
+function requireAdmin(req, res) {
+  const providedKey =
+    String(req.get("x-admin-key") || "").trim();
+
+  const expectedKey =
+    String(ADMIN_API_KEY.value() || "").trim();
+
+  if (
+    !providedKey ||
+    !expectedKey ||
+    providedKey !== expectedKey
+  ) {
+    res.status(401).json({
+      error: "Unauthorized.",
+    });
+
+    return false;
+  }
+
+  return true;
+}
+
+app.get("/api/admin/ping", (req, res) => {
+  if (!requireAdmin(req, res)) {
+    return;
+  }
+
+  return res.json({
+    ok: true,
+    message: "Burning Well admin access verified.",
+  });
+});
+app.get("/api/admin/overview", async (req, res) => {
+  if (!requireAdmin(req, res)) {
+    return;
+  }
+
+  try {
+    const burnSnap = await db
+      .collection("burn_registry")
+      .where("status", "==", "verified")
+      .get();
+
+    const referralSnap = await db
+      .collection("referral_rewards")
+      .get();
+
+    const burns = burnSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const referrals = referralSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const uniqueBurners = new Set();
+    const uniqueTokens = new Set();
+
+    let totalServiceFeesUsd = 0;
+    let totalReferralRewardsUsd = 0;
+
+    for (const burn of burns) {
+      if (burn.wallet) {
+        uniqueBurners.add(burn.wallet);
+      }
+
+      if (burn.mint) {
+        uniqueTokens.add(burn.mint);
+      }
+
+      totalServiceFeesUsd +=
+        Number(burn.serviceFeeUsd || 0);
+    }
+
+    for (const referral of referrals) {
+      totalReferralRewardsUsd +=
+        Number(referral.rewardUsd || 0);
+    }
+
+    return res.json({
+      totalBurnTransactions: burns.length,
+      uniqueBurners: uniqueBurners.size,
+      uniqueTokens: uniqueTokens.size,
+      totalServiceFeesUsd:
+        Number(totalServiceFeesUsd.toFixed(2)),
+      totalReferralRewardsUsd:
+        Number(totalReferralRewardsUsd.toFixed(2)),
+    });
+  } catch (error) {
+    console.error(
+      "Admin overview error:",
+      error
+    );
+
+    return res.status(500).json({
+      error: "Unable to load admin overview.",
+    });
+  }
+});
+app.get(
+  "/api/admin/leaderboard/tokens",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const snap = await db
+        .collection("burn_registry")
+        .where("status", "==", "verified")
+        .get();
+
+      const tokens = new Map();
+
+      snap.forEach((doc) => {
+        const burn = doc.data();
+
+        if (!burn.mint) {
+          return;
+        }
+
+        if (!tokens.has(burn.mint)) {
+          tokens.set(burn.mint, {
+            mint: burn.mint,
+            tokenName:
+              burn.tokenName || "Unknown Token",
+            tokenSymbol:
+              burn.tokenSymbol || "",
+            totalBurned: 0,
+            burnTransactions: 0,
+            burners: new Set(),
+            latestBurn: null,
+          });
+        }
+
+        const token = tokens.get(burn.mint);
+
+        token.totalBurned +=
+          Number(burn.amount || 0);
+
+        token.burnTransactions += 1;
+
+        if (burn.wallet) {
+          token.burners.add(burn.wallet);
+        }
+
+        const burnTime =
+          Number(burn.blockTime || 0);
+
+        if (
+          burnTime &&
+          (
+            !token.latestBurn ||
+            burnTime > token.latestBurn
+          )
+        ) {
+          token.latestBurn = burnTime;
+        }
+      });
+
+      const leaderboard = Array.from(
+        tokens.values()
+      )
+        .map((token) => ({
+          mint: token.mint,
+          tokenName: token.tokenName,
+          tokenSymbol: token.tokenSymbol,
+          totalBurned: token.totalBurned,
+          burnTransactions:
+            token.burnTransactions,
+          uniqueBurners:
+            token.burners.size,
+          latestBurn:
+            token.latestBurn,
+        }))
+        .sort(
+          (a, b) =>
+            b.totalBurned -
+            a.totalBurned
+        )
+        .map((token, index) => ({
+          rank: index + 1,
+          ...token,
+        }));
+
+      return res.json({
+        leaderboard,
+      });
+    } catch (error) {
+      console.error(
+        "Token leaderboard error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load token leaderboard.",
+      });
+    }
+  }
+);
+app.get(
+  "/api/admin/leaderboard/referrals",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const snap = await db
+        .collection("referral_rewards")
+        .get();
+
+      const referrers = new Map();
+
+      snap.forEach((doc) => {
+        const reward = doc.data();
+
+        const referrerWallet =
+          reward.referrerWallet || null;
+
+        if (!referrerWallet) {
+          return;
+        }
+
+        if (!referrers.has(referrerWallet)) {
+          referrers.set(referrerWallet, {
+            referrerWallet,
+            referralCode:
+              reward.referralCode || null,
+            successfulReferrals: 0,
+            rewardsEarnedUsd: 0,
+            rewardsPaidUsd: 0,
+            latestReferral: null,
+          });
+        }
+
+        const referrer =
+          referrers.get(referrerWallet);
+
+        referrer.successfulReferrals += 1;
+
+        const rewardUsd =
+          Number(reward.rewardUsd || 0);
+
+        referrer.rewardsEarnedUsd +=
+          rewardUsd;
+
+        if (reward.status === "paid") {
+          referrer.rewardsPaidUsd +=
+            rewardUsd;
+        }
+
+        const referralTime =
+          Number(
+            reward.blockTime ||
+            reward.createdAt?.seconds ||
+            0
+          );
+
+        if (
+          referralTime &&
+          (
+            !referrer.latestReferral ||
+            referralTime >
+              referrer.latestReferral
+          )
+        ) {
+          referrer.latestReferral =
+            referralTime;
+        }
+      });
+
+      const leaderboard = Array.from(
+        referrers.values()
+      )
+        .map((referrer) => ({
+          ...referrer,
+          rewardsEarnedUsd:
+            Number(
+              referrer.rewardsEarnedUsd.toFixed(2)
+            ),
+          rewardsPaidUsd:
+            Number(
+              referrer.rewardsPaidUsd.toFixed(2)
+            ),
+        }))
+        .sort(
+          (a, b) =>
+            b.successfulReferrals -
+              a.successfulReferrals ||
+            b.rewardsEarnedUsd -
+              a.rewardsEarnedUsd
+        )
+        .map((referrer, index) => ({
+          rank: index + 1,
+          ...referrer,
+        }));
+
+      return res.json({
+        leaderboard,
+      });
+    } catch (error) {
+      console.error(
+        "Referral leaderboard error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load referral leaderboard.",
+      });
+    }
+  }
+);
+app.get(
+  "/api/admin/leaderboard/burners",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const snap = await db
+        .collection("burn_registry")
+        .where("status", "==", "verified")
+        .get();
+
+      const burners = new Map();
+
+      snap.forEach((doc) => {
+        const burn = doc.data();
+
+        if (!burn.wallet) {
+          return;
+        }
+
+        if (!burners.has(burn.wallet)) {
+          burners.set(burn.wallet, {
+            wallet: burn.wallet,
+            burnTransactions: 0,
+            totalBurned: 0,
+            tokens: new Set(),
+            firstBurn: null,
+            latestBurn: null,
+          });
+        }
+
+        const burner =
+          burners.get(burn.wallet);
+
+        burner.burnTransactions += 1;
+
+        burner.totalBurned +=
+          Number(burn.amount || 0);
+
+        if (burn.mint) {
+          burner.tokens.add(burn.mint);
+        }
+
+        const burnTime =
+          Number(burn.blockTime || 0);
+
+        if (burnTime) {
+          if (
+            !burner.firstBurn ||
+            burnTime < burner.firstBurn
+          ) {
+            burner.firstBurn = burnTime;
+          }
+
+          if (
+            !burner.latestBurn ||
+            burnTime > burner.latestBurn
+          ) {
+            burner.latestBurn = burnTime;
+          }
+        }
+      });
+
+      const leaderboard = Array.from(
+        burners.values()
+      )
+        .map((burner) => ({
+          wallet: burner.wallet,
+          burnTransactions:
+            burner.burnTransactions,
+          uniqueTokens:
+            burner.tokens.size,
+          totalBurned:
+            burner.totalBurned,
+          firstBurn:
+            burner.firstBurn,
+          latestBurn:
+            burner.latestBurn,
+        }))
+        .sort(
+          (a, b) =>
+            b.burnTransactions -
+              a.burnTransactions ||
+            b.latestBurn -
+              a.latestBurn
+        )
+        .map((burner, index) => ({
+          rank: index + 1,
+          ...burner,
+        }));
+
+      return res.json({
+        leaderboard,
+      });
+    } catch (error) {
+      console.error(
+        "Burner leaderboard error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load burner leaderboard.",
+      });
+    }
+  }
+);
 exports.burningWellApi = onRequest(
   {
     region: "asia-southeast1",
