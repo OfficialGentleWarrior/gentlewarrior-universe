@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Burning Well
         working-directory: burning-well
-        run: npm run build
+        run: npm run build -- --base=/burning-well/
 
       - name: Prepare GitHub Pages site
         run: |
