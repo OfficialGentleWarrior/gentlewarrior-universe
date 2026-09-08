@@ -19,6 +19,8 @@ import {
   getTransferSolInstruction,
 } from "@solana-program/system";
 
+import burningWellVideoUrl from "./assets/burning well.mp4";
+
 // ======================================================
 // CONFIG
 // ======================================================
@@ -1679,7 +1681,7 @@ function createBurnModal() {
           preload="auto"
         >
           <source
-            src="./assets/burning well.mp4"
+            src="${burningWellVideoUrl}"
             type="video/mp4"
           />
         </video>

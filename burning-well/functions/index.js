@@ -222,15 +222,10 @@ app.get("/api/fee-quote", async (req, res) => {
         ? req.query.ref.trim()
         : "";
 
-    if (ref && !isValidAddress(ref)) {
-      return res.status(400).json({
-        error: "Invalid referral wallet.",
-      });
-    }
-
-    const referralCode = ref
-      ? referralCodeForWallet(ref)
-      : null;
+    const referralCode =
+  ref && /^BW-[A-F0-9]{12}$/.test(ref)
+    ? ref
+    : null;
 
     const response = await fetch(
       "https://lite-api.jup.ag/price/v3?ids=" +
