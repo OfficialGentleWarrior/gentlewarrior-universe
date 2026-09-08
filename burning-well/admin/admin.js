@@ -293,7 +293,239 @@ async function loadBurnerLeaderboard() {
     `)
     .join("");
 }
+async function loadBurnRegistry() {
+  const data =
+    await adminFetch("/api/burns");
 
+  const tbody =
+    document.getElementById("burnRegistry");
+
+  const rows =
+  Array.isArray(data.records)
+    ? data.records
+    : [];
+
+  if (!rows.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          No verified burns yet.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = rows
+    .map((item) => {
+      const timestamp =
+  item.blockTime ||
+  item.timestamp ||
+  item.createdAt ||
+  item.burnedAt ||
+  0;
+
+      const tokenName =
+        item.tokenName ||
+        item.name ||
+        "Unknown Token";
+
+      const tokenSymbol =
+        item.tokenSymbol ||
+        item.symbol ||
+        "";
+
+      const burner =
+        item.wallet ||
+        item.burnerWallet ||
+        item.burner ||
+        "";
+
+      const amount =
+        item.amount ??
+        item.amountBurned ??
+        item.burnAmount ??
+        0;
+
+      const serviceFee =
+        item.serviceFeeUsd ??
+        item.feeUsd ??
+        0;
+
+      const referral =
+        item.referralCode ||
+        item.referrerWallet ||
+        "None";
+
+      const signature =
+        item.signature ||
+        item.transactionSignature ||
+        item.txSignature ||
+        "";
+
+      return `
+        <tr>
+          <td>
+            ${formatDate(timestamp)}
+          </td>
+
+          <td>
+            <strong>${tokenName}</strong>
+            ${
+              tokenSymbol
+                ? ` (${tokenSymbol})`
+                : ""
+            }
+          </td>
+
+          <td title="${burner}">
+            ${shortenAddress(burner)}
+          </td>
+
+          <td>
+            ${Number(amount)}
+          </td>
+
+          <td>
+            ${formatUsd(serviceFee)}
+          </td>
+
+          <td>
+            ${referral}
+          </td>
+
+          <td>
+            ${
+              signature
+                ? `
+                  <a
+                    href="https://solscan.io/tx/${signature}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View TX
+                  </a>
+                `
+                : "—"
+            }
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+}
+async function loadReferralTransactions() {
+  const data =
+    await adminFetch("/api/admin/referrals");
+
+  const tbody =
+    document.getElementById(
+      "referralTransactions"
+    );
+
+  const rows =
+    Array.isArray(data.referrals)
+      ? data.referrals
+      : Array.isArray(data)
+        ? data
+        : [];
+
+  if (!rows.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          No referral transactions yet.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = rows
+    .map((item) => {
+      const timestamp =
+        item.timestamp ||
+        item.createdAt ||
+        item.paidAt ||
+        0;
+
+      const referralCode =
+        item.referralCode ||
+        "—";
+
+      const referrer =
+        item.referrerWallet ||
+        item.referrer ||
+        "";
+
+      const burner =
+        item.burnerWallet ||
+        item.wallet ||
+        item.burner ||
+        "";
+
+      const reward =
+        item.rewardUsd ??
+        item.referralRewardUsd ??
+        item.amountUsd ??
+        0;
+
+      const status =
+        item.status ||
+        "—";
+
+      const signature =
+        item.signature ||
+        item.transactionSignature ||
+        item.txSignature ||
+        "";
+
+      return `
+        <tr>
+          <td>
+            ${formatDate(timestamp)}
+          </td>
+
+          <td>
+            ${referralCode}
+          </td>
+
+          <td title="${referrer}">
+            ${shortenAddress(referrer)}
+          </td>
+
+          <td title="${burner}">
+            ${shortenAddress(burner)}
+          </td>
+
+          <td>
+            ${formatUsd(reward)}
+          </td>
+
+          <td>
+            ${status}
+          </td>
+
+          <td>
+            ${
+              signature
+                ? `
+                  <a
+                    href="https://solscan.io/tx/${signature}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View TX
+                  </a>
+                `
+                : "—"
+            }
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+}
 
 async function loadDashboard() {
   await Promise.all([
@@ -301,6 +533,8 @@ async function loadDashboard() {
     loadTokenLeaderboard(),
     loadReferralLeaderboard(),
     loadBurnerLeaderboard(),
+    loadBurnRegistry(),
+    loadReferralTransactions(),
   ]);
 }
 

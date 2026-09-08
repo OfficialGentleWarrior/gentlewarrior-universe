@@ -1227,6 +1227,105 @@ app.get(
   }
 );
 app.get(
+  "/api/admin/referrals",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const snap = await db
+        .collection("referral_rewards")
+        .get();
+
+      const referrals = [];
+
+      snap.forEach((doc) => {
+        const reward = doc.data();
+
+        const timestamp =
+          reward.timestamp ||
+          reward.createdAt ||
+          reward.paidAt ||
+          null;
+
+        let timestampSeconds = null;
+
+        if (
+          timestamp &&
+          typeof timestamp.toDate === "function"
+        ) {
+          timestampSeconds = Math.floor(
+            timestamp.toDate().getTime() / 1000
+          );
+        } else if (
+          timestamp &&
+          typeof timestamp.seconds === "number"
+        ) {
+          timestampSeconds = timestamp.seconds;
+        } else if (
+          typeof timestamp === "number"
+        ) {
+          timestampSeconds = timestamp;
+        }
+
+        referrals.push({
+          id: doc.id,
+
+          referralCode:
+            reward.referralCode || null,
+
+          referrerWallet:
+            reward.referrerWallet || null,
+
+          burnerWallet:
+            reward.burnerWallet ||
+            reward.wallet ||
+            null,
+
+          rewardUsd:
+            Number(
+              reward.rewardUsd ??
+              reward.referralRewardUsd ??
+              0
+            ),
+
+          status:
+            reward.status || null,
+
+          signature:
+            reward.signature ||
+            reward.transactionSignature ||
+            reward.txSignature ||
+            null,
+
+          timestamp: timestampSeconds,
+        });
+      });
+
+      referrals.sort(
+        (a, b) =>
+          Number(b.timestamp || 0) -
+          Number(a.timestamp || 0)
+      );
+
+      return res.json({
+        referrals,
+      });
+    } catch (error) {
+      console.error(
+        "Admin referral transactions error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load referral transactions.",
+      });
+    }
+  }
+);
+app.get(
   "/api/admin/leaderboard/burners",
   async (req, res) => {
     if (!requireAdmin(req, res)) {
