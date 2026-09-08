@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Burning Well Admin</title>
+
+  <link
+    rel="stylesheet"
+    href="./admin.css"
+  >
+</head>
+
+<body>
+
+  <main class="admin-shell">
+
+    <header class="admin-header">
+      <div>
+        <p class="admin-eyebrow">
+          BURNING WELL
+        </p>
+
+        <h1>Admin Dashboard</h1>
+
+        <p class="admin-subtitle">
+          Burns, fees, referrals and platform activity.
+        </p>
+      </div>
+    </header>
+
+    <!-- ADMIN ACCESS -->
+    <section
+      id="adminLogin"
+      class="admin-login"
+    >
+      <h2>Admin Access</h2>
+
+      <p>
+        Enter your Burning Well admin key.
+      </p>
+
+      <input
+        id="adminKey"
+        type="password"
+        placeholder="Admin key"
+        autocomplete="off"
+      >
+
+      <button
+        id="adminLoginBtn"
+        type="button"
+      >
+        Access Dashboard
+      </button>
+
+      <p
+        id="loginError"
+        class="login-error"
+      ></p>
+    </section>
+
+
+    <!-- DASHBOARD -->
+    <section
+      id="adminDashboard"
+      hidden
+    >
+
+      <div class="admin-toolbar">
+        <span>Authorized Admin</span>
+
+        <button
+          id="adminLogoutBtn"
+          type="button"
+        >
+          Logout
+        </button>
+      </div>
+
+
+      <!-- OVERVIEW -->
+      <section class="admin-section">
+
+        <h2>Overview</h2>
+
+        <div class="overview-grid">
+
+          <article class="stat-card">
+            <strong id="totalBurnTransactions">
+              0
+            </strong>
+            <span>Burn Transactions</span>
+          </article>
+
+          <article class="stat-card">
+            <strong id="uniqueBurners">
+              0
+            </strong>
+            <span>Unique Burners</span>
+          </article>
+
+          <article class="stat-card">
+            <strong id="uniqueTokens">
+              0
+            </strong>
+            <span>Unique Tokens</span>
+          </article>
+
+          <article class="stat-card">
+            <strong id="totalServiceFeesUsd">
+              $0.00
+            </strong>
+            <span>Service Fees</span>
+          </article>
+
+          <article class="stat-card">
+            <strong id="totalReferralRewardsUsd">
+              $0.00
+            </strong>
+            <span>Referral Rewards</span>
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <!-- TOKEN LEADERBOARD -->
+      <section class="admin-section">
+
+        <h2>Token Leaderboard</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Token</th>
+                <th>Mint</th>
+                <th>Total Burned</th>
+                <th>Burns</th>
+                <th>Burners</th>
+                <th>Latest Burn</th>
+              </tr>
+            </thead>
+
+            <tbody id="tokenLeaderboard">
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- REFERRAL LEADERBOARD -->
+      <section class="admin-section">
+
+        <h2>Referral Leaderboard</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Referrer</th>
+                <th>Code</th>
+                <th>Successful Referrals</th>
+                <th>Earned</th>
+                <th>Paid</th>
+                <th>Latest Referral</th>
+              </tr>
+            </thead>
+
+            <tbody id="referralLeaderboard">
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- BURNER LEADERBOARD -->
+      <section class="admin-section">
+
+        <h2>Burner Leaderboard</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Wallet</th>
+                <th>Burns</th>
+                <th>Unique Tokens</th>
+                <th>Total Burned</th>
+                <th>First Burn</th>
+                <th>Latest Burn</th>
+              </tr>
+            </thead>
+
+            <tbody id="burnerLeaderboard">
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <script
+    type="module"
+    src="./admin.js"
+  ></script>
+
+</body>
+</html>

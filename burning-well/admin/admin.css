@@ -1,0 +1,270 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #eef7e9;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(53, 112, 59, 0.22),
+      transparent 38%
+    ),
+    #07100a;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.admin-shell {
+  width: min(1400px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+.admin-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid
+    rgba(155, 229, 111, 0.14);
+}
+
+.admin-eyebrow {
+  margin: 0 0 8px;
+  color: #9be56f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 48px);
+}
+
+.admin-subtitle {
+  margin: 10px 0 0;
+  color: rgba(238, 247, 233, 0.62);
+}
+
+.admin-login {
+  width: min(440px, 100%);
+  margin: 80px auto 0;
+  padding: 28px;
+  border: 1px solid
+    rgba(155, 229, 111, 0.18);
+  border-radius: 18px;
+  background: rgba(7, 18, 10, 0.88);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+.admin-login h2 {
+  margin: 0 0 8px;
+}
+
+.admin-login p {
+  color: rgba(238, 247, 233, 0.62);
+}
+
+.admin-login input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px 14px;
+  color: #fff;
+  background: #0b170e;
+  border: 1px solid
+    rgba(155, 229, 111, 0.18);
+  border-radius: 10px;
+  outline: none;
+}
+
+.admin-login input:focus {
+  border-color: rgba(155, 229, 111, 0.65);
+}
+
+.admin-login button,
+.admin-toolbar button {
+  border: 1px solid
+    rgba(155, 229, 111, 0.30);
+  border-radius: 10px;
+  color: #07100a;
+  background: #9be56f;
+  font-weight: 800;
+}
+
+.admin-login button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px 16px;
+}
+
+.admin-login button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.login-error {
+  min-height: 20px;
+  margin-bottom: 0;
+  color: #ff8b8b !important;
+  font-size: 13px;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid
+    rgba(155, 229, 111, 0.14);
+  border-radius: 12px;
+  background: rgba(155, 229, 111, 0.04);
+}
+
+.admin-toolbar span {
+  color: #9be56f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-toolbar button {
+  padding: 8px 14px;
+}
+
+.admin-section {
+  margin-top: 22px;
+  padding: 22px;
+  border: 1px solid
+    rgba(155, 229, 111, 0.14);
+  border-radius: 16px;
+  background: rgba(7, 18, 10, 0.78);
+}
+
+.admin-section h2 {
+  margin: 0 0 18px;
+  font-size: 18px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  min-height: 110px;
+  padding: 18px;
+  border: 1px solid
+    rgba(155, 229, 111, 0.12);
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(155, 229, 111, 0.08),
+      rgba(155, 229, 111, 0.02)
+    );
+}
+
+.stat-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #9be56f;
+  font-size: 26px;
+}
+
+.stat-card span {
+  color: rgba(238, 247, 233, 0.60);
+  font-size: 12px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 12px;
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.06);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+th {
+  color: rgba(155, 229, 111, 0.82);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+td {
+  color: rgba(238, 247, 233, 0.82);
+}
+
+tbody tr:hover {
+  background: rgba(155, 229, 111, 0.035);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 1050px) {
+  .overview-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-shell {
+    width: min(100% - 24px, 1400px);
+    padding-top: 28px;
+  }
+
+  .overview-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-section {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 460px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
