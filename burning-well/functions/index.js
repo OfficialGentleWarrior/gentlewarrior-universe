@@ -744,7 +744,7 @@ app.post("/api/burns/register", async (req, res) => {
         Number(quotedService) /
         LAMPORTS_PER_SOL,
       feeLamports:
-        actualFee.toString(),
+  quotedService.toString(),
       serviceFeeUsd:
   referrerWallet
     ? SERVICE_FEE_USD - REFERRAL_REWARD_USD
