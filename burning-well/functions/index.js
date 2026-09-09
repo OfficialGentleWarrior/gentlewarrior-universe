@@ -201,6 +201,21 @@ app.post("/api/referrals/register", async (req, res) => {
 
     const code = referralCodeForWallet(wallet);
 
+    await db
+  .collection("referral_codes")
+  .doc(code)
+  .set(
+    {
+      code,
+      wallet,
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    },
+    {
+      merge: true,
+    }
+  );
+
     return res.json({
       code,
     });
@@ -226,6 +241,20 @@ app.get("/api/fee-quote", async (req, res) => {
   ref && /^BW-[A-F0-9]{12}$/.test(ref)
     ? ref
     : null;
+
+    let referrerWallet = null;
+
+if (referralCode) {
+  const referralDoc = await db
+    .collection("referral_codes")
+    .doc(referralCode)
+    .get();
+
+  if (referralDoc.exists) {
+    referrerWallet =
+      referralDoc.data()?.wallet || null;
+  }
+}
 
     const response = await fetch(
       "https://lite-api.jup.ag/price/v3?ids=" +
@@ -254,18 +283,24 @@ app.get("/api/fee-quote", async (req, res) => {
       );
     }
 
-    const serviceLamports = Math.ceil(
-      (SERVICE_FEE_USD / solPriceUsd) *
-        LAMPORTS_PER_SOL
-    );
+    const serviceFeeUsd =
+  referrerWallet
+    ? SERVICE_FEE_USD - REFERRAL_REWARD_USD
+    : SERVICE_FEE_USD;
 
-    const referralLamports = ref
-      ? Math.ceil(
-          (REFERRAL_REWARD_USD /
-            solPriceUsd) *
-            LAMPORTS_PER_SOL
-        )
-      : 0;
+const serviceLamports = Math.ceil(
+  (serviceFeeUsd / solPriceUsd) *
+    LAMPORTS_PER_SOL
+);
+
+    const referralLamports =
+  referrerWallet
+    ? Math.ceil(
+        (REFERRAL_REWARD_USD /
+          solPriceUsd) *
+        LAMPORTS_PER_SOL
+      )
+    : 0;
 
     const totalLamports =
       serviceLamports +
@@ -284,7 +319,7 @@ app.get("/api/fee-quote", async (req, res) => {
         serviceLamports,
         referralLamports,
         totalLamports,
-        referralWallet: ref || null,
+        referralWallet: referrerWallet,
         referralCode,
         createdAt:
   FieldValue.serverTimestamp(),
@@ -687,8 +722,8 @@ app.post("/api/burns/register", async (req, res) => {
       Math.floor(Date.now() / 1000);
 
     const feeSol =
-      Number(actualFee) /
-      LAMPORTS_PER_SOL;
+  Number(quotedService) /
+  LAMPORTS_PER_SOL;
 
     const record = {
       signature,
@@ -711,7 +746,9 @@ app.post("/api/burns/register", async (req, res) => {
       feeLamports:
         actualFee.toString(),
       serviceFeeUsd:
-        SERVICE_FEE_USD,
+  referrerWallet
+    ? SERVICE_FEE_USD - REFERRAL_REWARD_USD
+    : SERVICE_FEE_USD,
       serviceFeeLamports:
         quotedService.toString(),
       referralRewardUsd:
