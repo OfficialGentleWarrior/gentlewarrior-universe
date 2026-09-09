@@ -1333,9 +1333,6 @@ console.log(
 );
 
             if (ownReferralCode) {
-  activeReferralCode =
-    activeReferralCode || ownReferralCode;
-
   window.burningWellReferralCode =
     ownReferralCode;
 }
