@@ -3095,10 +3095,7 @@ if (copyReferralBtn && ownReferralCode) {
   const wallet =
     getConnectedWalletAddress();
 
-    console.log(
-  "RENDER REFERRAL:",
-  window.burningWellReferralCode
-);
+  
 
   if (!wallet) {
 
@@ -3806,10 +3803,6 @@ console.log(
   `$${SERVICE_FEE_USD.toFixed(2)} USD-equivalent`
 );
 
-console.log(
-  "Fee Wallet:",
-  FEE_WALLET
-);
 
 console.log(
   "Registry:",

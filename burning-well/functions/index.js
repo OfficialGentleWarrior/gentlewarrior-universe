@@ -337,6 +337,7 @@ expiresAt:
       referralLamports,
       totalLamports,
       referralCode,
+      referrerWallet,
       expiresInSeconds: 300,
     });
   } catch (error) {
