@@ -1342,11 +1342,11 @@ renderWalletHistory();
 
             closeWalletModal();
 
-            await loadWalletTokens();
-
-            await loadBurnRegistry();
-
             await loadReferralStats();
+
+await loadWalletTokens();
+
+await loadBurnRegistry();
 
           } catch (
             error
