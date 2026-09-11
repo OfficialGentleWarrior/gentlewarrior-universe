@@ -184,9 +184,14 @@ app.post("/api/rpc", async (req, res) => {
       error
     );
 
-    return res.status(500).json({
-      error: error.message,
-    });
+    return res.status(200).json({
+  jsonrpc: "2.0",
+  id: req.body?.id ?? null,
+  error: {
+    code: -32000,
+    message: error.message,
+  },
+});
   }
 });
 app.post("/api/referrals/register", async (req, res) => {
@@ -319,7 +324,7 @@ const serviceLamports = Math.ceil(
         serviceLamports,
         referralLamports,
         totalLamports,
-        referralWallet: referrerWallet,
+        referrerWallet,
         referralCode,
         createdAt:
   FieldValue.serverTimestamp(),
@@ -654,7 +659,9 @@ app.post("/api/burns/register", async (req, res) => {
 
 
     const referrerWallet =
-      feeQuote.referrerWallet || null;
+  feeQuote.referrerWallet ||
+  feeQuote.referralWallet ||
+  null;
 
     if (referrerWallet === wallet) {
       return res.status(400).json({
