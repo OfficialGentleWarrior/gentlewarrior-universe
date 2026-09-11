@@ -1342,7 +1342,7 @@ renderWalletHistory();
 
             closeWalletModal();
 
-            await loadReferralStats();
+            await loadReferralStats(connectedAddress);
 
 await loadWalletTokens();
 
@@ -2472,8 +2472,9 @@ async function loadBurnRegistry() {
     registryLoading = false;
   }
 }
-async function loadReferralStats() {
+async function loadReferralStats(walletOverride = null) {
   const wallet =
+    walletOverride ||
     getConnectedWalletAddress();
 
   if (!wallet) {
