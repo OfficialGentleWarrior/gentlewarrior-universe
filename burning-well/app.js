@@ -2490,10 +2490,13 @@ async function loadReferralStats() {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/referrals?wallet=${encodeURIComponent(
-        wallet
-      )}`
-    );
+  `${API_BASE_URL}/api/referrals?wallet=${encodeURIComponent(
+    wallet
+  )}&_=${Date.now()}`,
+  {
+    cache: "no-store",
+  }
+);
 
     const data = await response.json();
 
