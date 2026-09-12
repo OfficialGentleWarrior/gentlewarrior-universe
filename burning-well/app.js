@@ -2501,14 +2501,6 @@ async function loadReferralStats(walletOverride = null) {
 
     const data = await response.json();
 
-alert(
-  "Referral Debug\n" +
-  "Wallet: " + wallet + "\n" +
-  "HTTP: " + response.status + "\n" +
-  "Referrals: " + data.successfulReferrals + "\n" +
-  "Earned: " + data.rewardsEarned + "\n" +
-  "Paid: " + data.rewardsPaid
-);
 
 if (!response.ok) {
       throw new Error(
@@ -3838,6 +3830,41 @@ console.log(
 loadBurnRegistry();
 loadGlobalStats();
 loadReferralStats();
+
+let lastHistoryWallet = null;
+
+setInterval(async () => {
+  const wallet = getConnectedWalletAddress();
+
+  if (!wallet) {
+    lastHistoryWallet = null;
+    return;
+  }
+
+  if (wallet !== lastHistoryWallet) {
+    lastHistoryWallet = wallet;
+
+    try {
+      ownReferralCode =
+        await registerReferralWallet(wallet);
+
+      if (ownReferralCode) {
+        window.burningWellReferralCode =
+          ownReferralCode;
+      }
+
+      await loadBurnRegistry();
+      await loadReferralStats(wallet);
+
+      renderWalletHistory();
+    } catch (error) {
+      console.warn(
+        "Wallet history refresh failed:",
+        error
+      );
+    }
+  }
+}, 1000);
 
 // ======================================================
 // PERIODIC REGISTRY REFRESH
