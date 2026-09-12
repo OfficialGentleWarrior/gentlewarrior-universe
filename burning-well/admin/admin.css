@@ -152,6 +152,97 @@ button {
 .admin-toolbar button {
   padding: 8px 14px;
 }
+/* =========================================
+   GLOBAL ADMIN PERIOD FILTER
+========================================= */
+
+.admin-period-filter {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid rgba(155, 229, 111, 0.14);
+  border-radius: 12px;
+  background: rgba(155, 229, 111, 0.04);
+}
+
+.admin-period-label {
+  margin-bottom: 10px;
+  color: #9be56f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.admin-period-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-period-buttons .period-btn {
+  padding: 9px 14px;
+  border: 1px solid rgba(155, 229, 111, 0.22);
+  border-radius: 9px;
+  background: transparent;
+  color: #d9f5ca;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-period-buttons .period-btn:hover {
+  border-color: rgba(155, 229, 111, 0.55);
+  background: rgba(155, 229, 111, 0.08);
+}
+
+.admin-period-buttons .period-btn.active {
+  border-color: #9be56f;
+  background: #9be56f;
+  color: #07100a;
+}
+
+.custom-period-range {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.custom-period-range[hidden] {
+  display: none;
+}
+
+.custom-period-range label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #9be56f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.custom-period-range input {
+  padding: 9px 10px;
+  border: 1px solid rgba(155, 229, 111, 0.22);
+  border-radius: 8px;
+  background: #07100a;
+  color: #d9f5ca;
+  font: inherit;
+}
+
+#applyCustomPeriodBtn {
+  padding: 9px 14px;
+  border: 1px solid #9be56f;
+  border-radius: 8px;
+  background: #9be56f;
+  color: #07100a;
+  font-weight: 800;
+  cursor: pointer;
+}
 
 .admin-section {
   margin-top: 22px;

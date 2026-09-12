@@ -76,10 +76,31 @@ async function adminFetch(path) {
   return data;
 }
 
+let adminPeriod = "week";
+let adminCustomStart = "";
+let adminCustomEnd = "";
+
+function getAdminPeriodQuery() {
+  if (
+    adminPeriod === "custom" &&
+    adminCustomStart &&
+    adminCustomEnd
+  ) {
+    return (
+      `?period=custom` +
+      `&start=${encodeURIComponent(adminCustomStart)}` +
+      `&end=${encodeURIComponent(adminCustomEnd)}`
+    );
+  }
+
+  return `?period=${encodeURIComponent(adminPeriod)}`;
+}
 
 async function loadOverview() {
   const data =
-    await adminFetch("/api/admin/overview");
+  await adminFetch(
+    `/api/admin/overview${getAdminPeriodQuery()}`
+  );
 
   document.getElementById(
     "totalBurnTransactions"
@@ -586,6 +607,89 @@ adminKeyInput.addEventListener(
   }
 );
 
+const periodButtons =
+  document.querySelectorAll(".period-btn");
+
+const customPeriodRange =
+  document.getElementById("customPeriodRange");
+
+const customPeriodStart =
+  document.getElementById("customPeriodStart");
+
+const customPeriodEnd =
+  document.getElementById("customPeriodEnd");
+
+const applyCustomPeriodBtn =
+  document.getElementById("applyCustomPeriodBtn");
+
+function setActivePeriodButton(period) {
+  periodButtons.forEach((button) => {
+    button.classList.toggle(
+      "active",
+      button.dataset.period === period
+    );
+  });
+}
+
+periodButtons.forEach((button) => {
+  button.addEventListener("click", async () => {
+    const period =
+      button.dataset.period;
+
+    if (!period) {
+      return;
+    }
+
+    adminPeriod = period;
+
+    setActivePeriodButton(period);
+
+    if (period === "custom") {
+      customPeriodRange.hidden = false;
+      return;
+    }
+
+    customPeriodRange.hidden = true;
+
+    adminCustomStart = "";
+    adminCustomEnd = "";
+
+    await loadOverview();
+  });
+});
+
+applyCustomPeriodBtn.addEventListener(
+  "click",
+  async () => {
+    const start =
+      customPeriodStart.value;
+
+    const end =
+      customPeriodEnd.value;
+
+    if (!start || !end) {
+      alert(
+        "Please select both start and end dates."
+      );
+      return;
+    }
+
+    if (start > end) {
+      alert(
+        "Start date cannot be after end date."
+      );
+      return;
+    }
+
+    adminPeriod = "custom";
+    adminCustomStart = start;
+    adminCustomEnd = end;
+
+    setActivePeriodButton("custom");
+
+    await loadOverview();
+  }
+);
 
 adminLogoutBtn.addEventListener(
   "click",

@@ -1031,12 +1031,179 @@ app.get("/api/admin/ping", (req, res) => {
     message: "Burning Well admin access verified.",
   });
 });
+const PHT_OFFSET_MS =
+  8 * 60 * 60 * 1000;
+
+function firestoreTimeToMs(value) {
+  if (!value) {
+    return 0;
+  }
+
+  if (typeof value.toMillis === "function") {
+    return value.toMillis();
+  }
+
+  if (typeof value._seconds === "number") {
+    return value._seconds * 1000;
+  }
+
+  const parsed = Date.parse(value);
+
+  return Number.isFinite(parsed)
+    ? parsed
+    : 0;
+}
+
+function getAdminPeriodBounds(req) {
+  const period =
+    String(req.query.period || "week")
+      .trim()
+      .toLowerCase();
+
+  const now = Date.now();
+
+  const phtNow =
+    new Date(now + PHT_OFFSET_MS);
+
+  const year =
+    phtNow.getUTCFullYear();
+
+  const month =
+    phtNow.getUTCMonth();
+
+  const date =
+    phtNow.getUTCDate();
+
+  const startOfTodayPht =
+    Date.UTC(
+      year,
+      month,
+      date
+    ) - PHT_OFFSET_MS;
+
+  if (period === "today") {
+    return {
+      period,
+      startMs: startOfTodayPht,
+      endMs: now,
+    };
+  }
+
+  if (period === "week") {
+    const day =
+      phtNow.getUTCDay();
+
+    const daysSinceMonday =
+      day === 0
+        ? 6
+        : day - 1;
+
+    return {
+      period,
+      startMs:
+        startOfTodayPht -
+        daysSinceMonday *
+          24 *
+          60 *
+          60 *
+          1000,
+      endMs: now,
+    };
+  }
+
+  if (period === "month") {
+    return {
+      period,
+      startMs:
+        Date.UTC(
+          year,
+          month,
+          1
+        ) - PHT_OFFSET_MS,
+      endMs: now,
+    };
+  }
+
+  if (period === "custom") {
+    const start =
+      String(req.query.start || "");
+
+    const end =
+      String(req.query.end || "");
+
+    const datePattern =
+      /^\d{4}-\d{2}-\d{2}$/;
+
+    if (
+      !datePattern.test(start) ||
+      !datePattern.test(end)
+    ) {
+      throw new Error(
+        "Custom period requires valid start and end dates."
+      );
+    }
+
+    const startMs =
+      Date.parse(
+        `${start}T00:00:00+08:00`
+      );
+
+    const endMs =
+      Date.parse(
+        `${end}T23:59:59.999+08:00`
+      );
+
+    if (
+      !Number.isFinite(startMs) ||
+      !Number.isFinite(endMs) ||
+      startMs > endMs
+    ) {
+      throw new Error(
+        "Invalid custom date range."
+      );
+    }
+
+    return {
+      period,
+      startMs,
+      endMs,
+    };
+  }
+
+  return {
+    period: "all",
+    startMs: null,
+    endMs: null,
+  };
+}
+
+function isInsideAdminPeriod(
+  createdAt,
+  bounds
+) {
+  if (
+    bounds.startMs === null ||
+    bounds.endMs === null
+  ) {
+    return true;
+  }
+
+  const time =
+    firestoreTimeToMs(createdAt);
+
+  return (
+    time >= bounds.startMs &&
+    time <= bounds.endMs
+  );
+}
 app.get("/api/admin/overview", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;
   }
 
   try {
+    const bounds =
+  getAdminPeriodBounds(req);
     const burnSnap = await db
       .collection("burn_registry")
       .where("status", "==", "verified")
@@ -1046,15 +1213,29 @@ app.get("/api/admin/overview", async (req, res) => {
       .collection("referral_rewards")
       .get();
 
-    const burns = burnSnap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const burns = burnSnap.docs
+  .map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }))
+  .filter((burn) =>
+    isInsideAdminPeriod(
+      burn.createdAt,
+      bounds
+    )
+  );
 
-    const referrals = referralSnap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const referrals = referralSnap.docs
+  .map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }))
+  .filter((referral) =>
+    isInsideAdminPeriod(
+      referral.createdAt,
+      bounds
+    )
+  );
 
     const uniqueBurners = new Set();
     const uniqueTokens = new Set();
@@ -1081,6 +1262,7 @@ app.get("/api/admin/overview", async (req, res) => {
     }
 
     return res.json({
+      period: bounds.period,
       totalBurnTransactions: burns.length,
       uniqueBurners: uniqueBurners.size,
       uniqueTokens: uniqueTokens.size,

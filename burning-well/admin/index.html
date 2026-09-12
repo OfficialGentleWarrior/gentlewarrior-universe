@@ -85,7 +85,81 @@
         </button>
       </div>
 
+<!-- GLOBAL TIME FILTER -->
+<section class="admin-period-filter">
+  <div class="admin-period-label">VIEW PERIOD</div>
 
+  <div class="admin-period-buttons">
+    <button
+      type="button"
+      class="period-btn"
+      data-period="today"
+    >
+      Today
+    </button>
+
+    <button
+      type="button"
+      class="period-btn active"
+      data-period="week"
+    >
+      This Week
+    </button>
+
+    <button
+      type="button"
+      class="period-btn"
+      data-period="month"
+    >
+      This Month
+    </button>
+
+    <button
+      type="button"
+      class="period-btn"
+      data-period="all"
+    >
+      All Time
+    </button>
+
+    <button
+      type="button"
+      class="period-btn"
+      data-period="custom"
+    >
+      Custom
+    </button>
+  </div>
+
+  <div
+    id="customPeriodRange"
+    class="custom-period-range"
+    hidden
+  >
+    <label>
+      From
+      <input
+        id="customPeriodStart"
+        type="date"
+      >
+    </label>
+
+    <label>
+      To
+      <input
+        id="customPeriodEnd"
+        type="date"
+      >
+    </label>
+
+    <button
+      id="applyCustomPeriodBtn"
+      type="button"
+    >
+      Apply
+    </button>
+  </div>
+</section>
       <!-- OVERVIEW -->
       <section class="admin-section">
 
