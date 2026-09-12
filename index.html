@@ -1679,7 +1679,7 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
     </section>
 
     <footer>
-      <div>Gentle Warrior • © 2025</div>
+      <div>Gentle Warrior • © <span id="currentYear"></span></div>
       <div id="socials-container"></div>
 
       <p class="footer-disclaimer">
@@ -2828,6 +2828,10 @@ else if (text.includes("pillar") || href.includes("pillars-match")) {
       console && console.warn && console.warn("GW tracker init error", err);
     }
   })();
+  })();
+
+const currentYearEl = document.getElementById('currentYear');
+if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
 </script>
 </body>
   </html>
