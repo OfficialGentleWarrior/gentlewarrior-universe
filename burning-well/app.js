@@ -1585,7 +1585,18 @@ async function registerReferralWallet(wallet) {
       );
     }
 
-    return data.code || null;
+    referralStats = {
+  successfulReferrals: Number(data.successfulReferrals || 0),
+  rewardsEarned: Number(data.rewardsEarned || 0),
+  rewardsPaid: Number(data.rewardsPaid || 0),
+  referrals: Array.isArray(data.referrals)
+    ? data.referrals
+    : [],
+};
+
+renderWalletHistory();
+
+return data.code || null;
   } catch (error) {
     console.warn(
       "Referral registration failed:",

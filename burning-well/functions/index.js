@@ -221,9 +221,69 @@ app.post("/api/referrals/register", async (req, res) => {
     }
   );
 
-    return res.json({
-      code,
-    });
+    const referralSnapshot = await db
+  .collection("referral_rewards")
+  .where(
+    "referrerWallet",
+    "==",
+    wallet
+  )
+  .get();
+
+const referrals =
+  referralSnapshot.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
+      id: doc.id,
+      referredUser:
+        data.referredUser || null,
+      referralCode:
+        data.referralCode || null,
+      rewardUsd:
+        Number(data.rewardUsd || 0),
+      status:
+        data.status || "unknown",
+      payoutSignature:
+        data.payoutSignature || null,
+      createdAt:
+        data.createdAt?.toDate
+          ? data.createdAt
+              .toDate()
+              .toISOString()
+          : null,
+    };
+  });
+
+const successfulReferrals =
+  referrals.length;
+
+const rewardsEarned =
+  referrals.reduce(
+    (sum, item) =>
+      sum + item.rewardUsd,
+    0
+  );
+
+const rewardsPaid =
+  referrals
+    .filter(
+      (item) =>
+        item.status === "paid"
+    )
+    .reduce(
+      (sum, item) =>
+        sum + item.rewardUsd,
+      0
+    );
+
+return res.json({
+  code,
+  successfulReferrals,
+  rewardsEarned,
+  rewardsPaid,
+  referrals,
+});
   } catch (error) {
     console.error(
       "Referral registration error:",
