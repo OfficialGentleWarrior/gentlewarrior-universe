@@ -2501,7 +2501,16 @@ async function loadReferralStats(walletOverride = null) {
 
     const data = await response.json();
 
-    if (!response.ok) {
+alert(
+  "Referral Debug\n" +
+  "Wallet: " + wallet + "\n" +
+  "HTTP: " + response.status + "\n" +
+  "Referrals: " + data.successfulReferrals + "\n" +
+  "Earned: " + data.rewardsEarned + "\n" +
+  "Paid: " + data.rewardsPaid
+);
+
+if (!response.ok) {
       throw new Error(
         data?.error ||
           "Unable to load referral details."
