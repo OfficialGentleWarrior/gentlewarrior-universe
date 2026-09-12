@@ -199,6 +199,34 @@
       box-shadow:0 10px 20px rgba(0,0,0,0.5);
       border-color:var(--accent);
     }
+    .hub-card{
+  background:var(--card);
+  border-radius:14px;
+  padding:14px 12px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+  text-align:center;
+}
+
+.hub-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.5);
+  border-color:var(--accent);
+}
+
+.hub-card .symbol-name{
+  text-align:center;
+  font-weight:700;
+  margin-bottom:4px;
+  font-size:14px;
+}
+
+.hub-card .symbol-desc{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+}
 
     #controls{
       display:flex;
@@ -703,18 +731,6 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
         </button>
       </div>
 
-      <div id="roadmap" style="margin-top:24px; text-align:center;">
-        <h2 style="margin-bottom:12px;">Roadmap</h2>
-        <a href="roadmap.png" target="_blank">
-          <img src="roadmap.png"
-               alt="Gentle Warrior Roadmap"
-               loading="lazy"
-               style="max-width:100%; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.45);">
-        </a>
-        <p style="margin-top:8px;font-size:14px;color:var(--muted);">
-          Our journey from games, token, merchs, and community impact.
-        </p>
-      </div>
 
       <div id="home-cta"></div>
 
@@ -734,14 +750,14 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
   <div class="grid">
 
-    <div class="symbol-card" onclick="openSection('symbols')">
+    <div class="hub-card" onclick="openSection('symbols')">
       <div class="symbol-name">The Six Symbols</div>
       <div class="symbol-desc">
         Discover the six core symbols and the values they represent.
       </div>
     </div>
 
-    <div class="symbol-card" onclick="openSection('symbolism')">
+    <div class="hub-card" onclick="openSection('symbolism')">
       <div class="symbol-name">Symbolism</div>
       <div class="symbol-desc">
         Learn the meaning behind the Gentle Warrior identity, shield, heart, cape, sword, and more.
@@ -753,6 +769,11 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
     
     <!-- PILLAR SYMBOLS -->
     <section id="symbols" class="panel" style="display:none">
+      <button class="btn btn-secondary"
+        onclick="openSection('about')"
+        style="margin-bottom:14px;">
+  ← Back to About
+</button>
       <h2 style="text-align:center;margin-top:0">The Six Symbols</h2>
       <div class="grid">
         <div class="symbol-card"
@@ -809,6 +830,11 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
     <!-- SYMBOLISM -->
     <section id="symbolism" class="panel" style="display:none">
+      <button class="btn btn-secondary"
+        onclick="openSection('about')"
+        style="margin-bottom:14px;">
+  ← Back to About
+</button>
       <h2 style="text-align:center;margin-top:0;">Symbolism</h2>
       <p style="text-align:center;margin-bottom:14px;">
         Every symbol in Gentle Warrior connects to children with cerebral palsy —
@@ -915,7 +941,7 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
   <div class="grid">
 
-    <div class="symbol-card"
+    <div class="hub-card"
          onclick="document.getElementById('cp-awareness-title').scrollIntoView({behavior:'smooth'})">
       <div class="symbol-name">About Cerebral Palsy</div>
       <div class="symbol-desc">
@@ -923,21 +949,21 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
       </div>
     </div>
 
-    <div class="symbol-card" onclick="openSection('families')">
+    <div class="hub-card" onclick="openSection('families')">
       <div class="symbol-name">For Families</div>
       <div class="symbol-desc">
         A space for parents and families raising children with cerebral palsy.
       </div>
     </div>
 
-    <div class="symbol-card" onclick="openSection('caregivers')">
+    <div class="hub-card" onclick="openSection('caregivers')">
       <div class="symbol-name">Care Team</div>
       <div class="symbol-desc">
         For caregivers, therapists, and those supporting children with CP.
       </div>
     </div>
 
-    <div class="symbol-card" onclick="openSection('faq')">
+    <div class="hub-card" onclick="openSection('faq')">
       <div class="symbol-name">FAQ</div>
       <div class="symbol-desc">
         Common questions and helpful information about cerebral palsy.
@@ -1102,6 +1128,11 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
     <!-- FAMILIES -->
     <section id="families" class="panel" style="display:none">
+      <button class="btn btn-secondary"
+        onclick="openSection('awareness')"
+        style="margin-bottom:14px;">
+  ← Back to Awareness
+</button>
       <h2 style="margin-top:0;">For Parents & Families</h2>
       <p><strong>You Are Not Alone.</strong></p>
 
@@ -1209,6 +1240,11 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
     <!-- CAREGIVERS -->
     <section id="caregivers" class="panel" style="display:none">
+      <button class="btn btn-secondary"
+        onclick="openSection('awareness')"
+        style="margin-bottom:14px;">
+  ← Back to Awareness
+</button>
       <h2 style="margin-top:0;">For Caregivers & Therapists</h2>
       <p>
         Behind every child with cerebral palsy is someone who shows up when it’s hard — lifting,
@@ -1234,6 +1270,11 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
     <!-- FAQ -->
     <section id="faq" class="panel" style="display:none">
+      <button class="btn btn-secondary"
+        onclick="openSection('awareness')"
+        style="margin-bottom:14px;">
+  ← Back to Awareness
+</button>
       <h2 style="margin-top:0;">Family FAQ — Cerebral Palsy</h2>
       <p>For Parents & Families</p>
 
@@ -1485,7 +1526,7 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
 
   <!-- BURNING WELL FEATURED TOOL -->
   <div style="
-    max-width:620px;
+    max-width:440px;
     margin:0 auto 24px;
     background:var(--card);
     border:1px solid var(--border);
