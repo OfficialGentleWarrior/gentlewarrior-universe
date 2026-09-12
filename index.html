@@ -1836,21 +1836,47 @@ function openSection(tab){
     const modalLore = document.getElementById('symbolModalLore');
     const modalClose = document.getElementById('symbolModalClose');
 
-    document.querySelectorAll('.symbol-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const img = card.querySelector('img');
-        if(img){
-          modalImg.src = img.src;
-          modalImg.alt = img.alt;
-        } else {
-          modalImg.src = '';
-          modalImg.alt = '';
-        }
-        modalName.textContent = card.dataset.name || img?.alt || '';
-        modalLore.textContent = card.dataset.lore || card.querySelector('.symbol-desc')?.textContent || '';
-        modal.classList.add('active');
-      });
-    });
+    const gwarLabsImages = {
+  "Yield Garden": "symbol-gaialune.png",
+  "Silver Stream": "symbol-solyndra.png",
+  "Thunder Vault": "symbol-zeratheon.png",
+  "Golden Radiance": "symbol-aurelion.png",
+  "Moonwatch": "symbol-umbrath.png"
+};
+
+document.querySelectorAll('.symbol-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const img = card.querySelector('img');
+
+    const cardName =
+      card.dataset.name ||
+      card.querySelector('.symbol-name')?.textContent?.trim() ||
+      img?.alt ||
+      '';
+
+    const customImage = gwarLabsImages[cardName];
+
+    if (customImage) {
+      modalImg.src = customImage;
+      modalImg.alt = cardName;
+    } else if (img) {
+      modalImg.src = img.src;
+      modalImg.alt = img.alt || cardName;
+    } else {
+      modalImg.removeAttribute('src');
+      modalImg.alt = '';
+    }
+
+    modalName.textContent = cardName;
+
+    modalLore.textContent =
+      card.dataset.lore ||
+      card.querySelector('.symbol-desc')?.textContent ||
+      '';
+
+    modal.classList.add('active');
+  });
+});
     modalClose.addEventListener('click',()=>modal.classList.remove('active'));
     modal.addEventListener('click',e=>{
       if(e.target === modal) modal.classList.remove('active');
