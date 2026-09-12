@@ -3837,6 +3837,7 @@ console.log(
 
 loadBurnRegistry();
 loadGlobalStats();
+loadReferralStats();
 
 // ======================================================
 // PERIODIC REGISTRY REFRESH
