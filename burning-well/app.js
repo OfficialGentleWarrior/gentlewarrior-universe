@@ -2990,17 +2990,17 @@ function renderWalletHistory() {
 </button>
 <div class="burn-referral-stats">
   <div>
-    <strong>${referralStats.successfulReferrals}</strong>
+    <strong id="userSuccessfulReferrals">${referralStats.successfulReferrals}</strong>
     <span>Successful Referrals</span>
   </div>
 
   <div>
-    <strong>$${referralStats.rewardsEarned.toFixed(2)}</strong>
+    <strong id="userRewardsEarned">$${referralStats.rewardsEarned.toFixed(2)}</strong>
     <span>Rewards Earned</span>
   </div>
 
   <div>
-    <strong>$${referralStats.rewardsPaid.toFixed(2)}</strong>
+    <strong id="userRewardsPaid">$${referralStats.rewardsPaid.toFixed(2)}</strong>
     <span>Rewards Paid</span>
   </div>
 </div>
@@ -3086,6 +3086,30 @@ if (referralLink) {
   if (!list) {
     return;
   }
+
+  const successfulReferralsEl =
+  document.getElementById("userSuccessfulReferrals");
+
+const rewardsEarnedEl =
+  document.getElementById("userRewardsEarned");
+
+const rewardsPaidEl =
+  document.getElementById("userRewardsPaid");
+
+if (successfulReferralsEl) {
+  successfulReferralsEl.textContent =
+    String(referralStats.successfulReferrals || 0);
+}
+
+if (rewardsEarnedEl) {
+  rewardsEarnedEl.textContent =
+    `$${Number(referralStats.rewardsEarned || 0).toFixed(2)}`;
+}
+
+if (rewardsPaidEl) {
+  rewardsPaidEl.textContent =
+    `$${Number(referralStats.rewardsPaid || 0).toFixed(2)}`;
+}
 
   const copyReferralBtn =
   document.getElementById("copyReferralBtn");
