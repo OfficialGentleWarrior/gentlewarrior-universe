@@ -758,6 +758,23 @@ const burnEventFormMessage =
 const refreshBurnEventsBtn =
   document.getElementById("refreshBurnEventsBtn");
 
+  const burnEventDetails =
+  document.getElementById("burnEventDetails");
+
+const burnEventDetailsContent =
+  document.getElementById("burnEventDetailsContent");
+
+const burnEventLeaderboard =
+  document.getElementById("burnEventLeaderboard");
+
+const backToBurnEventsBtn =
+  document.getElementById("backToBurnEventsBtn");
+
+const refreshBurnEventDetailsBtn =
+  document.getElementById("refreshBurnEventDetailsBtn");
+
+let selectedBurnEventId = null;
+
   async function loadBurnEvents() {
   const data =
     await adminFetch("/api/admin/burn-events");
@@ -853,7 +870,156 @@ const refreshBurnEventsBtn =
       })
       .join("");
 }
+async function openBurnEventDetails(eventId) {
+  selectedBurnEventId = eventId;
 
+  burnEventDetails.hidden = false;
+
+  burnEventDetailsContent.innerHTML = `
+    <p>Loading event details...</p>
+  `;
+
+  burnEventLeaderboard.innerHTML = `
+    <tr>
+      <td colspan="7">
+        Loading leaderboard...
+      </td>
+    </tr>
+  `;
+
+  burnEventDetails.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+
+  try {
+    const data =
+      await adminFetch(
+        `/api/admin/burn-events/${encodeURIComponent(eventId)}/leaderboard`
+      );
+
+    const eventData =
+      data.event || {};
+
+    const rows =
+      Array.isArray(data.leaderboard)
+        ? data.leaderboard
+        : [];
+
+    const start =
+      eventData.startAt
+        ? new Date(
+            eventData.startAt
+          ).toLocaleString()
+        : "—";
+
+    const end =
+      eventData.endAt
+        ? new Date(
+            eventData.endAt
+          ).toLocaleString()
+        : "—";
+
+    burnEventDetailsContent.innerHTML = `
+      <h3>${eventData.name || "Burning Event"}</h3>
+
+      <div class="burn-event-card-meta">
+        <div>
+          <strong>Status</strong>
+          ${eventData.status || "—"}
+        </div>
+
+        <div>
+          <strong>Token</strong>
+          ${eventData.tokenSymbol || "—"}
+        </div>
+
+        <div>
+          <strong>Minimum Burn</strong>
+          ${eventData.minimumBurn ?? "—"}
+        </div>
+
+        <div>
+          <strong>Points / TXN</strong>
+          ${eventData.pointsPerTxn ?? "—"}
+        </div>
+
+        <div>
+          <strong>Daily Cap</strong>
+          ${eventData.dailyCap ?? "—"}
+        </div>
+
+        <div>
+          <strong>Winners</strong>
+          ${eventData.winnersCount ?? "—"}
+        </div>
+
+        <div>
+          <strong>Start</strong>
+          ${start}
+        </div>
+
+        <div>
+          <strong>End</strong>
+          ${end}
+        </div>
+      </div>
+    `;
+
+    if (!rows.length) {
+      burnEventLeaderboard.innerHTML = `
+        <tr>
+          <td colspan="7">
+            No qualifying transactions yet.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    burnEventLeaderboard.innerHTML =
+      rows
+        .map((row) => {
+          const latest =
+            row.latestQualifyingBurn
+              ? new Date(
+                  row.latestQualifyingBurn
+                ).toLocaleString()
+              : "—";
+
+          return `
+            <tr>
+              <td>#${row.rank}</td>
+              <td>${row.wallet}</td>
+              <td>${row.points}</td>
+              <td>${row.qualifyingTransactions}</td>
+              <td>${row.activeDays}</td>
+              <td>${row.totalBurned}</td>
+              <td>${latest}</td>
+            </tr>
+          `;
+        })
+        .join("");
+  } catch (error) {
+    burnEventDetailsContent.innerHTML = `
+      <p>Unable to load event details.</p>
+    `;
+
+    burnEventLeaderboard.innerHTML = `
+      <tr>
+        <td colspan="7">
+          Unable to load leaderboard.
+        </td>
+      </tr>
+    `;
+
+    console.error(
+      "Burn Event details error:",
+      error
+    );
+  }
+}
 function showAdminView(view) {
   const showDashboard =
     view === "dashboard";
@@ -937,9 +1103,25 @@ burnEventsList.addEventListener(
       return;
     }
 
-    console.log(
-      "Manage Burning Event:",
-      eventId
+    openBurnEventDetails(eventId);
+  }
+);
+backToBurnEventsBtn.addEventListener(
+  "click",
+  () => {
+    selectedBurnEventId = null;
+    burnEventDetails.hidden = true;
+  }
+);
+refreshBurnEventDetailsBtn.addEventListener(
+  "click",
+  async () => {
+    if (!selectedBurnEventId) {
+      return;
+    }
+
+    await openBurnEventDetails(
+      selectedBurnEventId
     );
   }
 );

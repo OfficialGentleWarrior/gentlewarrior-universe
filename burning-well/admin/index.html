@@ -517,6 +517,59 @@
     <p>No events loaded yet.</p>
   </div>
 </section>
+<section
+  id="burnEventDetails"
+  class="burn-event-details"
+  hidden
+>
+  <div class="burn-event-details-header">
+    <button
+      id="backToBurnEventsBtn"
+      type="button"
+    >
+      ← Back to Events
+    </button>
+
+    <button
+      id="refreshBurnEventDetailsBtn"
+      type="button"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <div id="burnEventDetailsContent">
+    <p>Select an event to view details.</p>
+  </div>
+
+  <section class="burn-event-leaderboard-section">
+    <h3>Live Leaderboard</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Wallet</th>
+            <th>Points</th>
+            <th>Qualifying TXNs</th>
+            <th>Active Days</th>
+            <th>Total Burned</th>
+            <th>Latest Qualifying Burn</th>
+          </tr>
+        </thead>
+
+        <tbody id="burnEventLeaderboard">
+          <tr>
+            <td colspan="7">
+              No leaderboard data yet.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
   </section>
 </section>
 
