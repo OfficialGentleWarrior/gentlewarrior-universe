@@ -541,7 +541,26 @@ tbody tr:hover {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+.burn-event-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
 
+.manage-burn-event-btn {
+  padding: 9px 14px;
+  border: 1px solid #9be56f;
+  border-radius: 8px;
+  background: transparent;
+  color: #9be56f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.manage-burn-event-btn:hover {
+  background: #9be56f;
+  color: #07100a;
+}
 @media (max-width: 900px) {
   .burn-event-card-meta {
     grid-template-columns:

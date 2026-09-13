@@ -839,6 +839,15 @@ const refreshBurnEventsBtn =
                 ${end}
               </div>
             </div>
+            <div class="burn-event-card-actions">
+  <button
+    type="button"
+    class="manage-burn-event-btn"
+    data-event-id="${event.id}"
+  >
+    Manage Event
+  </button>
+</div>
           </article>
         `;
       })
@@ -907,6 +916,31 @@ refreshBurnEventsBtn.addEventListener(
         error
       );
     }
+  }
+);
+burnEventsList.addEventListener(
+  "click",
+  async (event) => {
+    const button =
+      event.target.closest(
+        ".manage-burn-event-btn"
+      );
+
+    if (!button) {
+      return;
+    }
+
+    const eventId =
+      button.dataset.eventId;
+
+    if (!eventId) {
+      return;
+    }
+
+    console.log(
+      "Manage Burning Event:",
+      eventId
+    );
   }
 );
 burnEventForm.addEventListener(
