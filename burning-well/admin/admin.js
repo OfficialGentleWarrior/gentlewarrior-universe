@@ -710,6 +710,45 @@ const adminBurnEventsTab =
 const adminBurnEvents =
   document.getElementById("adminBurnEvents");
 
+  const burnEventForm =
+  document.getElementById("burnEventForm");
+
+const burnEventName =
+  document.getElementById("burnEventName");
+
+const burnEventTokenSymbol =
+  document.getElementById("burnEventTokenSymbol");
+
+const burnEventTokenMint =
+  document.getElementById("burnEventTokenMint");
+
+const burnEventMinimumBurn =
+  document.getElementById("burnEventMinimumBurn");
+
+const burnEventPointsPerTxn =
+  document.getElementById("burnEventPointsPerTxn");
+
+const burnEventDailyCap =
+  document.getElementById("burnEventDailyCap");
+
+const burnEventWinnersCount =
+  document.getElementById("burnEventWinnersCount");
+
+const burnEventStartAt =
+  document.getElementById("burnEventStartAt");
+
+const burnEventEndAt =
+  document.getElementById("burnEventEndAt");
+
+const burnEventStatus =
+  document.getElementById("burnEventStatus");
+
+const burnEventSubmitBtn =
+  document.getElementById("burnEventSubmitBtn");
+
+const burnEventFormMessage =
+  document.getElementById("burnEventFormMessage");
+
 function showAdminView(view) {
   const showDashboard =
     view === "dashboard";
@@ -742,6 +781,76 @@ adminBurnEventsTab.addEventListener(
   "click",
   () => {
     showAdminView("burn-events");
+  }
+);
+burnEventForm.addEventListener(
+  "submit",
+  async (event) => {
+    event.preventDefault();
+
+    burnEventFormMessage.textContent = "";
+    burnEventSubmitBtn.disabled = true;
+
+    const payload = {
+      name:
+        burnEventName.value.trim(),
+
+      tokenSymbol:
+        burnEventTokenSymbol.value
+          .trim()
+          .toUpperCase(),
+
+      tokenMint:
+        burnEventTokenMint.value.trim(),
+
+      minimumBurn:
+        Number(burnEventMinimumBurn.value),
+
+      pointsPerTxn:
+        Number(burnEventPointsPerTxn.value),
+
+      dailyCap:
+        Number(burnEventDailyCap.value),
+
+      winnersCount:
+        Number(burnEventWinnersCount.value),
+
+      startAt:
+  new Date(
+    burnEventStartAt.value
+  ).toISOString(),
+
+endAt:
+  new Date(
+    burnEventEndAt.value
+  ).toISOString(),
+
+      status:
+        burnEventStatus.value,
+    };
+        try {
+      await adminFetch(
+        "/api/admin/burn-events",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
+
+      burnEventFormMessage.textContent =
+        "Event created successfully.";
+
+      burnEventForm.reset();
+
+      burnEventPointsPerTxn.value = "1";
+      burnEventStatus.value = "draft";
+    } catch (error) {
+      burnEventFormMessage.textContent =
+        error.message ||
+        "Unable to create event.";
+    } finally {
+      burnEventSubmitBtn.disabled = false;
+    }
   }
 );
 adminLogoutBtn.addEventListener(

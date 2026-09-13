@@ -369,6 +369,137 @@
     <p>
       Create and manage weekly Burning Well events.
     </p>
+
+    <form id="burnEventForm">
+  <div class="burn-event-form-grid">
+
+    <label>
+      Event Name
+      <input
+        id="burnEventName"
+        type="text"
+        placeholder="Weekly Burn Race #1"
+        required
+      >
+    </label>
+
+    <label>
+      Token Symbol
+      <input
+        id="burnEventTokenSymbol"
+        type="text"
+        placeholder="GWAR"
+        required
+      >
+    </label>
+
+    <label class="full-width">
+      Token Mint
+      <input
+        id="burnEventTokenMint"
+        type="text"
+        placeholder="Solana token mint address"
+        required
+      >
+    </label>
+<label>
+  Minimum Burn
+  <input
+    id="burnEventMinimumBurn"
+    type="number"
+    min="1"
+    step="1"
+    placeholder="10000"
+    required
+  >
+</label>
+
+<label>
+  Points Per Transaction
+  <input
+    id="burnEventPointsPerTxn"
+    type="number"
+    min="1"
+    step="1"
+    value="1"
+    required
+  >
+</label>
+
+<label>
+  Daily Cap Per Wallet
+  <input
+    id="burnEventDailyCap"
+    type="number"
+    min="1"
+    step="1"
+    placeholder="10"
+    required
+  >
+</label>
+
+<label>
+  Number of Winners
+  <input
+    id="burnEventWinnersCount"
+    type="number"
+    min="1"
+    step="1"
+    placeholder="3"
+    required
+  >
+</label>
+<label>
+  Start Date & Time
+  <input
+    id="burnEventStartAt"
+    type="datetime-local"
+    required
+  >
+</label>
+
+<label>
+  End Date & Time
+  <input
+    id="burnEventEndAt"
+    type="datetime-local"
+    required
+  >
+</label>
+
+<label>
+  Status
+  <select
+    id="burnEventStatus"
+    required
+  >
+    <option value="draft">
+      Draft
+    </option>
+    <option value="live">
+      Live
+    </option>
+    <option value="ended">
+      Ended
+    </option>
+  </select>
+</label>
+  </div>
+  <div class="burn-event-form-actions">
+  <button
+    id="burnEventSubmitBtn"
+    type="submit"
+  >
+    Create Event
+  </button>
+
+  <span
+    id="burnEventFormMessage"
+    class="burn-event-form-message"
+  ></span>
+</div>
+</form>
+
   </section>
 </section>
 

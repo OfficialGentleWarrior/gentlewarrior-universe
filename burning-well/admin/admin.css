@@ -391,3 +391,82 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 }
+/* =========================================
+   BURNING EVENTS
+========================================= */
+
+.burn-event-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.burn-event-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #9be56f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.burn-event-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.burn-event-form-grid input,
+.burn-event-form-grid select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(155, 229, 111, 0.22);
+  border-radius: 9px;
+  background: #07100a;
+  color: #d9f5ca;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.burn-event-form-grid input:focus,
+.burn-event-form-grid select:focus {
+  outline: none;
+  border-color: #9be56f;
+}
+
+.burn-event-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+#burnEventSubmitBtn {
+  padding: 11px 18px;
+  border: 1px solid #9be56f;
+  border-radius: 9px;
+  background: #9be56f;
+  color: #07100a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#burnEventSubmitBtn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.burn-event-form-message {
+  color: #d9f5ca;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .burn-event-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .burn-event-form-grid .full-width {
+    grid-column: auto;
+  }
+}
