@@ -589,6 +589,7 @@ adminLoginBtn.addEventListener(
       await loadDashboard();
 
       adminLogin.hidden = true;
+      adminNav.hidden = false;
       adminDashboard.hidden = false;
 
       adminKeyInput.value = "";
@@ -697,6 +698,9 @@ applyCustomPeriodBtn.addEventListener(
     await loadDashboard();
   }
 );
+const adminNav =
+  document.getElementById("adminNav");
+
 const adminDashboardTab =
   document.getElementById("adminDashboardTab");
 
@@ -746,6 +750,7 @@ adminLogoutBtn.addEventListener(
     adminKey = "";
 
     adminDashboard.hidden = true;
+    adminNav.hidden = true;
     adminLogin.hidden = false;
 
     loginError.textContent = "";
