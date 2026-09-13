@@ -891,6 +891,14 @@ app.post("/api/burns/register", async (req, res) => {
 });
 app.get("/api/burns", async (req, res) => {
   try {
+    const bounds =
+  req.query.period
+    ? getAdminPeriodBounds(req)
+    : {
+        period: "all",
+        startMs: null,
+        endMs: null,
+      };
     let query = db
       .collection("burn_registry")
       .where("status", "==", "verified");
@@ -909,19 +917,26 @@ app.get("/api/burns", async (req, res) => {
     const snap = await query.get();
 
     const records = snap.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .sort(
-        (a, b) =>
-          Number(b.blockTime || 0) -
-          Number(a.blockTime || 0)
-      );
+  .map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }))
+  .filter((record) =>
+    isInsideAdminPeriod(
+      record.createdAt,
+      bounds
+    )
+  )
+  .sort(
+    (a, b) =>
+      Number(b.blockTime || 0) -
+      Number(a.blockTime || 0)
+  );
 
     return res.json({
-      records,
-    });
+  period: bounds.period,
+  records,
+});
   } catch (error) {
     console.error(
       "Burn registry error:",
@@ -1290,6 +1305,8 @@ app.get(
     }
 
     try {
+      const bounds =
+  getAdminPeriodBounds(req);
       const snap = await db
         .collection("burn_registry")
         .where("status", "==", "verified")
@@ -1299,6 +1316,14 @@ app.get(
 
       snap.forEach((doc) => {
         const burn = doc.data();
+        if (
+  !isInsideAdminPeriod(
+    burn.createdAt,
+    bounds
+  )
+) {
+  return;
+}
 
         if (!burn.mint) {
           return;
@@ -1369,8 +1394,9 @@ app.get(
         }));
 
       return res.json({
-        leaderboard,
-      });
+  period: bounds.period,
+  leaderboard,
+});
     } catch (error) {
       console.error(
         "Token leaderboard error:",
@@ -1392,6 +1418,8 @@ app.get(
     }
 
     try {
+      const bounds =
+  getAdminPeriodBounds(req);
       const snap = await db
         .collection("referral_rewards")
         .get();
@@ -1400,6 +1428,14 @@ app.get(
 
       snap.forEach((doc) => {
         const reward = doc.data();
+        if (
+  !isInsideAdminPeriod(
+    reward.createdAt,
+    bounds
+  )
+) {
+  return;
+}
 
         const referrerWallet =
           reward.referrerWallet || null;
@@ -1483,8 +1519,9 @@ app.get(
         }));
 
       return res.json({
-        leaderboard,
-      });
+  period: bounds.period,
+  leaderboard,
+});
     } catch (error) {
       console.error(
         "Referral leaderboard error:",
@@ -1605,6 +1642,8 @@ app.get(
     }
 
     try {
+      const bounds =
+  getAdminPeriodBounds(req);
       const snap = await db
         .collection("burn_registry")
         .where("status", "==", "verified")
@@ -1614,6 +1653,14 @@ app.get(
 
       snap.forEach((doc) => {
         const burn = doc.data();
+        if (
+  !isInsideAdminPeriod(
+    burn.createdAt,
+    bounds
+  )
+) {
+  return;
+}
 
         if (!burn.wallet) {
           return;
@@ -1691,8 +1738,9 @@ app.get(
         }));
 
       return res.json({
-        leaderboard,
-      });
+  period: bounds.period,
+  leaderboard,
+});
     } catch (error) {
       console.error(
         "Burner leaderboard error:",

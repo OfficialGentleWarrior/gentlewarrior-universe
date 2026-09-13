@@ -130,8 +130,9 @@ async function loadOverview() {
 
 
 async function loadTokenLeaderboard() {
-  const data = await adminFetch(
-    "/api/admin/leaderboard/tokens"
+  const data =
+  await adminFetch(
+    `/api/admin/leaderboard/tokens${getAdminPeriodQuery()}`
   );
 
   const tbody =
@@ -197,8 +198,9 @@ async function loadTokenLeaderboard() {
 
 
 async function loadReferralLeaderboard() {
-  const data = await adminFetch(
-    "/api/admin/leaderboard/referrals"
+  const data =
+  await adminFetch(
+    `/api/admin/leaderboard/referrals${getAdminPeriodQuery()}`
   );
 
   const tbody =
@@ -257,8 +259,9 @@ async function loadReferralLeaderboard() {
 
 
 async function loadBurnerLeaderboard() {
-  const data = await adminFetch(
-    "/api/admin/leaderboard/burners"
+  const data =
+  await adminFetch(
+    `/api/admin/leaderboard/burners${getAdminPeriodQuery()}`
   );
 
   const tbody =
@@ -316,7 +319,9 @@ async function loadBurnerLeaderboard() {
 }
 async function loadBurnRegistry() {
   const data =
-    await adminFetch("/api/burns");
+  await adminFetch(
+    `/api/burns${getAdminPeriodQuery()}`
+  );
 
   const tbody =
     document.getElementById("burnRegistry");
@@ -437,7 +442,9 @@ async function loadBurnRegistry() {
 }
 async function loadReferralTransactions() {
   const data =
-    await adminFetch("/api/admin/referrals");
+  await adminFetch(
+    `/api/admin/referrals${getAdminPeriodQuery()}`
+  );
 
   const tbody =
     document.getElementById(
@@ -654,7 +661,7 @@ periodButtons.forEach((button) => {
     adminCustomStart = "";
     adminCustomEnd = "";
 
-    await loadOverview();
+    await loadDashboard();
   });
 });
 
@@ -687,7 +694,7 @@ applyCustomPeriodBtn.addEventListener(
 
     setActivePeriodButton("custom");
 
-    await loadOverview();
+    await loadDashboard();
   }
 );
 
