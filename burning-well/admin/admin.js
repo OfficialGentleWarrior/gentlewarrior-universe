@@ -749,6 +749,99 @@ const burnEventSubmitBtn =
 const burnEventFormMessage =
   document.getElementById("burnEventFormMessage");
 
+  const burnEventsList =
+  document.getElementById("burnEventsList");
+
+const refreshBurnEventsBtn =
+  document.getElementById("refreshBurnEventsBtn");
+
+  async function loadBurnEvents() {
+  const data =
+    await adminFetch("/api/admin/burn-events");
+
+  const events =
+    Array.isArray(data.events)
+      ? data.events
+      : [];
+
+  if (!events.length) {
+    burnEventsList.innerHTML = `
+      <p>No Burning Events found.</p>
+    `;
+
+    return;
+  }
+
+  burnEventsList.innerHTML =
+    events
+      .map((event) => {
+        const start =
+          event.startAt
+            ? new Date(
+                event.startAt
+              ).toLocaleString()
+            : "—";
+
+        const end =
+          event.endAt
+            ? new Date(
+                event.endAt
+              ).toLocaleString()
+            : "—";
+
+        return `
+          <article class="burn-event-card">
+            <h4 class="burn-event-card-title">
+              ${event.name}
+            </h4>
+
+            <div class="burn-event-card-meta">
+              <div>
+                <strong>Status</strong>
+                ${event.status}
+              </div>
+
+              <div>
+                <strong>Token</strong>
+                ${event.tokenSymbol || "—"}
+              </div>
+
+              <div>
+                <strong>Minimum Burn</strong>
+                ${event.minimumBurn}
+              </div>
+
+              <div>
+                <strong>Points / TXN</strong>
+                ${event.pointsPerTxn}
+              </div>
+
+              <div>
+                <strong>Daily Cap</strong>
+                ${event.dailyCap}
+              </div>
+
+              <div>
+                <strong>Winners</strong>
+                ${event.winnersCount}
+              </div>
+
+              <div>
+                <strong>Start</strong>
+                ${start}
+              </div>
+
+              <div>
+                <strong>End</strong>
+                ${end}
+              </div>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+}
+
 function showAdminView(view) {
   const showDashboard =
     view === "dashboard";
@@ -779,8 +872,38 @@ adminDashboardTab.addEventListener(
 
 adminBurnEventsTab.addEventListener(
   "click",
-  () => {
+  async () => {
     showAdminView("burn-events");
+
+    try {
+      await loadBurnEvents();
+    } catch (error) {
+      burnEventsList.innerHTML = `
+        <p>Unable to load Burning Events.</p>
+      `;
+
+      console.error(
+        "Burning Events load error:",
+        error
+      );
+    }
+  }
+);
+refreshBurnEventsBtn.addEventListener(
+  "click",
+  async () => {
+    try {
+      await loadBurnEvents();
+    } catch (error) {
+      burnEventsList.innerHTML = `
+        <p>Unable to load Burning Events.</p>
+      `;
+
+      console.error(
+        "Burning Events refresh error:",
+        error
+      );
+    }
   }
 );
 burnEventForm.addEventListener(
@@ -844,6 +967,9 @@ endAt:
 
       burnEventPointsPerTxn.value = "1";
       burnEventStatus.value = "draft";
+
+      await loadBurnEvents();
+      
     } catch (error) {
       burnEventFormMessage.textContent =
         error.message ||

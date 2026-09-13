@@ -470,3 +470,87 @@ tbody tr:hover {
     grid-column: auto;
   }
 }
+.burn-events-list-section {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(155, 229, 111, 0.14);
+}
+
+.burn-events-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.burn-events-list-header h3 {
+  margin: 0;
+}
+
+#refreshBurnEventsBtn {
+  padding: 8px 12px;
+  border: 1px solid rgba(155, 229, 111, 0.22);
+  border-radius: 8px;
+  background: transparent;
+  color: #d9f5ca;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#refreshBurnEventsBtn:hover {
+  border-color: #9be56f;
+  background: rgba(155, 229, 111, 0.08);
+}
+
+.burn-events-list {
+  display: grid;
+  gap: 12px;
+}
+
+.burn-event-card {
+  padding: 16px;
+  border: 1px solid rgba(155, 229, 111, 0.14);
+  border-radius: 10px;
+  background: rgba(155, 229, 111, 0.025);
+}
+
+.burn-event-card-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.burn-event-card-meta {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.burn-event-card-meta div {
+  font-size: 12px;
+  color: #d9f5ca;
+}
+
+.burn-event-card-meta strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #9be56f;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 900px) {
+  .burn-event-card-meta {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .burn-event-card-meta {
+    grid-template-columns: 1fr;
+  }
+}
