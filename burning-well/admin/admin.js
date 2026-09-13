@@ -55,11 +55,14 @@ function formatUsd(value) {
 }
 
 
-async function adminFetch(path) {
+async function adminFetch(path, options = {}) {
   const response = await fetch(
     `${API_BASE_URL}${path}`,
     {
+      ...options,
       headers: {
+        ...(options.headers || {}),
+        "Content-Type": "application/json",
         "x-admin-key": adminKey,
       },
     }
@@ -969,7 +972,7 @@ endAt:
       burnEventStatus.value = "draft";
 
       await loadBurnEvents();
-      
+
     } catch (error) {
       burnEventFormMessage.textContent =
         error.message ||
