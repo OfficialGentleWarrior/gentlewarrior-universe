@@ -697,7 +697,49 @@ applyCustomPeriodBtn.addEventListener(
     await loadDashboard();
   }
 );
+const adminDashboardTab =
+  document.getElementById("adminDashboardTab");
 
+const adminBurnEventsTab =
+  document.getElementById("adminBurnEventsTab");
+
+const adminBurnEvents =
+  document.getElementById("adminBurnEvents");
+
+function showAdminView(view) {
+  const showDashboard =
+    view === "dashboard";
+
+  adminDashboard.hidden =
+    !showDashboard;
+
+  adminBurnEvents.hidden =
+    showDashboard;
+
+  adminDashboardTab.classList.toggle(
+    "active",
+    showDashboard
+  );
+
+  adminBurnEventsTab.classList.toggle(
+    "active",
+    !showDashboard
+  );
+}
+
+adminDashboardTab.addEventListener(
+  "click",
+  () => {
+    showAdminView("dashboard");
+  }
+);
+
+adminBurnEventsTab.addEventListener(
+  "click",
+  () => {
+    showAdminView("burn-events");
+  }
+);
 adminLogoutBtn.addEventListener(
   "click",
   () => {

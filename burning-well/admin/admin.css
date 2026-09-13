@@ -153,6 +153,38 @@ button {
   padding: 8px 14px;
 }
 /* =========================================
+   ADMIN NAVIGATION
+========================================= */
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.admin-nav-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(155, 229, 111, 0.22);
+  border-radius: 9px;
+  background: transparent;
+  color: #d9f5ca;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-nav-btn:hover {
+  border-color: rgba(155, 229, 111, 0.55);
+  background: rgba(155, 229, 111, 0.08);
+}
+
+.admin-nav-btn.active {
+  border-color: #9be56f;
+  background: #9be56f;
+  color: #07100a;
+}
+/* =========================================
    GLOBAL ADMIN PERIOD FILTER
 ========================================= */
 

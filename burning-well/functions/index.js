@@ -1211,6 +1211,494 @@ function isInsideAdminPeriod(
     time <= bounds.endMs
   );
 }
+const BURN_EVENT_STATUS = {
+  DRAFT: "draft",
+  LIVE: "live",
+  ENDED: "ended",
+};
+
+function normalizeBurnEventStatus(value) {
+  const status =
+    String(value || "")
+      .trim()
+      .toLowerCase();
+
+  if (
+    status === BURN_EVENT_STATUS.DRAFT ||
+    status === BURN_EVENT_STATUS.LIVE ||
+    status === BURN_EVENT_STATUS.ENDED
+  ) {
+    return status;
+  }
+
+  return BURN_EVENT_STATUS.DRAFT;
+}
+
+function parseEventDate(value) {
+  const text =
+    String(value || "").trim();
+
+  if (!text) {
+    return null;
+  }
+
+  const ms = Date.parse(text);
+
+  return Number.isFinite(ms)
+    ? ms
+    : null;
+}
+app.post("/api/admin/burn-events", async (req, res) => {
+  if (!requireAdmin(req, res)) {
+    return;
+  }
+
+  try {
+    const body = req.body || {};
+
+    const name =
+      String(body.name || "").trim();
+
+    const tokenMint =
+      String(body.tokenMint || "").trim();
+
+    const tokenSymbol =
+      String(body.tokenSymbol || "").trim();
+
+    const minimumBurn =
+      Number(body.minimumBurn);
+
+    const pointsPerTxn =
+      Number(body.pointsPerTxn);
+
+    const dailyCap =
+      Number(body.dailyCap);
+
+    const winnersCount =
+      Number(body.winnersCount);
+
+    const startAtMs =
+      parseEventDate(body.startAt);
+
+    const endAtMs =
+      parseEventDate(body.endAt);
+
+    const status =
+      normalizeBurnEventStatus(
+        body.status
+      );
+
+    if (!name) {
+      return res.status(400).json({
+        error: "Event name is required.",
+      });
+    }
+
+    if (!isValidAddress(tokenMint)) {
+      return res.status(400).json({
+        error: "Valid token mint is required.",
+      });
+    }
+
+    if (
+      !Number.isFinite(minimumBurn) ||
+      minimumBurn <= 0
+    ) {
+      return res.status(400).json({
+        error: "Minimum burn must be greater than 0.",
+      });
+    }
+
+    if (
+      !Number.isFinite(pointsPerTxn) ||
+      pointsPerTxn <= 0
+    ) {
+      return res.status(400).json({
+        error: "Points per transaction must be greater than 0.",
+      });
+    }
+
+    if (
+      !Number.isInteger(dailyCap) ||
+      dailyCap <= 0
+    ) {
+      return res.status(400).json({
+        error: "Daily cap must be a positive whole number.",
+      });
+    }
+
+    if (
+      !Number.isInteger(winnersCount) ||
+      winnersCount <= 0
+    ) {
+      return res.status(400).json({
+        error: "Winners count must be a positive whole number.",
+      });
+    }
+
+    if (
+      startAtMs === null ||
+      endAtMs === null ||
+      startAtMs >= endAtMs
+    ) {
+      return res.status(400).json({
+        error: "Valid event start and end dates are required.",
+      });
+    }
+
+    const eventRef =
+      db.collection("burn_events").doc();
+
+    await eventRef.set({
+      name,
+      tokenMint,
+      tokenSymbol:
+        tokenSymbol || null,
+      minimumBurn,
+      pointsPerTxn,
+      dailyCap,
+      winnersCount,
+      startAt:
+        Timestamp.fromMillis(startAtMs),
+      endAt:
+        Timestamp.fromMillis(endAtMs),
+      status,
+      createdAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    return res.json({
+      ok: true,
+      id: eventRef.id,
+    });
+  } catch (error) {
+    console.error(
+      "Create burn event error:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        error.message ||
+        "Unable to create burn event.",
+    });
+  }
+});
+app.get("/api/admin/burn-events", async (req, res) => {
+  if (!requireAdmin(req, res)) {
+    return;
+  }
+
+  try {
+    const snap = await db
+      .collection("burn_events")
+      .get();
+
+    const events = snap.docs
+      .map((doc) => {
+        const data = doc.data();
+
+        return {
+          id: doc.id,
+          name:
+            data.name || "Untitled Event",
+          tokenMint:
+            data.tokenMint || null,
+          tokenSymbol:
+            data.tokenSymbol || null,
+          minimumBurn:
+            Number(data.minimumBurn || 0),
+          pointsPerTxn:
+            Number(data.pointsPerTxn || 0),
+          dailyCap:
+            Number(data.dailyCap || 0),
+          winnersCount:
+            Number(data.winnersCount || 0),
+          status:
+            normalizeBurnEventStatus(
+              data.status
+            ),
+          startAt:
+            data.startAt?.toDate
+              ? data.startAt
+                  .toDate()
+                  .toISOString()
+              : null,
+          endAt:
+            data.endAt?.toDate
+              ? data.endAt
+                  .toDate()
+                  .toISOString()
+              : null,
+          createdAt:
+            data.createdAt?.toDate
+              ? data.createdAt
+                  .toDate()
+                  .toISOString()
+              : null,
+        };
+      })
+      .sort((a, b) => {
+        const aTime =
+          Date.parse(a.startAt || "") || 0;
+
+        const bTime =
+          Date.parse(b.startAt || "") || 0;
+
+        return bTime - aTime;
+      });
+
+    return res.json({
+      events,
+    });
+  } catch (error) {
+    console.error(
+      "Load burn events error:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        error.message ||
+        "Unable to load burn events.",
+    });
+  }
+});
+app.get(
+  "/api/admin/burn-events/:eventId/leaderboard",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const eventId =
+        String(req.params.eventId || "").trim();
+
+      if (!eventId) {
+        return res.status(400).json({
+          error: "Event ID is required.",
+        });
+      }
+
+      const eventDoc = await db
+        .collection("burn_events")
+        .doc(eventId)
+        .get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({
+          error: "Burn event not found.",
+        });
+      }
+
+      const event = eventDoc.data();
+      const startAtMs =
+  event.startAt?.toMillis
+    ? event.startAt.toMillis()
+    : 0;
+
+const endAtMs =
+  event.endAt?.toMillis
+    ? event.endAt.toMillis()
+    : 0;
+
+const tokenMint =
+  String(event.tokenMint || "");
+
+const minimumBurn =
+  Number(event.minimumBurn || 0);
+
+const pointsPerTxn =
+  Number(event.pointsPerTxn || 1);
+
+const dailyCap =
+  Number(event.dailyCap || 1);
+  const burnSnap = await db
+  .collection("burn_registry")
+  .where("status", "==", "verified")
+  .get();
+
+const walletMap = new Map();
+burnSnap.forEach((doc) => {
+  const burn = doc.data();
+
+  if (
+    String(burn.mint || "") !== tokenMint
+  ) {
+    return;
+  }
+
+  const burnTimeMs =
+    burn.createdAt?.toMillis
+      ? burn.createdAt.toMillis()
+      : Number(burn.blockTime || 0) * 1000;
+
+  if (
+    !burnTimeMs ||
+    burnTimeMs < startAtMs ||
+    burnTimeMs > endAtMs
+  ) {
+    return;
+  }
+
+  const amount =
+    Number(burn.amount || 0);
+
+  if (
+    !Number.isFinite(amount) ||
+    amount < minimumBurn
+  ) {
+    return;
+  }
+
+  const wallet =
+    String(burn.wallet || "").trim();
+
+  if (!wallet) {
+    return;
+  }
+  const phtDate =
+  new Date(
+    burnTimeMs + 8 * 60 * 60 * 1000
+  );
+
+const dayKey =
+  [
+    phtDate.getUTCFullYear(),
+    String(
+      phtDate.getUTCMonth() + 1
+    ).padStart(2, "0"),
+    String(
+      phtDate.getUTCDate()
+    ).padStart(2, "0"),
+  ].join("-");
+
+if (!walletMap.has(wallet)) {
+  walletMap.set(wallet, {
+    wallet,
+    points: 0,
+    qualifyingTransactions: 0,
+    totalBurned: 0,
+    activeDays: new Set(),
+    dailyCounts: new Map(),
+    firstQualifyingBurn: null,
+    latestQualifyingBurn: null,
+  });
+}
+
+const entry =
+  walletMap.get(wallet);
+  const currentDailyCount =
+  entry.dailyCounts.get(dayKey) || 0;
+
+if (
+  currentDailyCount >= dailyCap
+) {
+  return;
+}
+
+entry.dailyCounts.set(
+  dayKey,
+  currentDailyCount + 1
+);
+
+entry.qualifyingTransactions += 1;
+entry.points += pointsPerTxn;
+entry.totalBurned += amount;
+
+entry.activeDays.add(dayKey);
+
+if (
+  !entry.firstQualifyingBurn ||
+  burnTimeMs < entry.firstQualifyingBurn
+) {
+  entry.firstQualifyingBurn =
+    burnTimeMs;
+}
+
+if (
+  !entry.latestQualifyingBurn ||
+  burnTimeMs > entry.latestQualifyingBurn
+) {
+  entry.latestQualifyingBurn =
+    burnTimeMs;
+}
+});
+const leaderboard =
+  Array.from(walletMap.values())
+    .map((entry) => ({
+      wallet: entry.wallet,
+      points: entry.points,
+      qualifyingTransactions:
+        entry.qualifyingTransactions,
+      totalBurned:
+        entry.totalBurned,
+      activeDays:
+        entry.activeDays.size,
+      firstQualifyingBurn:
+        entry.firstQualifyingBurn,
+      latestQualifyingBurn:
+        entry.latestQualifyingBurn,
+    }))
+    .sort((a, b) =>
+      b.points - a.points ||
+      b.activeDays - a.activeDays ||
+      a.latestQualifyingBurn -
+        b.latestQualifyingBurn
+    )
+    .map((entry, index) => ({
+      rank: index + 1,
+      ...entry,
+    }));
+    return res.json({
+  event: {
+    id: eventDoc.id,
+    name:
+      event.name || "Untitled Event",
+    tokenMint,
+    tokenSymbol:
+      event.tokenSymbol || null,
+    minimumBurn,
+    pointsPerTxn,
+    dailyCap,
+    winnersCount:
+      Number(event.winnersCount || 0),
+    status:
+      normalizeBurnEventStatus(
+        event.status
+      ),
+    startAt:
+      event.startAt?.toDate
+        ? event.startAt
+            .toDate()
+            .toISOString()
+        : null,
+    endAt:
+      event.endAt?.toDate
+        ? event.endAt
+            .toDate()
+            .toISOString()
+        : null,
+  },
+  leaderboard,
+});
+    } catch (error) {
+      console.error(
+        "Burn event leaderboard error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          error.message ||
+          "Unable to load burn event leaderboard.",
+      });
+    }
+  }
+);
 app.get("/api/admin/overview", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;
@@ -1543,6 +2031,8 @@ app.get(
     }
 
     try {
+      const bounds =
+  getAdminPeriodBounds(req);
       const snap = await db
         .collection("referral_rewards")
         .get();
@@ -1552,11 +2042,20 @@ app.get(
       snap.forEach((doc) => {
         const reward = doc.data();
 
-        const timestamp =
-          reward.timestamp ||
-          reward.createdAt ||
-          reward.paidAt ||
-          null;
+const timestamp =
+  reward.timestamp ||
+  reward.createdAt ||
+  reward.paidAt ||
+  null;
+
+if (
+  !isInsideAdminPeriod(
+    timestamp,
+    bounds
+  )
+) {
+  return;
+}
 
         let timestampSeconds = null;
 
@@ -1619,8 +2118,9 @@ app.get(
       );
 
       return res.json({
-        referrals,
-      });
+  period: bounds.period,
+  referrals,
+});
     } catch (error) {
       console.error(
         "Admin referral transactions error:",
