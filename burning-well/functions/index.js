@@ -590,6 +590,167 @@ function extractBurnAndFee(tx, expected) {
   };
 }
 
+function extractBurnCandidate(tx) {
+  if (!tx || tx.meta?.err) {
+    return null;
+  }
+
+  const instructions =
+    tx.transaction?.message?.instructions || [];
+
+  const burns = [];
+  const transfers = [];
+
+  for (const ix of instructions) {
+    const parsed = ix?.parsed;
+    const type =
+      String(parsed?.type || "").toLowerCase();
+
+    if (
+      type === "burn" ||
+      type === "burnchecked"
+    ) {
+      const info = parsed.info || {};
+
+      const wallet = String(
+        info.authority ||
+        info.owner ||
+        ""
+      );
+
+      const mint = String(
+        info.mint || ""
+      );
+
+      const amountBaseUnits = String(
+        info.tokenAmount?.amount ||
+        info.amount ||
+        ""
+      );
+
+      const decimals = Number(
+        info.tokenAmount?.decimals
+      );
+
+      if (
+        isValidAddress(wallet) &&
+        isValidAddress(mint) &&
+        isValidBaseUnits(amountBaseUnits)
+      ) {
+        burns.push({
+          wallet,
+          mint,
+          amountBaseUnits,
+          decimals:
+            Number.isFinite(decimals)
+              ? decimals
+              : null,
+        });
+      }
+    }
+
+    if (
+      String(ix?.program || "").toLowerCase() ===
+        "system" &&
+      type === "transfer"
+    ) {
+      const info = parsed.info || {};
+
+      transfers.push({
+        source: String(info.source || ""),
+        destination: String(
+          info.destination || ""
+        ),
+        lamports: String(
+          info.lamports || "0"
+        ),
+      });
+    }
+  }
+
+  if (burns.length !== 1) {
+    return null;
+  }
+
+  const burn = burns[0];
+
+  const serviceTransfer =
+    transfers.find(
+      (transfer) =>
+        transfer.source === burn.wallet &&
+        transfer.destination === FEE_WALLET
+    );
+
+  if (!serviceTransfer) {
+    return null;
+  }
+
+  return {
+    ...burn,
+    serviceLamports:
+      serviceTransfer.lamports,
+    transfers,
+    blockTime:
+      Number(tx.blockTime || 0),
+  };
+}
+app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
+  try {
+    const signature = String(
+      req.params.signature || ""
+    );
+
+    if (!isValidSignature(signature)) {
+      return res.status(400).json({
+        error: "Invalid transaction signature.",
+      });
+    }
+
+    const existing = await db
+      .collection("burn_registry")
+      .doc(signature)
+      .get();
+
+    const tx = await rpc(
+      "getTransaction",
+      [
+        signature,
+        {
+          commitment: "confirmed",
+          encoding: "jsonParsed",
+          maxSupportedTransactionVersion: 0,
+        },
+      ]
+    );
+
+    if (!tx) {
+      return res.status(404).json({
+        error: "Transaction not found.",
+      });
+    }
+
+    const candidate =
+      extractBurnCandidate(tx);
+
+    return res.json({
+      ok: true,
+      signature,
+      alreadyRegistered: existing.exists,
+      blockTime: tx.blockTime || null,
+      transactionError: tx.meta?.err || null,
+      candidate,
+    });
+  } catch (error) {
+    console.error(
+      "Reconciliation inspection error:",
+      error
+    );
+
+    return res.status(500).json({
+      error: "Unable to inspect transaction.",
+    });
+  }
+});
 
 app.post("/api/burns/register", async (req, res) => {
   try {
