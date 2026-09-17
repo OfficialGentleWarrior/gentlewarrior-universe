@@ -833,7 +833,7 @@ function buildRecoveredBurnRecord(signature, candidate) {
     recovered: true,
     recoverySource: "on-chain-reconciliation",
 
-    createdAt: FieldValue.serverTimestamp(),
+    createdAt: Timestamp.fromMillis(blockTime * 1000),
 
     status: "verified",
   };
