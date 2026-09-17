@@ -694,6 +694,116 @@ function extractBurnCandidate(tx) {
       Number(tx.blockTime || 0),
   };
 }
+
+function buildRecoveredBurnRecord(signature, candidate) {
+  if (
+    !isValidSignature(signature) ||
+    !candidate ||
+    !isValidAddress(candidate.wallet) ||
+    !isValidAddress(candidate.mint) ||
+    !isValidBaseUnits(candidate.amountBaseUnits)
+  ) {
+    throw new Error("Invalid recovery candidate.");
+  }
+
+  const decimals = Number(candidate.decimals);
+
+  if (
+    !Number.isInteger(decimals) ||
+    decimals < 0
+  ) {
+    throw new Error(
+      "Unable to determine token decimals."
+    );
+  }
+
+  const amountBaseUnits =
+    String(candidate.amountBaseUnits);
+
+  const amount =
+    Number(amountBaseUnits) /
+    Math.pow(10, decimals);
+
+  if (
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ) {
+    throw new Error(
+      "Invalid recovered burn amount."
+    );
+  }
+
+  const serviceFeeLamports =
+    String(candidate.serviceLamports || "0");
+
+  if (!/^\d+$/.test(serviceFeeLamports)) {
+    throw new Error(
+      "Invalid recovered service fee."
+    );
+  }
+
+  const serviceFeeSol =
+    Number(serviceFeeLamports) /
+    LAMPORTS_PER_SOL;
+
+  const blockTime =
+    Number(candidate.blockTime || 0);
+
+  if (
+    !Number.isFinite(blockTime) ||
+    blockTime <= 0
+  ) {
+    throw new Error(
+      "Invalid transaction block time."
+    );
+  }
+
+  return {
+    signature,
+
+    // Recovery has no dependency on the original
+    // temporary fee quote.
+    quoteId: null,
+
+    wallet: candidate.wallet,
+    mint: candidate.mint,
+
+    // Token metadata can be resolved/enriched later.
+    tokenName: null,
+    tokenSymbol: null,
+
+    amount,
+    decimals,
+    amountBaseUnits,
+
+    // Actual on-chain service transfer.
+    feeSol: serviceFeeSol,
+    serviceFeeSol,
+    feeLamports: serviceFeeLamports,
+
+    // USD values cannot safely be reconstructed
+    // from the transaction alone.
+    serviceFeeUsd: null,
+
+    serviceFeeLamports,
+
+    referralRewardUsd: null,
+    referralRewardLamports: "0",
+    referralCode: null,
+    referrerWallet: null,
+
+    blockTime,
+
+    // This tells us the record came from reconciliation.
+    recovered: true,
+    recoverySource: "on-chain-reconciliation",
+
+    createdAt: FieldValue.serverTimestamp(),
+
+    status: "verified",
+  };
+}
+
 app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
   try {
     const signature = String(
@@ -732,14 +842,23 @@ app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
     const candidate =
       extractBurnCandidate(tx);
 
+      const proposedRecord =
+  candidate
+    ? buildRecoveredBurnRecord(
+        signature,
+        candidate
+      )
+    : null;
+
     return res.json({
-      ok: true,
-      signature,
-      alreadyRegistered: existing.exists,
-      blockTime: tx.blockTime || null,
-      transactionError: tx.meta?.err || null,
-      candidate,
-    });
+  ok: true,
+  signature,
+  alreadyRegistered: existing.exists,
+  blockTime: tx.blockTime || null,
+  transactionError: tx.meta?.err || null,
+  candidate,
+  proposedRecord,
+});
   } catch (error) {
     console.error(
       "Reconciliation inspection error:",
