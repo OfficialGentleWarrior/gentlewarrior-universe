@@ -155,6 +155,41 @@ async function rpc(method, params) {
 
   return data.result;
 }
+async function reconciliationRpc(method, params) {
+  const primaryResult = await rpc(method, params);
+
+  if (primaryResult !== null && primaryResult !== undefined) {
+    return primaryResult;
+  }
+
+  const response = await fetch(
+    "https://api.mainnet-beta.solana.com",
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: Date.now(),
+        method,
+        params,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    throw new Error(
+      data.error?.message ||
+      `Fallback RPC HTTP ${response.status}`
+    );
+  }
+
+  return data.result;
+}
+
 app.post("/api/rpc", async (req, res) => {
   try {
     const { method, params = [] } = req.body || {};
@@ -821,7 +856,7 @@ app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
       .doc(signature)
       .get();
 
-    const tx = await rpc(
+    const tx = await reconciliationRpc(
       "getTransaction",
       [
         signature,
