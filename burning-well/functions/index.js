@@ -729,7 +729,36 @@ function extractBurnCandidate(tx) {
       Number(tx.blockTime || 0),
   };
 }
+async function findExistingTokenMetadata(mint) {
+  const snap = await db
+    .collection("burn_registry")
+    .where("mint", "==", mint)
+    .where("status", "==", "verified")
+    .limit(20)
+    .get();
 
+  for (const doc of snap.docs) {
+    const data = doc.data();
+
+    const tokenName =
+      String(data.tokenName || "").trim();
+
+    const tokenSymbol =
+      String(data.tokenSymbol || "").trim();
+
+    if (tokenName || tokenSymbol) {
+      return {
+        tokenName: tokenName || null,
+        tokenSymbol: tokenSymbol || null,
+      };
+    }
+  }
+
+  return {
+    tokenName: null,
+    tokenSymbol: null,
+  };
+}
 function buildRecoveredBurnRecord(signature, candidate) {
   if (
     !isValidSignature(signature) ||
@@ -968,11 +997,22 @@ app.post(
         });
       }
 
-      const record =
-        buildRecoveredBurnRecord(
-          signature,
-          candidate
-        );
+      const tokenMetadata =
+  await findExistingTokenMetadata(
+    candidate.mint
+  );
+
+const record =
+  buildRecoveredBurnRecord(
+    signature,
+    candidate
+  );
+
+record.tokenName =
+  tokenMetadata.tokenName;
+
+record.tokenSymbol =
+  tokenMetadata.tokenSymbol;
 
       await db.runTransaction(
         async (firestoreTransaction) => {
