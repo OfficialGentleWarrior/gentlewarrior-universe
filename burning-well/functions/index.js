@@ -1145,7 +1145,7 @@ app.get(
 app.post(
   "/api/admin/reconcile/recover/:signature",
   async (req, res) => {
-        if (!requireAdmin(req, res)) {
+    if (!requireAdmin(req, res)) {
       return;
     }
 
@@ -1154,116 +1154,69 @@ app.post(
         req.params.signature || ""
       );
 
-      if (!isValidSignature(signature)) {
+      const result =
+        await recoverBurnBySignature(
+          signature
+        );
+
+      if (
+        result.status ===
+        "invalid_signature"
+      ) {
         return res.status(400).json({
-          error: "Invalid transaction signature.",
+          error:
+            "Invalid transaction signature.",
         });
       }
 
-      const burnRef = db
-        .collection("burn_registry")
-        .doc(signature);
-
-      const existing = await burnRef.get();
-
-      if (existing.exists) {
-        return res.json({
-          ok: true,
-          duplicate: true,
-          recovered: false,
-          record: existing.data(),
-        });
-      }
-
-      const tx = await reconciliationRpc(
-        "getTransaction",
-        [
-          signature,
-          {
-            commitment: "confirmed",
-            encoding: "jsonParsed",
-            maxSupportedTransactionVersion: 0,
-          },
-        ]
-      );
-
-      if (!tx) {
+      if (
+        result.status ===
+        "transaction_not_found"
+      ) {
         return res.status(404).json({
           error: "Transaction not found.",
         });
       }
 
-      if (tx.meta?.err) {
+      if (
+        result.status ===
+        "transaction_failed"
+      ) {
         return res.status(400).json({
-          error: "Transaction failed on-chain.",
+          error:
+            "Transaction failed on-chain.",
         });
       }
 
-      const candidate =
-        extractBurnCandidate(tx);
-
-      if (!candidate) {
+      if (
+        result.status ===
+        "not_burning_well_burn"
+      ) {
         return res.status(400).json({
           error:
             "Transaction is not a valid Burning Well burn.",
         });
       }
 
-      const tokenMetadata =
-  await findExistingTokenMetadata(
-    candidate.mint
-  );
-
-const record =
-  buildRecoveredBurnRecord(
-    signature,
-    candidate
-  );
-
-record.tokenName =
-  tokenMetadata.tokenName;
-
-record.tokenSymbol =
-  tokenMetadata.tokenSymbol;
-
-      await db.runTransaction(
-        async (firestoreTransaction) => {
-          const latest =
-            await firestoreTransaction.get(
-              burnRef
-            );
-
-          if (latest.exists) {
-            throw new Error(
-              "BURN_ALREADY_REGISTERED"
-            );
-          }
-
-          firestoreTransaction.set(
-            burnRef,
-            record
-          );
-        }
-      );
-
-      return res.json({
-        ok: true,
-        duplicate: false,
-        recovered: true,
-        record,
-      });
-    } catch (error) {
       if (
-        error?.message ===
-        "BURN_ALREADY_REGISTERED"
+        result.status ===
+        "already_registered"
       ) {
         return res.json({
           ok: true,
           duplicate: true,
           recovered: false,
+          record: result.record || null,
         });
       }
 
+      return res.json({
+        ok: true,
+        duplicate: false,
+        recovered: true,
+        record: result.record,
+      });
+    } catch (error) {
       console.error(
         "Burn reconciliation recovery error:",
         error
