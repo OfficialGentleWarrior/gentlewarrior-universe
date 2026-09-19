@@ -90,6 +90,24 @@ async function testReconciliationSignatures() {
 
   return data;
 }
+async function testReconciliationSync() {
+  const data = await adminFetch(
+    "/api/admin/reconcile/sync",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        limit: 25,
+      }),
+    }
+  );
+
+  console.log(
+    "Reconciliation sync test:",
+    data
+  );
+
+  return data;
+}
 let adminPeriod = "week";
 let adminCustomStart = "";
 let adminCustomEnd = "";
@@ -602,6 +620,7 @@ adminLoginBtn.addEventListener(
       await adminFetch("/api/admin/ping");
       await loadDashboard();
       await testReconciliationSignatures();
+      await testReconciliationSync();
 
       adminLogin.hidden = true;
       adminNav.hidden = false;

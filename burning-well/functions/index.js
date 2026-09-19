@@ -1027,6 +1027,107 @@ async function recoverBurnBySignature(signature) {
     record,
   };
 }
+async function reconcileRecentBurns(
+  limit = 25
+) {
+  const signatures =
+    await getRecentReconciliationSignatures(
+      limit
+    );
+
+  const summary = {
+    scanned: signatures.length,
+    alreadyRegistered: 0,
+    recovered: 0,
+    skipped: 0,
+    failed: 0,
+  };
+
+  const results = [];
+
+  for (const item of signatures) {
+    try {
+      const result =
+        await recoverBurnBySignature(
+          item.signature
+        );
+
+      if (
+        result.status ===
+        "already_registered"
+      ) {
+        summary.alreadyRegistered += 1;
+      } else if (
+        result.status === "recovered"
+      ) {
+        summary.recovered += 1;
+      } else {
+        summary.skipped += 1;
+      }
+
+      results.push({
+        signature: item.signature,
+        status: result.status,
+      });
+    } catch (error) {
+      summary.failed += 1;
+
+      results.push({
+        signature: item.signature,
+        status: "failed",
+        error:
+          error?.message ||
+          "Unknown reconciliation error",
+      });
+    }
+  }
+
+  return {
+    summary,
+    results,
+  };
+}
+app.post(
+  "/api/admin/reconcile/sync",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const requestedLimit =
+        Number(req.body?.limit || 25);
+
+      const limit = Math.min(
+        Math.max(
+          Number.isFinite(requestedLimit)
+            ? Math.floor(requestedLimit)
+            : 25,
+          1
+        ),
+        100
+      );
+
+      const result =
+        await reconcileRecentBurns(limit);
+
+      return res.json({
+        ok: true,
+        ...result,
+      });
+    } catch (error) {
+      console.error(
+        "Burn reconciliation sync error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to sync missing transactions.",
+      });
+    }
+  }
+);
 app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;
