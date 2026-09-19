@@ -912,7 +912,121 @@ function buildRecoveredBurnRecord(signature, candidate) {
     status: "verified",
   };
 }
+async function recoverBurnBySignature(signature) {
+  if (!isValidSignature(signature)) {
+    return {
+      status: "invalid_signature",
+      recovered: false,
+    };
+  }
 
+  const burnRef = db
+    .collection("burn_registry")
+    .doc(signature);
+
+  const existing = await burnRef.get();
+
+  if (existing.exists) {
+    return {
+      status: "already_registered",
+      recovered: false,
+      record: existing.data(),
+    };
+  }
+
+  const tx = await reconciliationRpc(
+    "getTransaction",
+    [
+      signature,
+      {
+        commitment: "confirmed",
+        encoding: "jsonParsed",
+        maxSupportedTransactionVersion: 0,
+      },
+    ]
+  );
+
+  if (!tx) {
+    return {
+      status: "transaction_not_found",
+      recovered: false,
+    };
+  }
+
+  if (tx.meta?.err) {
+    return {
+      status: "transaction_failed",
+      recovered: false,
+    };
+  }
+
+  const candidate =
+    extractBurnCandidate(tx);
+
+  if (!candidate) {
+    return {
+      status: "not_burning_well_burn",
+      recovered: false,
+    };
+  }
+
+  const tokenMetadata =
+    await findExistingTokenMetadata(
+      candidate.mint
+    );
+
+  const record =
+    buildRecoveredBurnRecord(
+      signature,
+      candidate
+    );
+
+  record.tokenName =
+    tokenMetadata.tokenName;
+
+  record.tokenSymbol =
+    tokenMetadata.tokenSymbol;
+
+  try {
+    await db.runTransaction(
+      async (firestoreTransaction) => {
+        const latest =
+          await firestoreTransaction.get(
+            burnRef
+          );
+
+        if (latest.exists) {
+          throw new Error(
+            "BURN_ALREADY_REGISTERED"
+          );
+        }
+
+        firestoreTransaction.set(
+          burnRef,
+          record
+        );
+      }
+    );
+  } catch (error) {
+    if (
+      error?.message ===
+      "BURN_ALREADY_REGISTERED"
+    ) {
+      return {
+        status: "already_registered",
+        recovered: false,
+      };
+    }
+
+    throw error;
+  }
+
+  return {
+    status: "recovered",
+    recovered: true,
+    record,
+  };
+}
 app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;
