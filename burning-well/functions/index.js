@@ -804,6 +804,87 @@ async function findExistingTokenMetadata(mint) {
     tokenSymbol: null,
   };
 }
+async function findMatchingRecoveryFeeQuote(
+  candidate
+) {
+  const serviceLamports =
+    String(candidate.serviceLamports || "0");
+
+  if (!/^\d+$/.test(serviceLamports)) {
+    return null;
+  }
+
+  const snapshot = await db
+    .collection("fee_quotes")
+    .where(
+      "serviceLamports",
+      "==",
+      Number(serviceLamports)
+    )
+    .limit(20)
+    .get();
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const transfers =
+    Array.isArray(candidate.transfers)
+      ? candidate.transfers
+      : [];
+
+  for (const doc of snapshot.docs) {
+    const quote = doc.data();
+
+    const quotedService = String(
+      quote.serviceLamports || "0"
+    );
+
+    if (quotedService !== serviceLamports) {
+      continue;
+    }
+
+    const referrerWallet =
+      quote.referrerWallet ||
+      quote.referralWallet ||
+      null;
+
+    const referralLamports = String(
+      quote.referralLamports || "0"
+    );
+
+    if (referrerWallet) {
+      const referralTransfer =
+        transfers.find(
+          (transfer) =>
+            transfer.destination ===
+              referrerWallet &&
+            String(transfer.lamports) ===
+              referralLamports
+        );
+
+      if (!referralTransfer) {
+        continue;
+      }
+    } else if (referralLamports !== "0") {
+      continue;
+    }
+
+    return {
+      quoteId: doc.id,
+      serviceLamports,
+      referralLamports,
+      referralCode:
+        quote.referralCode || null,
+      referrerWallet,
+      solPriceUsd:
+        Number(quote.solPriceUsd || 0) ||
+        null,
+    };
+  }
+
+  return null;
+}
 function buildRecoveredBurnRecord(signature, candidate) {
   if (
     !isValidSignature(signature) ||
@@ -974,7 +1055,10 @@ async function recoverBurnBySignature(signature) {
     await findExistingTokenMetadata(
       candidate.mint
     );
-
+const feeQuote =
+  await findMatchingRecoveryFeeQuote(
+    candidate
+  );
   const record =
     buildRecoveredBurnRecord(
       signature,
@@ -987,6 +1071,31 @@ async function recoverBurnBySignature(signature) {
   record.tokenSymbol =
     tokenMetadata.tokenSymbol;
 
+    if (feeQuote) {
+  record.quoteId = feeQuote.quoteId;
+
+  record.serviceFeeUsd =
+    feeQuote.referrerWallet
+      ? SERVICE_FEE_USD -
+        REFERRAL_REWARD_USD
+      : SERVICE_FEE_USD;
+
+  record.referralRewardUsd =
+    feeQuote.referrerWallet
+      ? REFERRAL_REWARD_USD
+      : 0;
+
+  record.referralRewardLamports =
+    feeQuote.referralLamports;
+
+  record.referralCode =
+    feeQuote.referrerWallet
+      ? feeQuote.referralCode
+      : null;
+
+  record.referrerWallet =
+    feeQuote.referrerWallet || null;
+}
   try {
     await db.runTransaction(
       async (firestoreTransaction) => {
@@ -1005,6 +1114,45 @@ async function recoverBurnBySignature(signature) {
           burnRef,
           record
         );
+        if (
+  feeQuote?.referrerWallet &&
+  feeQuote.referralCode
+) {
+  const rewardId =
+    `${signature}_${feeQuote.referrerWallet}`;
+
+  const rewardRef = db
+    .collection("referral_rewards")
+    .doc(rewardId);
+
+  firestoreTransaction.set(
+    rewardRef,
+    {
+      signature,
+      referrerWallet:
+        feeQuote.referrerWallet,
+      referredUser:
+        candidate.wallet,
+      referralCode:
+        feeQuote.referralCode,
+      rewardUsd:
+        REFERRAL_REWARD_USD,
+      rewardLamports:
+        feeQuote.referralLamports,
+      status: "paid",
+      payoutSignature:
+        signature,
+      createdAt:
+        Timestamp.fromMillis(
+          Number(candidate.blockTime) *
+            1000
+        ),
+      recovered: true,
+      recoverySource:
+        "on-chain-reconciliation",
+    }
+  );
+}
       }
     );
   } catch (error) {
