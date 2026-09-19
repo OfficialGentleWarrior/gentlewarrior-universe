@@ -1027,6 +1027,10 @@ app.get(
 app.post(
   "/api/admin/reconcile/recover/:signature",
   async (req, res) => {
+        if (!requireAdmin(req, res)) {
+      return;
+    }
+
     try {
       const signature = String(
         req.params.signature || ""
