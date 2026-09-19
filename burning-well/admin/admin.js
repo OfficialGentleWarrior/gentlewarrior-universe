@@ -78,7 +78,18 @@ async function adminFetch(path, options = {}) {
 
   return data;
 }
+async function testReconciliationSignatures() {
+  const data = await adminFetch(
+    "/api/admin/reconcile/recent-signatures?limit=25"
+  );
 
+  console.log(
+    "Reconciliation signature discovery:",
+    data
+  );
+
+  return data;
+}
 let adminPeriod = "week";
 let adminCustomStart = "";
 let adminCustomEnd = "";
