@@ -601,6 +601,7 @@ adminLoginBtn.addEventListener(
 
       await adminFetch("/api/admin/ping");
       await loadDashboard();
+      await testReconciliationSignatures();
 
       adminLogin.hidden = true;
       adminNav.hidden = false;
