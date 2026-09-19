@@ -189,7 +189,44 @@ async function reconciliationRpc(method, params) {
 
   return data.result;
 }
+async function getRecentReconciliationSignatures(
+  limit = 100
+) {
+  const safeLimit = Math.min(
+    Math.max(Number(limit) || 100, 1),
+    100
+  );
 
+  const signatures =
+    await reconciliationRpc(
+      "getSignaturesForAddress",
+      [
+        FEE_WALLET,
+        {
+          limit: safeLimit,
+        },
+      ]
+    );
+
+  if (!Array.isArray(signatures)) {
+    return [];
+  }
+
+  return signatures
+    .filter(
+      (item) =>
+        item &&
+        isValidSignature(item.signature) &&
+        item.err === null
+    )
+    .map((item) => ({
+      signature: item.signature,
+      blockTime:
+        Number(item.blockTime || 0) || null,
+      slot:
+        Number(item.slot || 0) || null,
+    }));
+}
 app.post("/api/rpc", async (req, res) => {
   try {
     const { method, params = [] } = req.body || {};
@@ -934,6 +971,51 @@ app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
     });
   }
 });
+app.get(
+  "/api/admin/reconcile/recent-signatures",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const requestedLimit =
+        Number(req.query.limit || 25);
+
+      const limit = Math.min(
+        Math.max(
+          Number.isFinite(requestedLimit)
+            ? Math.floor(requestedLimit)
+            : 25,
+          1
+        ),
+        100
+      );
+
+      const signatures =
+        await getRecentReconciliationSignatures(
+          limit
+        );
+
+      return res.json({
+        ok: true,
+        feeWallet: FEE_WALLET,
+        count: signatures.length,
+        signatures,
+      });
+    } catch (error) {
+      console.error(
+        "Recent reconciliation signatures error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load recent reconciliation signatures.",
+      });
+    }
+  }
+);
 app.post(
   "/api/admin/reconcile/recover/:signature",
   async (req, res) => {
