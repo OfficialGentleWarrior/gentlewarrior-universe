@@ -158,9 +158,17 @@ async function rpc(method, params) {
 async function reconciliationRpc(method, params) {
   const primaryResult = await rpc(method, params);
 
-  if (primaryResult !== null && primaryResult !== undefined) {
-    return primaryResult;
-  }
+  if (
+  primaryResult !== null &&
+  primaryResult !== undefined &&
+  !(
+    method === "getSignaturesForAddress" &&
+    Array.isArray(primaryResult) &&
+    primaryResult.length === 0
+  )
+) {
+  return primaryResult;
+}
 
   const response = await fetch(
     "https://api.mainnet-beta.solana.com",
