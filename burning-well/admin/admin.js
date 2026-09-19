@@ -90,6 +90,24 @@ async function testReconciliationSignatures() {
 
   return data;
 }
+async function testDuplicateRecovery() {
+  const signature =
+    "45LVM1TP26q3efGnjgxrCr8NohRyQDcWLAWMsFoDjB5JDSsayrWS1hWAX4mcQR3sGqupibfx37tB9WaiwXJY8cgQ";
+
+  const data = await adminFetch(
+    `/api/admin/reconcile/recover/${signature}`,
+    {
+      method: "POST",
+    }
+  );
+
+  console.log(
+    "Duplicate recovery test:",
+    data
+  );
+
+  return data;
+}
 let adminPeriod = "week";
 let adminCustomStart = "";
 let adminCustomEnd = "";
@@ -602,6 +620,7 @@ adminLoginBtn.addEventListener(
       await adminFetch("/api/admin/ping");
       await loadDashboard();
       await testReconciliationSignatures();
+      await testDuplicateRecovery();
 
       adminLogin.hidden = true;
       adminNav.hidden = false;
