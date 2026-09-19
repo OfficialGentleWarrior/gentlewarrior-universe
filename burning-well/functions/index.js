@@ -914,6 +914,10 @@ function buildRecoveredBurnRecord(signature, candidate) {
 }
 
 app.get("/api/admin/reconcile/inspect/:signature", async (req, res) => {
+  if (!requireAdmin(req, res)) {
+    return;
+  }
+
   try {
     const signature = String(
       req.params.signature || ""
