@@ -1064,7 +1064,96 @@ record.tokenSymbol =
     }
   }
 );
+app.post(
+  "/api/admin/reconcile/enrich/:signature",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
 
+    try {
+      const signature = String(
+        req.params.signature || ""
+      );
+
+      if (!isValidSignature(signature)) {
+        return res.status(400).json({
+          error: "Invalid transaction signature.",
+        });
+      }
+
+      const burnRef = db
+        .collection("burn_registry")
+        .doc(signature);
+
+      const burnDoc = await burnRef.get();
+
+      if (!burnDoc.exists) {
+        return res.status(404).json({
+          error: "Burn record not found.",
+        });
+      }
+
+      const burn = burnDoc.data();
+
+      if (!burn.recovered) {
+        return res.status(400).json({
+          error:
+            "Only recovered burn records can be enriched.",
+        });
+      }
+
+      const mint = String(
+        burn.mint || ""
+      );
+
+      if (!isValidAddress(mint)) {
+        return res.status(400).json({
+          error: "Burn record has an invalid mint.",
+        });
+      }
+
+      const tokenMetadata =
+        await findExistingTokenMetadata(mint);
+
+      if (
+        !tokenMetadata.tokenName &&
+        !tokenMetadata.tokenSymbol
+      ) {
+        return res.status(404).json({
+          error:
+            "No existing token metadata found.",
+        });
+      }
+
+      await burnRef.update({
+        tokenName:
+          tokenMetadata.tokenName,
+        tokenSymbol:
+          tokenMetadata.tokenSymbol,
+      });
+
+      return res.json({
+        ok: true,
+        signature,
+        tokenName:
+          tokenMetadata.tokenName,
+        tokenSymbol:
+          tokenMetadata.tokenSymbol,
+      });
+    } catch (error) {
+      console.error(
+        "Burn metadata enrichment error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to enrich burn metadata.",
+      });
+    }
+  }
+);
 app.post("/api/burns/register", async (req, res) => {
   try {
     const b = req.body || {};
