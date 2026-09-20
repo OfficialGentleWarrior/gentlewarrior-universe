@@ -21,6 +21,16 @@ const adminLogoutBtn =
 const loginError =
   document.getElementById("loginError");
 
+const syncMissingTransactionsBtn =
+  document.getElementById(
+    "syncMissingTransactionsBtn"
+  );
+
+const syncMissingTransactionsResult =
+  document.getElementById(
+    "syncMissingTransactionsResult"
+  );
+
 
 function shortenAddress(value) {
   if (!value) {
@@ -90,7 +100,7 @@ async function testReconciliationSignatures() {
 
   return data;
 }
-async function testReconciliationSync() {
+async function syncMissingTransactions() {
   const data = await adminFetch(
     "/api/admin/reconcile/sync",
     {
@@ -619,8 +629,7 @@ adminLoginBtn.addEventListener(
 
       await adminFetch("/api/admin/ping");
       await loadDashboard();
-      await testReconciliationSignatures();
-      await testReconciliationSync();
+      
 
       adminLogin.hidden = true;
       adminNav.hidden = false;
@@ -1241,5 +1250,35 @@ adminLogoutBtn.addEventListener(
     loginError.textContent = "";
     adminKeyInput.value = "";
     adminKeyInput.focus();
+  }
+);
+syncMissingTransactionsBtn.addEventListener(
+  "click",
+  async () => {
+    syncMissingTransactionsBtn.disabled = true;
+    syncMissingTransactionsResult.textContent =
+      "Scanning missing transactions...";
+
+    try {
+      const data =
+        await syncMissingTransactions();
+
+      const summary = data.summary || {};
+
+      syncMissingTransactionsResult.textContent =
+        `Scanned: ${summary.scanned || 0} | ` +
+        `Already Registered: ${summary.alreadyRegistered || 0} | ` +
+        `Recovered: ${summary.recovered || 0} | ` +
+        `Skipped: ${summary.skipped || 0} | ` +
+        `Failed: ${summary.failed || 0}`;
+
+      await loadDashboard();
+    } catch (error) {
+      syncMissingTransactionsResult.textContent =
+        error.message ||
+        "Unable to sync missing transactions.";
+    } finally {
+      syncMissingTransactionsBtn.disabled = false;
+    }
   }
 );
