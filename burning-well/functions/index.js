@@ -9,6 +9,10 @@ const {
 } = require("firebase-functions/v2/https");
 
 const {
+  onSchedule,
+} = require("firebase-functions/v2/scheduler");
+
+const {
   defineSecret,
 } = require("firebase-functions/params");
 
@@ -1055,11 +1059,11 @@ async function recoverBurnBySignature(signature) {
     await findExistingTokenMetadata(
       candidate.mint
     );
-const feeQuote =
-  await findMatchingRecoveryFeeQuote(
+  const feeQuote =
+    await findMatchingRecoveryFeeQuote(
     candidate
   );
-  const record =
+  const record =                   
     buildRecoveredBurnRecord(
       signature,
       candidate
@@ -1114,45 +1118,45 @@ const feeQuote =
           burnRef,
           record
         );
-        if (
-  feeQuote?.referrerWallet &&
-  feeQuote.referralCode
-) {
-  const rewardId =
-    `${signature}_${feeQuote.referrerWallet}`;
+          if (
+    feeQuote?.referrerWallet &&
+    feeQuote.referralCode
+  ) {
+    const rewardId =
+      `${signature}_${feeQuote.referrerWallet}`;
 
-  const rewardRef = db
-    .collection("referral_rewards")
-    .doc(rewardId);
+    const rewardRef = db
+      .collection("referral_rewards")
+      .doc(rewardId);
 
-  firestoreTransaction.set(
-    rewardRef,
-    {
-      signature,
-      referrerWallet:
-        feeQuote.referrerWallet,
-      referredUser:
-        candidate.wallet,
-      referralCode:
-        feeQuote.referralCode,
-      rewardUsd:
-        REFERRAL_REWARD_USD,
-      rewardLamports:
-        feeQuote.referralLamports,
-      status: "paid",
-      payoutSignature:
+    firestoreTransaction.set(
+      rewardRef,
+      {
         signature,
-      createdAt:
-        Timestamp.fromMillis(
-          Number(candidate.blockTime) *
-            1000
-        ),
-      recovered: true,
-      recoverySource:
-        "on-chain-reconciliation",
-    }
-  );
-}
+        referrerWallet:
+          feeQuote.referrerWallet,
+        referredUser:
+          candidate.wallet,
+        referralCode:
+          feeQuote.referralCode,
+        rewardUsd:
+          REFERRAL_REWARD_USD,
+        rewardLamports:
+          feeQuote.referralLamports,
+        status: "paid",
+        payoutSignature:
+          signature,
+        createdAt:
+          Timestamp.fromMillis(
+            Number(candidate.blockTime) *
+              1000
+          ),
+        recovered: true,
+        recoverySource:
+          "on-chain-reconciliation",
+      }
+    );
+  }
       }
     );
   } catch (error) {
@@ -3240,4 +3244,31 @@ exports.burningWellApi = onRequest(
     ],
   },
   app
+);
+exports.burningWellReconciliation = onSchedule(
+  {
+    schedule: "every 15 minutes",
+    region: "asia-southeast1",
+    secrets: [
+      ANKR_RPC_URL,
+    ],
+  },
+  async () => {
+    try {
+      const result =
+        await reconcileRecentBurns(25);
+
+      console.log(
+        "Automatic burn reconciliation:",
+        result.summary
+      );
+    } catch (error) {
+      console.error(
+        "Automatic burn reconciliation failed:",
+        error
+      );
+
+      throw error;
+    }
+  }
 );
