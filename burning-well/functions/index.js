@@ -2214,6 +2214,38 @@ function normalizeBurnEventStatus(value) {
 
   return BURN_EVENT_STATUS.DRAFT;
 }
+function getEffectiveBurnEventStatus(
+  status,
+  startAt,
+  endAt
+) {
+  const normalizedStatus =
+    normalizeBurnEventStatus(status);
+
+  if (normalizedStatus === BURN_EVENT_STATUS.DRAFT) {
+    return BURN_EVENT_STATUS.DRAFT;
+  }
+
+  const now = Date.now();
+
+  const startMs = startAt?.toMillis
+    ? startAt.toMillis()
+    : 0;
+
+  const endMs = endAt?.toMillis
+    ? endAt.toMillis()
+    : 0;
+
+  if (endMs && now >= endMs) {
+    return BURN_EVENT_STATUS.ENDED;
+  }
+
+  if (startMs && now < startMs) {
+    return "upcoming";
+  }
+
+  return BURN_EVENT_STATUS.LIVE;
+}
 
 function parseEventDate(value) {
   const text =
@@ -2398,9 +2430,11 @@ app.get("/api/admin/burn-events", async (req, res) => {
           winnersCount:
             Number(data.winnersCount || 0),
           status:
-            normalizeBurnEventStatus(
-              data.status
-            ),
+  getEffectiveBurnEventStatus(
+    data.status,
+    data.startAt,
+    data.endAt
+  ),
           startAt:
             data.startAt?.toDate
               ? data.startAt
