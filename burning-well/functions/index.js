@@ -2682,9 +2682,11 @@ const leaderboard =
     winnersCount:
       Number(event.winnersCount || 0),
     status:
-      normalizeBurnEventStatus(
-        event.status
-      ),
+  getEffectiveBurnEventStatus(
+    event.status,
+    event.startAt,
+    event.endAt
+  ),
     startAt:
       event.startAt?.toDate
         ? event.startAt
