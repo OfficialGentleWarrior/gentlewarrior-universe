@@ -39,10 +39,11 @@ app.use(
 "http://127.0.0.1:5174",
     ],
     methods: [
-      "GET",
-      "POST",
-      "OPTIONS",
-    ],
+  "GET",
+  "POST",
+  "PUT",
+  "OPTIONS",
+],
     allowedHeaders: [
   "Content-Type",
   "x-admin-key",
