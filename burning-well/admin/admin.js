@@ -1041,6 +1041,7 @@ const editBurnEventBtn =
 editBurnEventBtn.addEventListener(
   "click",
   () => {
+    selectedBurnEventId = eventId;
     burnEventName.value =
       eventData.name || "";
 
