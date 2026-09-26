@@ -2399,6 +2399,159 @@ app.post("/api/admin/burn-events", async (req, res) => {
     });
   }
 });
+app.put(
+  "/api/admin/burn-events/:eventId",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const eventId =
+        String(req.params.eventId || "").trim();
+
+      const eventRef =
+        db.collection("burn_events").doc(eventId);
+
+      const eventDoc = await eventRef.get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({
+          error: "Burn event not found.",
+        });
+      }
+
+      const body = req.body || {};
+
+      const name =
+        String(body.name || "").trim();
+
+      const tokenMint =
+        String(body.tokenMint || "").trim();
+
+      const tokenSymbol =
+        String(body.tokenSymbol || "").trim();
+
+      const minimumBurn =
+        Number(body.minimumBurn);
+
+      const pointsPerTxn =
+        Number(body.pointsPerTxn);
+
+      const dailyCap =
+        Number(body.dailyCap);
+
+      const winnersCount =
+        Number(body.winnersCount);
+
+      const startAtMs =
+        parseEventDate(body.startAt);
+
+      const endAtMs =
+        parseEventDate(body.endAt);
+
+      const status =
+        normalizeBurnEventStatus(
+          body.status
+        );
+
+      if (!name) {
+        return res.status(400).json({
+          error: "Event name is required.",
+        });
+      }
+
+      if (!isValidAddress(tokenMint)) {
+        return res.status(400).json({
+          error: "Valid token mint is required.",
+        });
+      }
+
+      if (
+        !Number.isFinite(minimumBurn) ||
+        minimumBurn <= 0
+      ) {
+        return res.status(400).json({
+          error:
+            "Minimum burn must be greater than 0.",
+        });
+      }
+
+      if (
+        !Number.isFinite(pointsPerTxn) ||
+        pointsPerTxn <= 0
+      ) {
+        return res.status(400).json({
+          error:
+            "Points per transaction must be greater than 0.",
+        });
+      }
+
+      if (
+        !Number.isInteger(dailyCap) ||
+        dailyCap <= 0
+      ) {
+        return res.status(400).json({
+          error:
+            "Daily cap must be a positive whole number.",
+        });
+      }
+
+      if (
+        !Number.isInteger(winnersCount) ||
+        winnersCount <= 0
+      ) {
+        return res.status(400).json({
+          error:
+            "Winners count must be a positive whole number.",
+        });
+      }
+
+      if (
+        startAtMs === null ||
+        endAtMs === null ||
+        startAtMs >= endAtMs
+      ) {
+        return res.status(400).json({
+          error:
+            "Valid event start and end dates are required.",
+        });
+      }
+
+      await eventRef.update({
+        name,
+        tokenMint,
+        tokenSymbol:
+          tokenSymbol || null,
+        minimumBurn,
+        pointsPerTxn,
+        dailyCap,
+        winnersCount,
+        startAt:
+          Timestamp.fromMillis(startAtMs),
+        endAt:
+          Timestamp.fromMillis(endAtMs),
+        status,
+        updatedAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      return res.json({
+        ok: true,
+        eventId,
+      });
+    } catch (error) {
+      console.error(
+        "Burn event update error:",
+        error
+      );
+
+      return res.status(500).json({
+        error: "Unable to update burn event.",
+      });
+    }
+  }
+);
 app.get("/api/admin/burn-events", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;

@@ -789,6 +789,11 @@ const burnEventStatus =
 const burnEventSubmitBtn =
   document.getElementById("burnEventSubmitBtn");
 
+const cancelBurnEventEditBtn =
+  document.getElementById(
+    "cancelBurnEventEditBtn"
+  );  
+
 const burnEventFormMessage =
   document.getElementById("burnEventFormMessage");
 
@@ -814,6 +819,20 @@ const refreshBurnEventDetailsBtn =
   document.getElementById("refreshBurnEventDetailsBtn");
 
 let selectedBurnEventId = null;
+
+function resetBurnEventForm() {
+  selectedBurnEventId = null;
+
+  burnEventForm.reset();
+  burnEventPointsPerTxn.value = "1";
+  burnEventStatus.value = "draft";
+
+  burnEventSubmitBtn.textContent =
+    "Create Event";
+
+  cancelBurnEventEditBtn.hidden = true;
+  burnEventFormMessage.textContent = "";
+}
 
   async function loadBurnEvents() {
   const data =
@@ -1004,7 +1023,71 @@ async function openBurnEventDetails(eventId) {
           ${end}
         </div>
       </div>
-    `;
+
+<div class="burn-event-card-actions">
+  <button
+    type="button"
+    id="editBurnEventBtn"
+  >
+    Edit Event
+  </button>
+</div>
+`;
+const editBurnEventBtn =
+  document.getElementById(
+    "editBurnEventBtn"
+  );
+
+editBurnEventBtn.addEventListener(
+  "click",
+  () => {
+    burnEventName.value =
+      eventData.name || "";
+
+    burnEventTokenSymbol.value =
+      eventData.tokenSymbol || "";
+
+    burnEventTokenMint.value =
+      eventData.tokenMint || "";
+
+    burnEventMinimumBurn.value =
+      eventData.minimumBurn ?? "";
+
+    burnEventPointsPerTxn.value =
+      eventData.pointsPerTxn ?? "1";
+
+    burnEventDailyCap.value =
+      eventData.dailyCap ?? "";
+
+    burnEventWinnersCount.value =
+      eventData.winnersCount ?? "";
+
+    burnEventStartAt.value =
+      eventData.startAt
+        ? eventData.startAt.slice(0, 16)
+        : "";
+
+    burnEventEndAt.value =
+      eventData.endAt
+        ? eventData.endAt.slice(0, 16)
+        : "";
+
+    burnEventStatus.value =
+      eventData.status === "upcoming"
+        ? "live"
+        : eventData.status || "draft";
+
+    burnEventSubmitBtn.textContent =
+      "Save Changes";
+
+    cancelBurnEventEditBtn.hidden = false;
+
+    burnEventForm.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+);
 
     if (!rows.length) {
       burnEventLeaderboard.innerHTML = `
@@ -1146,6 +1229,14 @@ burnEventsList.addEventListener(
     openBurnEventDetails(eventId);
   }
 );
+
+cancelBurnEventEditBtn.addEventListener(
+  "click",
+  () => {
+    resetBurnEventForm();
+  }
+);
+
 backToBurnEventsBtn.addEventListener(
   "click",
   () => {
@@ -1211,23 +1302,38 @@ endAt:
         burnEventStatus.value,
     };
         try {
-      await adminFetch(
-        "/api/admin/burn-events",
-        {
-          method: "POST",
-          body: JSON.stringify(payload),
-        }
-      );
+     const editingEventId =
+  selectedBurnEventId;
 
-      burnEventFormMessage.textContent =
-        "Event created successfully.";
+const isEditing =
+  Boolean(editingEventId);
 
-      burnEventForm.reset();
+await adminFetch(
+  isEditing
+    ? `/api/admin/burn-events/${encodeURIComponent(
+        editingEventId
+      )}`
+    : "/api/admin/burn-events",
+  {
+    method: isEditing ? "PUT" : "POST",
+    body: JSON.stringify(payload),
+  }
+);
 
-      burnEventPointsPerTxn.value = "1";
-      burnEventStatus.value = "draft";
+burnEventFormMessage.textContent =
+  isEditing
+    ? "Event updated successfully."
+    : "Event created successfully.";
 
-      await loadBurnEvents();
+resetBurnEventForm();
+
+await loadBurnEvents();
+
+if (isEditing) {
+  await openBurnEventDetails(
+    editingEventId
+  );
+}
 
     } catch (error) {
       burnEventFormMessage.textContent =
