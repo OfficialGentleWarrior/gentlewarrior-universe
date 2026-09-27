@@ -42,6 +42,7 @@ app.use(
   "GET",
   "POST",
   "PUT",
+  "DELETE",
   "OPTIONS",
 ],
     allowedHeaders: [
@@ -2549,6 +2550,52 @@ app.put(
 
       return res.status(500).json({
         error: "Unable to update burn event.",
+      });
+    }
+  }
+);
+app.delete(
+  "/api/admin/burn-events/:eventId",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const eventId =
+        String(req.params.eventId || "").trim();
+
+      if (!eventId) {
+        return res.status(400).json({
+          error: "Event ID is required.",
+        });
+      }
+
+      const eventRef =
+        db.collection("burn_events").doc(eventId);
+
+      const eventDoc = await eventRef.get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({
+          error: "Burn event not found.",
+        });
+      }
+
+      await eventRef.delete();
+
+      return res.json({
+        ok: true,
+        eventId,
+      });
+    } catch (error) {
+      console.error(
+        "Burn event delete error:",
+        error
+      );
+
+      return res.status(500).json({
+        error: "Unable to delete burn event.",
       });
     }
   }

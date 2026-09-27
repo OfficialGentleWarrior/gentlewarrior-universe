@@ -1031,11 +1031,24 @@ async function openBurnEventDetails(eventId) {
   >
     Edit Event
   </button>
+
+  <button
+  type="button"
+  id="deleteBurnEventBtn"
+>
+  Delete Event
+</button>
+
 </div>
 `;
 const editBurnEventBtn =
   document.getElementById(
     "editBurnEventBtn"
+  );
+
+  const deleteBurnEventBtn =
+  document.getElementById(
+    "deleteBurnEventBtn"
   );
 
 editBurnEventBtn.addEventListener(
@@ -1087,6 +1100,46 @@ editBurnEventBtn.addEventListener(
       behavior: "smooth",
       block: "start",
     });
+  }
+);
+
+deleteBurnEventBtn.addEventListener(
+  "click",
+  async () => {
+    const confirmed = window.confirm(
+      `Delete "${eventData.name || "this event"}"?\n\n` +
+      "This will delete the event configuration. " +
+      "Burn transaction records will not be deleted."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    deleteBurnEventBtn.disabled = true;
+
+    try {
+      await adminFetch(
+        `/api/admin/burn-events/${encodeURIComponent(
+          eventId
+        )}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      selectedBurnEventId = null;
+      burnEventDetails.hidden = true;
+
+      await loadBurnEvents();
+    } catch (error) {
+      window.alert(
+        error.message ||
+        "Unable to delete event."
+      );
+
+      deleteBurnEventBtn.disabled = false;
+    }
   }
 );
 
