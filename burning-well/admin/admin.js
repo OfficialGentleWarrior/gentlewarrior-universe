@@ -1034,6 +1034,13 @@ async function openBurnEventDetails(eventId) {
 
   <button
   type="button"
+  id="publishBurnEventBtn"
+>
+  ${eventData.published ? "Unpublish" : "Publish"}
+</button>
+
+  <button
+  type="button"
   id="deleteBurnEventBtn"
 >
   Delete Event
@@ -1044,6 +1051,11 @@ async function openBurnEventDetails(eventId) {
 const editBurnEventBtn =
   document.getElementById(
     "editBurnEventBtn"
+  );
+
+  const publishBurnEventBtn =
+  document.getElementById(
+    "publishBurnEventBtn"
   );
 
   const deleteBurnEventBtn =
@@ -1100,6 +1112,40 @@ editBurnEventBtn.addEventListener(
       behavior: "smooth",
       block: "start",
     });
+  }
+);
+
+publishBurnEventBtn.addEventListener(
+  "click",
+  async () => {
+    const nextPublished =
+      eventData.published !== true;
+
+    publishBurnEventBtn.disabled = true;
+
+    try {
+      await adminFetch(
+        `/api/admin/burn-events/${encodeURIComponent(
+          eventId
+        )}/publish`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            published: nextPublished,
+          }),
+        }
+      );
+
+      await loadBurnEvents();
+      await openBurnEventDetails(eventId);
+    } catch (error) {
+      window.alert(
+        error.message ||
+        "Unable to update event publication."
+      );
+    } finally {
+      publishBurnEventBtn.disabled = false;
+    }
   }
 );
 

@@ -2378,6 +2378,7 @@ app.post("/api/admin/burn-events", async (req, res) => {
       endAt:
         Timestamp.fromMillis(endAtMs),
       status,
+      published: false,
       createdAt:
         FieldValue.serverTimestamp(),
       updatedAt:
@@ -2600,6 +2601,61 @@ app.delete(
     }
   }
 );
+app.put(
+  "/api/admin/burn-events/:eventId/publish",
+  async (req, res) => {
+    if (!requireAdmin(req, res)) {
+      return;
+    }
+
+    try {
+      const eventId =
+        String(req.params.eventId || "").trim();
+
+      if (!eventId) {
+        return res.status(400).json({
+          error: "Event ID is required.",
+        });
+      }
+
+      const published =
+        req.body?.published === true;
+
+      const eventRef =
+        db.collection("burn_events").doc(eventId);
+
+      const eventDoc = await eventRef.get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({
+          error: "Burn event not found.",
+        });
+      }
+
+      await eventRef.update({
+        published,
+        updatedAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      return res.json({
+        ok: true,
+        eventId,
+        published,
+      });
+    } catch (error) {
+      console.error(
+        "Burn event publish update error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to update event publication.",
+      });
+    }
+  }
+);
 app.get("/api/admin/burn-events", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;
@@ -2636,6 +2692,8 @@ app.get("/api/admin/burn-events", async (req, res) => {
     data.startAt,
     data.endAt
   ),
+  published:
+  data.published === true,
           startAt:
             data.startAt?.toDate
               ? data.startAt
@@ -2888,6 +2946,8 @@ const leaderboard =
     event.startAt,
     event.endAt
   ),
+  published:
+  event.published === true,
     startAt:
       event.startAt?.toDate
         ? event.startAt
