@@ -989,6 +989,11 @@ async function openBurnEventDetails(eventId) {
         </div>
 
         <div>
+          <strong>Visibility</strong>
+          ${eventData.published ? "Published" : "Unpublished"}
+        </div>
+
+        <div>
           <strong>Token</strong>
           ${eventData.tokenSymbol || "—"}
         </div>
@@ -1025,16 +1030,22 @@ async function openBurnEventDetails(eventId) {
       </div>
 
 <div class="burn-event-card-actions">
-  <button
-    type="button"
-    id="editBurnEventBtn"
-  >
+  <<button
+  type="button"
+  id="editBurnEventBtn"
+  class="event-action-btn event-edit-btn"
+>
     Edit Event
   </button>
 
   <button
   type="button"
   id="publishBurnEventBtn"
+  class="event-action-btn ${
+  eventData.published
+    ? "event-unpublish-btn"
+    : "event-publish-btn"
+}"
 >
   ${eventData.published ? "Unpublish" : "Publish"}
 </button>
@@ -1042,6 +1053,7 @@ async function openBurnEventDetails(eventId) {
   <button
   type="button"
   id="deleteBurnEventBtn"
+  class="event-action-btn event-delete-btn"
 >
   Delete Event
 </button>
