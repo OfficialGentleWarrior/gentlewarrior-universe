@@ -1030,7 +1030,7 @@ async function openBurnEventDetails(eventId) {
       </div>
 
 <div class="burn-event-card-actions">
-  <<button
+  <button
   type="button"
   id="editBurnEventBtn"
   class="event-action-btn event-edit-btn"
