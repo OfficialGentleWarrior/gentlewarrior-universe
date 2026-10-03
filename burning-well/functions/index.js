@@ -66,6 +66,11 @@ const SERVICE_FEE_USD = 1.50;
 
 const REFERRAL_REWARD_USD = 0.05;
 
+const PUBLIC_EVENT_PRICES_USD = Object.freeze({
+  7: 5,
+  30: 15,
+});
+
 const LAMPORTS_PER_SOL =
   1_000_000_000;
 
@@ -502,6 +507,97 @@ expiresAt:
     });
   }
 });
+app.get("/api/event-fee-quote", async (req, res) => {
+  try {
+    const durationDays = Number(
+      req.query.durationDays || 0
+    );
+
+    const eventFeeUsd =
+      PUBLIC_EVENT_PRICES_USD[durationDays];
+
+    if (!eventFeeUsd) {
+      return res.status(400).json({
+        error: "Invalid event duration.",
+      });
+    }
+
+    const response = await fetch(
+      "https://lite-api.jup.ag/price/v3?ids=" +
+        SOL_MINT
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Jupiter price request failed: ${response.status}`
+      );
+    }
+
+    const priceData = await response.json();
+
+    const solPriceUsd = Number(
+      priceData?.[SOL_MINT]?.usdPrice
+    );
+
+    if (
+      !Number.isFinite(solPriceUsd) ||
+      solPriceUsd <= 0
+    ) {
+      throw new Error(
+        "Invalid SOL/USD price."
+      );
+    }
+
+    const totalLamports = Math.ceil(
+      (eventFeeUsd / solPriceUsd) *
+        LAMPORTS_PER_SOL
+    );
+
+    const quoteId = crypto
+      .randomBytes(16)
+      .toString("hex");
+
+    await db
+      .collection("event_fee_quotes")
+      .doc(quoteId)
+      .set({
+        quoteId,
+        durationDays,
+        eventFeeUsd,
+        solPriceUsd,
+        totalLamports,
+        feeWallet: FEE_WALLET,
+        used: false,
+        createdAt:
+          FieldValue.serverTimestamp(),
+        expiresAt:
+          Timestamp.fromMillis(
+            Date.now() + 5 * 60 * 1000
+          ),
+      });
+
+    return res.json({
+      quoteId,
+      durationDays,
+      eventFeeUsd,
+      solPriceUsd,
+      totalLamports,
+      feeWallet: FEE_WALLET,
+      expiresInSeconds: 300,
+    });
+  } catch (error) {
+    console.error(
+      "Event fee quote error:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        error.message ||
+        "Unable to create event fee quote.",
+    });
+  }
+});
 app.get("/api/referrals", async (req, res) => {
   try {
     const wallet = String(
@@ -675,7 +771,52 @@ function extractBurnAndFee(tx, expected) {
     feeLamports: feeLamports.toString(),
   };
 }
+function verifyEventPayment(
+  tx,
+  creatorWallet,
+  expectedLamports
+) {
+  if (!tx || tx.meta?.err) {
+    return {
+      valid: false,
+      reason: "Transaction failed or not found.",
+    };
+  }
 
+  const instructions =
+    tx.transaction?.message?.instructions || [];
+
+  for (const ix of instructions) {
+    const parsed = ix?.parsed;
+
+    if (
+      String(ix?.program || "").toLowerCase() ===
+        "system" &&
+      parsed?.type === "transfer"
+    ) {
+      const info = parsed.info || {};
+
+      if (
+        String(info.source || "") ===
+          creatorWallet &&
+        String(info.destination || "") ===
+          FEE_WALLET &&
+        String(info.lamports || "0") ===
+          String(expectedLamports)
+      ) {
+        return {
+          valid: true,
+        };
+      }
+    }
+  }
+
+  return {
+    valid: false,
+    reason:
+      "Required event payment transfer was not found.",
+  };
+}
 function extractBurnCandidate(tx) {
   if (!tx || tx.meta?.err) {
     return null;
@@ -2399,6 +2540,422 @@ app.post("/api/admin/burn-events", async (req, res) => {
       error:
         error.message ||
         "Unable to create burn event.",
+    });
+  }
+});
+app.post("/api/public/burn-events", async (req, res) => {
+  try {
+    const body = req.body || {};
+
+    const creatorWallet =
+      String(body.creatorWallet || "").trim();
+
+    const signature =
+      String(body.signature || "").trim();
+
+    const quoteId =
+      String(body.quoteId || "").trim();
+
+    const name =
+      String(body.name || "").trim();
+
+    const tokenMint =
+      String(body.tokenMint || "").trim();
+
+    const tokenSymbol =
+      String(body.tokenSymbol || "").trim();
+
+    const minimumBurn =
+      Number(body.minimumBurn);
+
+    const pointsPerTxn =
+      Number(body.pointsPerTxn);
+
+    const dailyCap =
+      Number(body.dailyCap);
+
+    const winnersCount =
+      Number(body.winnersCount);
+
+    const startAtMs =
+      parseEventDate(body.startAt);
+
+    const endAtMs =
+      parseEventDate(body.endAt);
+
+    if (!isValidAddress(creatorWallet)) {
+      return res.status(400).json({
+        error: "Valid creator wallet is required.",
+      });
+    }
+
+    if (!isValidSignature(signature)) {
+      return res.status(400).json({
+        error: "Valid payment signature is required.",
+      });
+    }
+
+    if (!/^[a-f0-9]{32}$/.test(quoteId)) {
+      return res.status(400).json({
+        error: "Valid event fee quote is required.",
+      });
+    }
+
+    if (!name) {
+      return res.status(400).json({
+        error: "Event name is required.",
+      });
+    }
+
+    if (!isValidAddress(tokenMint)) {
+      return res.status(400).json({
+        error: "Valid token mint is required.",
+      });
+    }
+
+    if (
+      !Number.isFinite(minimumBurn) ||
+      minimumBurn <= 0
+    ) {
+      return res.status(400).json({
+        error: "Minimum burn must be greater than 0.",
+      });
+    }
+
+    if (
+      !Number.isFinite(pointsPerTxn) ||
+      pointsPerTxn <= 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Points per transaction must be greater than 0.",
+      });
+    }
+
+    if (
+      !Number.isInteger(dailyCap) ||
+      dailyCap <= 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Daily cap must be a positive whole number.",
+      });
+    }
+
+    if (
+      !Number.isInteger(winnersCount) ||
+      winnersCount <= 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Winners count must be a positive whole number.",
+      });
+    }
+
+    if (
+      startAtMs === null ||
+      endAtMs === null ||
+      startAtMs >= endAtMs
+    ) {
+      return res.status(400).json({
+        error:
+          "Valid event start and end dates are required.",
+      });
+    }
+
+    const quoteRef = db
+      .collection("event_fee_quotes")
+      .doc(quoteId);
+
+    const quoteDoc = await quoteRef.get();
+
+    if (!quoteDoc.exists) {
+      return res.status(404).json({
+        error: "Event fee quote not found.",
+      });
+    }
+
+    const quote = quoteDoc.data() || {};
+
+    if (quote.used) {
+      return res.status(409).json({
+        error: "Event fee quote has already been used.",
+      });
+    }
+
+    const expiresAtMs =
+      quote.expiresAt?.toMillis
+        ? quote.expiresAt.toMillis()
+        : 0;
+
+    if (
+      !expiresAtMs ||
+      Date.now() > expiresAtMs
+    ) {
+      return res.status(410).json({
+        error: "Event fee quote has expired.",
+      });
+    }
+
+    const durationDays =
+      Number(quote.durationDays);
+
+const eventDurationMs =
+  endAtMs - startAtMs;
+
+const expectedDurationMs =
+  durationDays *
+  24 *
+  60 *
+  60 *
+  1000;
+
+if (eventDurationMs !== expectedDurationMs) {
+  return res.status(400).json({
+    error:
+      `Event duration must be exactly ${durationDays} days for this plan.`,
+  });
+}
+
+    const expectedEventFeeUsd =
+      PUBLIC_EVENT_PRICES_USD[durationDays];
+
+    if (
+      !expectedEventFeeUsd ||
+      Number(quote.eventFeeUsd) !==
+        expectedEventFeeUsd
+    ) {
+      return res.status(400).json({
+        error: "Invalid event fee quote.",
+      });
+    }
+
+    const expectedLamports =
+      String(quote.totalLamports || "0");
+
+    if (!/^\d+$/.test(expectedLamports)) {
+      return res.status(400).json({
+        error: "Invalid event fee quote amount.",
+      });
+    }
+
+    const tx = await rpc(
+      "getTransaction",
+      [
+        signature,
+        {
+          commitment: "confirmed",
+          encoding: "jsonParsed",
+          maxSupportedTransactionVersion: 0,
+        },
+      ]
+    );
+
+    if (!tx) {
+      return res.status(409).json({
+        error: "Payment transaction is not confirmed yet.",
+      });
+    }
+
+    const paymentVerification =
+      verifyEventPayment(
+        tx,
+        creatorWallet,
+        expectedLamports
+      );
+
+    if (!paymentVerification.valid) {
+      return res.status(400).json({
+        error: paymentVerification.reason,
+      });
+    }
+
+    const paymentRef = db
+      .collection("event_payments")
+      .doc(signature);
+
+    const eventRef = db
+      .collection("burn_events")
+      .doc();
+
+    try {
+      await db.runTransaction(
+        async (firestoreTransaction) => {
+          const latestQuote =
+            await firestoreTransaction.get(
+              quoteRef
+            );
+
+          if (!latestQuote.exists) {
+            throw new Error(
+              "EVENT_QUOTE_NOT_FOUND"
+            );
+          }
+
+          const latestQuoteData =
+            latestQuote.data() || {};
+
+          if (latestQuoteData.used) {
+            throw new Error(
+              "EVENT_QUOTE_ALREADY_USED"
+            );
+          }
+
+          const latestExpiresAtMs =
+            latestQuoteData.expiresAt?.toMillis
+              ? latestQuoteData.expiresAt.toMillis()
+              : 0;
+
+          if (
+            !latestExpiresAtMs ||
+            Date.now() > latestExpiresAtMs
+          ) {
+            throw new Error(
+              "EVENT_QUOTE_EXPIRED"
+            );
+          }
+
+          const existingPayment =
+            await firestoreTransaction.get(
+              paymentRef
+            );
+
+          if (existingPayment.exists) {
+            throw new Error(
+              "EVENT_PAYMENT_ALREADY_USED"
+            );
+          }
+
+          firestoreTransaction.set(
+            eventRef,
+            {
+              name,
+              tokenMint,
+              tokenSymbol:
+                tokenSymbol || null,
+              minimumBurn,
+              pointsPerTxn,
+              dailyCap,
+              winnersCount,
+              startAt:
+                Timestamp.fromMillis(
+                  startAtMs
+                ),
+              endAt:
+                Timestamp.fromMillis(
+                  endAtMs
+                ),
+              status:
+                normalizeBurnEventStatus(
+                  body.status
+                ),
+              published: true,
+
+              creatorWallet,
+              creationType: "public",
+              durationDays,
+              paymentSignature: signature,
+              quoteId,
+
+              createdAt:
+                FieldValue.serverTimestamp(),
+              updatedAt:
+                FieldValue.serverTimestamp(),
+            }
+          );
+
+          firestoreTransaction.set(
+            paymentRef,
+            {
+              signature,
+              quoteId,
+              eventId: eventRef.id,
+              creatorWallet,
+              durationDays,
+              eventFeeUsd:
+                expectedEventFeeUsd,
+              lamports:
+                expectedLamports,
+              createdAt:
+                FieldValue.serverTimestamp(),
+            }
+          );
+
+          firestoreTransaction.update(
+            quoteRef,
+            {
+              used: true,
+              usedByWallet:
+                creatorWallet,
+              paymentSignature:
+                signature,
+              eventId:
+                eventRef.id,
+              usedAt:
+                FieldValue.serverTimestamp(),
+            }
+          );
+        }
+      );
+    } catch (error) {
+      if (
+        error?.message ===
+        "EVENT_QUOTE_NOT_FOUND"
+      ) {
+        return res.status(404).json({
+          error: "Event fee quote not found.",
+        });
+      }
+
+      if (
+        error?.message ===
+        "EVENT_QUOTE_ALREADY_USED"
+      ) {
+        return res.status(409).json({
+          error:
+            "Event fee quote has already been used.",
+        });
+      }
+
+      if (
+        error?.message ===
+        "EVENT_QUOTE_EXPIRED"
+      ) {
+        return res.status(410).json({
+          error: "Event fee quote has expired.",
+        });
+      }
+
+      if (
+        error?.message ===
+        "EVENT_PAYMENT_ALREADY_USED"
+      ) {
+        return res.status(409).json({
+          error:
+            "Payment transaction has already been used.",
+        });
+      }
+
+      throw error;
+    }
+
+    return res.json({
+      ok: true,
+      id: eventRef.id,
+      eventId: eventRef.id,
+      published: true,
+      durationDays,
+    });
+  } catch (error) {
+    console.error(
+      "Public create burn event error:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        error.message ||
+        "Unable to create public burn event.",
     });
   }
 });
