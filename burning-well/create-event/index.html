@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="Create a community token burning event on Solana with Burning Well."
+  />
+
+  <title>Create Burn Event | Burning Well</title>
+
+  <link
+    rel="stylesheet"
+    href="./create-event.css"
+  />
+</head>
+
+<body>
+
+  <main class="event-creator-shell">
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="creator-header">
+
+      <div class="creator-brand-mark">
+        <img
+          src="../avatar.png"
+          alt="Gentle Warrior"
+        />
+      </div>
+
+      <p class="creator-eyebrow">
+        A GENTLE WARRIOR TOOL
+      </p>
+
+      <h1>
+        Burning Well
+      </h1>
+
+      <p class="creator-brand-tagline">
+        Burn Tokens.
+        <span>Fund Hope.</span>
+        Strengthen GWAR.
+      </p>
+
+    </header>
+
+
+    <!-- =========================================
+         PAGE INTRO
+    ========================================== -->
+
+    <section class="creator-intro">
+
+      <span class="section-label">
+        PUBLIC EVENT CREATOR
+      </span>
+
+      <h2>
+        Create a Burn Event
+      </h2>
+
+      <p>
+        Launch a community burning event
+        for your Solana token.
+      </p>
+
+    </section>
+
+
+    <!-- =========================================
+         FLOW INDICATOR
+    ========================================== -->
+
+    <nav
+      class="creator-progress"
+      aria-label="Event creation progress"
+    >
+
+      <div
+        class="progress-step is-active"
+        data-step="1"
+      >
+        <span>1</span>
+        <strong>Connect</strong>
+      </div>
+
+      <div
+        class="progress-step"
+        data-step="2"
+      >
+        <span>2</span>
+        <strong>Setup</strong>
+      </div>
+
+      <div
+        class="progress-step"
+        data-step="3"
+      >
+        <span>3</span>
+        <strong>Preview</strong>
+      </div>
+
+      <div
+        class="progress-step"
+        data-step="4"
+      >
+        <span>4</span>
+        <strong>Pay</strong>
+      </div>
+
+      <div
+        class="progress-step"
+        data-step="5"
+      >
+        <span>5</span>
+        <strong>Publish</strong>
+      </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         STEP 1 — CONNECT WALLET
+    ========================================== -->
+
+    <section
+      id="connectStep"
+      class="creator-card creator-step"
+    >
+
+      <div class="card-heading">
+
+        <span class="step-number">
+          STEP 1
+        </span>
+
+        <h3>
+          Connect Your Wallet
+        </h3>
+
+        <p>
+          Connect the Solana wallet that will
+          own and manage this event.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        id="connectWalletBtn"
+        class="primary-btn"
+      >
+        Connect Wallet
+      </button>
+
+      <div
+        id="connectedWallet"
+        class="connected-wallet"
+        hidden
+      >
+
+        <span>
+          Connected Wallet
+        </span>
+
+        <strong id="connectedWalletAddress">
+          —
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         STEP 2 — EVENT SETUP
+    ========================================== -->
+
+    <section
+      id="setupStep"
+      class="creator-card creator-step"
+      hidden
+    >
+
+      <div class="card-heading">
+
+        <span class="step-number">
+          STEP 2
+        </span>
+
+        <h3>
+          Event Setup
+        </h3>
+
+        <p>
+          Set the token and mechanics
+          for your burn event.
+        </p>
+
+      </div>
+
+
+      <form id="eventSetupForm">
+
+        <div class="form-grid">
+
+          <label class="form-field full-width">
+
+            <span>
+              Event Name
+            </span>
+
+            <input
+              type="text"
+              id="eventName"
+              maxlength="80"
+              placeholder="Example: Community Burn Week"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field full-width">
+
+            <span>
+              Token Mint Address
+            </span>
+
+            <input
+              type="text"
+              id="tokenMint"
+              placeholder="Solana token mint address"
+              autocomplete="off"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Token Symbol
+            </span>
+
+            <input
+              type="text"
+              id="tokenSymbol"
+              maxlength="15"
+              placeholder="TOKEN"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Minimum Burn
+            </span>
+
+            <input
+              type="number"
+              id="minimumBurn"
+              min="0"
+              step="any"
+              placeholder="1000"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Points per Transaction
+            </span>
+
+            <input
+              type="number"
+              id="pointsPerTxn"
+              min="1"
+              step="1"
+              placeholder="1"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Daily Transaction Cap
+            </span>
+
+            <input
+              type="number"
+              id="dailyCap"
+              min="1"
+              step="1"
+              placeholder="10"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Number of Winners
+            </span>
+
+            <input
+              type="number"
+              id="winnersCount"
+              min="1"
+              step="1"
+              placeholder="3"
+              required
+            />
+
+          </label>
+
+
+          <label class="form-field">
+
+            <span>
+              Event Start
+            </span>
+
+            <input
+              type="datetime-local"
+              id="startAt"
+              required
+            />
+
+          </label>
+
+        </div>
+
+
+        <!-- =====================================
+             PLAN
+        ====================================== -->
+
+        <fieldset class="plan-section">
+
+          <legend>
+            Choose Event Plan
+          </legend>
+
+          <div class="plan-grid">
+
+            <label class="plan-card">
+
+              <input
+                type="radio"
+                name="eventPlan"
+                value="7"
+                checked
+              />
+
+              <span class="plan-name">
+                7 Days
+              </span>
+
+              <strong>
+                $5
+              </strong>
+
+              <small>
+                One event
+              </small>
+
+            </label>
+
+
+            <label class="plan-card">
+
+              <input
+                type="radio"
+                name="eventPlan"
+                value="30"
+              />
+
+              <span class="plan-name">
+                30 Days
+              </span>
+
+              <strong>
+                $15
+              </strong>
+
+              <small>
+                One event
+              </small>
+
+            </label>
+
+          </div>
+
+        </fieldset>
+
+
+        <div class="form-actions split-actions">
+
+  <button
+    type="button"
+    id="backToConnectBtn"
+    class="secondary-btn"
+  >
+    Back
+  </button>
+
+  <button
+    type="submit"
+    class="primary-btn"
+  >
+    Preview Event
+  </button>
+
+</div>
+
+      </form>
+
+    </section>
+
+
+    <!-- =========================================
+         STEP 3 — PREVIEW
+    ========================================== -->
+
+    <section
+      id="previewStep"
+      class="creator-card creator-step"
+      hidden
+    >
+
+      <div class="card-heading">
+
+        <span class="step-number">
+          STEP 3
+        </span>
+
+        <h3>
+          Preview Event
+        </h3>
+
+        <p>
+          Review your event before payment.
+        </p>
+
+      </div>
+
+      <div id="eventPreview"></div>
+
+      <div class="form-actions split-actions">
+
+        <button
+          type="button"
+          id="backToSetupBtn"
+          class="secondary-btn"
+        >
+          Back
+        </button>
+
+        <button
+          type="button"
+          id="continueToPaymentBtn"
+          class="primary-btn"
+        >
+          Continue to Payment
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         STEP 4 — PAYMENT
+    ========================================== -->
+
+    <section
+      id="paymentStep"
+      class="creator-card creator-step"
+      hidden
+    >
+
+      <div class="card-heading">
+
+        <span class="step-number">
+          STEP 4
+        </span>
+
+        <h3>
+          Event Payment
+        </h3>
+
+        <p>
+          Your payment amount will be calculated
+          using the current SOL/USD price.
+        </p>
+
+      </div>
+
+      <div
+        id="paymentQuote"
+        class="payment-quote"
+      >
+        Loading quote…
+      </div>
+
+      <div class="form-actions split-actions">
+
+  <button
+    type="button"
+    id="backToPreviewBtn"
+    class="secondary-btn"
+  >
+    Back
+  </button>
+
+  <button
+    type="button"
+    id="payAndCreateBtn"
+    class="primary-btn"
+    disabled
+  >
+    Pay & Create Event
+  </button>
+
+</div>
+
+      <p class="payment-note">
+        Event creation is activated only after
+        the payment is verified on-chain.
+      </p>
+
+    </section>
+
+
+    <!-- =========================================
+         STEP 5 — SUCCESS
+    ========================================== -->
+
+    <section
+      id="successStep"
+      class="creator-card creator-step success-card"
+      hidden
+    >
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <span class="step-number">
+        EVENT CREATED
+      </span>
+
+      <h3>
+        Your Burn Event Is Ready
+      </h3>
+
+      <p>
+        Your payment has been verified and
+        your event has been created successfully.
+      </p>
+
+      <div
+        id="createdEventDetails"
+        class="created-event-details"
+      ></div>
+
+    </section>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="creator-footer">
+
+      <strong>
+        GWAR LABS
+      </strong>
+
+      <span>
+        REAL TOOLS. REAL IMPACT.
+      </span>
+
+      <p>
+        Burning Well supports community token
+        burning events across Solana.
+      </p>
+
+    </footer>
+
+  </main>
+
+
+  <script
+    type="module"
+    src="./create-event.js"
+  ></script>
+
+</body>
+</html>
