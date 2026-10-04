@@ -3213,6 +3213,143 @@ app.put(
     }
   }
 );
+/* =========================================================
+   PUBLIC BURN EVENT
+   ========================================================= */
+
+app.get(
+  "/api/public/burn-events/:eventId",
+  async (req, res) => {
+    try {
+      const eventId =
+        String(
+          req.params.eventId || ""
+        ).trim();
+
+      if (!eventId) {
+        return res.status(400).json({
+          error: "Event ID is required.",
+        });
+      }
+
+      const eventRef =
+        db
+          .collection("burn_events")
+          .doc(eventId);
+
+
+      const eventDoc =
+        await eventRef.get();
+
+      if (!eventDoc.exists) {
+  return res.status(404).json({
+    error: "Burn event not found.",
+  });
+}
+
+      const data =
+        eventDoc.data() || {};
+
+      /*
+       * Public endpoint must never expose
+       * unpublished events.
+       */
+      if (data.published !== true) {
+  return res.status(404).json({
+    error: "Burn event not found.",
+  });
+}
+
+      const event = {
+        id: eventDoc.id,
+
+        name:
+          data.name ||
+          "Untitled Event",
+
+        tokenMint:
+          data.tokenMint || null,
+
+        tokenSymbol:
+          data.tokenSymbol || null,
+
+        minimumBurn:
+          Number(
+            data.minimumBurn || 0
+          ),
+
+        pointsPerTxn:
+          Number(
+            data.pointsPerTxn || 0
+          ),
+
+        dailyCap:
+          Number(
+            data.dailyCap || 0
+          ),
+
+        winnersCount:
+          Number(
+            data.winnersCount || 0
+          ),
+
+        status:
+          getEffectiveBurnEventStatus(
+            data.status,
+            data.startAt,
+            data.endAt
+          ),
+
+        published: true,
+
+        creatorWallet:
+          data.creatorWallet || null,
+
+        durationDays:
+          Number(
+            data.durationDays || 0
+          ),
+
+        startAt:
+          data.startAt?.toDate
+            ? data.startAt
+                .toDate()
+                .toISOString()
+            : null,
+
+        endAt:
+          data.endAt?.toDate
+            ? data.endAt
+                .toDate()
+                .toISOString()
+            : null,
+
+        createdAt:
+          data.createdAt?.toDate
+            ? data.createdAt
+                .toDate()
+                .toISOString()
+            : null,
+      };
+
+      return res.json({
+        event,
+      });
+
+    } catch (error) {
+      console.error(
+        "Load public burn event error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          error.message ||
+          "Unable to load burn event.",
+      });
+    }
+  }
+);
 app.get("/api/admin/burn-events", async (req, res) => {
   if (!requireAdmin(req, res)) {
     return;

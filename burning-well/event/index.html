@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="View and participate in a Burning Well community token burn event."
+  />
+
+  <title>Burn Event | Burning Well</title>
+
+  <link
+    rel="icon"
+    href="../avatar.png"
+  />
+
+  <link
+    rel="stylesheet"
+    href="./event.css"
+  />
+</head>
+
+<body>
+
+  <main class="event-page">
+
+    <!-- ================================================
+         HEADER
+         ================================================ -->
+
+    <header class="event-header">
+
+      <a
+        class="brand-mark"
+        href="../"
+        aria-label="Burning Well Home"
+      >
+        <img
+          src="../avatar.png"
+          alt="Gentle Warrior"
+        />
+      </a>
+
+      <p class="tool-label">
+        A GENTLE WARRIOR TOOL
+      </p>
+
+      <h1>
+        Burning Well
+      </h1>
+
+      <p class="tool-tagline">
+        Burn Tokens. Fund Hope. Strengthen GWAR.
+      </p>
+
+    </header>
+
+
+    <!-- ================================================
+         LOADING
+         ================================================ -->
+
+    <section
+      id="loadingState"
+      class="state-card"
+    >
+      <p>
+        Loading burn event...
+      </p>
+    </section>
+
+
+    <!-- ================================================
+         ERROR
+         ================================================ -->
+
+    <section
+      id="errorState"
+      class="state-card state-error"
+      hidden
+    >
+      <h2>
+        Event Unavailable
+      </h2>
+
+      <p id="errorMessage">
+        This burn event could not be loaded.
+      </p>
+
+      <a
+        class="secondary-btn"
+        href="../"
+      >
+        Back to Burning Well
+      </a>
+    </section>
+
+
+    <!-- ================================================
+         EVENT
+         ================================================ -->
+
+    <section
+      id="eventContent"
+      class="event-content"
+      hidden
+    >
+
+      <div class="event-intro">
+
+        <p class="section-label">
+          COMMUNITY BURN EVENT
+        </p>
+
+        <div class="event-title-row">
+
+          <div>
+            <h2 id="eventName">
+              Burn Event
+            </h2>
+
+            <p id="eventToken">
+              Token
+            </p>
+          </div>
+
+          <span
+            id="eventStatus"
+            class="status-badge"
+          >
+            Loading
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ==============================================
+           EVENT DETAILS
+           ============================================== -->
+
+      <section class="event-card">
+
+        <div class="card-heading">
+          <p class="section-label">
+            EVENT DETAILS
+          </p>
+
+          <h3>
+            Burn Mechanics
+          </h3>
+        </div>
+
+        <div class="details-grid">
+
+          <div class="detail-item">
+            <span>
+              Minimum Burn
+            </span>
+
+            <strong id="minimumBurn">
+              —
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>
+              Points / Transaction
+            </span>
+
+            <strong id="pointsPerTxn">
+              —
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>
+              Daily Transaction Cap
+            </span>
+
+            <strong id="dailyCap">
+              —
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>
+              Winners
+            </span>
+
+            <strong id="winnersCount">
+              —
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>
+              Starts
+            </span>
+
+            <strong id="startAt">
+              —
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <span>
+              Ends
+            </span>
+
+            <strong id="endAt">
+              —
+            </strong>
+          </div>
+
+        </div>
+
+        <div class="mint-row">
+
+          <span>
+            Token Mint
+          </span>
+
+          <strong
+            id="tokenMint"
+            title=""
+          >
+            —
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==============================================
+           PARTICIPATE
+           ============================================== -->
+
+      <section class="event-card">
+
+        <div class="card-heading">
+          <p class="section-label">
+            PARTICIPATE
+          </p>
+
+          <h3>
+            Burn Tokens
+          </h3>
+
+          <p id="participationMessage">
+            Connect your Solana wallet to participate.
+          </p>
+        </div>
+
+        <div class="action-row">
+
+          <button
+            type="button"
+            id="connectWalletBtn"
+            class="primary-btn"
+          >
+            Connect Wallet
+          </button>
+
+          <button
+            type="button"
+            id="burnTokensBtn"
+            class="primary-btn"
+            hidden
+            disabled
+          >
+            Burn Tokens
+          </button>
+
+        </div>
+
+        <div
+          id="walletStatus"
+          class="wallet-status"
+          hidden
+        ></div>
+
+      </section>
+
+
+      <!-- ==============================================
+           LEADERBOARD
+           ============================================== -->
+
+      <section class="event-card">
+
+        <div class="card-heading">
+          <p class="section-label">
+            LEADERBOARD
+          </p>
+
+          <h3>
+            Event Rankings
+          </h3>
+
+          <p>
+            Verified burn transactions for this event.
+          </p>
+        </div>
+
+        <div
+          id="leaderboard"
+          class="leaderboard"
+        >
+          <div class="empty-state">
+            Leaderboard will appear here.
+          </div>
+        </div>
+
+      </section>
+
+    </section>
+
+
+    <!-- ================================================
+         FOOTER
+         ================================================ -->
+
+    <footer class="event-footer">
+
+      <strong>
+        GWAR LABS
+      </strong>
+
+      <span>
+        REAL TOOLS. REAL IMPACT.
+      </span>
+
+      <p>
+        Burning Well supports community token burning events across Solana.
+      </p>
+
+    </footer>
+
+  </main>
+
+
+  <script
+    type="module"
+    src="./event.js"
+  ></script>
+
+</body>
+</html>
