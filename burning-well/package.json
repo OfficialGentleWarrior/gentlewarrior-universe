@@ -18,8 +18,7 @@
     "@solana/kit": "^8.2.0",
     "@solana/kit-plugin-rpc": "^0.18.0",
     "@solana/kit-plugin-signer": "^0.18.0",
-    "@solana/kit-plugin-wallet": "^0.18.0",
-    "@solana/spl-token": "^0.4.15"
+    "@solana/kit-plugin-wallet": "^0.18.0"
   },
   "devDependencies": {
     "vite": "^8.2.2"
