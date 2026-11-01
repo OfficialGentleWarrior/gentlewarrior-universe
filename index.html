@@ -1756,7 +1756,13 @@ function openSection(tab){
 }
     function openTabFromHash(){
       const hash = (window.location.hash || '').toLowerCase();
-      if(hash === '#play' || hash === '#game'){
+      if(hash === '#gwar-labs'){
+  const labsBtn = document.querySelector('.tab-btn[data-tab="gwar-labs"]');
+  if(labsBtn) labsBtn.click();
+  return;
+}
+
+if(hash === '#play' || hash === '#game'){
         const gameTabBtn = document.querySelector('.tab-btn[data-tab="game"]');
         if(gameTabBtn) gameTabBtn.click();
         const gameSection = document.getElementById('game');
