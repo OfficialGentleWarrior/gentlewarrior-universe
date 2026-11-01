@@ -1738,6 +1738,7 @@ Listen on Spotify — Gentle Warrior (Official Theme Song)
         tabButtons.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
+        history.replaceState(null, '', '#' + tab);
         ['home','about','symbols','symbolism','awareness','families','caregivers','faq','game','gwar-labs','roadmap','announcements'].forEach(id=>{
           const el = document.getElementById(id);
           if(el) el.style.display = (id===tab?'block':'none');
