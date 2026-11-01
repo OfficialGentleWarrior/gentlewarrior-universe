@@ -2582,13 +2582,22 @@ async function loadGlobalStats() {
           data.totalBurnTransactions || 0
         ).toLocaleString();
     }
+    
+const uniqueBurnersCounter =
+  document.getElementById("uniqueBurners");
+
+if (uniqueBurnersCounter) {
+  uniqueBurnersCounter.textContent =
+    Number(data.uniqueBurners || 0).toLocaleString();
+}
+
 
     if (feeCounter) {
-      feeCounter.textContent =
-        `$${Number(
-          data.totalFeesUsd || 0
-        ).toFixed(2)}`;
-    }
+  feeCounter.textContent =
+    `${Number(
+      data.totalFeesSol || 0
+    ).toFixed(4)} SOL`;
+}
 
   } catch (error) {
     console.warn(
@@ -2669,7 +2678,7 @@ function createRegistryUI() {
           </small>
 
           <strong
-            id="totalBurnTransactions"
+            id="registryTotalBurnTransactions"
           >
             0
           </strong>
@@ -2681,13 +2690,13 @@ function createRegistryUI() {
         >
 
           <small>
-            Total Fees Generated
+            Treasury Fees Collected
           </small>
 
           <strong
-            id="totalFeesGenerated"
+            id="registryTotalFeesGenerated"
           >
-            $0.00
+            0.0000 SOL
           </strong>
 
         </div>
@@ -2747,12 +2756,12 @@ function renderRegistry() {
 
   const burnCounter =
     document.getElementById(
-      "totalBurnTransactions"
+      "registryTotalBurnTransactions"
     );
 
   const feeCounter =
     document.getElementById(
-      "totalFeesGenerated"
+      "registryTotalFeesGenerated"
     );
 
   if (
@@ -2768,7 +2777,7 @@ function renderRegistry() {
   ) {
 
     feeCounter.textContent =
-      `$${totalFees.toFixed(2)}`;
+      `${totalFees.toFixed(4)} SOL`;
   }
 
   const list =
@@ -2968,7 +2977,33 @@ function renderWalletHistory() {
           </p>
         </div>
 
-        <div class="burn-referral-box">
+        
+        <div class="burn-history-tabs" role="tablist" aria-label="Wallet activity">
+  <button
+    type="button"
+    class="burn-history-tab active"
+    data-tab="history"
+    aria-selected="true"
+  >
+    Burn History
+  </button>
+
+  <button
+    type="button"
+    class="burn-history-tab"
+    data-tab="referral"
+    aria-selected="false"
+  >
+    Referral Program
+  </button>
+</div>
+
+<div
+  class="burn-referral-box"
+  id="referralTabPanel"
+  hidden
+>
+
   <strong>Your Referral Link</strong>
 
   <div class="burn-referral-link">
@@ -3043,9 +3078,9 @@ function renderWalletHistory() {
   }
 </div>
 </div>
-        <div
-          id="walletBurnHistoryList"
-        ></div>
+        <div id="historyTabPanel">
+  <div id="walletBurnHistoryList"></div>
+</div>
 
       </div>
     `;
@@ -3068,7 +3103,34 @@ function renderWalletHistory() {
       );
     }
   }
-const referralLink =
+
+const tabButtons =
+  section.querySelectorAll(".burn-history-tab");
+
+const historyPanel =
+  section.querySelector("#historyTabPanel");
+
+const referralPanel =
+  section.querySelector("#referralTabPanel");
+
+tabButtons.forEach((button) => {
+  button.onclick = () => {
+    const showReferral =
+      button.dataset.tab === "referral";
+
+    historyPanel.hidden = showReferral;
+    referralPanel.hidden = !showReferral;
+
+    tabButtons.forEach((tab) => {
+      const active = tab === button;
+
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+  };
+});
+
+  const referralLink =
   section.querySelector(
     ".burn-referral-link"
   );

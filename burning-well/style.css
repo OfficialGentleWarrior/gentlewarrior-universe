@@ -1091,7 +1091,7 @@ footer {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  repeat(3, minmax(0, 1fr));
 
   gap: 14px;
 
@@ -1590,5 +1590,53 @@ footer {
 @media (max-width: 600px) {
   .burn-referral-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+/* BURN HISTORY / REFERRAL TABS */
+
+.burn-history-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 22px 0 18px;
+  padding: 6px;
+  background: rgba(3, 19, 13, 0.85);
+  border: 1px solid rgba(155, 229, 111, 0.18);
+  border-radius: 14px;
+}
+
+.burn-history-tab {
+  min-width: 0;
+  padding: 13px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #9bb0a4;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.burn-history-tab:hover {
+  color: #b8ff83;
+  background: rgba(155, 229, 111, 0.08);
+}
+
+.burn-history-tab.active {
+  background: #9be56f;
+  color: #07150d;
+}
+
+#historyTabPanel[hidden],
+#referralTabPanel[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .burn-history-tab {
+    padding: 12px 6px;
+    font-size: 11px;
   }
 }
