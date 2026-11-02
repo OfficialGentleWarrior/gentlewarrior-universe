@@ -3087,7 +3087,7 @@ function renderWalletHistory() {
 
     const main =
       document.querySelector(
-        "main"
+        "#burnPage"
       );
 
     if (main) {
@@ -4048,3 +4048,41 @@ window.addEventListener(
 
   }
 );
+// ======================================================
+// BURNING WELL MAIN NAVIGATION
+// ======================================================
+
+const bwNavTabs = document.querySelectorAll(".bw-nav-tab");
+
+const bwPages = {
+  burn: document.getElementById("burnPage"),
+  leaderboard: document.getElementById("leaderboardPage"),
+  events: document.getElementById("eventsPage"),
+  revenue: document.getElementById("revenuePage")
+};
+
+function showBwPage(pageName) {
+  const selectedPage = bwPages[pageName] ? pageName : "burn";
+
+  Object.entries(bwPages).forEach(([name, page]) => {
+    if (page) {
+      page.hidden = name !== selectedPage;
+    }
+  });
+
+  bwNavTabs.forEach((tab) => {
+    const active = tab.dataset.page === selectedPage;
+
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-current", active ? "page" : "false");
+  });
+}
+
+bwNavTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    showBwPage(tab.dataset.page);
+  });
+});
+
+// Default page
+showBwPage("burn");

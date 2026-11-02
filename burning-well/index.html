@@ -40,8 +40,28 @@
 
     </header>
 
+<!-- MAIN NAVIGATION -->
+<nav class="bw-main-nav" aria-label="Burning Well navigation">
+  <button type="button" class="bw-nav-tab active" data-page="burn">
+    BURN
+  </button>
 
-    <!-- STATS -->
+  <button type="button" class="bw-nav-tab" data-page="leaderboard">
+    LEADERBOARD
+  </button>
+
+  <button type="button" class="bw-nav-tab" data-page="events">
+    EVENTS
+  </button>
+
+  <button type="button" class="bw-nav-tab" data-page="revenue">
+    REVENUE
+  </button>
+</nav>
+
+<!-- BURN TAB CONTENT -->
+<div id="burnPage" class="bw-page">
+<!-- STATS -->
     <section class="stats-grid">
 
       <div class="stat-card">
@@ -216,8 +236,30 @@
         Burning Well for statistics and future community events.
       </p>
 
-    </section>
+        </section>
 
+    <!-- END BURN TAB CONTENT -->
+    </div>
+    <!-- LEADERBOARD TAB -->
+<section id="leaderboardPage" class="bw-page" hidden>
+  <h2>Leaderboard</h2>
+  <p>Top Burners · Top Referrers · Top Token Burns</p>
+  <p>Coming soon.</p>
+</section>
+
+<!-- EVENTS TAB -->
+<section id="eventsPage" class="bw-page" hidden>
+  <h2>Events</h2>
+  <p>Burning Well community burn events.</p>
+  <p>Coming soon.</p>
+</section>
+
+<!-- REVENUE TAB -->
+<section id="revenuePage" class="bw-page" hidden>
+  <h2>Revenue</h2>
+  <p>Burning Well revenue transparency and fund allocations.</p>
+  <p>Coming soon.</p>
+</section>
 
     <!-- FOOTER -->
     <footer>
