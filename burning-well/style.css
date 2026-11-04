@@ -1685,3 +1685,28 @@ footer {
 .bw-page[hidden] {
   display: none !important;
 }
+/* PUBLIC LEADERBOARD */
+#leaderboardPage { padding: 24px; background: rgba(5,30,18,.65); border: 1px solid rgba(160,240,120,.2); border-radius: 16px; }
+.bw-lb-header { margin-bottom: 22px; }
+.bw-lb-header h2 { color: #a2ee79; margin: 0 0 8px; }
+.bw-lb-header p { color: #d5e9d7; opacity: .85; margin: 0; }
+.bw-lb-tabs { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-bottom: 20px; }
+.bw-lb-tab { padding: 12px 8px; border: 1px solid rgba(160,240,120,.25); border-radius: 10px; background: rgba(5,30,18,.85); color: #d5e9d7; font-weight: 700; cursor: pointer; }
+.bw-lb-tab:hover { background: #1d4930; }
+.bw-lb-tab.active { background: #a2ee79; color: #092313; border-color: #a2ee79; }
+.bw-lb-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+.bw-lb-filters label { color: #d5e9d7; font-size: 13px; }
+.bw-lb-filters select, .bw-lb-filters input { background: #092313; color: #d5e9d7; border: 1px solid rgba(160,240,120,.35); border-radius: 8px; padding: 10px; max-width: 100%; }
+#bwLbCustomDates:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#bwLbApply { padding: 10px 16px; background: #a2ee79; color: #092313; border: 0; border-radius: 8px; font-weight: 700; cursor: pointer; }
+#bwLbStatus { color: #d5e9d7; font-size: 13px; margin-bottom: 12px; }
+.bw-lb-table-wrap { overflow-x: auto; width: 100%; }
+#bwLbTable { width: 100%; border-collapse: collapse; color: #d5e9d7; text-align: left; }
+#bwLbTable th, #bwLbTable td { padding: 13px 12px; border-bottom: 1px solid rgba(160,240,120,.15); white-space: nowrap; }
+#bwLbTable th { color: #a2ee79; font-size: 12px; text-transform: uppercase; }
+#bwLbTable tbody tr:hover { background: rgba(160,240,120,.06); }
+@media (max-width: 600px) {
+#leaderboardPage { padding: 14px; }
+.bw-lb-tab { padding: 10px 4px; font-size: 11px; }
+#bwLbTable th, #bwLbTable td { padding: 10px 8px; font-size: 12px; }
+}

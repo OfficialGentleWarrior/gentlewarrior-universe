@@ -242,9 +242,39 @@
     </div>
     <!-- LEADERBOARD TAB -->
 <section id="leaderboardPage" class="bw-page" hidden>
-  <h2>Leaderboard</h2>
-  <p>Top Burners · Top Referrers · Top Token Burns</p>
-  <p>Coming soon.</p>
+  <div class="bw-lb-header">
+    <h2>Burning Well Leaderboard</h2>
+    <p>Every burn counts. Explore the community rankings.</p>
+  </div>
+  <div class="bw-lb-tabs" role="group" aria-label="Leaderboard category">
+    <button type="button" class="bw-lb-tab active" data-lb="burners">Top Burners</button>
+    <button type="button" class="bw-lb-tab" data-lb="referrers">Top Referrers</button>
+    <button type="button" class="bw-lb-tab" data-lb="tokens">Top Tokens</button>
+  </div>
+  <div class="bw-lb-filters">
+    <label for="bwLbPeriod">Period</label>
+    <select id="bwLbPeriod">
+      <option value="all">All Time</option>
+      <option value="week">Weekly</option>
+      <option value="month">Monthly</option>
+      <option value="quarter">Quarterly</option>
+      <option value="custom">Custom Date Range</option>
+    </select>
+    <div id="bwLbCustomDates" hidden>
+      <label for="bwLbStart">From</label>
+      <input type="date" id="bwLbStart">
+      <label for="bwLbEnd">To</label>
+      <input type="date" id="bwLbEnd">
+      <button type="button" id="bwLbApply">Apply</button>
+    </div>
+  </div>
+  <div id="bwLbStatus" role="status">Select a leaderboard to view rankings.</div>
+  <div class="bw-lb-table-wrap">
+    <table id="bwLbTable">
+      <thead id="bwLbHead"></thead>
+      <tbody id="bwLbBody"></tbody>
+    </table>
+  </div>
 </section>
 
 <!-- EVENTS TAB -->

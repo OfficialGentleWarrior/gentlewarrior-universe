@@ -1,3 +1,4 @@
+import { loadBwLeaderboard } from "./leaderboard.js";
 import {
   createClient,
   address,
@@ -4070,6 +4071,7 @@ function showBwPage(pageName) {
     }
   });
 
+  if (selectedPage === "leaderboard" && typeof loadBwLeaderboard === "function") { loadBwLeaderboard(API_BASE_URL); }
   bwNavTabs.forEach((tab) => {
     const active = tab.dataset.page === selectedPage;
 
