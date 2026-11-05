@@ -1,4 +1,5 @@
 import { loadBwLeaderboard } from "./leaderboard.js";
+import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
   createClient,
   address,
@@ -1340,6 +1341,10 @@ console.log(
 renderWalletHistory();
 
             updateWalletUI();
+            if (!document.getElementById('leaderboardPage')?.hidden) {
+              const rankInput = document.getElementById('bwRankWallet');
+              if (rankInput && connectedAddress) { rankInput.value = connectedAddress; document.getElementById('bwRankSearch')?.click(); }
+            }
 
             closeWalletModal();
 
@@ -1405,6 +1410,9 @@ connectWalletBtn.addEventListener(
       ) {
 
         await client.wallet.disconnect();
+        cancelFindMyRank();
+        if (document.getElementById('bwRankWallet')) document.getElementById('bwRankWallet').value = '';
+        document.getElementById('bwRankResult')?.replaceChildren();
 
         resetTokenUI();
 
@@ -4071,7 +4079,7 @@ function showBwPage(pageName) {
     }
   });
 
-  if (selectedPage === "leaderboard" && typeof loadBwLeaderboard === "function") { loadBwLeaderboard(API_BASE_URL); }
+  if (selectedPage === "leaderboard" && typeof loadBwLeaderboard === "function") { loadBwLeaderboard(API_BASE_URL); initFindMyRank(API_BASE_URL); const rankWallet = client.wallet.getState().connected?.account?.address; if (rankWallet) { const rankInput = document.getElementById("bwRankWallet"); if (rankInput && rankInput.value !== String(rankWallet)) { rankInput.value = String(rankWallet); document.getElementById("bwRankSearch")?.click(); } } }
   bwNavTabs.forEach((tab) => {
     const active = tab.dataset.page === selectedPage;
 

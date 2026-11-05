@@ -1710,3 +1710,4 @@ footer {
 .bw-lb-tab { padding: 10px 4px; font-size: 11px; }
 #bwLbTable th, #bwLbTable td { padding: 10px 8px; font-size: 12px; }
 }
+.bw-my-rank{background:#092313;border:1px solid rgba(160,240,120,.35);border-radius:12px;padding:20px;margin:18px 0}.bw-my-rank h3{color:#a2ee79;margin:0 0 8px}.bw-my-rank p{color:#d5e9d7;margin:0 0 14px}.bw-my-rank input{background:#061a0d;color:#fff;border:1px solid rgba(160,240,120,.35);border-radius:8px;padding:12px;width:min(100%,420px);box-sizing:border-box}.bw-my-rank button{background:#a2ee79;color:#092313;border:0;border-radius:8px;padding:12px 18px;font-weight:700;cursor:pointer;margin:8px}.bw-my-rank button:hover{background:#c2ffa0}#bwRankResult{color:#d5e9d7;margin-top:12px;overflow-wrap:anywhere}
