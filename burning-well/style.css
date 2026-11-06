@@ -1711,3 +1711,22 @@ footer {
 #bwLbTable th, #bwLbTable td { padding: 10px 8px; font-size: 12px; }
 }
 .bw-my-rank{background:#092313;border:1px solid rgba(160,240,120,.35);border-radius:12px;padding:20px;margin:18px 0}.bw-my-rank h3{color:#a2ee79;margin:0 0 8px}.bw-my-rank p{color:#d5e9d7;margin:0 0 14px}.bw-my-rank input{background:#061a0d;color:#fff;border:1px solid rgba(160,240,120,.35);border-radius:8px;padding:12px;width:min(100%,420px);box-sizing:border-box}.bw-my-rank button{background:#a2ee79;color:#092313;border:0;border-radius:8px;padding:12px 18px;font-weight:700;cursor:pointer;margin:8px}.bw-my-rank button:hover{background:#c2ffa0}#bwRankResult{color:#d5e9d7;margin-top:12px;overflow-wrap:anywhere}
+
+
+/* BURNING WELL EVENTS TAB */
+.bw-events-header { margin-bottom: 22px; }
+.bw-events-header h2 { color: #a2ee79; margin: 0 0 8px; }
+.bw-events-header p { color: #d5e9d7; margin: 0 0 18px; }
+.bw-create-event-btn { display: inline-block; padding: 12px 20px; background: #a2ee79; color: #092313; border-radius: 10px; font-weight: 700; text-decoration: none; }
+.bw-create-event-btn:hover { background: #c1ffa0; }
+.bw-event-filters { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-bottom: 20px; }
+.bw-event-filter { padding: 12px 8px; border: 1px solid rgba(160,240,120,.25); border-radius: 10px; background: rgba(5,30,18,.85); color: #d5e9d7; font-weight: 700; cursor: pointer; }
+.bw-event-filter:hover { background: #1d4930; }
+.bw-event-filter.active { background: #a2ee79; color: #092313; border-color: #a2ee79; }
+.bw-events-list { display: grid; gap: 14px; }
+.bw-event-card { padding: 18px; border: 1px solid rgba(160,240,120,.25); border-radius: 14px; background: rgba(5,30,18,.85); }
+.bw-event-card h3 { color: #a2ee79; margin: 0 0 10px; }
+.bw-event-card p { color: #d5e9d7; margin: 6px 0; overflow-wrap: anywhere; }
+.bw-event-card a { display: inline-block; margin-top: 12px; color: #a2ee79; font-weight: 700; }
+#bwEventsStatus { color: #d5e9d7; margin-bottom: 14px; }
+@media(max-width:480px) { .bw-event-filter { font-size: 11px; padding: 10px 4px; } }

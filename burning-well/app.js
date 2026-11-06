@@ -1,3 +1,4 @@
+import { loadBwEvents, initBwEventFilters } from './events.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -4080,6 +4081,7 @@ function showBwPage(pageName) {
   });
 
   if (selectedPage === "leaderboard" && typeof loadBwLeaderboard === "function") { loadBwLeaderboard(API_BASE_URL); initFindMyRank(API_BASE_URL); const rankWallet = client.wallet.getState().connected?.account?.address; if (rankWallet) { const rankInput = document.getElementById("bwRankWallet"); if (rankInput && rankInput.value !== String(rankWallet)) { rankInput.value = String(rankWallet); document.getElementById("bwRankSearch")?.click(); } } }
+  if (selectedPage === 'events') { initBwEventFilters(); loadBwEvents(API_BASE_URL); }
   bwNavTabs.forEach((tab) => {
     const active = tab.dataset.page === selectedPage;
 
@@ -4095,4 +4097,4 @@ bwNavTabs.forEach((tab) => {
 });
 
 // Default page
-showBwPage("burn");
+showBwPage(new URLSearchParams(window.location.search).get("tab") || "burn");

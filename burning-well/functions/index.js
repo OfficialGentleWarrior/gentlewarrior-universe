@@ -27,6 +27,38 @@ const {
 const db = getFirestore();
 
 const app = express();
+// Public Leaderboard cache — per Cloud Function instance.
+const PUBLIC_LB_CACHE_TTL_MS = 60_000;
+const PUBLIC_LB_CACHE_MAX_ENTRIES = 100;
+const publicLbCache = new Map();
+
+function getPublicLbCache(key) {
+  const entry = publicLbCache.get(key);
+
+  if (!entry) return null;
+
+  if (Date.now() >= entry.expiresAt) {
+    publicLbCache.delete(key);
+    return null;
+  }
+
+  return entry.data;
+}
+
+function setPublicLbCache(key, data) {
+  if (publicLbCache.size >= PUBLIC_LB_CACHE_MAX_ENTRIES) {
+    const oldestKey = publicLbCache.keys().next().value;
+    if (oldestKey !== undefined) {
+      publicLbCache.delete(oldestKey);
+    }
+  }
+
+  publicLbCache.set(key, {
+    data,
+    expiresAt: Date.now() + PUBLIC_LB_CACHE_TTL_MS,
+  });
+}
+
 
 app.use(
   cors({
@@ -1206,7 +1238,7 @@ async function recoverBurnBySignature(signature) {
     await findMatchingRecoveryFeeQuote(
     candidate
   );
-  const record =                   
+  const record =
     buildRecoveredBurnRecord(
       signature,
       candidate
@@ -1830,7 +1862,7 @@ app.post("/api/burns/register", async (req, res) => {
       });
     }
 
-    
+
 
     const quotedService = BigInt(
       feeQuote.serviceLamports || "0"
@@ -2334,6 +2366,55 @@ function isInsideAdminPeriod(
     time >= bounds.startMs &&
     time <= bounds.endMs
   );
+}
+function getPublicPeriodBounds(req) {
+  const period = String(req.query.period || "all").toLowerCase();
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const m = now.getUTCMonth();
+  const d = now.getUTCDate();
+  let startMs = null;
+  let endMs = Date.now();
+  if (period === "week") {
+    const day = now.getUTCDay();
+    startMs = Date.UTC(y, m, d - ((day + 6) % 7));
+  } else if (period === "month") {
+    startMs = Date.UTC(y, m, 1);
+  } else if (period === "quarter") {
+    startMs = Date.UTC(y, Math.floor(m / 3) * 3, 1);
+
+} else if (period === "custom") {
+  const start = String(req.query.start || "");
+  const end = String(req.query.end || "");
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(start) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(end)
+  ) {
+    throw new Error("Invalid custom date format");
+  }
+
+  const startDateMs = Date.parse(start + "T00:00:00Z");
+  const endDateMs = Date.parse(end + "T00:00:00Z");
+
+  if (
+    !Number.isFinite(startDateMs) ||
+    !Number.isFinite(endDateMs) ||
+    new Date(startDateMs).toISOString().slice(0, 10) !== start ||
+    new Date(endDateMs).toISOString().slice(0, 10) !== end ||
+    startDateMs > endDateMs ||
+    startDateMs > Date.now()
+  ) {
+    throw new Error("Invalid custom date range");
+  }
+
+  startMs = startDateMs;
+  endMs = Math.min(endDateMs + 86400000 - 1, Date.now());
+
+  } else if (period !== "all") {
+    throw new Error("Unsupported public period");
+  }
+  return { period, startMs, endMs: period === "all" ? null : endMs };
 }
 const BURN_EVENT_STATUS = {
   DRAFT: "draft",
@@ -3216,6 +3297,28 @@ app.put(
 /* =========================================================
    PUBLIC BURN EVENT
    ========================================================= */
+
+app.get('/api/public/burn-events', async (req, res) => {
+  try {
+    const snap = await db.collection('burn_events').where('published', '==', true).get();
+    const events = snap.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name || 'Untitled Event',
+        tokenMint: data.tokenMint || null,
+        tokenSymbol: data.tokenSymbol || null,
+        status: getEffectiveBurnEventStatus(data.status, data.startAt, data.endAt),
+        startAt: data.startAt?.toDate ? data.startAt.toDate().toISOString() : null,
+        endAt: data.endAt?.toDate ? data.endAt.toDate().toISOString() : null
+      };
+    }).filter(event => event.status !== 'draft').sort((a, b) => (Date.parse(b.startAt || '') || 0) - (Date.parse(a.startAt || '') || 0));
+    return res.json({ events });
+  } catch (error) {
+    console.error('Public events listing error:', error);
+    return res.status(500).json({ error: 'Unable to load public events.' });
+  }
+});
 
 app.get(
   "/api/public/burn-events/:eventId",
@@ -4226,6 +4329,163 @@ app.get(
     }
   }
 );
+app.get("/api/leaderboard/burners", async (req, res) => {
+  try {
+    const bounds = getPublicPeriodBounds(req);
+    const cacheKey = `burners:${bounds.period}:${bounds.startMs ?? "all"}:${bounds.period === "custom" ? String(req.query.end || "") : "current"}`;
+    const cached = getPublicLbCache(cacheKey);
+
+    if (cached) {
+      return res.json(cached);
+    }
+
+let query = db
+  .collection("burn_registry")
+  .where("status", "==", "verified");
+
+if (bounds.startMs !== null) {
+  query = query.where(
+    "createdAt",
+    ">=",
+    Timestamp.fromMillis(bounds.startMs)
+  );
+}
+
+if (bounds.endMs !== null) {
+  query = query.where(
+    "createdAt",
+    "<=",
+    Timestamp.fromMillis(bounds.endMs)
+  );
+}
+
+const snap = await query.get();
+
+    const wallets = new Map();
+    snap.forEach((doc) => {
+      const burn = doc.data();
+      if (!isInsideAdminPeriod(burn.createdAt, bounds) || !burn.wallet) return;
+      const wallet = burn.wallet;
+      if (!wallets.has(wallet)) wallets.set(wallet, { wallet, burnTransactions: 0, tokens: new Set() });
+      const item = wallets.get(wallet);
+      item.burnTransactions += 1;
+      if (burn.mint) item.tokens.add(burn.mint);
+    });
+    const leaderboard = Array.from(wallets.values())
+      .map((item) => ({ wallet: item.wallet, burnTransactions: item.burnTransactions, uniqueTokens: item.tokens.size }))
+      .sort((a, b) => b.burnTransactions - a.burnTransactions || a.wallet.localeCompare(b.wallet))
+      .map((item, index) => ({ rank: index + 1, ...item }));
+    const result = { period: bounds.period, leaderboard };
+setPublicLbCache(cacheKey, result);
+return res.json(result);
+  } catch (error) {
+    console.error("Public burner leaderboard error:", error);
+    return res.status(400).json({ error: "Unable to load burner leaderboard." });
+  }
+});
+app.get("/api/leaderboard/referrers", async (req, res) => {
+  try {
+    const bounds = getPublicPeriodBounds(req);
+    const cacheKey = `referrers:${bounds.period}:${bounds.startMs ?? "all"}:${bounds.period === "custom" ? String(req.query.end || "") : "current"}`;
+    const cached = getPublicLbCache(cacheKey);
+
+    if (cached) {
+      return res.json(cached);
+    }
+    let query = db
+  .collection("referral_rewards")
+  .where("status", "==", "paid");
+
+if (bounds.startMs !== null) {
+  query = query.where(
+    "createdAt",
+    ">=",
+    Timestamp.fromMillis(bounds.startMs)
+  );
+}
+
+if (bounds.endMs !== null) {
+  query = query.where(
+    "createdAt",
+    "<=",
+    Timestamp.fromMillis(bounds.endMs)
+  );
+}
+
+const snap = await query.get();
+    const wallets = new Map();
+    snap.forEach((doc) => {
+      const reward = doc.data();
+      if (reward.status !== "paid" || !reward.referrerWallet || !reward.signature) return;
+      if (!isInsideAdminPeriod(reward.createdAt, bounds)) return;
+      const wallet = reward.referrerWallet;
+      if (!wallets.has(wallet)) wallets.set(wallet, { wallet, signatures: new Set() });
+      wallets.get(wallet).signatures.add(reward.signature);
+    });
+    const leaderboard = Array.from(wallets.values())
+      .map((item) => ({ wallet: item.wallet, successfulReferrals: item.signatures.size }))
+      .sort((a, b) => b.successfulReferrals - a.successfulReferrals || a.wallet.localeCompare(b.wallet))
+      .map((item, index) => ({ rank: index + 1, ...item }));
+    const result = { period: bounds.period, leaderboard };
+setPublicLbCache(cacheKey, result);
+return res.json(result);
+  } catch (error) {
+    console.error("Public referrer leaderboard error:", error);
+    return res.status(400).json({ error: "Unable to load referrer leaderboard." });
+  }
+});
+app.get("/api/leaderboard/tokens", async (req, res) => {
+  try {
+    const bounds = getPublicPeriodBounds(req);
+    const cacheKey = `tokens:${bounds.period}:${bounds.startMs ?? "all"}:${bounds.period === "custom" ? String(req.query.end || "") : "current"}`;
+    const cached = getPublicLbCache(cacheKey);
+
+    if (cached) {
+      return res.json(cached);
+    }
+    let query = db
+  .collection("burn_registry")
+  .where("status", "==", "verified");
+
+if (bounds.startMs !== null) {
+  query = query.where(
+    "createdAt",
+    ">=",
+    Timestamp.fromMillis(bounds.startMs)
+  );
+}
+
+if (bounds.endMs !== null) {
+  query = query.where(
+    "createdAt",
+    "<=",
+    Timestamp.fromMillis(bounds.endMs)
+  );
+}
+
+const snap = await query.get();
+    const tokens = new Map();
+    snap.forEach((doc) => {
+      const burn = doc.data();
+      if (!isInsideAdminPeriod(burn.createdAt, bounds) || !burn.mint) return;
+      if (!tokens.has(burn.mint)) tokens.set(burn.mint, { mint: burn.mint, tokenName: burn.tokenName || "Unknown Token", tokenSymbol: burn.tokenSymbol || "", burnTransactions: 0, totalBurned: 0, burners: new Set() });
+      const item = tokens.get(burn.mint);
+      item.burnTransactions += 1;
+      item.totalBurned += Number(burn.amount || 0);
+      if (burn.wallet) item.burners.add(burn.wallet);
+    });
+    const leaderboard = Array.from(tokens.values())
+      .map((item) => ({ mint: item.mint, tokenName: item.tokenName, tokenSymbol: item.tokenSymbol, burnTransactions: item.burnTransactions, totalBurned: item.totalBurned, uniqueBurners: item.burners.size }))
+      .sort((a, b) => b.burnTransactions - a.burnTransactions || a.mint.localeCompare(b.mint))
+      .map((item, index) => ({ rank: index + 1, ...item }));
+    const result = { period: bounds.period, leaderboard };
+setPublicLbCache(cacheKey, result);
+return res.json(result);
+  } catch (error) {
+    console.error("Public token leaderboard error:", error);
+    return res.status(400).json({ error: "Unable to load token leaderboard." });
+  }
+});
 exports.burningWellApi = onRequest(
   {
     region: "asia-southeast1",

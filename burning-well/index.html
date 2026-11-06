@@ -279,9 +279,18 @@
 
 <!-- EVENTS TAB -->
 <section id="eventsPage" class="bw-page" hidden>
-  <h2>Events</h2>
-  <p>Burning Well community burn events.</p>
-  <p>Coming soon.</p>
+  <div class="bw-events-header">
+    <h2>Community Burn Events</h2>
+    <p>Explore burning competitions across Solana communities.</p>
+    <a class="bw-create-event-btn" href="./create-event/">+ Create Event</a>
+  </div>
+  <div class="bw-event-filters">
+    <button type="button" class="bw-event-filter active" data-status="live">Live Events</button>
+    <button type="button" class="bw-event-filter" data-status="upcoming">Upcoming</button>
+    <button type="button" class="bw-event-filter" data-status="ended">Ended</button>
+  </div>
+  <div id="bwEventsStatus" role="status">Loading events...</div>
+  <div id="bwEventsList" class="bw-events-list"></div>
 </section>
 
 <!-- REVENUE TAB -->

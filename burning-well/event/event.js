@@ -1,9 +1,17 @@
+import { openEventWalletModal } from "./wallet-modal.js";
+import { createClient } from "@solana/kit";
+import { walletSigner } from "@solana/kit-plugin-wallet";
+
+/* EVENT WALLET CLIENT */
+const eventWalletClient = createClient().use(walletSigner({ chain: "solana:mainnet" }));
+
 /* =========================================================
    CONFIG
    ========================================================= */
 
-const API_BASE_URL =
-  "https://burningwellapi-slmbcnmgwa-as.a.run.app";
+const API_BASE_URL = import.meta.env.DEV
+  ? "/local-events-api"
+  : "https://burningwellapi-slmbcnmgwa-as.a.run.app";
 
 
 /* =========================================================
@@ -416,5 +424,64 @@ async function loadEvent() {
 /* =========================================================
    INITIALIZE
    ========================================================= */
+
+/* EVENT WALLET HANDLER */
+connectWalletBtn.addEventListener(
+'click'
+, async () => {
+  const wallet = eventWalletClient.wallet;
+  try {
+    if (wallet.getState().connected) {
+      await wallet.disconnect();
+      connectWalletBtn.textContent =
+'Connect Wallet'
+;
+      participationMessage.textContent =
+'Wallet disconnected.'
+;
+      return;
+    }
+    const available = wallet.getState().wallets || [];
+    if (!available.length) {
+      participationMessage.textContent =
+'No compatible Solana wallet detected.'
+;
+      return;
+    }
+    connectWalletBtn.disabled = true;
+    connectWalletBtn.textContent =
+'Connecting...'
+;
+    await new Promise((resolve, reject) => { openEventWalletModal(available, (selectedWallet) => { if (!selectedWallet) { connectWalletBtn.textContent = 'Connect Wallet'; participationMessage.textContent = 'Wallet connection cancelled.'; resolve(); return; } wallet.connect(selectedWallet).then(resolve).catch(reject); }); });
+    if (!wallet.getState().connected) { connectWalletBtn.textContent = 'Connect Wallet'; return; }
+    const addr = String(wallet.getState().connected?.account?.address ||
+''
+);
+    connectWalletBtn.textContent =
+'Disconnect'
+;
+    participationMessage.textContent = addr ?
+'Connected: '
+ + addr.slice(0,6) +
+'...'
+ + addr.slice(-6) :
+'Wallet connected.'
+;
+  } catch (error) {
+    console.error(
+'Event wallet connection failed:'
+, error);
+    participationMessage.textContent = error?.message ||
+'Wallet connection failed.'
+;
+    connectWalletBtn.textContent = wallet.getState().connected ?
+'Disconnect'
+ :
+'Connect Wallet'
+;
+  } finally {
+    connectWalletBtn.disabled = false;
+  }
+});
 
 loadEvent();

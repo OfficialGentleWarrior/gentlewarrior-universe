@@ -924,3 +924,21 @@ button {
 
   line-height: 1.6;
 }
+/* BACK TO EVENTS BUTTON */
+.creator-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 8px;
+  padding: 10px 16px;
+  color: #a0ed78;
+  border: 1px solid rgba(160,237,120,.35);
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s ease;
+}
+.creator-back-link:hover {
+  background: rgba(160,237,120,.12);
+}
