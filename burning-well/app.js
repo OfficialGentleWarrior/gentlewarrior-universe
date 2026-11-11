@@ -1,5 +1,5 @@
 import { loadBwEvents, initBwEventFilters } from './events.js';
-import { fetchRevenueData, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity } from './revenue.js';
+import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity } from './revenue.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -4087,16 +4087,16 @@ async function loadRevenueDashboard() {
   if (prev) prev.disabled = true;
   if (next) next.disabled = true;
   try {
-    const { summary, activity } = await fetchRevenueData(REVENUE_API_BASE_URL, period, bwRevenueCurrentPage, 5);
+    const [{ summary, activity }, priceResult] = await Promise.all([fetchRevenueData(REVENUE_API_BASE_URL, period, bwRevenueCurrentPage, 5), fetchSolPrice(REVENUE_API_BASE_URL).catch(() => null)]); const solPriceUsd = priceResult?.solPriceUsd ?? null;
     if (requestId !== bwRevenueRequestId) return;
     const lastPage = Math.max(1, activity.totalPages);
     if (bwRevenueCurrentPage > lastPage) {
       bwRevenueCurrentPage = lastPage;
       return loadRevenueDashboard();
     }
-    renderRevenueOverview(summary);
-    renderRevenueAllocations(summary);
-    renderRevenueActivity(activity);
+    const priceLabel = document.getElementById("bwRevenueSolPrice"); if (priceLabel) priceLabel.textContent = solPriceUsd == null ? "SOL/USD market price temporarily unavailable. SOL values remain available." : "1 SOL = " + new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(solPriceUsd) + " USD (approx.) - Source: Jupiter"; renderRevenueOverview(summary, solPriceUsd);
+    renderRevenueAllocations(summary, solPriceUsd);
+    renderRevenueActivity(activity, solPriceUsd);
     const pageInfo = document.getElementById('bwRevenuePageInfo');
     if (pageInfo) pageInfo.textContent = 'Page ' + activity.page + ' of ' + Math.max(1, activity.totalPages);
     if (prev) prev.disabled = activity.page <= 1;

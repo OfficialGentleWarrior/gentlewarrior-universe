@@ -3,6 +3,7 @@ const cors = require("cors");
 const crypto = require("crypto");
 const { calculateRevenue } = require("./revenue");
 const { getRevenueActivity } = require("./revenueActivity");
+const { getSolPriceUsd } = require("./solPrice");
 
 const admin = require("firebase-admin");
 
@@ -4488,6 +4489,7 @@ return res.json(result);
     return res.status(400).json({ error: "Unable to load token leaderboard." });
   }
 });
+app.get('/api/revenue/sol-price', async (req, res) => { try { const price = await getSolPriceUsd(); return res.json(price); } catch (error) { console.error('Revenue SOL price error:', error); return res.status(503).json({ error: 'SOL price temporarily unavailable' }); } });
 app.get('/api/revenue/summary', async (req,res) => {
 const period = req.query.period || 'all'; if (typeof period !== 'string' || !['7d','30d','90d','all'].includes(period)) return res.status(400).json({error:'Invalid revenue period'});
 try {
