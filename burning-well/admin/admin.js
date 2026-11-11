@@ -750,6 +750,9 @@ const adminDashboardTab =
 const adminBurnEventsTab =
   document.getElementById("adminBurnEventsTab");
 
+const adminRevenueFundsTab = document.getElementById("adminRevenueFundsTab");
+const adminRevenueFunds = document.getElementById("adminRevenueFunds");
+
 const adminBurnEvents =
   document.getElementById("adminBurnEvents");
 
@@ -1256,25 +1259,18 @@ deleteBurnEventBtn.addEventListener(
   }
 }
 function showAdminView(view) {
-  const showDashboard =
-    view === "dashboard";
-
-  adminDashboard.hidden =
-    !showDashboard;
-
-  adminBurnEvents.hidden =
-    showDashboard;
-
-  adminDashboardTab.classList.toggle(
-    "active",
-    showDashboard
-  );
-
-  adminBurnEventsTab.classList.toggle(
-    "active",
-    !showDashboard
-  );
+  const showDashboard = view === "dashboard";
+  const showEvents = view === "burn-events";
+  const showRevenue = view === "revenue-funds";
+  adminDashboard.hidden = !showDashboard;
+  adminBurnEvents.hidden = !showEvents;
+  adminRevenueFunds.hidden = !showRevenue;
+  adminDashboardTab.classList.toggle("active", showDashboard);
+  adminBurnEventsTab.classList.toggle("active", showEvents);
+  adminRevenueFundsTab.classList.toggle("active", showRevenue);
 }
+
+adminRevenueFundsTab.addEventListener("click", () => { showAdminView("revenue-funds"); });
 
 adminDashboardTab.addEventListener(
   "click",
