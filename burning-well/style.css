@@ -1730,3 +1730,23 @@ footer {
 .bw-event-card a { display: inline-block; margin-top: 12px; color: #a2ee79; font-weight: 700; }
 #bwEventsStatus { color: #d5e9d7; margin-bottom: 14px; }
 @media(max-width:480px) { .bw-event-filter { font-size: 11px; padding: 10px 4px; } }
+
+/* REVENUE DASHBOARD V2 */
+#revenuePage { padding:24px; background:rgba(5,30,18,.65); border:1px solid rgba(160,240,120,.2); border-radius:16px; }
+.bw-revenue-dashboard { color:#d5e9d7; }
+.bw-revenue-dashboard label { display:block; margin-bottom:8px; font-weight:700; }
+#bwRevenuePeriod { padding:11px 14px; max-width:100%; margin-bottom:16px; background:#092313; color:#d5e9d7; border:1px solid rgba(160,240,120,.35); border-radius:9px; }
+#bwRevenueStatus { color:#d5e9d7; margin:0 0 18px; }
+.bw-revenue-dashboard h3 { color:#a2ee79; margin:24px 0 14px; }
+.bw-revenue-overview,.bw-revenue-allocations { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.bw-revenue-card,.bw-revenue-allocation-card,.bw-revenue-activity-card { padding:18px; background:rgba(5,30,18,.85); border:1px solid rgba(160,240,120,.25); border-radius:14px; min-width:0; overflow-wrap:anywhere; }
+.bw-revenue-card h4,.bw-revenue-allocation-card h4 { color:#d5e9d7; margin:0 0 10px; font-size:14px; }
+.bw-revenue-card p,.bw-revenue-allocation-card p { color:#a2ee79; margin:0; font-size:20px; font-weight:700; }
+.bw-revenue-activity { display:grid; gap:12px; }
+.bw-revenue-activity-card p { color:#d5e9d7; margin:8px 0; font-size:13px; }
+.bw-revenue-activity-card a { color:#a2ee79; font-weight:700; overflow-wrap:anywhere; }
+.bw-revenue-pagination { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:20px; }
+.bw-revenue-pagination button { background:#a2ee79; color:#092313; border:0; border-radius:9px; padding:10px 16px; font-weight:700; cursor:pointer; }
+.bw-revenue-pagination button:disabled { opacity:.4; cursor:not-allowed; }
+#bwRevenuePageInfo { color:#d5e9d7; }
+@media(max-width:600px) { #revenuePage { padding:14px; } .bw-revenue-overview,.bw-revenue-allocations { grid-template-columns:1fr; } .bw-revenue-pagination { gap:8px; } .bw-revenue-pagination button { padding:9px 12px; } }

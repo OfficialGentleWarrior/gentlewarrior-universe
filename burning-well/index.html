@@ -297,7 +297,17 @@
 <section id="revenuePage" class="bw-page" hidden>
   <h2>Revenue</h2>
   <p>Burning Well revenue transparency and fund allocations.</p>
-  <p>Coming soon.</p>
+  <div class="bw-revenue-dashboard">
+    <label for="bwRevenuePeriod">Reporting Period</label>
+    <select id="bwRevenuePeriod"><option value="7d">Last 7 Days</option><option value="30d">Last 30 Days</option><option value="90d">Last 90 Days</option><option value="all" selected>All Time</option></select>
+    <p id="bwRevenueStatus" role="status">Revenue data not loaded yet.</p>
+    <div id="bwRevenueOverview" class="bw-revenue-overview"></div>
+    <h3>Fund Allocation</h3>
+    <div id="bwRevenueAllocations" class="bw-revenue-allocations"></div>
+    <h3>Revenue Activity</h3>
+    <div id="bwRevenueActivity" class="bw-revenue-activity"></div>
+    <div class="bw-revenue-pagination"><button type="button" id="bwRevenuePrev" disabled>Previous</button><span id="bwRevenuePageInfo">Page 1</span><button type="button" id="bwRevenueNext" disabled>Next</button></div>
+  </div>
 </section>
 
     <!-- FOOTER -->

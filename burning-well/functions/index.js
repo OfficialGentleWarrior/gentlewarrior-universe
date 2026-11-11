@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
+const { calculateRevenue } = require("./revenue");
+const { getRevenueActivity } = require("./revenueActivity");
 
 const admin = require("firebase-admin");
 
@@ -4484,6 +4486,27 @@ return res.json(result);
   } catch (error) {
     console.error("Public token leaderboard error:", error);
     return res.status(400).json({ error: "Unable to load token leaderboard." });
+  }
+});
+app.get('/api/revenue/summary', async (req,res) => {
+const period = req.query.period || 'all'; if (typeof period !== 'string' || !['7d','30d','90d','all'].includes(period)) return res.status(400).json({error:'Invalid revenue period'});
+try {
+const snap = await db.collection('burn_registry').where('status','==','verified').get();
+return res.json(calculateRevenue(snap.docs.map(d=>d.data()), period));
+} catch(e) { console.error(e); return res.status(500).json({error:'Revenue summary unavailable'}); }
+});
+app.get('/api/revenue/activity', async (req, res) => {
+  const period = req.query.period || 'all';
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 20);
+  if (typeof period !== 'string' || !['7d','30d','90d','all'].includes(period)) return res.status(400).json({error:'Invalid revenue period'});
+  if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(limit) || limit < 1 || limit > 100) return res.status(400).json({error:'Invalid pagination'});
+  try {
+    const snap = await db.collection('burn_registry').where('status','==','verified').get();
+    return res.json(getRevenueActivity(snap.docs.map(d => d.data()), period, page, limit));
+  } catch (e) {
+    console.error('Revenue activity error:', e);
+    return res.status(500).json({error:'Revenue activity unavailable'});
   }
 });
 exports.burningWellApi = onRequest(

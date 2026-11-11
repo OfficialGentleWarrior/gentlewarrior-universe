@@ -1,4 +1,5 @@
 import { loadBwEvents, initBwEventFilters } from './events.js';
+import { fetchRevenueData, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity } from './revenue.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -30,6 +31,8 @@ import burningWellVideoUrl from "./assets/burning well.mp4";
 
 const API_BASE_URL =
   "https://burningwellapi-slmbcnmgwa-as.a.run.app";
+
+const REVENUE_API_BASE_URL = import.meta.env.DEV ? '/local-events-api' : API_BASE_URL;
 
 // RPC now goes through the backend so the ANKR secret never reaches the browser.
 const RPC_ENDPOINTS = [
@@ -4071,6 +4074,45 @@ const bwPages = {
   revenue: document.getElementById("revenuePage")
 };
 
+let bwRevenueCurrentPage = 1;
+let bwRevenueRequestId = 0;
+
+async function loadRevenueDashboard() {
+  const requestId = ++bwRevenueRequestId;
+  const period = document.getElementById('bwRevenuePeriod')?.value || 'all';
+  const status = document.getElementById('bwRevenueStatus');
+  const prev = document.getElementById('bwRevenuePrev');
+  const next = document.getElementById('bwRevenueNext');
+  if (status) status.textContent = 'Loading revenue data...';
+  if (prev) prev.disabled = true;
+  if (next) next.disabled = true;
+  try {
+    const { summary, activity } = await fetchRevenueData(REVENUE_API_BASE_URL, period, bwRevenueCurrentPage, 5);
+    if (requestId !== bwRevenueRequestId) return;
+    const lastPage = Math.max(1, activity.totalPages);
+    if (bwRevenueCurrentPage > lastPage) {
+      bwRevenueCurrentPage = lastPage;
+      return loadRevenueDashboard();
+    }
+    renderRevenueOverview(summary);
+    renderRevenueAllocations(summary);
+    renderRevenueActivity(activity);
+    const pageInfo = document.getElementById('bwRevenuePageInfo');
+    if (pageInfo) pageInfo.textContent = 'Page ' + activity.page + ' of ' + Math.max(1, activity.totalPages);
+    if (prev) prev.disabled = activity.page <= 1;
+    if (next) next.disabled = activity.page >= activity.totalPages;
+    if (status) status.textContent = summary.incompleteReferralRecords ? 'Some referral amounts are pending verification.' : 'Revenue data updated.';
+  } catch (error) {
+    if (requestId !== bwRevenueRequestId) return;
+    document.getElementById('bwRevenueOverview')?.replaceChildren(document.createTextNode('Revenue figures temporarily unavailable.'));
+    document.getElementById('bwRevenueAllocations')?.replaceChildren(document.createTextNode('Fund allocations temporarily unavailable.'));
+    document.getElementById('bwRevenueActivity')?.replaceChildren(document.createTextNode('Transaction history temporarily unavailable.'));
+    const pageInfo = document.getElementById('bwRevenuePageInfo');
+    if (pageInfo) pageInfo.textContent = 'Page unavailable';
+    if (status) status.textContent = 'Unable to load revenue data. Please try again.';
+    console.error('Revenue dashboard error:', error);
+  }
+}
 function showBwPage(pageName) {
   const selectedPage = bwPages[pageName] ? pageName : "burn";
 
@@ -4082,6 +4124,7 @@ function showBwPage(pageName) {
 
   if (selectedPage === "leaderboard" && typeof loadBwLeaderboard === "function") { loadBwLeaderboard(API_BASE_URL); initFindMyRank(API_BASE_URL); const rankWallet = client.wallet.getState().connected?.account?.address; if (rankWallet) { const rankInput = document.getElementById("bwRankWallet"); if (rankInput && rankInput.value !== String(rankWallet)) { rankInput.value = String(rankWallet); document.getElementById("bwRankSearch")?.click(); } } }
   if (selectedPage === 'events') { initBwEventFilters(); loadBwEvents(API_BASE_URL); }
+  if (selectedPage === 'revenue') { loadRevenueDashboard(); }
   bwNavTabs.forEach((tab) => {
     const active = tab.dataset.page === selectedPage;
 
@@ -4095,6 +4138,12 @@ bwNavTabs.forEach((tab) => {
     showBwPage(tab.dataset.page);
   });
 });
+
+document.getElementById('bwRevenuePeriod')?.addEventListener('change', () => { bwRevenueCurrentPage = 1; loadRevenueDashboard(); });
+
+document.getElementById('bwRevenuePrev')?.addEventListener('click', () => { if (bwRevenueCurrentPage > 1) { bwRevenueCurrentPage--; loadRevenueDashboard(); } });
+
+document.getElementById('bwRevenueNext')?.addEventListener('click', () => { const next = document.getElementById('bwRevenueNext'); if (next && !next.disabled) { bwRevenueCurrentPage++; loadRevenueDashboard(); } });
 
 // Default page
 showBwPage(new URLSearchParams(window.location.search).get("tab") || "burn");
