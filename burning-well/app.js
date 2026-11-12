@@ -4146,4 +4146,14 @@ document.getElementById('bwRevenuePrev')?.addEventListener('click', () => { if (
 document.getElementById('bwRevenueNext')?.addEventListener('click', () => { const next = document.getElementById('bwRevenueNext'); if (next && !next.disabled) { bwRevenueCurrentPage++; loadRevenueDashboard(); } });
 
 // Default page
+function showRevenueSubTab(name) {
+  const tabs = document.querySelectorAll(".bw-revenue-tab");
+  const panels = document.querySelectorAll(".bw-revenue-panel");
+  const selected = Array.from(tabs).some(tab => tab.dataset.revenueTab === name) ? name : "overview";
+  tabs.forEach(tab => { const active = tab.dataset.revenueTab === selected; tab.classList.toggle("active", active); tab.setAttribute("aria-selected", String(active)); });
+  panels.forEach(panel => { panel.hidden = panel.dataset.revenuePanel !== selected; });
+}
+document.querySelectorAll(".bw-revenue-tab").forEach(tab => tab.addEventListener("click", () => showRevenueSubTab(tab.dataset.revenueTab)));
+showRevenueSubTab("overview");
+
 showBwPage(new URLSearchParams(window.location.search).get("tab") || "burn");

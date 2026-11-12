@@ -302,12 +302,13 @@
     <select id="bwRevenuePeriod"><option value="7d">Last 7 Days</option><option value="30d">Last 30 Days</option><option value="90d">Last 90 Days</option><option value="all" selected>All Time</option></select>
     <p id="bwRevenueStatus" role="status">Revenue data not loaded yet.</p>
     <p id="bwRevenueSolPrice" class="bw-revenue-price" aria-live="polite">SOL/USD market price unavailable</p>
-    <div id="bwRevenueOverview" class="bw-revenue-overview"></div>
-    <h3>Fund Allocation</h3>
+<div class="bw-revenue-tabs" role="tablist" aria-label="Revenue Sections"><button type="button" class="bw-revenue-tab active" data-revenue-tab="overview">Overview</button><button type="button" class="bw-revenue-tab" data-revenue-tab="funds">Fund Allocation</button><button type="button" class="bw-revenue-tab" data-revenue-tab="rewards">Community Rewards</button><button type="button" class="bw-revenue-tab" data-revenue-tab="buyburn">Buy & Burn</button><button type="button" class="bw-revenue-tab" data-revenue-tab="activity">Activity</button></div><div class="bw-revenue-panel" data-revenue-panel="overview">    <div id="bwRevenueOverview" class="bw-revenue-overview"></div></div>
+<div class="bw-revenue-panel" data-revenue-panel="funds" hidden>    <h3>Fund Allocation</h3>
     <div id="bwRevenueAllocations" class="bw-revenue-allocations"></div>
-    <h3>Revenue Activity</h3>
+</div><div class="bw-revenue-panel" data-revenue-panel="rewards" hidden><h3>Community Rewards</h3><p>Live estimated SOL prizes coming soon.</p></div><div class="bw-revenue-panel" data-revenue-panel="buyburn" hidden><h3>$GWAR Buy & Burn</h3><p>Verified buy and burn tracking coming soon.</p></div><div class="bw-revenue-panel" data-revenue-panel="activity" hidden><h3>Revenue Activity</h3>
     <div id="bwRevenueActivity" class="bw-revenue-activity"></div>
     <div class="bw-revenue-pagination"><button type="button" id="bwRevenuePrev" disabled>Previous</button><span id="bwRevenuePageInfo">Page 1</span><button type="button" id="bwRevenueNext" disabled>Next</button></div>
+  </div>
   </div>
 </section>
 

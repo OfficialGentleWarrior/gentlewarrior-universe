@@ -1750,3 +1750,11 @@ footer {
 .bw-revenue-pagination button:disabled { opacity:.4; cursor:not-allowed; }
 #bwRevenuePageInfo { color:#d5e9d7; }
 @media(max-width:600px) { #revenuePage { padding:14px; } .bw-revenue-overview,.bw-revenue-allocations { grid-template-columns:1fr; } .bw-revenue-pagination { gap:8px; } .bw-revenue-pagination button { padding:9px 12px; } }
+
+/* Revenue sub-tabs */
+.bw-revenue-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:20px 0;padding:6px;background:#03130d;border:1px solid #a0f07833;border-radius:14px}
+.bw-revenue-tab{min-width:0;min-height:44px;padding:10px 6px;color:#d5e9d7;background:transparent;border:0;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s,color .2s}
+.bw-revenue-tab:hover{background:#1d4930}
+.bw-revenue-tab.active{color:#092313;background:#a2ee79}
+.bw-revenue-panel[hidden]{display:none!important}
+@media(max-width:650px){.bw-revenue-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.bw-revenue-tab{font-size:12px;padding:11px 8px}}
