@@ -1,5 +1,5 @@
 import { loadBwEvents, initBwEventFilters } from './events.js';
-import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity } from './revenue.js';
+import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity, fetchCommunityRewards, renderCommunityRewards } from './revenue.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -4097,11 +4097,15 @@ async function loadRevenueDashboard() {
     const priceLabel = document.getElementById("bwRevenueSolPrice"); if (priceLabel) priceLabel.textContent = solPriceUsd == null ? "SOL/USD market price temporarily unavailable. SOL values remain available." : "1 SOL = " + new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(solPriceUsd) + " USD (approx.) - Source: Jupiter"; renderRevenueOverview(summary, solPriceUsd);
     renderRevenueAllocations(summary, solPriceUsd);
     renderRevenueActivity(activity, solPriceUsd);
+    const now = new Date();
+    const rewardsYear = now.getUTCFullYear();
+    const rewardsQuarter = Math.floor(now.getUTCMonth() / 3) + 1;
+    fetchCommunityRewards(REVENUE_API_BASE_URL, rewardsYear, rewardsQuarter).then(data => { if (requestId === bwRevenueRequestId) renderCommunityRewards(data); }).catch(error => { if (requestId !== bwRevenueRequestId) return; const el = document.getElementById('bwCommunityRewards'); if (el) el.textContent = 'Quarterly rewards temporarily unavailable.'; console.error('Community Rewards error:', error); });
     const pageInfo = document.getElementById('bwRevenuePageInfo');
     if (pageInfo) pageInfo.textContent = 'Page ' + activity.page + ' of ' + Math.max(1, activity.totalPages);
     if (prev) prev.disabled = activity.page <= 1;
     if (next) next.disabled = activity.page >= activity.totalPages;
-    if (status) status.textContent = summary.incompleteReferralRecords ? 'Some referral amounts are pending verification.' : 'Revenue data updated.';
+    if (status) status.textContent = summary.invalidFinancialSignatures ? 'Warning: Some invalid financial records were excluded. Figures require review.' : summary.incompleteReferralRecords ? 'Some referral amounts are pending verification.' : 'Revenue data updated.';
   } catch (error) {
     if (requestId !== bwRevenueRequestId) return;
     document.getElementById('bwRevenueOverview')?.replaceChildren(document.createTextNode('Revenue figures temporarily unavailable.'));

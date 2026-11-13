@@ -20,11 +20,34 @@ function calculateRevenue(records, period = 'all', nowSeconds = Math.floor(Date.
   let incompleteReferralRecords = 0;
   const signatures = new Set();
 
+  const feeBySignature = new Map();
+  const walletBySignature = new Map();
+  const referrerBySignature = new Map();
+  const conflictingSignatures = new Set();
+  const invalidSignatures = new Set();
   for (const record of records) {
     if (record.status !== 'verified') continue;
     const time = Number(record.blockTime);
     if (!Number.isFinite(time) || time <= 0 || time > nowSeconds || (cutoff !== null && time < cutoff)) continue;
-    if (!record.signature || signatures.has(record.signature)) continue;
+    if (!record.signature) continue;
+    const fee = record.serviceFeeLamports ?? record.feeLamports;
+    if (fee == null) continue;
+    let amount;
+    try { amount = parseLamports(fee).toString()+String.fromCharCode(58)+parseLamports(record.referralRewardLamports).toString(); }
+    catch (error) { invalidSignatures.add(record.signature); continue; }
+    if (feeBySignature.has(record.signature) && feeBySignature.get(record.signature) !== amount) conflictingSignatures.add(record.signature);
+    if (record.wallet && walletBySignature.has(record.signature) && walletBySignature.get(record.signature) !== record.wallet) conflictingSignatures.add(record.signature);
+    if (!feeBySignature.has(record.signature)) feeBySignature.set(record.signature, amount);
+    if (record.wallet && !walletBySignature.has(record.signature)) walletBySignature.set(record.signature, record.wallet);
+    if (record.referrerWallet && referrerBySignature.has(record.signature) && referrerBySignature.get(record.signature) !== record.referrerWallet) conflictingSignatures.add(record.signature);
+    if (record.referrerWallet && !referrerBySignature.has(record.signature)) referrerBySignature.set(record.signature, record.referrerWallet);
+  }
+
+  for (const record of records) {
+    if (record.status !== 'verified') continue;
+    const time = Number(record.blockTime);
+    if (!Number.isFinite(time) || time <= 0 || time > nowSeconds || (cutoff !== null && time < cutoff)) continue;
+    if (!record.signature || signatures.has(record.signature) || conflictingSignatures.has(record.signature) || invalidSignatures.has(record.signature)) continue;
 
     const serviceValue = record.serviceFeeLamports ?? record.feeLamports;
     if (serviceValue == null) continue;
@@ -52,6 +75,8 @@ function calculateRevenue(records, period = 'all', nowSeconds = Math.floor(Date.
 
   return {
     verifiedBurns,
+    invalidFinancialSignatures: invalidSignatures.size,
+    netRevenueLamports: net.toString(),
     incompleteReferralRecords,
     grossCollectedSol: incompleteReferralRecords > 0 ? null : sol(gross),
     referralRewardsSol: incompleteReferralRecords > 0 ? null : sol(referrals),

@@ -10,6 +10,35 @@ export async function fetchRevenueData(apiBaseUrl, period = 'all', page = 1, lim
   return { summary: await summaryResponse.json(), activity: await activityResponse.json() };
 }
 
+export async function fetchCommunityRewards(base, year, quarter) {
+  const params = new URLSearchParams({ year: String(year), quarter: String(quarter) });
+  const response = await fetch(base + '/api/revenue/community-rewards?' + params.toString());
+  if (!response.ok) throw new Error('Unable to load Community Rewards');
+  return response.json();
+}
+
+export function renderCommunityRewards(data) {
+  const root = document.getElementById('bwCommunityRewards');
+  if (!root) return;
+  root.replaceChildren();
+  const add = (parent, tag, value) => { const el = document.createElement(tag); el.textContent = String(value); parent.appendChild(el); return el; };
+  add(root, 'h4', 'Q' + data.quarter + ' ' + data.year + ' — ' + data.status);
+  add(root, 'p', 'Community Rewards Pool: ' + data.communityRewardsSol + ' SOL');
+  add(root, 'p', 'Top Burners Pool: ' + data.burnersPoolSol + ' SOL');
+  add(root, 'p', 'Top Referrers Pool: ' + data.referrersPoolSol + ' SOL');
+  for (const [title, leaders, prizes] of [['Top Burners', data.topBurners, data.burnersPrizes], ['Top Referrers', data.topReferrers, data.referrersPrizes]]) {
+    const section = add(root, 'section', '');
+    add(section, 'h4', title);
+    if (!Array.isArray(leaders) || !leaders.length) { add(section, 'p', 'No eligible participants yet.'); continue; }
+    leaders.slice(0, 3).forEach((entry, i) => {
+      const prize = Array.isArray(prizes) ? prizes[i] : null;
+      const count = title === 'Top Burners' ? entry.verifiedBurns : entry.successfulReferrals;
+      add(section, 'p', '#' + (i + 1) + ' ' + entry.wallet + ' — ' + count + ' verified — Estimated prize: ' + (prize ? prize.sol : 0) + ' SOL');
+    });
+  }
+  add(root, 'p', 'Rewards are estimates, not finalized payouts.');
+}
+
 export function renderRevenueOverview(summary, solPriceUsd = null) {
   const container = document.getElementById('bwRevenueOverview');
   if (!container) return;

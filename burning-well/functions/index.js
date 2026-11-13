@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const { calculateRevenue } = require("./revenue");
+const { calculateQuarterlyRewards, distributeTopThree, rankQuarterlyBurners, rankQuarterlyReferrers } = require("./communityRewards");
 const { getRevenueActivity } = require("./revenueActivity");
 const { getSolPriceUsd } = require("./solPrice");
 
@@ -4488,6 +4489,17 @@ return res.json(result);
     console.error("Public token leaderboard error:", error);
     return res.status(400).json({ error: "Unable to load token leaderboard." });
   }
+});
+app.get('/api/revenue/community-rewards', async (req,res) => {
+try {
+const now=new Date();
+const year=req.query.year===undefined?now.getUTCFullYear():Number(req.query.year);
+const quarter=req.query.quarter===undefined?Math.floor(now.getUTCMonth()/3)+1:Number(req.query.quarter);
+if(!Number.isInteger(year)||year<2025||!Number.isInteger(quarter)||quarter<1||quarter>4||Date.UTC(year,(quarter-1)*3,1)>Date.now())return res.status(400).json({error:'Invalid or future quarter'});
+const snap=await db.collection('burn_registry').where('status','==','verified').get();
+const burns=snap.docs.map(d=>d.data());const referralSnap=await db.collection("referral_rewards").where("status","==","paid").get();const referrals=referralSnap.docs.map(d=>d.data());const rewards=calculateQuarterlyRewards(burns,year,quarter);
+return res.json({...rewards,topBurners:rankQuarterlyBurners(burns,year,quarter),topReferrers:rankQuarterlyReferrers(burns,referrals,year,quarter),burnersPrizes:distributeTopThree(rewards.burnersPoolLamports),referrersPrizes:distributeTopThree(rewards.referrersPoolLamports),status:'estimated'});
+} catch(e) { console.error(e);return res.status(500).json({error:'Community Rewards unavailable'}); }
 });
 app.get('/api/revenue/sol-price', async (req, res) => { try { const price = await getSolPriceUsd(); return res.json(price); } catch (error) { console.error('Revenue SOL price error:', error); return res.status(503).json({ error: 'SOL price temporarily unavailable' }); } });
 app.get('/api/revenue/summary', async (req,res) => {

@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const {calculateRevenue}=require('./revenue');
+const t=Date.UTC(2026,10,1)/1000;
+const a={signature:'tx1',status:'verified',blockTime:t,serviceFeeLamports:'1000000000'};
+const b={...a,serviceFeeLamports:'2000000000'};
+const c={signature:'tx2',status:'verified',blockTime:t,serviceFeeLamports:'1000000000'};
+assert.equal(calculateRevenue([a,c]).netRevenueSol,2);
+assert.equal(calculateRevenue([a,a,c]).netRevenueSol,2);
+assert.equal(calculateRevenue([a,b,c]).netRevenueSol,1);
+assert.equal(calculateRevenue([b,a,c]).netRevenueSol,1);
+console.log('Revenue regression tests PASSED');
