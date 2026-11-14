@@ -22,18 +22,18 @@ export function renderCommunityRewards(data) {
   if (!root) return;
   root.replaceChildren();
   const add = (parent, tag, value) => { const el = document.createElement(tag); el.textContent = String(value); parent.appendChild(el); return el; };
-  add(root, 'h4', 'Q' + data.quarter + ' ' + data.year + ' — ' + data.status);
-  add(root, 'p', 'Community Rewards Pool: ' + data.communityRewardsSol + ' SOL');
-  add(root, 'p', 'Top Burners Pool: ' + data.burnersPoolSol + ' SOL');
-  add(root, 'p', 'Top Referrers Pool: ' + data.referrersPoolSol + ' SOL');
+  add(root, 'h4', (data.year === 2026 ? '2026 ALL-TIME REWARDS' : 'Q' + data.quarter + ' ' + data.year) + ' — ' + data.status);
+  const pools = add(root, 'div', ''); pools.className = 'bw-reward-pools'; add(pools, 'div', 'Total Rewards: ' + data.communityRewardsSol + ' SOL');
+  add(pools, 'div', 'Top Burners Pool: ' + data.burnersPoolSol + ' SOL');
+  add(pools, 'div', 'Top Referrers Pool: ' + data.referrersPoolSol + ' SOL');
   for (const [title, leaders, prizes] of [['Top Burners', data.topBurners, data.burnersPrizes], ['Top Referrers', data.topReferrers, data.referrersPrizes]]) {
     const section = add(root, 'section', '');
     add(section, 'h4', title);
     if (!Array.isArray(leaders) || !leaders.length) { add(section, 'p', 'No eligible participants yet.'); continue; }
     leaders.slice(0, 3).forEach((entry, i) => {
       const prize = Array.isArray(prizes) ? prizes[i] : null;
-      const count = title === 'Top Burners' ? entry.verifiedBurns : entry.successfulReferrals;
-      add(section, 'p', '#' + (i + 1) + ' ' + entry.wallet + ' — ' + count + ' verified — Estimated prize: ' + (prize ? prize.sol : 0) + ' SOL');
+      const count = title === 'Top Burners' ? entry.burnTransactions : entry.successfulReferrals;
+      add(section, 'p', '#' + (i + 1) + ' ' + (entry.wallet ? entry.wallet.slice(0, 4) + '...' + entry.wallet.slice(-4) : 'Unknown wallet') + ' — ' + count + ' verified — Estimated prize: ' + (prize ? prize.sol : 0) + ' SOL');
     });
   }
   add(root, 'p', 'Rewards are estimates, not finalized payouts.');
