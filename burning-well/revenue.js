@@ -18,27 +18,39 @@ export async function fetchCommunityRewards(base, year, quarter) {
 }
 
 export function renderCommunityRewards(data) {
-  const root = document.getElementById('bwCommunityRewards');
+  const root = document.getElementById("bwCommunityRewards");
   if (!root) return;
   root.replaceChildren();
-  const add = (parent, tag, value) => { const el = document.createElement(tag); el.textContent = String(value); parent.appendChild(el); return el; };
-  add(root, 'h4', (data.year === 2026 ? '2026 ALL-TIME REWARDS' : 'Q' + data.quarter + ' ' + data.year) + ' — ' + data.status);
-  const pools = add(root, 'div', ''); pools.className = 'bw-reward-pools'; add(pools, 'div', 'Total Rewards: ' + data.communityRewardsSol + ' SOL');
-  add(pools, 'div', 'Top Burners Pool: ' + data.burnersPoolSol + ' SOL');
-  add(pools, 'div', 'Top Referrers Pool: ' + data.referrersPoolSol + ' SOL');
-  for (const [title, leaders, prizes] of [['Top Burners', data.topBurners, data.burnersPrizes], ['Top Referrers', data.topReferrers, data.referrersPrizes]]) {
-    const section = add(root, 'section', '');
-    add(section, 'h4', title);
-    if (!Array.isArray(leaders) || !leaders.length) { add(section, 'p', 'No eligible participants yet.'); continue; }
+  const add = (parent, tag, cls, value) => { const el = document.createElement(tag); if (cls) el.className = cls; if (value !== undefined) el.textContent = String(value); parent.appendChild(el); return el; };
+  const fmt = value => Number(value || 0).toFixed(9).replace(/0+$/, "").replace(/\.$/, "");
+  const period = data.year === 2026 ? "2026 ALL-TIME REWARDS" : "Q" + data.quarter + " " + data.year;
+  add(root, "h4", "bw-reward-heading", period);
+  add(root, "p", "bw-reward-status", "Estimated rewards — not finalized payouts");
+  const pools = add(root, "div", "bw-reward-pools");
+  for (const [label, value] of [["Total Community Rewards", data.communityRewardsSol], ["Top Burners Pool", data.burnersPoolSol], ["Top Referrers Pool", data.referrersPoolSol]]) {
+    const card = add(pools, "div", "bw-reward-pool-card");
+    add(card, "span", "bw-reward-pool-label", label);
+    add(card, "strong", "bw-reward-pool-value", fmt(value) + " SOL");
+  }
+  const boards = add(root, "div", "bw-reward-boards");
+  for (const [title, leaders, prizes, field] of [["Top Burners", data.topBurners, data.burnersPrizes, "burnTransactions"], ["Top Referrers", data.topReferrers, data.referrersPrizes, "successfulReferrals"]]) {
+    const section = add(boards, "section", "bw-reward-board");
+    add(section, "h4", "bw-reward-board-title", title);
+    if (!Array.isArray(leaders) || !leaders.length) { add(section, "p", "bw-reward-empty", "No eligible participants yet."); continue; }
     leaders.slice(0, 3).forEach((entry, i) => {
-      const prize = Array.isArray(prizes) ? prizes[i] : null;
-      const count = title === 'Top Burners' ? entry.burnTransactions : entry.successfulReferrals;
-      add(section, 'p', '#' + (i + 1) + ' ' + (entry.wallet ? entry.wallet.slice(0, 4) + '...' + entry.wallet.slice(-4) : 'Unknown wallet') + ' — ' + count + ' verified — Estimated prize: ' + (prize ? prize.sol : 0) + ' SOL');
+      const card = add(section, "div", "bw-reward-rank-card");
+      add(card, "span", "bw-reward-rank", "#" + (i + 1));
+      const info = add(card, "div", "bw-reward-rank-info");
+      const wallet = String(entry.wallet || "");
+      const walletEl = add(info, "strong", "bw-reward-wallet", wallet ? wallet.slice(0, 4) + "..." + wallet.slice(-4) : "Unknown wallet");
+      walletEl.title = wallet;
+      add(info, "span", "bw-reward-count", String(entry[field] ?? 0) + (field === "burnTransactions" ? " verified burns" : " successful referrals"));
+      const prize = add(card, "div", "bw-reward-prize");
+      add(prize, "span", "bw-reward-prize-label", "Estimated prize");
+      add(prize, "strong", "bw-reward-prize-value", fmt(prizes?.[i]?.sol) + " SOL");
     });
   }
-  add(root, 'p', 'Rewards are estimates, not finalized payouts.');
 }
-
 export function renderRevenueOverview(summary, solPriceUsd = null) {
   const container = document.getElementById('bwRevenueOverview');
   if (!container) return;
