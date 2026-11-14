@@ -17,6 +17,15 @@ export async function fetchCommunityRewards(base, year, quarter) {
   return response.json();
 }
 
+export async function fetchRewardHistory(apiBaseUrl) {
+  const base = apiBaseUrl.replace(/\/$/, "");
+  const response = await fetch(base + "/api/revenue/community-rewards/history");
+  if (!response.ok) throw new Error("Unable to load Reward History");
+  const data = await response.json();
+  if (!Array.isArray(data.history)) throw new Error("Invalid Reward History response");
+  return data.history;
+}
+
 export function renderCommunityRewards(data) {
   const root = document.getElementById("bwCommunityRewards");
   if (!root) return;
@@ -51,6 +60,13 @@ export function renderCommunityRewards(data) {
     });
   }
 }
+export function renderRewardHistory(history) {
+ const root=document.getElementById("bwRewardHistory");if(!root)return;root.replaceChildren();
+ const add=(parent,tag,cls,value)=>{const el=document.createElement(tag);el.className=cls;el.textContent=String(value);parent.appendChild(el);return el;};
+ if(!Array.isArray(history)||!history.length){add(root,"p","bw-reward-empty","No finalized rewards yet.");return;}
+ const fmt=n=>Number(n||0).toFixed(9)+" SOL";
+ for(const archive of history){const section=document.createElement("section");section.className="bw-reward-history-period";root.appendChild(section);add(section,"h4","bw-reward-heading",archive.label||archive.periodId);add(section,"p","bw-reward-status","Finalized winners - Payout: "+(archive.payoutStatus||"pending"));add(section,"p","bw-reward-pool-value","Community Rewards: "+fmt(archive.communityRewardsSol));const boards=document.createElement("div");boards.className="bw-reward-boards";section.appendChild(boards);for(const [title,leaders,prizes,field] of [["Top Burners",archive.topBurners,archive.burnersPrizes,"burnTransactions"],["Top Referrers",archive.topReferrers,archive.referrersPrizes,"successfulReferrals"]]){const board=document.createElement("section");board.className="bw-reward-board";boards.appendChild(board);add(board,"h4","bw-reward-board-title",title);if(!Array.isArray(leaders)||!leaders.length){add(board,"p","bw-reward-empty","No eligible winners.");continue;}leaders.slice(0,3).forEach((entry,i)=>{const card=document.createElement("div");card.className="bw-reward-rank-card";board.appendChild(card);add(card,"span","bw-reward-rank","#"+(i+1));const wallet=String(entry.wallet||"");const w=add(card,"strong","bw-reward-wallet",wallet?wallet.slice(0,4)+"..."+wallet.slice(-4):"Unknown wallet");w.title=wallet;add(card,"span","bw-reward-count",String(entry[field]??0));add(card,"strong","bw-reward-prize-value",fmt(prizes?.[i]?.sol));});}}}
+
 export function renderRevenueOverview(summary, solPriceUsd = null) {
   const container = document.getElementById('bwRevenueOverview');
   if (!container) return;

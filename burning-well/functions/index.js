@@ -244,6 +244,8 @@ async function reconciliationRpc(method, params) {
 
   return data.result;
 }
+async function historicalPublicRpc(method,params){for(let attempt=0;attempt<3;attempt++){try{const response=await fetch("https://api.mainnet-beta.solana.com",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:Date.now(),method,params})});if(response.status===429||response.status>=500){if(attempt===2)throw Error("Historical RPC HTTP "+response.status);await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));continue;}if(!response.ok)throw Error("Historical RPC HTTP "+response.status);const data=await response.json();if(data.error)throw Error(data.error.message);return data.result;}catch(error){if(attempt===2)throw error;await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));}}throw Error("Historical RPC retries exhausted");}
+async function getHistoricalReconciliationSignatures(startTime,endTime){if(!Number.isSafeInteger(startTime)||!Number.isSafeInteger(endTime)||startTime>=endTime)throw new Error("Invalid historical period");const results=[];let before;let reachedStart=false;for(let page=0;page<1000;page++){const options={limit:1000};if(before)options.before=before;const batch=await historicalPublicRpc("getSignaturesForAddress",[FEE_WALLET,options]);if(!Array.isArray(batch))throw new Error("Invalid historical RPC response");if(batch.length===0){if(results.length===0)throw new Error("Historical scan returned no eligible signatures; manual verification required");reachedStart=true;break;}for(const item of batch){if(!item||!isValidSignature(item.signature))throw new Error("Invalid historical signature");if(item.blockTime==null||!Number.isSafeInteger(Number(item.blockTime)))throw new Error("Historical transaction missing blockTime");const t=Number(item.blockTime);if(t<startTime){reachedStart=true;break;}if(t<endTime&&item.err===null)results.push({signature:item.signature,blockTime:t});}if(reachedStart)break;const last=batch[batch.length-1];if(!last||!isValidSignature(last.signature)||last.signature===before)throw new Error("Historical pagination stalled");before=last.signature;if(batch.length<1000){const probe=await historicalPublicRpc("getSignaturesForAddress",[FEE_WALLET,{limit:1,before:last.signature}]);if(!Array.isArray(probe))throw new Error("Historical pagination verification failed");if(probe.length===0){reachedStart=true;break;}}}if(!reachedStart)throw new Error("Historical scan incomplete; pagination limit reached");console.log("Historical scan coverage:",{startTime,endTime,signatures:results.length,reachedStart,pagesComplete:true});return results;}
 async function getRecentReconciliationSignatures(
   limit = 100
 ) {
@@ -1358,6 +1360,7 @@ async function recoverBurnBySignature(signature) {
     record,
   };
 }
+async function reconcileHistoricalBurns(startTime,endTime){const signatures=await getHistoricalReconciliationSignatures(startTime,endTime);const summary={scanned:signatures.length,alreadyRegistered:0,recovered:0,skipped:0,failed:0};for(const item of signatures){try{const result=await recoverBurnBySignature(item.signature);if(result.status==="already_registered")summary.alreadyRegistered++;else if(result.status==="recovered")summary.recovered++;else if(result.status==="not_burning_well_burn"||result.status==="transaction_failed")summary.skipped++;else{summary.failed++;console.error("Historical reconciliation unresolved:",item.signature,result.status);}}catch(error){summary.failed++;console.error("Historical reconciliation failed:",item.signature,error);}}if(summary.failed>0)throw new Error("Historical reconciliation incomplete: "+summary.failed+" unresolved transactions");return summary;}
 async function reconcileRecentBurns(
   limit = 25
 ) {
@@ -4490,6 +4493,7 @@ return res.json(result);
     return res.status(400).json({ error: "Unable to load token leaderboard." });
   }
 });
+app.get('/api/revenue/community-rewards/history',async(req,res)=>{try{const snap=await db.collection('community_rewards_archives').get();const history=snap.docs.map(d=>d.data()).filter(x=>x.status==='finalized').sort((a,b)=>b.end-a.end);return res.json({history});}catch(e){console.error('Reward History error:',e);return res.status(500).json({error:'Reward History unavailable'});}});
 app.get('/api/revenue/community-rewards', async (req,res) => {
 try {
 const now=new Date();
@@ -4560,3 +4564,5 @@ exports.burningWellReconciliation = onSchedule(
     }
   }
 );
+const {getCompletedArchivePeriods,archiveCompletedPeriod}=require("./communityRewardsArchive");
+exports.communityRewardsArchiving=onSchedule({schedule:"0 2 * * *",timeZone:"Etc/UTC",region:"asia-southeast1"},async()=>{const periods=getCompletedArchivePeriods();for(const period of periods){const snap=await db.collection("community_rewards_archives").doc(period.id).get();if(snap.exists)continue;try{const result=await archiveCompletedPeriod(db,period,{});console.log("Community Rewards archive result:",result);}catch(error){console.error("Community Rewards archive failed:",period.id,error);}}});

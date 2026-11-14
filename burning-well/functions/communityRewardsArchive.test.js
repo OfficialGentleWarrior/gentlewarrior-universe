@@ -1,0 +1,5 @@
+"use strict";
+const assert=require("node:assert/strict");
+const {archiveCompletedPeriod,getArchivePeriod}=require("./communityRewardsArchive");
+async function run(){let writes=0;const db={collection:()=>({doc:()=>({get:async()=>({exists:false}),create:async()=>{writes++;}})})};const period=getArchivePeriod(2026,null);const realNow=Date.now;Date.now=()=>Date.UTC(2026,11,31);await assert.rejects(()=>archiveCompletedPeriod(db,period,{reconcile:async()=>({scanned:0,alreadyRegistered:0,recovered:0,skipped:0,failed:0})}),/Closing window incomplete/);assert.equal(writes,0);console.log("PASS: Archive blocked before closing window");Date.now=()=>Date.UTC(2027,0,3);const reconcile=async()=>({scanned:1,alreadyRegistered:1,recovered:0,skipped:0,failed:0});const records=[];const mock={collection:name=>name==="community_rewards_archives"?{doc:()=>({get:async()=>({exists:false}),create:async()=>{writes++;}})}:{where:()=>({get:async()=>({docs:records})})}};await archiveCompletedPeriod(mock,period,{});assert.equal(writes,1);console.log("PASS: 2026 All-Time archive created from verified registry");}
+run().catch(e=>{console.error(e);process.exitCode=1});

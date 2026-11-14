@@ -1,5 +1,5 @@
 import { loadBwEvents, initBwEventFilters } from './events.js';
-import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity, fetchCommunityRewards, renderCommunityRewards } from './revenue.js';
+import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity, fetchCommunityRewards, renderCommunityRewards, fetchRewardHistory, renderRewardHistory } from './revenue.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -4101,6 +4101,7 @@ async function loadRevenueDashboard() {
     const rewardsYear = now.getUTCFullYear();
     const rewardsQuarter = Math.floor(now.getUTCMonth() / 3) + 1;
     fetchCommunityRewards(REVENUE_API_BASE_URL, rewardsYear, rewardsQuarter).then(data => { if (requestId === bwRevenueRequestId) renderCommunityRewards(data); }).catch(error => { if (requestId !== bwRevenueRequestId) return; const el = document.getElementById('bwCommunityRewards'); if (el) el.textContent = 'Quarterly rewards temporarily unavailable.'; console.error('Community Rewards error:', error); });
+    fetchRewardHistory(REVENUE_API_BASE_URL).then(history => { if (requestId === bwRevenueRequestId) renderRewardHistory(history); }).catch(error => { if (requestId !== bwRevenueRequestId) return; const el = document.getElementById("bwRewardHistory"); if (el) el.textContent = "Reward History temporarily unavailable."; console.error("Reward History error:", error); });
     const pageInfo = document.getElementById('bwRevenuePageInfo');
     if (pageInfo) pageInfo.textContent = 'Page ' + activity.page + ' of ' + Math.max(1, activity.totalPages);
     if (prev) prev.disabled = activity.page <= 1;
