@@ -1258,6 +1258,26 @@ deleteBurnEventBtn.addEventListener(
     );
   }
 }
+document.getElementById("buyBurnForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const message = document.getElementById("buyBurnMessage");
+  const button = form.querySelector("button[type=submit]");
+  const sol = document.getElementById("buyBurnSol").value.trim();
+  const gwar = document.getElementById("buyBurnGwar").value.trim();
+  if (!/^(?:0|[1-9][0-9]*)(?:\.[0-9]{1,9})?$/.test(sol)) { message.textContent = "Invalid SOL amount."; return; }
+  const parts = sol.split(".");
+  const lamports = (BigInt(parts[0]) * 1000000000n + BigInt((parts[1] || "").padEnd(9,"0"))).toString();
+  if (lamports === "0") { message.textContent = "SOL amount must be positive."; return; }
+  button.disabled = true;
+  message.textContent = "Saving completed Buy and Burn...";
+  try {
+    await adminFetch("/api/admin/buy-burn", { method:"POST", body:JSON.stringify({purchaseSignature:document.getElementById("buyBurnPurchase").value.trim(),burnSignature:document.getElementById("buyBurnBurn").value.trim(),solSpentLamports:lamports,gwarBurned:gwar}) });
+    message.textContent = "Buy and Burn record saved successfully.";
+    form.reset();
+  } catch(error) { message.textContent = error.message; }
+  finally { button.disabled = false; }
+});
 function showAdminView(view) {
   const showDashboard = view === "dashboard";
   const showEvents = view === "burn-events";

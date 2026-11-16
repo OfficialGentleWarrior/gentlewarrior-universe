@@ -152,3 +152,44 @@ export function formatRevenueUsd(solAmount, solPriceUsd) {
   if (solAmount == null || !Number.isFinite(amount) || !Number.isFinite(price) || price <= 0) return null;
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount * price);
 }
+
+export async function fetchBuyBurn(apiBaseUrl) {
+  const response = await fetch(apiBaseUrl.replace(/\/$/, String()) + "/api/revenue/buy-burn");
+  if (!response.ok) throw new Error("Unable to load Buy and Burn records");
+  return response.json();
+}
+
+export function renderBuyBurn(data) {
+  const root = document.getElementById("bwRevenueBuyBurn");
+  if (!root) return;
+  root.replaceChildren();
+  const add = (tag,value) => { const el=document.createElement(tag); el.textContent=value; root.appendChild(el); };
+  const sol=BigInt(data.totalSolSpentLamports || "0");
+  const solText=(sol/1000000000n).toString()+"."+(sol%1000000000n).toString().padStart(9,"0");
+  add("h4","Total SOL Spent: "+solText+" SOL");
+  add("h4","Total GWAR Burned: "+(data.totalGwarBurned || "0")+" GWAR");
+  add("p","Completed Batches: "+(data.totalBatches || 0));
+  add("p","Admin-reported transactions; review transaction signatures on Solscan.");
+  if (!Array.isArray(data.history) || data.history.length === 0) { add("p","No completed Buy and Burn records yet."); return; }
+  for (const record of data.history) {
+    const card=document.createElement("div");
+    card.className="bw-revenue-activity-card";
+    const details=document.createElement("p");
+    const amount=BigInt(record.solSpentLamports);
+    const spent=(amount/1000000000n).toString()+"."+(amount%1000000000n).toString().padStart(9,"0");
+    details.textContent="Recorded: "+record.createdAt+" - SOL Spent: "+spent+" - GWAR Burned: "+record.gwarBurned;
+    card.appendChild(details);
+    for (const item of [["Purchase TXN",record.purchaseSignature],["Burn TXN",record.burnSignature]]) {
+      const signature=item[1];
+      if (typeof signature !== "string" || !/^[1-9A-HJ-NP-Za-km-z]{64,88}$/.test(signature)) continue;
+      const link=document.createElement("a");
+      link.textContent=item[0];
+      link.href="https://solscan.io/tx/"+signature;
+      link.target="_blank";
+      link.rel="noopener noreferrer";
+      card.appendChild(link);
+      card.appendChild(document.createTextNode(" "));
+    }
+    root.appendChild(card);
+  }
+}

@@ -1,5 +1,5 @@
 import { loadBwEvents, initBwEventFilters } from './events.js';
-import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity, fetchCommunityRewards, renderCommunityRewards, fetchRewardHistory, renderRewardHistory } from './revenue.js';
+import { fetchRevenueData, fetchSolPrice, renderRevenueOverview, renderRevenueAllocations, renderRevenueActivity, fetchCommunityRewards, renderCommunityRewards, fetchRewardHistory, renderRewardHistory, fetchBuyBurn, renderBuyBurn } from './revenue.js';
 import { loadBwLeaderboard } from "./leaderboard.js";
 import { initFindMyRank, cancelFindMyRank } from "./find-my-rank.js";
 import {
@@ -4097,6 +4097,7 @@ async function loadRevenueDashboard() {
     const priceLabel = document.getElementById("bwRevenueSolPrice"); if (priceLabel) priceLabel.textContent = solPriceUsd == null ? "SOL/USD market price temporarily unavailable. SOL values remain available." : "1 SOL = " + new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(solPriceUsd) + " USD (approx.) - Source: Jupiter"; renderRevenueOverview(summary, solPriceUsd);
     renderRevenueAllocations(summary, solPriceUsd);
     renderRevenueActivity(activity, solPriceUsd);
+    fetchBuyBurn(REVENUE_API_BASE_URL).then(data => { if (requestId === bwRevenueRequestId) renderBuyBurn(data); }).catch(error => { if (requestId !== bwRevenueRequestId) return; const el=document.getElementById("bwRevenueBuyBurn"); if(el) el.textContent="Unable to load Buy and Burn records."; console.error("Buy and Burn load error:",error); });
     const now = new Date();
     const rewardsYear = now.getUTCFullYear();
     const rewardsQuarter = Math.floor(now.getUTCMonth() / 3) + 1;

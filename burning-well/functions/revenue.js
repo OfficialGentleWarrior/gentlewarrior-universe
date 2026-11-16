@@ -85,6 +85,7 @@ function calculateRevenue(records, period = 'all', nowSeconds = Math.floor(Date.
       leamTherapySol: sol(leam),
       cpKidsSol: sol(cpKids),
       communityRewardsSol: sol(community),
+      gwarBuyBurnLamports: buyBurn.toString(),
       gwarBuyBurnSol: sol(buyBurn)
     }
   };

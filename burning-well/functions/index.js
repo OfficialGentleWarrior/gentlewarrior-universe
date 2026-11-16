@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const { calculateRevenue } = require("./revenue");
+const { saveCompletedBuyBurn } = require('./buyBurnStore');
 const { calculateQuarterlyRewards, distributeTopThree, rankQuarterlyBurners, rankQuarterlyReferrers } = require("./communityRewards");
 const { getRevenueActivity } = require("./revenueActivity");
 const { getSolPriceUsd } = require("./solPrice");
@@ -4525,6 +4526,37 @@ app.get('/api/revenue/activity', async (req, res) => {
   } catch (e) {
     console.error('Revenue activity error:', e);
     return res.status(500).json({error:'Revenue activity unavailable'});
+  }
+});
+app.post('/api/admin/buy-burn', async (req,res) => {
+  if (!requireAdmin(req,res)) return;
+  try {
+    const snap = await db.collection('burn_registry').where('status','==','verified').get();
+    const revenue = calculateRevenue(snap.docs.map(d => d.data()), 'all');
+    const allocation = revenue.allocations.gwarBuyBurnLamports;
+    const result = await saveCompletedBuyBurn(db, req.body, allocation);
+    return res.json(result);
+  } catch (e) {
+    if (e.message === 'BUY_BURN_DUPLICATE') return res.status(409).json({error:'Transaction already recorded'});
+    if (e.message === 'BUY_BURN_BUDGET_EXCEEDED') return res.status(400).json({error:'Buy and Burn allocation exceeded'});
+    if (e.message.startsWith('Invalid')) return res.status(400).json({error:e.message});
+    console.error('Buy and Burn save error:',e);
+    return res.status(500).json({error:'Unable to save Buy and Burn record'});
+  }
+});
+app.get('/api/revenue/buy-burn', async (req,res) => {
+  try {
+    const snap = await db.collection('buy_burn_batches').get();
+    const records = snap.docs.map(d => d.data()).filter(r => r.status === 'completed');
+    records.sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+    const totalLamports = records.reduce((n,r) => n + BigInt(r.solSpentLamports), 0n);
+    const gwarUnits = records.reduce((n,r) => { const parts = String(r.gwarBurned).split('.'); return n + BigInt(parts[0]) * 1000000000n + BigInt((parts[1] || '').padEnd(9,'0')); }, 0n);
+    const totalGwarBurned = (gwarUnits / 1000000000n).toString() + (gwarUnits % 1000000000n ? '.' + (gwarUnits % 1000000000n).toString().padStart(9,'0').replace(/0+$/,'') : '');
+    const history = records.map(r => ({...r, purchaseUrl:'https://solscan.io/tx/'+r.purchaseSignature, burnUrl:'https://solscan.io/tx/'+r.burnSignature}));
+    return res.json({verification:'admin_reported', totalSolSpentLamports:totalLamports.toString(), totalGwarBurned, totalBatches:history.length, history});
+  } catch(e) {
+    console.error('Buy and Burn history error:',e);
+    return res.status(500).json({error:'Buy and Burn history unavailable'});
   }
 });
 exports.burningWellApi = onRequest(
