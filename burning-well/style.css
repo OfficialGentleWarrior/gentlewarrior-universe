@@ -1758,3 +1758,28 @@ footer {
 .bw-revenue-tab.active{color:#092313;background:#a2ee79}
 .bw-revenue-panel[hidden]{display:none!important}
 @media(max-width:650px){.bw-revenue-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.bw-revenue-tab{font-size:12px;padding:11px 8px}}
+
+.hero{position:relative;max-width:100%;margin:0 auto 20px;padding:8px 12px 13px;text-align:center;overflow:hidden;border:1px solid #4d7025;border-radius:12px;background:radial-gradient(ellipse at 50% 10%,#08632c 0%,#003b1b 45%,#00180d 100%)}.gwarlabs-header-logo{display:block;width:120px;height:auto;margin:0 auto -4px;object-fit:contain}.hero .bw-v2-title{margin:0;white-space:nowrap;font-family:Georgia,Times New Roman,serif;font-size:clamp(28px,6.4vw,68px);font-style:italic;font-weight:900;line-height:1;letter-spacing:-3px;color:#f6d65b;background:linear-gradient(180deg,#fff8c0 0%,#ffd34d 30%,#b96b0c 62%,#fff0a1 85%,#a85b09 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(2px 3px 1px #170c00)}.hero .bw-v2-subtitle{margin:4px 0 0;color:#fff6d4;font-size:clamp(8px,1.35vw,12px);font-weight:900;letter-spacing:clamp(2px,.55vw,5px)}@media(max-width:620px){.hero{padding:8px 5px 12px}.gwarlabs-header-logo{width:92px}.hero .bw-v2-title{font-size:clamp(24px,6.2vw,40px);letter-spacing:-1.5px}}
+/* HD BANNER HEADER */
+.hero{margin:0 auto 20px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:hidden}
+.bw-header-banner{display:block;width:100%;height:auto;object-fit:contain}
+@media(max-width:620px){.hero{margin-bottom:14px!important}}
+
+/* TELEGRAM BOT PROMO */
+.bw-tg-promo{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;padding:14px 18px;border:1px solid rgba(130,220,95,.35);border-radius:12px;background:linear-gradient(110deg,#073d25,#052719);box-shadow:0 5px 22px rgba(0,0,0,.15)}
+.bw-tg-promo-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.bw-tg-promo-copy strong{color:#b4f48c;font-size:13px;letter-spacing:1px}
+.bw-tg-promo-copy span{color:#d1ddcf;font-size:13px;line-height:1.4}
+.bw-tg-promo-cta{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:11px 16px;border-radius:9px;background:#a6ed7a;color:#092511!important;font-size:12px;font-weight:800;text-align:center;text-decoration:none;transition:background .2s}
+.bw-tg-promo-cta:hover{background:#c7ffa3}
+@media(max-width:620px){.bw-tg-promo{flex-direction:column;align-items:stretch;gap:12px;padding:13px}.bw-tg-promo-cta{width:100%;box-sizing:border-box}}
+
+/* TELEGRAM BOT ICON AND BADGE */
+.bw-tg-promo-icon{display:flex;align-items:center;justify-content:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;background:#229ed9;color:#fff;box-shadow:0 0 0 3px rgba(34,158,217,.14)}
+.bw-tg-promo-icon svg{width:25px;height:25px}
+.bw-tg-promo-copy{flex:1;min-width:0}
+.bw-tg-promo-heading{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.bw-tg-live{display:inline-flex;align-items:center;padding:3px 8px;border:1px solid rgba(166,237,122,.5);border-radius:20px;background:rgba(166,237,122,.13);color:#b4f48c!important;font-size:10px!important;font-weight:800;letter-spacing:1px}
+.bw-tg-promo-cta{gap:9px}
+.bw-tg-promo-cta svg{width:17px;height:17px;flex-shrink:0}
+@media(max-width:620px){.bw-tg-promo{display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px 12px;align-items:center}.bw-tg-promo-icon{grid-column:1;grid-row:1}.bw-tg-promo-copy{grid-column:2;grid-row:1}.bw-tg-promo-cta{grid-column:1/-1;grid-row:2}}
