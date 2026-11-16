@@ -85,9 +85,10 @@ function formatBurnNotification(signature, record) {
     const fraction = decimals ? (units % divisor).toString().padStart(decimals, '0').replace(/0+$/, '') : '';
     amount = fraction ? whole + '.' + fraction : whole;
   }
+  const escapeHtml = v => String(v).replace(/[<>&]/g, c => String.fromCharCode(38,35) + c.charCodeAt(0) + ';');
   const symbol = record.tokenSymbol || 'TOKEN';
   const name = record.tokenName || symbol;
-  return ['🔥 Burning Well - Verified Token Burn', 'Token: ' + name + ' ($' + symbol + ')', 'Amount Burned: ' + amount + ' ' + symbol, 'Mint: ' + record.mint, 'Transaction: https://solscan.io/tx/' + encodeURIComponent(signature), 'Powered by GWAR Labs'].join(String.fromCharCode(10));
+  return ['<b>🔥 BURNING WELL - VERIFIED BURN</b>','','<b>'+escapeHtml(name)+' ($'+escapeHtml(symbol)+')</b>','','🔥 <b>AMOUNT BURNED</b>','<b>'+amount+' '+escapeHtml(symbol)+'</b>','','Successfully burned and verified on Solana.','','🪙 <b>TOKEN MINT</b>','<code>'+escapeHtml(record.mint)+'</code>','','<i>Powered by GWAR Labs</i>'].join(String.fromCharCode(10));
 }
 
 async function notifyVerifiedBurn(signature, record, token) {
@@ -106,7 +107,7 @@ async function notifyVerifiedBurn(signature, record, token) {
     });
     if (!claimed) continue;
     try {
-      await sendTelegramMessage(token, chatId, message);
+      await telegramRequest(token, 'sendMessage', {chat_id:chatId,text:message,parse_mode:'HTML',reply_markup:{inline_keyboard:[[{text:'View on Solscan',url:'https://solscan.io/tx/'+encodeURIComponent(signature)}]]}});
       await deliveryRef.update({ status: 'sent', sentAt: FieldValue.serverTimestamp() });
     } catch (error) {
       await deliveryRef.update({ status: 'failed', error: String(error.message).slice(0, 200) });
