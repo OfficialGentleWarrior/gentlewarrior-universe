@@ -166,11 +166,7 @@ export function renderBuyBurn(data) {
   const add = (tag,value) => { const el=document.createElement(tag); el.textContent=value; root.appendChild(el); };
   const sol=BigInt(data.totalSolSpentLamports || "0");
   const solText=(sol/1000000000n).toString()+"."+(sol%1000000000n).toString().padStart(9,"0");
-  add("h4","Total SOL Spent: "+solText+" SOL");
-  add("h4","Total GWAR Burned: "+(data.totalGwarBurned || "0")+" GWAR");
-  add("p","Completed Batches: "+(data.totalBatches || 0));
-  add("p","Admin-reported transactions; review transaction signatures on Solscan.");
-  if (!Array.isArray(data.history) || data.history.length === 0) { add("p","No completed Buy and Burn records yet."); return; }
+  const metric=(label,value)=>{const card=document.createElement("div");card.className="bw-buyburn-card";const heading=document.createElement("div");heading.className="bw-buyburn-label";heading.textContent=label;const number=document.createElement("div");number.className="bw-buyburn-value";number.textContent=value;card.append(heading,number);root.appendChild(card);};metric("Total SOL Spent",solText+" SOL");metric("Total GWAR Burned",(data.totalGwarBurned||"0")+" GWAR");metric("Completed Batches",String(data.totalBatches||0));metric("Verification","Admin-reported");const history=document.createElement("section");history.className="bw-buyburn-history";const heading=document.createElement("h4");heading.textContent="Transaction History";history.appendChild(heading);const note=document.createElement("p");note.textContent="Review purchase and burn signatures independently on Solscan.";history.appendChild(note);root.appendChild(history);if(!Array.isArray(data.history)||data.history.length===0){const empty=document.createElement("p");empty.textContent="No completed Buy and Burn records yet.";history.appendChild(empty);return;}
   for (const record of data.history) {
     const card=document.createElement("div");
     card.className="bw-revenue-activity-card";
@@ -190,6 +186,6 @@ export function renderBuyBurn(data) {
       card.appendChild(link);
       card.appendChild(document.createTextNode(" "));
     }
-    root.appendChild(card);
+    history.appendChild(card);;
   }
 }
