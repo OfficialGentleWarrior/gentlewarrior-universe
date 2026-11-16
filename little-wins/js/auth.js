@@ -17,7 +17,11 @@ import {
 
 const provider = new GoogleAuthProvider();
 
+let loginInProgress = false;
+
 export async function signInWithGoogle() {
+  if (loginInProgress) return;
+  loginInProgress = true;
 
   try {
 
@@ -57,6 +61,9 @@ export async function signInWithGoogle() {
 
     console.error(error);
     alert(error.message);
+
+  } finally {
+    loginInProgress = false;
 
   }
 
