@@ -4598,3 +4598,35 @@ exports.burningWellReconciliation = onSchedule(
 );
 const {getCompletedArchivePeriods,archiveCompletedPeriod}=require("./communityRewardsArchive");
 exports.communityRewardsArchiving=onSchedule({schedule:"0 2 * * *",timeZone:"Etc/UTC",region:"asia-southeast1"},async()=>{const periods=getCompletedArchivePeriods();for(const period of periods){const snap=await db.collection("community_rewards_archives").doc(period.id).get();if(snap.exists)continue;try{const result=await archiveCompletedPeriod(db,period,{});console.log("Community Rewards archive result:",result);}catch(error){console.error("Community Rewards archive failed:",period.id,error);}}});
+
+// Burning Well Telegram Bot V2
+const {onDocumentCreated} = require('firebase-functions/v2/firestore');
+const {handleTelegramWebhook, notifyVerifiedBurn} = require('./telegramBot');
+const TELEGRAM_BOT_TOKEN = defineSecret('TELEGRAM_BOT_TOKEN');
+const TELEGRAM_WEBHOOK_SECRET = defineSecret('TELEGRAM_WEBHOOK_SECRET');
+
+exports.burningWellTelegramWebhook = onRequest({
+  region: 'asia-southeast1',
+  secrets: [TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET],
+}, async (req, res) => {
+  return handleTelegramWebhook(req, res, TELEGRAM_BOT_TOKEN.value(), TELEGRAM_WEBHOOK_SECRET.value());
+});
+
+exports.burningWellTelegramBurnNotifier = onDocumentCreated({
+  document: 'burn_registry/{signature}',
+  region: 'asia-southeast1',
+  secrets: [TELEGRAM_BOT_TOKEN],
+}, async (event) => {
+  if (!event.data) return;
+  const record = event.data.data();
+  if (record?.status !== 'verified') return;
+  await notifyVerifiedBurn(event.params.signature, record, TELEGRAM_BOT_TOKEN.value());
+});
+
+exports.burningWellTelegramRetry = onSchedule({
+  schedule: 'every 10 minutes',
+  region: 'asia-southeast1',
+  secrets: [TELEGRAM_BOT_TOKEN],
+}, async () => {
+  await require('./telegramBot').retryFailedNotifications(TELEGRAM_BOT_TOKEN.value());
+});
