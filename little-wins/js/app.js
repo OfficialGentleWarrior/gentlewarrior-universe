@@ -2,7 +2,8 @@ import { auth, db, storage } from "./firebase.js";
 import { dailyQuotes } from "./quotes.js";
 
 import {
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 import {
@@ -14,8 +15,25 @@ import {
 import {
     ref,
     uploadBytes,
-    getDownloadURL
+    getBlob
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+async function loadPrivateJourneyPhoto(userId, fallbackURL) {
+    const photoRef = ref(storage, `journeyPhotos/${userId}/profile.jpg`);
+    try {
+        const blob = await getBlob(photoRef);
+        const objectURL = URL.createObjectURL(blob);
+        journeyPhoto.onload = () => URL.revokeObjectURL(objectURL);
+        journeyPhoto.onerror = () => {
+            URL.revokeObjectURL(objectURL);
+            journeyPhoto.src = fallbackURL;
+        };
+        journeyPhoto.src = objectURL;
+    } catch (error) {
+        console.error("Private journey photo loading failed:", error);
+        journeyPhoto.src = fallbackURL;
+    }
+}
 
 const userName = document.getElementById("userName");
 const journeyPhoto =
@@ -99,13 +117,9 @@ const journeyData = journeySnap.exists()
 
     "Little Wins";
 
-journeyPhoto.src =
-
-    journeyData?.journeyPhoto ||
-
-    userData.photoURL ||
-
-    "assets/avatar/default-avatar.png";
+const fallbackPhoto = userData.photoURL || "assets/avatar/default-avatar.png";
+    journeyPhoto.src = fallbackPhoto;
+    await loadPrivateJourneyPhoto(user.uid, fallbackPhoto);
 
         if (journeyData?.journeyStarted) {
 
@@ -141,6 +155,8 @@ journeyPhotoInput.addEventListener("change", async (event) => {
     const file = event.target.files[0];
 
     if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { alert('Please select a JPEG, PNG, or WebP image.'); event.target.value = ''; return; }
+    if (file.size > 5 * 1024 * 1024) { alert('Image must be 5 MB or smaller.'); event.target.value = ''; return; }
 
     try {
 
@@ -158,19 +174,8 @@ alert("⏳ Uploading journey photo...");
 
         await uploadBytes(storageRef, file);
 
-        // Get Download URL
-        const downloadURL = await getDownloadURL(storageRef);
-
-        // Save URL to Firestore
-        await updateDoc(
-            doc(db, "lw_journeys", user.uid),
-            {
-                journeyPhoto: downloadURL
-            }
-        );
-
-        // Update avatar immediately
-        journeyPhoto.src = downloadURL;
+        // Load the uploaded photo using authenticated Storage access
+        await loadPrivateJourneyPhoto(user.uid, user.photoURL || "assets/avatar/default-avatar.png");
 
 alert("✅ Journey photo updated successfully!");
 
@@ -187,12 +192,14 @@ alert("✅ Journey photo updated successfully!");
 // Record Little Win
 // ==========================================
 
-alert("Before record button");
+
 
 recordWin.onclick = () => {
 
-    alert("Clicked");
+    
 
     location.href = "record.html";
 
 };
+
+document.getElementById("navProfile").addEventListener("click", async () => { if (!confirm("Sign out of Little Wins?")) return; try { await signOut(auth); window.location.replace("index.html"); } catch (error) { console.error("Logout failed:", error); alert("Unable to sign out. Please try again."); } });

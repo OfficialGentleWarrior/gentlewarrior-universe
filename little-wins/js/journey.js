@@ -26,7 +26,7 @@ export async function hasJourney() {
     return journeySnap.exists();
   } catch (error) {
     console.error("Error checking journey:", error);
-    return false;
+    throw error;
   }
 }
 

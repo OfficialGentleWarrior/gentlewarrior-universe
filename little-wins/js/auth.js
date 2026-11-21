@@ -60,7 +60,7 @@ export async function signInWithGoogle() {
   } catch (error) {
 
     console.error(error);
-    alert(error.message);
+    alert(error.code === "auth/popup-closed-by-user" ? "Google Sign-In was cancelled." : error.code === "auth/network-request-failed" || error.code === "unavailable" || error.code === "deadline-exceeded" ? "Unable to connect right now. Please check your internet connection and try again." : "Unable to complete sign-in. Please try again. If the problem continues, contact support.");
 
   } finally {
     loginInProgress = false;
